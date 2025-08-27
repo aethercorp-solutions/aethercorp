@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS Lambda</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS Lambda</h1>
+                    <p class="subtitle">AWS Lambda is a serverless computing service provided by Amazon Web Services (AWS). It lets you run code in response to events—such as HTTP requests, file uploads, or database changes—without having to provision or manage servers. Here's a breakdown of how it works:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 How AWS Lambda Works</h2>
+            <ol>
+                <li>
+                    Write Your Function
+                    <ul>
+                        <li>You write a function in a supported language (e.g., Python, Node.js, Java, Go).</li>
+                        <li>The function contains the logic you want to run when triggered.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Deploy to Lambda
+                    <ul>
+                        <li>You upload your code to AWS Lambda.</li>
+                        <li>You can do this through the AWS Console, AWS CLI, or via tools like AWS SAM or Serverless Framework.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Configure Triggers
+                    <ul>
+                        <li>
+                            Lambda functions are invoked by events from AWS services like:
+                            <ul>
+                                <li>API Gateway – for web APIs</li>
+                                <li>S3 – for file uploads</li>
+                                <li>DynamoDB – for data changes</li>
+                                <li>SNS/SQS – for messaging</li>
+                                <li>CloudWatch – for scheduled jobs</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    AWS Executes Your Code
+                    <ul>
+                        <li>
+                            When the event occurs, AWS:
+                            <ul>
+                                <li>Automatically provisions resources</li>
+                                <li>Executes your function</li>
+                                <li>Scales automatically based on the number of incoming events</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Pay Only for What You Use
+                    <ul>
+                        <li>
+                            <p>You’re billed based on:</p>
+                            <ul>
+                                <li>The number of requests</li>
+                                <li>The duration your function runs</li>
+                                <li>The memory allocated</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ Key Features</h2>
+            <ul>
+                <li>No server management</li>
+                <li>Auto-scaling</li>
+                <li>Built-in fault tolerance</li>
+                <li>Supports multiple runtimes</li>
+                <li>Integrates with most AWS services</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Example Use Case</h2>
+            <p>Image Processing:</p>
+            <ul>
+                <li>A user uploads an image to S3.</li>
+                <li>
+                    This triggers a Lambda function that:
+                    <ul>
+                        <li>Resizes the image</li>
+                        <li>Stores the processed version back in another S3 bucket</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Lambda Function in Python</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Lambda Function in Python</h1>
+                    <p class="subtitle">Great — let's talk about lambda functions in programming, especially in Python and JavaScript.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🐍 Python Lambda Functions</h2>
+            <p>A lambda function in Python is a small anonymous function defined using the lambda keyword. It's often used when you need a simple function for a short period of time — typically as an argument to functions like map(), filter(), or sorted().</p>
+        
+            <p>🔹 Syntax:</p>
+            <pre><code>
+lambda arguments: expression
+            </code></pre>
+
+            <p>🔹 Example:</p>
+            <pre><code>
+add = lambda x, y: x + y
+print(add(2, 3))  # Output: 5
+            </code></pre>
+
+            <p>🔹 Common Use:</p>
+            <pre><code>
+numbers = [1, 2, 3, 4, 5]
+squared = list(map(lambda x: x ** 2, numbers))
+print(squared)  # Output: [1, 4, 9, 16, 25]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🌐 JavaScript Arrow Functions (Similar to Lambda)</h2>
+            <p>In JavaScript, there isn't a lambda keyword, but arrow functions (=>) serve a similar purpose — they define anonymous or short functions.</p>
+            <p>🔹 Syntax:</p>
+            <pre><code>
+const add = (x, y) => x + y;
+console.log(add(2, 3));  // Output: 5
+            </code></pre>
+
+            <p>🔹 Common Use:</p>
+            <pre><code>
+const numbers = [1, 2, 3, 4, 5];
+const squared = numbers.map(x => x ** 2);
+console.log(squared);  // Output: [1, 4, 9, 16, 25]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Python lambda</th>
+                        <th>JavaScript Arrow Function</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Syntax</td>
+                        <td>lambda x: x + 1</td>
+                        <td>x => x + 1</td>
+                    </tr>
+                    <tr>
+                        <td>Anonymous</td>
+                        <td>Yes</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Multi-line body</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Use case</td>
+                        <td>Short throwaway functions</td>
+                        <td>Similar, but more flexible</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How Filesystems Work</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How Filesystems Work</h1>
+                    <p class="subtitle">
+                        Great! Let’s walk through a conceptual overview of how filesystems work, focusing on key components like:
+                        <ul>
+                            <li>Blocks</li>
+                            <li>Inodes</li>
+                            <li>Directories</li>
+                            <li>Superblock</li>
+                            <li>Allocation methods</li>
+                            <li>File operations</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🗃️ What is a Filesystem?</h2>
+            <p>A filesystem is a method an operating system uses to store, organize, manage, and retrieve data on storage devices like hard drives, SSDs, or USB sticks.</p>
+            <p>You can think of it as a data structure on disk that tells the OS where files are, how big they are, who owns them, etc.</p>
+        </section>
+
+        <section>
+            <h2>🧱 1. Blocks: Basic Storage Unit</h2>
+            <ul>
+                <li>The disk is divided into fixed-size blocks (usually 512B, 4KB, etc.).</li>
+                <li>Files are stored as one or more blocks.</li>
+                <li>Even if a file is smaller than a block, it takes up the whole block (→ internal fragmentation).</li>
+            </ul>
+            <p>Example:</p>
+            <ul>
+                <li>File A.txt = 6 KB, block size = 4 KB</li>
+                <li>File takes up 2 blocks = 8 KB (with 2 KB unused)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 2. Inodes: Metadata of Files</h2>
+            <p>Inodes (Index Nodes) store metadata about files.</p>
+            <p>Each inode contains:</p>
+            <ul>
+                <li>File type (regular file, directory, link)</li>
+                <li>Size</li>
+                <li>Owner & permissions</li>
+                <li>Timestamps (created, modified, accessed)</li>
+                <li>Pointers to data blocks</li>
+            </ul>
+            <p>🔗 Example (Direct Pointers):</p>
+            <pre><code>
+Inode 1001
+  - Size: 15 KB
+  - Direct Block Pointers: [12, 13, 14, 15]
+  - Indirect Pointers: (if file is large)
+            </code></pre>
+            <p>Inode ≠ filename! The filename is stored separately in the directory structure.</p>
+        </section>
+
+        <section>
+            <h2>📁 3. Directories: Mapping Names to Inodes</h2>
+            <p>Directories are special files that contain mappings:</p>
+            <pre><code>
+filename → inode number
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+dir1/
+  - "file.txt" → inode 1001
+  - "notes.md" → inode 1002
+            </code></pre>
+
+            <p>When you access dir1/file.txt, the filesystem:</p>
+            <ol>
+                <li>Looks up "dir1"</li>
+                <li>Opens its inode</li>
+                <li>Finds the directory entry for "file.txt"</li>
+                <li>Retrieves inode 1001</li>
+                <li>Reads data blocks for that file</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📋 4. Superblock: Filesystem Summary</h2>
+            <p>Every filesystem has a superblock, a structure that holds high-level metadata:</p>
+            <ul>
+                <li>Total size of filesystem</li>
+                <li>Number of inodes</li>
+                <li>Number of blocks</li>
+                <li>Free blocks/inodes</li>
+                <li>Location of inode table</li>
+            </ul>
+            <p>If the superblock gets corrupted, the whole filesystem may become unreadable.</p>
+        </section>
+
+        <section>
+            <h2>📊 5. File Allocation Methods</h2>
+            <p>Files may be stored in blocks in different ways:</p>
+
+            <p>▪️ Contiguous Allocation</p>
+            <ul>
+                <li>Store all blocks of a file next to each other</li>
+                <li>Fast but suffers from fragmentation</li>
+            </ul>
+
+            <p>🔗 Linked Allocation</p>
+            <ul>
+                <li>Each block has a pointer to the next</li>
+                <li>Simple, no fragmentation, but slow random access</li>
+            </ul>
+
+            <p>🗂️ Indexed Allocation (used in inodes)</p>
+            <ul>
+                <li>Use an index (inode) to point to all data blocks</li>
+                <li>Fast random access, scalable</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ 6. Common File Operations</h2>
+            <p>Here’s how the filesystem handles typical operations:</p>
+
+            <p>✅ open("file.txt")</p>
+            <ul>
+                <li>Locate filename in directory</li>
+                <li>Get inode number</li>
+                <li>Read inode from inode table</li>
+            </ul>
+
+            <p>✅ read(fd, buf, size)</p>
+            <ul>
+                <li>Use inode to get block pointers</li>
+                <li>Read from disk into buffer</li>
+            </ul>
+
+            <p>✅ write(fd, buf, size)</p>
+            <ul>
+                <li>Allocate new blocks if needed</li>
+                <li>Update inode size & block pointers</li>
+                <li>Update timestamps</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔄 7. Journaling (Crash Recovery)</h2>
+            <p>Modern filesystems like ext4, NTFS, APFS use journaling to prevent data corruption:</p>
+            <ul>
+                <li>Before writing actual data, they write a “journal” of what will change</li>
+                <li>If crash occurs, system replays the journal to restore consistency</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 Filesystem Layout on Disk</h2>
+            <p>A disk typically looks like this:</p>
+
+            <pre><code>
+[ Boot Block ][ Superblock ][ Inode Table ][ Data Blocks ]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 Example Filesystems</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Filesystem</th>
+                        <th>Type</th>
+                        <th>Key Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ext4</td>
+                        <td>Linux</td>
+                        <td>Journaling, large file support</td>
+                    </tr>
+                    <tr>
+                        <td>NTFS</td>
+                        <td>Windows</td>
+                        <td>Journaling, ACLs, compression</td>
+                    </tr>
+                    <tr>
+                        <td>FAT32</td>
+                        <td>Legacy</td>
+                        <td>Simple, limited file sizes</td>
+                    </tr>
+                    <tr>
+                        <td>APFS</td>
+                        <td>macOS</td>
+                        <td>Snapshots, encryption, SSD-friendly</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Smallest unit of storage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Block</td>
+                        <td>Smallest unit of storage</td>
+                    </tr>
+                    <tr>
+                        <td>Inode</td>
+                        <td>Metadata about files (not the name)</td>
+                    </tr>
+                    <tr>
+                        <td>Directory</td>
+                        <td>Maps filenames to inode numbers</td>
+                    </tr>
+                    <tr>
+                        <td>Superblock</td>
+                        <td>Summary of the whole filesystem</td>
+                    </tr>
+                    <tr>
+                        <td>Journaling</td>
+                        <td>Helps recover from crashes</td>
+                    </tr>
+                    <tr>
+                        <td>Allocation</td>
+                        <td>Methods to organize file data on disk</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

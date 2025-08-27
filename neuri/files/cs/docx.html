@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>.docx</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">.docx</h1>
+                    <p class="subtitle">A .docx file is actually a ZIP archive that contains a collection of XML files and other resources (like images and styles). This structure follows the Office Open XML (OOXML) standard.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>📦 .docx ZIP Structure (Simplified)</h2>
+            <p>When you unzip a .docx file, you'll typically see something like:</p>
+
+            <pre><code>
+your_file.docx (zip archive)
+├── [Content_Types].xml
+├── _rels/
+│   └── .rels
+├── word/
+│   ├── document.xml
+│   ├── styles.xml
+│   ├── settings.xml
+│   ├── webSettings.xml
+│   ├── fontTable.xml
+│   ├── theme/
+│   ├── media/
+│   └── _rels/
+├── docProps/
+│   ├── core.xml
+│   └── app.xml
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧾 Key Files & Their Purpose</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>word/document.xml</td>
+                        <td>Main content of the Word document (paragraphs, text, tables, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>word/styles.xml</td>
+                        <td>Defines styles used (fonts, spacing, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>word/settings.xml</td>
+                        <td>Document-level settings</td>
+                    </tr>
+                    <tr>
+                        <td>word/_rels/document.xml.rels</td>
+                        <td>Relationships (e.g., links to images or headers)</td>
+                    </tr>
+                    <tr>
+                        <td>[Content_Types].xml</td>
+                        <td>Declares MIME types for parts of the package</td>
+                    </tr>
+                    <tr>
+                        <td>docProps/core.xml</td>
+                        <td>Metadata (author, title, creation date, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>docProps/app.xml</td>
+                        <td>Additional metadata (application name, total words, etc.)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📄 Example: document.xml (Main Content)</h2>
+            <pre><code>
+&lt;w:document xmlns:w=&quot;http://schemas.openxmlformats.org/wordprocessingml/2006/main&quot;&gt;
+  &lt;w:body&gt;
+    &lt;w:p&gt;
+      &lt;w:r&gt;
+        &lt;w:t&gt;Hello, world!&lt;/w:t&gt;
+      &lt;/w:r&gt;
+    &lt;/w:p&gt;
+    &lt;w:sectPr /&gt;
+  &lt;/w:body&gt;
+&lt;/w:document&gt;
+            </code></pre>
+        </section>
+        
+        <section>
+            <h2>Breakdown:</h2>
+            <ul>
+                <li>&lt;w:document&gt;: Root element for the Word document.</li>
+                <li>&lt;w:p&gt;: A paragraph.</li>
+                <li>&ltw:r&gt;: A run — a segment of text with the same styling.</li>
+                <li>&lt;w:t&gt: The text content — in this case, "Hello, world!"</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📎 Relationships in _rels/.rels or word/_rels/document.xml.rels</h2>
+
+            <pre><code>
+&lt;Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"&gt;
+    &ltRelationship Id="rId1" Type=".../image" Target="media/image1.png"/&gt;
+&lt;/Relationships&gt;                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔧 Tools to Explore .docx XML Structure</h2>
+
+            <ul>
+                <li>Unzip the .docx file: Rename it to .zip and extract it.</li>
+                <li>Use a text editor (e.g., VS Code) or XML viewer to explore contents.</li>
+                <li>Use python-docx if you want a high-level interface (without manual XML handling).</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

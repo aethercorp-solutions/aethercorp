@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>XML (eXtensible Markup Language)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">XML (eXtensible Markup Language)</h1>
+                    <p class="subtitle">XML (eXtensible Markup Language) is a markup language used to store and transport data in a structured, human-readable, and machine-readable format. It's widely used in various applications where data needs to be shared between different systems, especially over the internet.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Basic Usage of XML</h2>
+            <p>XML uses tags to define elements, similar to HTML, but unlike HTML, XML is descriptive, not presentation-based.</p>
+            <p>📄 Example:</p>
+
+            <pre><code>
+&lt;book&gt;
+  &lt;title&gt;Introduction to XML&lt;/title&gt;
+  &lt;author&gt;John Doe&lt;/author&gt;
+  &lt;year&gt;2025&lt;/year&gt;
+&lt;/book&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🛠️ Common Use Cases</h2>
+            <ol>
+                <li>Data storage – Used to save structured data (e.g., config files).</li>
+                <li>Data transport – Used in web services (e.g., SOAP APIs).</li>
+                <li>Configuration files – Used in applications like Java (.xml config files).</li>
+                <li>RSS/ATOM feeds – News aggregators use XML to deliver content.</li>
+                <li>Office documents – Formats like .docx and .xlsx are ZIP files containing XML.</li>
+                <li>Serialization – Saving objects in XML format in programming (e.g., C#, Java).</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📚 Key Features of XML</h2>
+            <ol>
+                <li>Hierarchical structure (tree-like).</li>
+                <li>User-defined tags (customizable structure).</li>
+                <li>Cross-platform and language-independent.</li>
+                <li>Supports attributes and nested elements.</li>
+            </ol>
+
+            <p>🔍 Example with attributes:</p>
+            <pre><code>
+&lt;book isbn=&quot;978-3-16-148410-0&quot;&gt;
+  &lt;title&gt;Advanced XML&lt;/title&gt;
+  &lt;author&gt;Jane Smith&lt;/author&gt;
+&lt;/book&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ How XML Is Used in Programming</h2>
+            <p>Depending on the language you're using, XML can be parsed and manipulated with built-in libraries.</p>
+
+            <p>✅ Python</p>
+            <pre><code>
+import xml.etree.ElementTree as ET
+
+tree = ET.parse('data.xml')
+root = tree.getroot()
+print(root.tag)
+            </code></pre>
+
+            <p>✅ Java</p>
+            <pre><code>
+DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+DocumentBuilder builder = factory.newDocumentBuilder();
+Document doc = builder.parse(new File("data.xml"));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Pros</h2>
+            <ul>
+                <li>Self-descriptive structure</li>
+                <li>Human-readable</li>
+                <li>Widely supported</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>❌ Cons</h2>
+            <ul>
+                <li>Verbose (more characters than JSON)</li>
+                <li>Parsing can be slower than more modern formats</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔄 Alternatives</h2>
+            <ul>
+                <li>JSON – More compact and faster for web APIs</li>
+                <li>YAML – Human-friendly configuration files</li>
+                <li>CSV – Simple tabular data</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
