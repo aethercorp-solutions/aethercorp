@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>The Core NFC framework</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">The Core NFC framework</h1>
+                    <p class="subtitle">The Core NFC framework is an Apple framework that allows iOS apps to read Near Field Communication (NFC) tags. It was introduced in iOS 11 and has been gradually expanded in functionality since then.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔍 What is Core NFC?</h2>
+            <p>Core NFC allows your iOS app to detect NFC tags and read their data when the iPhone is brought near one. Starting with later versions of iOS and supported iPhone models, it also supports writing to tags, scanning for NFC-enabled passports, and more.</p>
+        </section>
+
+        <section>
+            <h2>✅ Supported Devices</h2>
+            <p>Core NFC is only available on certain iPhones (not iPad or iPod touch). Support varies by device and iOS version:</p>
+            <table>
+                <thead>
+                    <th>iPhone Model</th>
+                    <th>Read NFC</th>
+                    <th>Write NFC</th>
+                    <th>Background Scanning</th>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>iPhone 7/7 Plus</td>
+                        <td>Yes</td>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>iPhone XS and newer</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>You can check NFCNDEFReaderSession.readingAvailable to see if the device supports NFC.</p>
+        </section>
+
+        <section>
+            <h2>📦 Key Classes in Core NFC</h2>
+            <ol>
+                <li>
+                    NFCNDEFReaderSession
+                    <ul>
+                        <li>Starts a session to read NDEF (NFC Data Exchange Format) tags.</li>
+                        <li>Presents the native NFC reader UI.</li>
+                        <li>
+                            Example:
+                            <pre><code>
+let session = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: true)
+session?.begin()
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    NFCNDEFMessage / NFCNDEFPayload
+                    <ul>
+                        <li>Represent the data read from or written to a tag.</li>
+                        <li>You can access the payload content in various formats (e.g., text, URI).</li>
+                    </ul>
+                </li>
+
+                <li>
+                    NFCISO7816Tag, NFCISO15693Tag, NFCFeliCaTag, NFCMiFareTag
+                    <ul>
+                        <li>For reading other types of tags (e.g., access cards, passports).</li>
+                        <li>Available on iOS 13+ with enhanced tag support.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔐 Entitlements</h2>
+            <p>To use Core NFC, you need to:</p>
+
+            <ol>
+                <li>Enable the NFC Tag Reading capability in Xcode.</li>
+                <li>
+                    Add the following key to your Info.plist:
+                    <pre><code>
+&lt;key&gt;NFCReaderUsageDescription&lt;/key&gt;
+&lt;string&gtWe use NFC to scan tags.&lt;/string&gt;
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            🚨 Limitations
+            <ul>
+                <li>No background scanning for custom apps (Apple Wallet and system apps can).</li>
+                <li>Reading only works when the user explicitly initiates scanning.</li>
+                <li>Requires physical proximity (a few centimeters).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠 Simple Example (NDEF Reading)</h2>
+            <pre><code>
+import CoreNFC
+
+class NFCReader: NSObject, NFCNDEFReaderSessionDelegate {
+    var session: NFCNDEFReaderSession?
+
+    func beginScanning() {
+        session = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: true)
+        session?.begin()
+    }
+
+    func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
+        for message in messages {
+            for record in message.records {
+                if let text = String(data: record.payload, encoding: .utf8) {
+                    print("Payload: \(text)")
+                }
+            }
+        }
+    }
+
+    func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {
+        print("Session invalidated: \(error.localizedDescription)")
+    }
+}
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
