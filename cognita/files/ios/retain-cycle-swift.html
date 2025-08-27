@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What Is a Retain Cycle?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What Is a Retain Cycle?</h1>
+                    <p class="subtitle">A retain cycle happens when two objects strongly reference each other, so neither can be deallocated because each holds a strong reference to the other.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Example: Retain Cycle</h2>
+            <pre><code>
+class Person {
+    let name: String
+    var apartment: Apartment?  // Strong reference
+    init(name: String) { self.name = name }
+    deinit { print("\(name) is being deinitialized") }
+}
+
+class Apartment {
+    let unit: String
+    var tenant: Person?  // Strong reference
+    init(unit: String) { self.unit = unit }
+    deinit { print("Apartment \(unit) is being deinitialized") }
+}                
+            </code></pre>
+
+            <pre><code>
+var john: Person? = Person(name: "John")
+var unit4A: Apartment? = Apartment(unit: "4A")
+
+john?.apartment = unit4A
+unit4A?.tenant = john
+
+john = nil
+unit4A = nil
+            </code></pre>
+            <p>Expected Behavior: Both john and unit4A should deallocate.</p>
+            <p>Actual Behavior: Neither deallocates. Both hold strong references to each other → retain cycle.</p>
+        </section>
+
+        <section>
+            <h2>Breaking the Retain Cycle</h2>
+            <p>You break the retain cycle by changing one of the references to weak or unowned.</p>
+            <p>Option 1: Use weak (when the reference can become nil)</p>
+            <pre><code>
+class Apartment {
+    let unit: String
+    weak var tenant: Person?  // Weak reference breaks cycle
+    init(unit: String) { self.unit = unit }
+    deinit { print("Apartment \(unit) is being deinitialized") }
+}                
+            </code></pre>
+
+            <p>Now if you run the same setup:</p>
+
+            <pre><code>
+var john: Person? = Person(name: "John")
+var unit4A: Apartment? = Apartment(unit: "4A")
+
+john?.apartment = unit4A
+unit4A?.tenant = john
+
+john = nil
+unit4A = nil
+            </code></pre>
+            <p>Both objects are properly deinitialized.</p>
+        </section>
+
+        <section>
+            <h2>Option 2: Use unowned (when the reference should never be nil)</h2>
+            <p>Use unowned only when you're confident the referenced object will always exist as long as the current object exists. For example, a CreditCard always belongs to a Customer — the card has no reason to exist if the customer doesn’t.</p>
+            <pre><code>
+class CreditCard {
+    let number: Int
+    unowned let customer: Customer  // Unowned reference
+    init(number: Int, customer: Customer) {
+        self.number = number
+        self.customer = customer
+    }
+    deinit { print("CreditCard #\(number) is being deinitialized") }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Retain Cycle Checklist</h2>
+            <ul>
+                <li>Strong ↔ Strong = ❌ Potential retain cycle.</li>
+                <li>Strong ↔ Weak = ✅ Safe (breaks cycle, allows nil).</li>
+                <li>Strong ↔ Unowned = ✅ Safe (if lifetime is guaranteed).</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

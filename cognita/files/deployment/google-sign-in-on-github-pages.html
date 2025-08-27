@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Google Sign-In on a static site hosted on GitHub Pages</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Google Sign-In on a static site hosted on GitHub Pages</h1>
+                    <p class="subtitle">If you want to implement Google Sign-In on a static site hosted on GitHub Pages, here’s a straightforward approach:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Quick Overview</h2>
+            <ul>
+                <li>GitHub Pages is a static hosting service — no backend server.</li>
+                <li>Google Sign-In uses OAuth 2.0, which requires some setup.</li>
+                <li>You can use Google Identity Services JavaScript SDK for client-side sign-in.</li>
+                <li>After sign-in, you get a JWT token or user profile info in the browser.</li>
+                <li>No backend needed if you just want user authentication on client side.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step-by-step to add Google Sign-In on GitHub Pages</h2>
+            <ol>
+                <li>
+                    Create a Google Cloud Project & OAuth Client ID
+                    <ol>
+                        <li>Go to <a href="https://console.cloud.google.com/">Google Cloud Console.</a></li>
+                        <li>Create a new project or use an existing one.</li>
+                        <li>Navigate to APIs & Services > Credentials.</li>
+                        <li>Click Create Credentials > OAuth client ID.</li>
+                        <li>Select Web application.</li>
+                        <li>
+                            Add your GitHub Pages URL under Authorized JavaScript origins, e.g.:
+                            <pre><code>
+https://yourusername.github.io
+                            </code></pre>
+                        </li>
+                        <li>Copy the Client ID.</li>
+                    </ol>
+                </li>
+
+                <li>
+                    <p>Add Google Identity Services JS SDK to your HTML</p>
+                    <p>In your GitHub Pages repo, add this to your HTML page:</p>
+                    <pre><code>
+&lt;script src="https://accounts.google.com/gsi/client" async defer&gt;&lt;/script&gt;
+                    </code></pre>
+                </li>
+
+                <li>
+                    <p>Add a Sign-In button and handle the callback</p>
+                    <p>Example HTML + JavaScript:</p>
+                    <pre><code>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;title&gt;Google Sign-In on GitHub Pages&lt;/title&gt;
+  &lt;script src=&quot;https://accounts.google.com/gsi/client&quot; async defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div id=&quot;g_id_onload&quot;
+       data-client_id=&quot;YOUR_CLIENT_ID.apps.googleusercontent.com&quot;
+       data-callback=&quot;handleCredentialResponse&quot;&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;g_id_signin&quot; data-type=&quot;standard&quot;&gt;&lt;/div&gt;
+
+  &lt;script&gt;
+    function handleCredentialResponse(response) {
+      // response.credential is the ID token (JWT)
+      console.log(&quot;Encoded JWT ID token: &quot; + response.credential);
+
+      // Optionally decode JWT here or send to backend
+      // For demo, just display user info with JWT decode
+      // You can use jwt-decode library or parse it yourself
+      alert('Signed in! Token: ' + response.credential);
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+                    </code></pre>
+                </li>
+
+                <li>
+                    Deploy to GitHub Pages
+                    <ul>
+                        <li>Push your changes.</li>
+                        <li>Visit your GitHub Pages URL.</li>
+                        <li>You should see a Google Sign-In button.</li>
+                        <li>Clicking it triggers Google Sign-In and calls your handleCredentialResponse callback.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Notes</h2>
+            <ul>
+                <li>This approach uses the new Google Identity Services — which is the recommended way now.</li>
+                <li>If you want to verify the token, you normally send it to a backend for validation, but since GitHub Pages is static, you can only decode it client-side or use third-party backend.</li>
+                <li>Make sure your OAuth Client ID has the GitHub Pages URL as an authorized origin.</li>
+                <li>If you want to restrict sign-in only for your domain, configure that in Google Cloud Console.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

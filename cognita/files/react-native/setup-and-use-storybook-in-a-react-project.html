@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Set up and use Storybook in a React Native project</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Set up and use Storybook in a React Native project</h1>
+                    <p class="subtitle">Here's a straightforward tutorial to set up and use Storybook in a React Native project. Storybook is a great tool for developing and testing UI components in isolation.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Step-by-Step: Setup Storybook in React Native</h2>
+            <p>Prerequisites</p>
+            <p>Make sure you already have:</p>
+            <ul>
+                <li>A React Native project (react-native init MyApp or via Expo)</li>
+                <li>Node.js and npm/yarn installed</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. 📦 Install Storybook</h2>
+                <p>In your React Native project directory, run:</p>
+                <pre><code>
+npx -p @storybook/cli sb init --type react_native
+                </code></pre>
+                <p>This installs the required dependencies and sets up the Storybook folder structure.</p>
+        </section>
+
+        <section>
+            <h2>2. 📁 Project Structure</h2>
+            <p>This will create a .storybook and storybook folder:</p>
+            <pre><code>
+project-root/
+├── storybook/
+│   ├── addons.js
+│   ├── index.js
+│   └── stories/
+│       └── Button.stories.js
+├── .storybook/
+│   └── main.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. 📲 Link Storybook with App Entry</h2>
+            <p>Modify App.js to toggle between your app and Storybook:</p>
+            <pre><code>
+import React, { useState } from 'react';
+import { View, Text, Button } from 'react-native';
+import StorybookUIRoot from './storybook';
+
+export default function App() {
+  const [showStorybook, setShowStorybook] = useState(false);
+
+  if (showStorybook) {
+    return <StorybookUIRoot />;
+  }
+
+  return (
+    &lt;View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}&gt;
+      &lt;Text&gt;Welcome to your app&lt;/Text&gt;
+      &lt;Button title="Open Storybook" onPress={() => setShowStorybook(true)} /&gt;
+    &lt/View&gt;
+  );
+}
+            </code></pre>
+            <p>Or for development only, you can set an environment variable or use __DEV__ to conditionally load Storybook.</p>
+        </section>
+
+        <section>
+            <h2>4. ✍️ Add a Story</h2>
+            <p>Create a simple story in storybook/stories/Button.stories.js:</p>
+            <pre><code>
+import React from 'react';
+import { Button } from 'react-native';
+import { storiesOf } from '@storybook/react-native';
+
+storiesOf('Button', module)
+  .add('default', () =&gt; &lt;Button title="Hello Storybook" onPress={() =&gt {}} /&gt;);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. ▶️ Run the App</h2>
+            <p>Run your app on iOS or Android:</p>
+            <pre><code>
+npx react-native run-ios
+# or
+npx react-native run-android
+            </code></pre>
+
+            <p>Click the “Open Storybook” button in your app to view your stories.</p>
+        </section>
+        
+        <section>
+            <h2>6. (Optional) 📱 Use Storybook as the Default Entry</h2>
+            <p>If you're focusing on building components:</p>
+            <p>Replace the content of App.js:</p>
+
+            <pre><code>
+import StorybookUIRoot from './storybook';
+export default StorybookUIRoot;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. 🔁 Develop Components in Isolation</h2>
+            <p>Now, add your components to storybook/stories, test their appearance, props, and behavior without needing to run the entire app context.</p>
+        </section>
+
+        <section>
+            <h2>Useful Addons (Optional)</h2>
+            <p>You can enhance Storybook with addons like:</p>
+            <ul>
+                <li>@storybook/addon-actions</li>
+                <li>@storybook/addon-knobs (deprecated, use controls)</li>
+                <li>@storybook/addon-controls</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Tips</h2>
+            <ul>
+                <li>You might need to configure Babel or Metro bundler if you run into issues.</li>
+                <li>Hot reloading sometimes doesn’t work perfectly with Storybook in React Native—restarting Metro often helps.</li>
+                <li>You can run Storybook in the browser (kind of) by connecting it via React Native Web + Storybook Web if needed, but this is more advanced.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

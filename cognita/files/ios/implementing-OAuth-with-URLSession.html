@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Implementing OAuth with URLSession</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Implementing OAuth with URLSession</h1>
+                    <p class="subtitle">If you're implementing OAuth with URLSession, the delegate method urlSession(_:didReceive:completionHandler:) is usually not directly involved unless:</p>
+                    <ul>
+                        <li>You're handling a challenge from the server that uses HTTP Basic/Digest authentication (rare with modern OAuth).</li>
+                        <li>You're interacting with a server that requires a client certificate or other TLS-level authentication.</li>
+                    </ul>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>In OAuth, you typically don’t handle authentication in this delegate.</h2>
+            <p>Instead, OAuth is handled via:</p>
+            <ol>
+                <li>Redirecting the user to a login/authorization URL.</li>
+                <li>Receiving an authorization code (in the redirect URI).</li>
+                <li>Exchanging that code for an access token.</li>
+                <li>Sending the token in the Authorization header of your API requests.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>How to Use OAuth with URLSession</h2>
+            <p>Here’s a simple structure using OAuth 2.0 (Authorization Code Flow with PKCE):</p>
+
+            <ol>
+                <li>
+                    1. Step: Redirect user to OAuth provider
+                    <pre><code>
+let authURL = URL(string: "https://auth.example.com/oauth/authorize?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=yourapp://callback&scope=read write&code_challenge=XYZ&code_challenge_method=S256")!
+UIApplication.shared.open(authURL)
+                    </code></pre>
+                </li>
+
+                <li>
+                    Step: Handle redirect (in your app delegate or scene delegate)
+                    <pre><code>
+func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    // Extract the authorization code from the URL
+    if let code = extractCode(from: url) {
+        exchangeCodeForToken(code)
+    }
+    return true
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Step: Exchange authorization code for access token
+                    <pre><code>
+func exchangeCodeForToken(_ code: String) {
+    let tokenURL = URL(string: "https://auth.example.com/oauth/token")!
+    var request = URLRequest(url: tokenURL)
+    request.httpMethod = "POST"
+    
+    let bodyParams = [
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": "yourapp://callback",
+        "client_id": "YOUR_CLIENT_ID",
+        "code_verifier": "XYZ"
+    ]
+    
+    request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+    request.httpBody = bodyParams.map { "\($0)=\($1)" }
+                                    .joined(separator: "&")
+                                    .data(using: .utf8)
+    
+    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        // Decode access token and store it securely (e.g., in Keychain)
+    }
+    task.resume()
+}                   
+                    </code></pre>
+                </li>
+
+                <li>
+                    <h2>Step: Use the token in API requests</h2>
+                    <pre><code>
+func makeAuthenticatedRequest(with accessToken: String) {
+    var request = URLRequest(url: URL(string: "https://api.example.com/user")!)
+    request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+    
+    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        // Handle API response
+    }
+    task.resume()
+}                        
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>What about urlSession(_:didReceive:completionHandler:)?</h2>
+            <p>If your server challenges the client with Basic authentication (rare in OAuth), you might respond like this:</p>
+            <pre><code>
+func urlSession(_ session: URLSession, 
+                didReceive challenge: URLAuthenticationChallenge, 
+                completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodHTTPBasic {
+        let credential = URLCredential(user: "username", password: "password", persistence: .forSession)
+        completionHandler(.useCredential, credential)
+    } else {
+        completionHandler(.performDefaultHandling, nil)
+    }
+}
+            </code></pre>
+            <p>But again, for OAuth (especially bearer token), you don't normally use this method.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

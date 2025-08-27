@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Type Erasure</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Type Erasure</h1>
+                    <p class="subtitle">Type erasure in Swift is a technique used to hide the concrete type of a value that conforms to a protocol, while still exposing the protocol's interface. It's commonly used when you want to store heterogeneous types that conform to the same protocol in a uniform way (like in an array or as return types).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why use Type Erasure?</h2>
+            <p>Swift protocols with associated types or Self requirements (e.g., IteratorProtocol, View, etc.) can't be used as existential types (e.g., you can't say let a: SomeProtocol = someValue if the protocol has associated types). Type erasure gets around this by wrapping the conforming types in a box that hides the underlying type.</p>
+            <p>Example Use Case: AnySequence</p>
+            <p>The standard library provides a type-erased sequence wrapper called AnySequence. You can use it to store any sequence without knowing the underlying type.</p>
+            <pre><code>
+func makeSequence() -> AnySequence<Int> {
+    let array = [1, 2, 3]
+    return AnySequence(array)
+}                
+            </code></pre>
+            <p>Here, Array<Int> is type-erased to AnySequence<Int>.</p>
+
+            <p>How to Implement Type Erasure Manually</p>
+            <p>Let’s say you have a protocol:</p>
+            <pre><code>
+protocol Animal {
+    func speak() -> String
+}                
+            </code></pre>
+            <p>You want to store multiple types (e.g., Dog, Cat) that conform to Animal in one array:</p>
+            <pre><code>
+struct Dog: Animal {
+    func speak() -> String { "Woof" }
+}
+
+struct Cat: Animal {
+    func speak() -> String { "Meow" }
+}                
+            </code></pre>
+            <p>let animals: [Animal] = [Dog(), Cat()] // ❌ if `Animal` has associated type or Self</p>
+            <pre><code>
+let animals: [Animal] = [Dog(), Cat()] // ❌ if `Animal` has associated type or Self
+            </code></pre>
+
+            <p>But with type erasure:</p>
+            <p>Step 1: Create the type-erased wrapper</p>
+            <pre><code>
+class AnyAnimal: Animal {
+    private let _speak: () -> String
+
+    init&lt;A: Animal&gt;(_ animal: A) {
+        self._speak = animal.speak
+    }
+
+    func speak() -> String {
+        return _speak()
+    }
+}                
+            </code></pre>
+            <p>Step 2: Use the wrapper</p>
+            <pre><code>
+let animals: [AnyAnimal] = [AnyAnimal(Dog()), AnyAnimal(Cat())]
+
+for animal in animals {
+    print(animal.speak())  // Woof, Meow
+}
+            </code></pre>
+
+            <p>Use With Protocols That Have Associated Types</p>
+            <p>Say you have a protocol like:</p>
+            <pre><code>
+protocol DataSource {
+    associatedtype Data
+    func getData() -> Data
+}                
+            </code></pre>
+
+            <p>You can't use [DataSource], but you can do:</p>
+            <pre><code>
+class AnyDataSource&lt;Output&gt;: DataSource {
+    private let _getData: () -> Output
+
+    init&lt;DS: DataSource&gt;(_ dataSource: DS) where DS.Data == Output {
+        self._getData = dataSource.getData
+    }
+
+    func getData() -> Output {
+        _getData()
+    }
+}                
+            </code></pre>
+            <p>Summary</p>
+            <ul>
+                <li>Use type erasure when working with protocols with associated types or Self requirements.</li>
+                <li>Swift’s standard library already provides type-erased wrappers like AnySequence, AnyIterator, and AnyHashable.</li>
+                <li>You can implement your own wrappers using closures that forward protocol method calls.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Type Erasure in SwiftUI</h2>
+            <p>Great — let's walk through type erasure in SwiftUI, specifically using AnyView, which is one of the most common real-world examples.</p>
+        
+            <p>Problem in SwiftUI</p>
+            <p>SwiftUI views conform to the View protocol:</p>
+            <pre><code>
+struct MyTextView: View {
+    var body: some View {
+        Text("Hello")
+    }
+}                
+            </code></pre>
+            <p>But View has an associated type called Body, which means you can't do this:</p>
+            <pre><code>
+func makeView(condition: Bool) -> View { // ❌ Error
+    if condition {
+        return Text("Yes")
+    } else {
+        return Image(systemName: "xmark")
+    }
+}                
+            </code></pre>
+
+            <p>Swift doesn't know what concrete type to expect for the return.</p>
+
+            <p>Solution: Use AnyView (Type Erasure)</p>
+            <p>AnyView erases the underlying type and wraps any view:</p>
+
+            <pre><code>
+func makeView(condition: Bool) -> AnyView {
+    if condition {
+        return AnyView(Text("Yes"))
+    } else {
+        return AnyView(Image(systemName: "xmark"))
+    }
+}                
+            </code></pre>
+
+            <p>Now Swift is happy because the function always returns one concrete type: AnyView, regardless of what's inside.</p>
+            
+            <p>How AnyView Works Internally (Simplified)</p>
+            <p>Here’s a conceptual implementation of AnyView:</p>
+
+            <pre><code>
+struct AnyView: View {
+    private let _view: () -> Any
+    
+    init&lt;V: View&gt;(_ view: V) {
+        self._view = { view }
+    }
+
+    var body: some View {
+        _view() as! some View // simplified for demo; real implementation is more complex
+    }
+}                
+            </code></pre>
+            <p>Of course, in reality, AnyView is implemented in a highly optimized and opaque way in SwiftUI's internals, but conceptually it’s just wrapping a view in a box that hides the specific type.</p>
+        
+            <p>Use Case: Arrays of Views</p>
+            <p>You can’t do this:</p>
+
+            <pre><code>
+let views: [View] = [Text("A"), Image(systemName: "star")] // ❌
+            </code></pre>
+
+            <p>But you can:</p>
+            <pre><code>
+let views: [AnyView] = [
+    AnyView(Text("A")),
+    AnyView(Image(systemName: "star"))
+]
+            </code></pre>
+
+            <p>Then use them like:</p>
+            <pre><code>
+VStack {
+    ForEach(0..&lt;views.count) { index in
+        views[index]
+    }
+}                
+            </code></pre>
+
+            <p>When Not to Use AnyView</p>
+            <ul>
+                <li>Type erasure adds runtime overhead and removes compile-time layout optimization. Avoid using AnyView unless you really need to:</li>
+                <li>Store different views in a collection</li>
+                <li>Abstract view generation behind a function or protocol</li>
+            </ul>
+
+            <p>Alternatives Before Reaching for AnyView</p>
+            <ul>
+                <li>Use Group or TupleView if all branches return the same type.</li>
+                <li>Use view builders with @ViewBuilder which helps Swift infer types.</li>
+            </ul>
+
+            <pre><code>
+@ViewBuilder
+func makeView(condition: Bool) -> some View {
+    if condition {
+        Text("Yes")
+    } else {
+        Image(systemName: "xmark")
+    }
+}
+            </code></pre>
+            <p>This avoids type erasure entirely.</p>
+
+            <p>Summary</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Should You Use AnyView?</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Return different views from a function</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Store heterogeneous views in an array</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Uniform layout, simple conditions</td>
+                        <td>Prefer @ViewBuilder</td>
+                    </tr>
+                    <tr>
+                        <td>Performance-critical layout</td>
+                        <td>Avoid AnyView</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

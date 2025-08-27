@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>URLSessionDelegate</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">URLSessionDelegate</h1>
+                    <p class="subtitle">The function you've provided is a delegate method of URLSessionDelegate, used to handle authentication challenges — typically for things like SSL/TLS certificate validation or HTTP basic authentication.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Here's the method signature properly formatted:</h2>
+            <pre><code>
+func urlSession(_ session: URLSession, 
+    didReceive challenge: URLAuthenticationChallenge, 
+    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
+            </code></pre>
+
+            <p>This method is called when the server requires authentication, for example:</p>
+            <ul>
+                <li>Server trust (SSL pinning, self-signed certificates)</li>
+                <li>HTTP basic/digest authentication</li>
+                <li>Client certificate authentication</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Common Use Case: Handling Server Trust (e.g., SSL Pinning or Accepting All Certs for Testing)</h2>
+            <p>Example 1: Accept all certificates (insecure, only for debugging)</p>
+            <pre><code>
+func urlSession(_ session: URLSession, 
+            didReceive challenge: URLAuthenticationChallenge, 
+            completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    let credential = URLCredential(trust: challenge.protectionSpace.serverTrust!)
+    completionHandler(.useCredential, credential)
+}
+            </code></pre>
+            <p>Never use this in production, as it disables SSL certificate validation and opens the door to man-in-the-middle attacks.</p>
+        </section>
+
+        <section>
+            <h2>Example 2: Perform default handling</h2>
+            <pre><code>
+func urlSession(_ session: URLSession,
+                didReceive challenge: URLAuthenticationChallenge,
+                completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    completionHandler(.performDefaultHandling, nil)
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example 3: Custom certificate validation (SSL pinning)</h2>
+            <p>To validate a pinned certificate:</p>
+            <pre><code>
+func urlSession(_ session: URLSession, 
+                didReceive challenge: URLAuthenticationChallenge, 
+                completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+       let serverTrust = challenge.protectionSpace.serverTrust {
+        
+        // Load your pinned certificate
+        if let path = Bundle.main.path(forResource: "your_cert", ofType: "cer"),
+           let certData = try? Data(contentsOf: URL(fileURLWithPath: path)),
+           let pinnedCert = SecCertificateCreateWithData(nil, certData as CFData) {
+
+            // Compare server's certificate with your pinned certificate
+            let serverCert = SecTrustGetCertificateAtIndex(serverTrust, 0)
+            if serverCert != nil && pinnedCert == serverCert {
+                let credential = URLCredential(trust: serverTrust)
+                completionHandler(.useCredential, credential)
+                return
+            }
+        }
+    }
+
+    completionHandler(.cancelAuthenticationChallenge, nil)
+}
+            </code></pre>
+            <p>Use this approach for SSL pinning.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

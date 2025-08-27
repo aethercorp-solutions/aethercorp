@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Firestore To Manage User Data Securely</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Firestore To Manage User Data Securely</h1>
+                    <p class="subtitle">
+                        Using Firestore to manage user data securely requires designing both the data model and security rules properly. Below is a breakdown covering:
+                        <ol>
+                            <li>Concepts</li>
+                            <li>Security</li>
+                            <li>Implementation</li>
+                            <li>Usage (Frontend + Rules)</li>
+                        </ol>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔐 1. Concept: Firestore for User Data</h2>
+            <p>Each user should have a document in a collection, such as:</p>
+            <pre><code>
+users/
+  └── uid_12345/
+         ├── name: "John Doe"
+         ├── email: "john@example.com"
+         └── createdAt: Timestamp
+            </code></pre>
+            <ul>
+                <li>The document ID is typically the UID from Firebase Authentication.</li>
+                <li>This setup ensures each user only accesses their own data.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛡️ 2. Firestore Security Rules</h2>
+            <p>Security rules protect your database from unauthorized access.</p>
+            <p>✅ Goal: Users can read/write only their own data</p>
+            <pre><code>
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Match any document in the 'users' collection
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+            </code></pre>
+            <p>🔐 Explanation:</p>
+            <ul>
+                <li>request.auth != null: User is authenticated</li>
+                <li>request.auth.uid == userId: User can only access their own document</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ 3. Implementation (Frontend + Backend)</h2>
+            <p>🔹 Frontend (JavaScript / Firebase SDK)</p>
+            <p>a. Add Firebase to your web app</p>
+            <pre><code>
+npm install firebase
+            </code></pre>
+            <p>b. Firebase Config + Initialization</p>
+            <pre><code>
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "...",
+  authDomain: "...",
+  projectId: "...",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+            </code></pre>
+
+            <p>🔹 c. Creating User Data on Sign-Up</p>
+            <pre><code>
+import { createUserWithEmailAndPassword } from "firebase/auth";
+
+async function signUp(email, password, name) {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const user = userCredential.user;
+
+  await setDoc(doc(db, "users", user.uid), {
+    name: name,
+    email: user.email,
+    createdAt: new Date()
+  });
+
+  console.log("User document created.");
+}
+            </code></pre>
+
+            <p>🔹 d. Reading User Data</p>
+            <pre><code>
+async function getUserData() {
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+    
+        if (docSnap.exists()) {
+            console.log("User Data:", docSnap.data());
+        } else {
+            console.log("No user document found.");
+        }
+        }
+    });
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 4. Usage & Best Practices</h2>
+            <p>✅ Best Practices</p>
+            <ul>
+                <li>Use Firestore rules as your main security layer, not just frontend code.</li>
+                <li>Validate input data before saving it to Firestore.</li>
+                <li>Avoid exposing sensitive fields unnecessarily (e.g. isAdmin flags).</li>
+                <li>Store minimal user data (prefer Firebase Auth for authentication details).</li>
+            </ul>
+            <p>✅ Optional: Add Custom Claims for Roles</p>
+            <p>If you want to support roles like admin, use custom claims
+                and add conditional logic in your Firestore rules.</p>
+            <pre><code>
+allow read, write: if request.auth.token.role == 'admin';
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧭 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Responsibility</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Firebase Auth</td>
+                        <td>Authenticates users and provides UID</td>
+                    </tr>
+                    <tr>
+                        <td>Firestore</td>
+                        <td>Stores user data (per UID document)</td>
+                    </tr>
+                    <tr>
+                        <td>Security Rules</td>
+                        <td>Enforce that users only access their own data</td>
+                    </tr>
+                    <tr>
+                        <td>Frontend SDK</td>
+                        <td>Reads/writes data after verifying authentication</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Firebase Cloud Messaging (FCM)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Firebase Cloud Messaging (FCM)</h1>
+                    <p class="subtitle">Firebase Cloud Messaging (FCM) is a free service provided by Google Firebase that allows you to send push notifications and messages to users across platforms such as iOS, Android, and web applications.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Key Features of Firebase Cloud Messaging:</h2>
+            <ol>
+                <li>
+                    <p>Cross-platform Messaging</p>
+                    <p>Send notifications to Android, iOS, and web from one platform.</p>
+                </li>
+                <li>
+                    <p>Targeted Messaging</p>
+                    <ul>
+                        <li>To a specific device</li>
+                        <li>Device groups</li>
+                        <li>Topics (e.g., "news", "weather")</li>
+                        <li>User segments</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>Data Messages</p>
+                    <p>Send custom key-value pairs (invisible to the user) to trigger actions in the app.</p>
+                </li>
+                <li>
+                    <p>Notification Messages</p>
+                    <p>Automatically handled by the system to show messages in the system tray.</p>
+                </li>
+                <li>
+                    <p>Analytics & A/B Testing</p>
+                    <p>Integrated with Firebase Analytics for performance tracking and conversion metrics.</p>
+                </li>
+                <li>
+                    <p>High Reliability</p>
+                    <p>Uses Google’s reliable cloud infrastructure.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🛠️ How FCM Works (Basic Flow):</h2>
+
+            <ul>
+                <li>
+                    <p>App registers with FCM</p>
+                    <p>The client app gets a device token from Firebase.</p>
+                </li>
+                <li>
+                    <p>Backend sends a message</p>
+                    <p>You use the FCM API or Firebase console to send a message to the device token or topic.</p>
+                </li>
+                <li>
+                    <p>FCM delivers the message</p>
+                    <p>The message is routed through Google’s infrastructure to the target device.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Types of Messages:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Message Type</th>
+                        <th>Delivered by</th>
+                        <th>When App is in Background</th>
+                        <th>Custom Payload?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Notification</td>
+                        <td>FCM SDK</td>
+                        <td>Automatically shows notification</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Data</td>
+                        <td>App code</td>
+                        <td>Not shown unless handled</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Combined</td>
+                        <td>App code + SDK</td>
+                        <td>Notification shown, data available in extras</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>🧪 Sample Use Case:</h2>
+            <ul>
+                <li>A news app sends a push notification to all users subscribed to the "sports" topic when a new sports article is published.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 Security:</h2>
+            <ul>
+                <li>Uses Firebase Authentication or server keys for secure message sending.</li>
+                <li>Token-based delivery ensures only intended devices receive the message.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

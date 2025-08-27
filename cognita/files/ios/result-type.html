@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Swift's Result Type</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Swift's Result Type</h1>
+                    <p class="subtitle">Swift's Result type offers a more flexible and composable way to handle errors compared to traditional throws functions. Here's a breakdown of how Result helps and how it compares:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is Result?</h2>
+            <p>Result is an enum with two cases:</p>
+            <pre><code>
+enum Result<Success, Failure: Error> {
+    case success(Success)
+    case failure(Failure)
+}                
+            </code></pre>
+
+            <p>It represents either a successful outcome with an associated value (Success) or a failure with an associated error (Failure).</p>
+            
+            <p>Comparison: Result vs throws</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>throws / try</th>
+                        <th>Result Type</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Error Propagation</td>
+                        <td>Automatic with try and throws</td>
+                        <td>Manual via switch or methods like .map()</td>
+                    </tr>
+                    <tr>
+                        <td>Return Type</td>
+                        <td>Function returns a single type; throws errors separately</td>
+                        <td>Function returns Result<Success, Failure></Success></td>
+                    </tr>
+                    <tr>
+                        <td>Composability</td>
+                        <td>Less composable in closures and async chains</td>
+                        <td>Easily used in higher-order functions</td>
+                    </tr>
+                    <tr>
+                        <td>Explicit Handling</td>
+                        <td>Errors can be ignored accidentally</td>
+                        <td>Requires handling both .success and .failure</td>
+                    </tr>
+                    <tr>
+                        <td>Readability</td>
+                        <td>More concise for simple synchronous code</td>
+                        <td>More verbose, but clearer in complex flows</td>
+                    </tr>
+                    <tr>
+                        <td>Use in Async or Functional Contexts</td>
+                        <td>Awkward, needs workarounds like do/catch</td>
+                        <td>Easy to pass around or map over results</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Why Use Result?</h2>
+            <ul>
+                <li>Encapsulates both result and error in one value—great for APIs and callbacks.</li>
+                <li>
+                    Works better in async contexts or with completion handlers:
+                    <pre><code>
+func fetchData(completion: (Result<Data, Error>) -> Void)
+                    </code></pre>
+                </li>
+                <li>
+                    You can chain transformations:
+                    <pre><code>
+result
+  .map { data in process(data) }
+  .mapError { error in CustomError(error) }
+                    </code></pre>
+                </li>
+                <li>Enables explicit and predictable error handling, especially where silent failures are problematic.</li>
+            </ul>
+
+            <p>When to Use Each</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Recommended Approach</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Simple, linear synchronous code</td>
+                        <td>throws / try</td>
+                    </tr>
+                    <tr>
+                        <td>Asynchronous operations / callbacks</td>
+                        <td>Result</td>
+                    </tr>
+                    <tr>
+                        <td>Returning success/failure as a value</td>
+                        <td>Result</td>
+                    </tr>
+                    <tr>
+                        <td>Functional composition / chaining logic</td>
+                        <td>Result</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Summary</p>
+            <ul>
+                <li>Use throws for simpler cases where Swift's error propagation is sufficient.</li>
+                <li>Use Result when you need to store, return, or compose results and errors explicitly—especially useful in asynchronous, functional, or complex workflows.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

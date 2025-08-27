@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Modern JavaScript features (ES6 and beyond)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Modern JavaScript features (ES6 and beyond)</h1>
+                    <p class="subtitle">Modern JavaScript (ES6 and beyond) includes many powerful features that improve code readability, maintainability, and performance. Here’s a breakdown of the most notable features introduced from ES6 (2015) onward:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>ES6 (ECMAScript 2015)</h2>
+            
+            <ol>
+                <li>
+                    let and const
+                    <pre><code>
+let x = 10;
+const y = 20;
+                    </code></pre>
+                    <ul>
+                        <li>let is block-scoped.</li>
+                        <li>const is also block-scoped and cannot be reassigned.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Arrow Functions
+                    <pre><code>
+const add = (a, b) => a + b;
+                    </code></pre>
+                    <ul>
+                        <li>Concise syntax.</li>
+                        <li>Lexically binds this.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Template Literals
+                    <pre><code>
+const name = "Jane";
+console.log(`Hello, ${name}!`);
+                    </code></pre>
+                </li>
+
+                <li>
+                    Destructuring
+                    <pre><code>
+const [a, b] = [1, 2];
+const {name, age} = {name: "John", age: 30};
+                    </code></pre>
+                </li>
+
+                <li>
+                    Default Parameters
+                    <pre><code>
+function greet(name = "Guest") {
+    console.log(`Hello, ${name}`);
+}                         
+                    </code></pre>
+                </li>
+
+                <li>
+                    Spread and Rest Operators
+                    <pre><code>
+const nums = [1, 2, 3];
+const more = [...nums, 4, 5];
+
+function sum(...args) {
+  return args.reduce((acc, val) => acc + val, 0);
+}
+                    </code></pre>
+                </li>
+
+                <li>
+                    Classes
+                    <pre><code>
+class Person {
+    constructor(name) {
+        this.name = name;
+    }
+    
+    greet() {
+        console.log(`Hi, I'm ${this.name}`);
+    }
+}     
+                    </code></pre>
+                </li>
+
+                <li>
+                    Modules
+                    <pre><code>
+// Export
+export const PI = 3.14;
+
+// Import
+import { PI } from './math.js';
+                    </code></pre>
+                </li>
+
+                <li>
+                    Promises
+                    <pre><code>
+fetch('api/data')
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.error(err));
+                    </code></pre>
+                    <h3>ES7–ES13 (2016–2022) Highlights</h3>
+                </li>
+                
+                <li>
+                    Async/Await (ES8)
+                    <pre><code>
+async function fetchData() {
+    try {
+        const res = await fetch('api/data');
+        const data = await res.json();
+        console.log(data);
+    } catch (err) {
+        console.error(err);
+    }
+}        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Object.entries(), Object.values(), Object.fromEntries() (ES8/ES10)
+                    <pre><code>
+Object.entries({a: 1, b: 2}); // [['a', 1], ['b', 2]]
+                    </code></pre>
+                </li>
+
+                <li>
+                    Optional Chaining (?.) and Nullish Coalescing (??) (ES11)<
+                    <pre><code>
+const user = {};
+console.log(user?.profile?.name); // undefined
+console.log(user.name ?? "Anonymous"); // "Anonymous"
+                    </code></pre>
+                </li>
+
+                <li>
+                    Array.prototype.includes (ES7)
+                    <pre><code>
+[1, 2, 3].includes(2); // true
+                    </code></pre>
+                </li>
+
+                <li>
+                    String.prototype.padStart / padEnd (ES8)
+                    <pre><code>
+'5'.padStart(3, '0'); // "005"
+                    </code></pre>
+
+                    <h3>ES2023+ (New & Emerging Features)</h3>
+                </li>
+
+                <li>
+                    Top-Level Await
+                    <pre><code>
+const res = await fetch('api/data'); // Works at module top-level
+                    </code></pre>
+                </li>
+
+                <li>
+                    Logical Assignment Operators
+                    <pre><code>
+a ||= 10; // a = a || 10
+b &&= 20; // b = b && 20
+                    </code></pre>
+                </li>
+
+                <li>
+                    Array at() Method
+                    <pre><code>
+const arr = [10, 20, 30];
+arr.at(-1); // 30
+                    </code></pre>
+                </li>
+
+                <li>
+                    Promise.allSettled
+                    <pre><code>
+Promise.allSettled([p1, p2, p3]).then(results => {
+    // Each result is { status: 'fulfilled' | 'rejected', value | reason }
+});      
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

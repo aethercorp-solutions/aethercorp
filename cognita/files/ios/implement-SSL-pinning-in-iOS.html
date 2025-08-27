@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Implement SSL pinning in iOS</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Implement SSL pinning in iOS</h1>
+                    <p class="subtitle">Here's how to implement SSL pinning in iOS (using Swift) with URLSession. You’ll validate the server certificate or public key to prevent MITM attacks.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Step-by-Step: SSL Pinning in iOS (Swift)</h2>
+            <h3>1. Add the certificate to your app</h3>
+            <ol>
+                <li>Get the .cer file from your server:</li>
+                <ul>
+                    <li>
+                        Use a browser or openssl:
+                        <pre><code>
+openssl s_client -connect yourdomain.com:443 -showcerts
+                        </code></pre>
+                    </li>
+                    <li>Save the PEM output as .cer and convert it to DER format if needed.</li>
+                </ul>
+                <li>
+                    Drag the .cer file into your Xcode project.
+                    <ul>
+                        <li>Ensure it's added to the target (check the box when adding).</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>2. Implement SSL Pinning with URLSession Delegate</h3>
+            <pre>
+                <code>
+import Foundation
+
+class PinnedSessionDelegate: NSObject, URLSessionDelegate {
+    // Load the local certificate from the bundle
+    private func loadPinnedCertificate() -> Data? {
+        guard let certPath = Bundle.main.path(forResource: "your_cert", ofType: "cer"),
+              let certData = try? Data(contentsOf: URL(fileURLWithPath: certPath)) else {
+            return nil
+        }
+        return certData
+    }
+
+    // URLSession delegate method for SSL pinning
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge,
+                    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+
+        guard let serverTrust = challenge.protectionSpace.serverTrust,
+              let pinnedCertData = loadPinnedCertificate(),
+              let serverCert = SecTrustGetCertificateAtIndex(serverTrust, 0) else {
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
+        }
+
+        // Extract the certificate data from the server
+        let serverCertData = SecCertificateCopyData(serverCert) as Data
+
+        if pinnedCertData == serverCertData {
+            // Success - certificate matches
+            let credential = URLCredential(trust: serverTrust)
+            completionHandler(.useCredential, credential)
+        } else {
+            // Failure - certificate mismatch
+            completionHandler(.cancelAuthenticationChallenge, nil)
+        }
+    }
+}                </code>
+            </pre>
+
+            <h3>3. Use the Delegate with URLSession</h3>
+            <pre><code>
+let url = URL(string: "https://yourdomain.com/api")!
+let session = URLSession(configuration: .default, delegate: PinnedSessionDelegate(), delegateQueue: nil)
+
+let task = session.dataTask(with: url) { data, response, error in
+    if let error = error {
+        print("❌ Connection failed: \(error)")
+    } else {
+        print("✅ Secure connection established")
+        // Handle response
+    }
+}
+task.resume()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Public Key Pinning (Optional Alternative)</h2>
+            <p>If you prefer to pin public keys instead of full certificates (which makes cert rotation easier), you can extract and compare the public key from the cert. Let me know if you want code for that too.</p>
+        </section>
+
+        <section>
+            <h2>Important Tips</h2>
+            <ul>
+                <li>Certificate expiration: Update your app before the pinned cert expires.</li>
+                <li>Fallback: Consider multiple pinned certs for backup servers or rotation.</li>
+                <li>Don’t pin in debug builds: Use different logic or bypass in development/testing.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

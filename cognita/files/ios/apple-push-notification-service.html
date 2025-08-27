@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Apple Push Notification service (APNs)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Apple Push Notification service (APNs)</h1>
+                    <p class="subtitle">Apple Push Notification service (APNs) is a cloud-based service provided by Apple that allows app developers to send notifications and messages to iOS, iPadOS, macOS, watchOS, and tvOS devices.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 How It Works (Overview)</h2>
+            <ol>
+                <li>
+                    App Registers with APNs:
+                    <ul>
+                        <li>When a user launches an app for the first time, the app requests permission to receive push notifications.</li>
+                        <li>If approved, the system registers the device with APNs and gives the app a device token.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    App Sends Device Token to Server:
+                    <ul>
+                        <li>The app sends the token to the developer's server.</li>
+                        <li>This token uniquely identifies the user’s device on APNs.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Server Sends Notification via APNs:
+                    <ul>
+                        <li>The developer’s backend sends a notification payload (message + metadata) to APNs, along with the device token and authentication credentials (using a key or certificate).</li>
+                        <li>APNs delivers the notification to the correct device.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔒 Security</h2>
+
+            <p>Authentication: APNs uses JWT (JSON Web Tokens) with a private key or older TLS certificates for authentication.</p>
+            <p>Encryption: Messages are encrypted during transmission.</p>
+        </section>
+
+        <section>
+            <h2>🛠️ Key Components</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Device Token</td>
+                        <td>A unique identifier for the device-app pair; used by APNs to route notifications.</td>
+                    </tr>
+                    <tr>
+                        <td>Push Payload</td>
+                        <td>JSON object with keys like aps, alert, badge, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>APNs Server API</td>
+                        <td>HTTPS endpoint to send push requests (e.g., https://api.push.apple.com/3/device/{device-token})</td>
+                    </tr>
+                    <tr>
+                        <td>JWT Auth Token</td>
+                        <td>Used to authenticate push requests with a signing key (.p8 file).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📦 Payload Example</h2>
+
+            <pre><code>
+{
+    "aps": {
+        "alert": "Hello, world!",
+        "sound": "default",
+        "badge": 1
+    }
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Best Practices</h2>
+            <ul>
+                <li>Handle token refresh (device tokens can change).</li>
+                <li>Minimize payload size (max: 4KB for APNs HTTP/2).</li>
+                <li>Use silent notifications (content-available: 1) for background updates.</li>
+                <li>Respect user privacy and notification limits.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧰 Useful Tools / Resources</h2>
+            <ul>
+                <li>Apple Developer Docs: <a href="https://developer.apple.com/documentation/usernotifications">APNs Overview</a></li>
+                <li>Testing Tool: pusher or tools like Postman, curl for manual sending</li>
+                <li>
+                    Libraries:
+                    <ul>
+                        <li>iOS: UNUserNotificationCenter for handling notifications</li>
+                        <li>Backend: Libraries for Node.js, Python, PHP, etc.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

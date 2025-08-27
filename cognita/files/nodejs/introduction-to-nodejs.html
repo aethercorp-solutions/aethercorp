@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Introduction to Node.js</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Introduction to Node.js</h1>
+                    <p class="subtitle">Node.js is a runtime environment that allows you to run JavaScript code outside the browser — primarily used to build server-side applications.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is Node.js?</h2>
+            <ul>
+                <li>Node.js is built on the V8 JavaScript engine (the same engine that powers Google Chrome).</li>
+                <li>Created by Ryan Dahl in 2009.</li>
+                <li>It uses an event-driven, non-blocking I/O model — which makes it lightweight and efficient.</li>
+                <li>Ideal for building real-time applications, like chat apps, APIs, and streaming services.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key Features</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Asynchronous & Event-Driven</td>
+                        <td>Handles many connections at once without blocking the main thread.</td>
+                    </tr>
+                    <tr>
+                        <td>Fast Execution</td>
+                        <td>Built on V8 engine, compiles JavaScript to native machine code.</td>
+                    </tr>
+                    <tr>
+                        <td>Single-Threaded</td>
+                        <td>Uses a single-threaded event loop to handle multiple clients.</td>
+                    </tr>
+                    <tr>
+                        <td>NPM (Node Package Manager)</td>
+                        <td>A massive ecosystem of open-source libraries and tools.</td>
+                    </tr>
+                    <tr>
+                        <td>Cross-platform</td>
+                        <td>Runs on Windows, macOS, and Linux.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Common Use Cases</h2>
+            <ul>
+                <li>RESTful APIs and web services</li>
+                <li>Real-time chat applications (e.g., using Socket.io)</li>
+                <li>Data streaming applications</li>
+                <li>Microservices architecture</li>
+                <li>Command-line tools</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What is NPM?</h2>
+            <p>NPM (Node Package Manager) is the default package manager for Node.js.</p>
+            <ul>
+                <li>Helps manage libraries/dependencies.</li>
+                <li>Example: npm install express installs the Express framework.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example: A Simple HTTP Server</h2>
+            <pre><code>
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello, Node.js!');
+});
+
+server.listen(3000, () => {
+  console.log('Server running on http://localhost:3000/');
+});
+            </code></pre>
+            <p>This code sets up a basic server that listens on port 3000 and responds with "Hello, Node.js!"</p>
+        </section>
+
+        <section>
+            <h2>How to Get Started</h2>
+            <ol>
+                <li>nstall Node.js from <a href="https://nodejs.org">https://nodejs.org</a></li>
+                <li>Open terminal or command prompt.</li>
+                <li>Run node to enter the REPL (Read-Eval-Print Loop).</li>
+                <li>Create a .js file and run it using node filename.js.</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

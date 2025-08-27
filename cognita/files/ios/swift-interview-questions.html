@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Swift Interview Questions</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Swift Interview Questions</h1>
+                    <p class="subtitle">Here are several Swift interview questions tailored for a Senior iOS Developer role. These range from language-specific questions to architectural and performance-related topics, which are commonly expected at a senior level:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Value Types vs. Reference Types</h2>
+            
+            <p>1. What are value types vs. reference types in Swift? When would you use each?</p>
+                <ul>
+                    <li>Follow-up: Explain copy-on-write optimization in Swift.</li>
+                </ul>
+            <p>Answer:</p>
+            <p>In Swift, value types and reference types are two fundamental categories that determine how data is stored and passed around in your app.</p>
+            <p>Value Types</p>
+            <p>Examples:</p>
+            <ul>
+                <li>struct</li>
+                <li>enum</li>
+                <li>tuple</li>
+                <li>Basic types like Int, Double, Bool, Array, Dictionary (these are structs)</li>
+            </ul>
+
+            <p>Key Characteristics:</p>
+                <ul>
+                    <li>Copied when passed to a function, assigned to a variable, or returned.</li>
+                    <li>Each copy is independent—changes to one copy don’t affect others.</li>
+                    <li>Stored on the stack (mostly; with optimizations, this can vary).</li>
+                </ul>
+
+            <p>When to Use:</p>
+            <p>Use value types when:</p>
+                <ul>
+                    <li>You want independent copies of your data.</li>
+                    <li>You prefer immutability and predictable behavior.</li>
+                    <li>Your type is relatively small and simple.</li>
+                    <li>You’re modeling data, like a Point, Rectangle, or User.</li>
+                </ul>
+
+            <pre><code>
+struct Point {
+    var x: Int
+    var y: Int
+}
+
+var p1 = Point(x: 0, y: 0)
+var p2 = p1
+p2.x = 10
+
+print(p1.x) // 0 — remains unchanged                        
+            </code></pre>
+
+            <p>Reference Types</p>
+            <p>Examples:</p>
+            <ul>
+                <li>class</li>
+                <li>NSObject and most UIKit/AppKit types</li>
+            </ul>
+
+            <p>Key Characteristics:</p>
+            <ul>
+                <li>Shared references: assigning or passing around a reference type creates a new reference to the same instance.</li>
+                <li>Changes to one reference affect all references to the same object.</li>
+                <li>Stored on the heap.</li>
+            </ul>
+
+            <p>When to Use:</p>
+            <p>Use reference types when:</p>
+
+            <ul>
+                <li>You want shared, mutable state.</li>
+                <li>Identity matters (e.g., === to compare instances).</li>
+                <li>You're interacting with Objective-C APIs or frameworks like UIKit.</li>
+            </ul>
+
+            <pre><code>
+class Dog {
+    var name: String
+    init(name: String) {
+        self.name = name
+    }
+}
+
+var dog1 = Dog(name: "Fido")
+var dog2 = dog1
+dog2.name = "Rex"
+
+print(dog1.name) // "Rex" — same instance                
+            </code></pre>
+
+        <p>Rule of Thumb</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>If you want...</th>
+                    <th>struct</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Safe, immutable data modeling</td>
+                    <td>struct</td>
+                </tr>
+                <tr>
+                    <td>Shared mutable state or identity semantics</td>
+                    <td>class</td>
+                </tr>
+                <tr>
+                    <td>Better performance for small types</td>
+                    <td>struct</td>
+                </tr>
+                <tr>
+                    <td>Reference semantics (i.e., shared instance)</td>
+                    <td>class</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>Best Practice in Swift</p>
+        <p>Swift encourages value types (i.e., struct) by default because they lead to safer and more predictable code. Use class only when you specifically need reference semantics.</p>
+        </section>
+
+        <section>
+            <h2>ARC</h2>
+            <p>2. Explain how ARC (Automatic Reference Counting) works in Swift.</p>
+            <ul>
+                <li>Follow-up: How do strong, weak, and unowned references differ?</li>
+            </ul>
+
+            <p>Answer:</p>
+            <p>How ARC (Automatic Reference Counting) Works in Swift</p>
+            <p>ARC (Automatic Reference Counting) is Swift’s memory management system. It automatically keeps track of how many references there are to each class instance in your program. When no references to an object remain, the object is deallocated to free up memory.</p>
+        
+            <p>Basic Principle:</p>
+            <p>Each time you assign a class instance to a variable, constant, or property, ARC increases the reference count for that instance. When the reference is removed (set to nil or goes out of scope), ARC decreases the count. If the reference count drops to zero, the instance is deallocated.</p>
+        
+            <p>Example:</p>
+            <pre><code>
+class Person {
+    let name: String
+    init(name: String) {
+        self.name = name
+        print("\(name) is initialized")
+    }
+    deinit {
+        print("\(name) is deinitialized")
+    }
+}
+
+var person1: Person? = Person(name: "Alice")
+person1 = nil  // Reference count drops to 0, so object is deallocated                
+            </code></pre>
+
+            <p>Strong, Weak, and Unowned References</p>
+            <p>These keywords describe how references affect ARC’s count, and they are crucial for avoiding retain cycles (which can cause memory leaks).</p>
+            <p>1. Strong References (Default)</p>
+            <ul>
+                <li>
+                    <p>A strong reference increases the reference count.</p>
+                    <p>As long as at least one strong reference exists, the object won’t be deallocated.</p>
+                    <p>Default behavior for most properties/variables.</p>
+                    <pre><code>
+var strongReference = SomeClass()  // ARC count +1
+                    </code></pre>
+                </li>
+                <li>
+                    <p>Weak References</p>
+                    <ul>
+                        <li>A weak reference does not increase the reference count.</li>
+                        <li>Used when one object should not own the other (e.g., delegate pattern).</li>
+                        <li>Weak references must be declared as optional (?) because they can become nil when the object is deallocated.</li>
+                    </ul>
+                    <pre><code>
+class Dog {
+    var name: String
+    init(name: String) { self.name = name }
+    deinit { print("\(name) is deallocated") }
+}
+
+class Owner {
+    var dog: Dog?
+}
+
+class Kennel {
+    weak var dog: Dog?  // weak: avoids retain cycle
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    <p>Unowned References</p>
+                    <ul>
+                        <li>Like weak, an unowned reference does not increase the reference count.</li>
+                        <li>However, unlike weak, it’s non-optional (no ?), meaning it assumes the referenced object will never be nil during its lifetime.</li>
+                        <li>If you access an unowned reference after the object has been deallocated, your app will crash.</li>
+                    </ul>
+
+                    <pre><code>
+class Customer {
+    var name: String
+    var card: CreditCard?
+    init(name: String) {
+        self.name = name
+    }
+    deinit {
+        print("\(name) is being deinitialized")
+    }
+}
+
+class CreditCard {
+    let number: Int
+    unowned let customer: Customer  // unowned: no retain cycle
+    init(number: Int, customer: Customer) {
+        self.number = number
+        self.customer = customer
+    }
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Reference Type</th>
+                                <th>Increases ARC Count?</th>
+                                <th>Optional?</th>
+                                <th>Use When...</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>strong</td>
+                                <td>Yes</td>
+                                <td>No</td>
+                                <td>You want ownership and to retain the object.</td>
+                            </tr>
+                            <tr>
+                                <td>weak</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>You want to avoid retain cycles, and it's okay for the reference to become nil.</td>
+                            </tr>
+                            <tr>
+                                <td>unowned</td>
+                                <td>No</td>
+                                <td>No</td>
+                                <td>You want to avoid retain cycles and are sure the reference will never be nil.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </li>
+
+                <li>
+                    <p>1. What is the difference between @escaping and @autoclosure in Swift? When should you use them?</p>
+                    <p>Answer:</p>
+                    <p>In Swift, @escaping and @autoclosure are two different attributes used with closures, and they serve distinct purposes. Here's a breakdown of each:</p>
+                
+                    <p>@escaping — Closure That Escapes the Function</p>
+                    <p>What it means:</p>
+                    <p>A closure is "escaping" if it's called after the function it was passed to returns. Normally, closures are non-escaping by default, meaning they must be executed before the function returns.</p>
+                    <p>Why it's needed:</p>
+                    <p>Swift needs to know whether a closure can outlive the function call, so it can manage memory safely (especially with ARC and capturing self).</p>
+                    <p>Common use case:</p>
+                    <p>When you store a closure for later execution, like in completion handlers for asynchronous operations.</p>
+                    <p>Example:</p>
+                    <pre><code>
+func performAsyncOperation(completion: @escaping () -> Void) {
+    DispatchQueue.global().async {
+        // Simulate work
+        completion() // Escapes the function scope
+    }
+}                        
+                    </code></pre>
+                    <p>If you remove @escaping, the compiler gives an error because the closure might be called after the function exits.</p>
+                
+                    <p>@autoclosure — Automatically Wrap an Expression in a Closure</p>
+                    <p>What it means:</p>
+
+                    <p>@autoclosure automatically turns an expression into a closure. It allows you to pass an expression that’s lazily evaluated only when needed.</p>
+                    <p>Why it's needed:</p>
+                    <p>This is often used for APIs where the syntax should look clean, like in assertions or custom control-flow functions.</p>
+                    
+                    <p>Common use case:</p>
+                    <p>Used in functions that expect a closure but where you want to pass a normal expression and delay evaluation until (and unless) it's used.</p>
+                    <p>Example:</p>
+                    <pre><code>
+func logIfTrue(_ condition: @autoclosure () -> Bool) {
+    if condition() {
+        print("Condition was true")
+    }
+}
+
+// Instead of writing:
+logIfTrue({ 1 &lt; 2 })
+
+// You can write:
+logIfTrue(1 &lt; 2) // Cleaner syntax                        
+                    </code></pre>
+                    <p>Note: You can also combine it with @escaping, e.g., @autoclosure @escaping.</p>
+                
+                    <p>Summary</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Attribute</th>
+                                <th>Purpose</th>
+                                <th>Use When...</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@escaping</td>
+                                <td>Converts an expression into a closure automatically</td>
+                                <td>You want clean syntax and delayed evaluation of an expression</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p>When to Use Each</p>
+                    <ul>
+                        <li>
+                            <p>Use @escaping when:</p>
+                            <ul>
+                                <li>You're doing asynchronous operations (e.g., network calls).</li>
+                                <li>You're storing the closure in a property or elsewhere.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <p>Use @autoclosure when:</p>
+                            <ul>
+                                <li>You're designing an API for better readability.</li>
+                                <li>You want lazy evaluation of the passed-in expression.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Real-World Example</h2>
+            <p>Great — let's build a real-world example that uses both @escaping and @autoclosure together, and demonstrates how ARC (Automatic Reference Counting) plays a role (especially with capturing self).</p>
+            
+            <p>Goal:</p>
+            <p>We’ll create a simple logger class that:</p>
+            <ul>
+                <li>Accepts delayed evaluation of messages using @autoclosure</li>
+                <li>Stores the logging closure for later execution using @escaping</li>
+                <li>Demonstrates how to avoid retain cycles with [weak self]</li>
+            </ul>
+
+            <p>Code Example</p>
+            <pre><code>
+class Logger {
+    private var logClosures: [() -> Void] = []
+
+    func addLog(_ message: @autoclosure @escaping () -> String) {
+        logClosures.append {
+            print("Log: \(message())")
+        }
+    }
+
+    func executeLogs() {
+        for closure in logClosures {
+            closure()
+        }
+        logClosures.removeAll()
+    }
+
+    deinit {
+        print("Logger deinitialized")
+    }
+}                
+            </code></pre>
+
+            <p>Usage with ARC & self:</p>
+            <pre><code>
+class ViewController {
+    var logger: Logger? = Logger()
+
+    func doSomething() {
+        logger?.addLog("Starting operation at \(Date())")
+
+        DispatchQueue.global().asyncAfter(deadline: .now() + 2) { [weak self] in
+            self?.logger?.addLog("Finished async operation at \(Date())")
+        }
+    }
+
+    func showLogs() {
+        logger?.executeLogs()
+    }
+    
+    deinit {
+        print("ViewController deinitialized")
+    }
+}                
+            </code></pre>
+
+            <p>Running It:</p>
+            <pre><code>
+var vc: ViewController? = ViewController()
+vc?.doSomething()
+
+DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+    vc?.showLogs()
+    vc = nil // Trigger deinitialization
+}
+            </code></pre>
+
+            <p>What’s Happening Here?</p>
+            <p>@autoclosure:</p>
+            <p>Allows us to write:</p>
+            <pre><code>
+logger?.addLog("Starting operation at \(Date())")
+            </code></pre>
+
+            <p>…instead of:</p>
+            <pre><code>
+logger?.addLog({ return "Starting operation at \(Date())" })
+            </code></pre>
+            <p>The message is not computed until we call message() inside the stored closure.</p>
+
+            <p>@escaping:</p>
+            <p>We store the closure in an array, so it needs to escape the function scope.</p>
+            <pre><code>
+logClosures.append {
+    print("Log: \(message())")
+}                
+            </code></pre>
+
+            <p>ARC + [weak self]:</p>
+            <p>Without [weak self], the closure passed to DispatchQueue would capture self strongly, causing a retain cycle like:</p>
+            <ul>
+                <li>ViewController → holds Logger</li>
+                <li>Logger → holds closures</li>
+                <li>Closure → captures self (ViewController)</li>
+            </ul>
+            <p>Using [weak self] breaks the cycle, allowing ViewController to be deallocated.</p>
+            <p>Output Example:</p>
+            <pre><code>
+Log: Starting operation at 2025-08-20 14:55:30 +0000
+Log: Finished async operation at 2025-08-20 14:55:32 +0000
+Logger deinitialized
+ViewController deinitialized
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What is the role of protocols with associated types? Why can't they be used as types directly?</h2>
+            <p>Follow-up: Explain how to work around this limitation.</p>
+
+            <p>Answer:</p>
+            <p>In Swift, protocols with associated types are a powerful feature that allows protocols to describe generic behavior without specifying concrete types. However, they cannot be used as concrete types directly due to the way associated types work. Let's break this down:</p>
+            <p>What Are Protocols with Associated Types?</p>
+            <p>Protocols with associated types define placeholders that are specified by the conforming type.</p>
+        
+            <p>Example:</p>
+            <pre><code>
+protocol Container {
+    associatedtype Item
+    func append(_ item: Item)
+    func get(at index: Int) -> Item
+}                
+            </code></pre>
+            <p>Here, Container is a generic protocol — it doesn’t specify what Item is. Instead, each type that conforms to Container will define Item as part of the conformance.</p>
+        
+            <p>Why Can't They Be Used as Types Directly?</p>
+            <p>You cannot write:</p>
+            <pre><code>
+func process(container: Container) { ... } // ❌ Error
+            </code></pre>
+            <p>Error:</p>
+
+            <p>Protocol 'Container' can only be used as a generic constraint because it has Self or associated type requirements</p>
+            <p>Reason:</p>
+            <p>Swift needs to know the concrete type of the associated type (Item) at compile time. But if you write func process(container: Container), Swift doesn't know what type Item is. This makes the protocol incomplete as a concrete type, because the type system can't reason about the behavior of Item.</p>
+            
+            <p>Workarounds</p>
+            <p>1. Use Generics</p>
+            <p>Make the function generic over the protocol:</p>
+            <pre><code>
+func process<C: Container>(container: C) {
+    let item = container.get(at: 0)
+    print(item)
+}                
+            </code></pre>
+
+            <p>Here, Swift can infer the Item type from C, and everything compiles safely.</p>
+
+            <p>2. Use Type Erasure</p>
+            <p>If you want to store or pass around a protocol with associated types (e.g. in arrays or properties), you can use type erasure.</p>
+            <p>Example:</p>
+
+            <pre><code>
+struct AnyContainer<T>: Container {
+    private let _append: (T) -> Void
+    private let _get: (Int) -> T
+
+    init<C: Container>(_ container: C) where C.Item == T {
+        var mutableContainer = container
+        _append = { item in mutableContainer.append(item) }
+        _get = { index in mutableContainer.get(at: index) }
+    }
+
+    func append(_ item: T) {
+        _append(item)
+    }
+
+    func get(at index: Int) -> T {
+        _get(index)
+    }
+}                
+            </code></pre>
+            <p>Now you can write:</p>
+            <pre><code>
+let intContainer = SomeIntContainer() // conforms to Container with Item = Int
+let erased: AnyContainer<Int> = AnyContainer(intContainer)
+            </code></pre>
+
+            <p>This way, you've erased the underlying type but preserved the functionality.</p>
+
+            <p>Summary</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Explanation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Why can't protocols with associated types be used as types?</td>
+                        <td>Because Swift can't infer the concrete associated type (like Item) at compile time.</td>
+                    </tr>
+                    <tr>
+                        <td>Workaround 1</td>
+                        <td>Use generics to pass the protocol as a generic parameter.</td>
+                    </tr>
+                    <tr>
+                        <td>Workaround 2</td>
+                        <td>Use type erasure to wrap the protocol and fix the associated type.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

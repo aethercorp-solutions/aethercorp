@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Create HTML Template Using Bash Script</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Create HTML Template Using Bash Script</h1>
+                    <p class="subtitle">Here's a Bash script that echoes the provided HTML content into an index.html file:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Instructions:</h2>
+            <pre><code>
+#!/bin/bash
+
+cat << 'EOF' > index.html
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+EOF
+            </code></pre>
+            <ol>
+                <li>Save the code above into a file, e.g., create_index.sh</li>
+                <li>
+                    Make the script executable:
+                    <pre><code>
+chmod +x create_index.sh
+                    </code></pre>
+                </li>
+                <li>
+                    Run the script:
+                    <pre><code>
+./create_index.sh
+                    </code></pre>
+                </li>
+            </ol>
+            <p>This will create an index.html file with the HTML content.</p>
+
+            <p>Here's a version of the Bash script that allows you to specify both the path and filename for the HTML file (e.g., ./create_index.sh ./pages/index.html), and it will create the directories if they don’t already exist:</p>
+            
+            <pre><code>
+#!/bin/bash
+
+# Check if path/filename is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 path/filename.html"
+    exit 1
+fi
+
+FILEPATH="$1"
+DIRNAME=$(dirname "$FILEPATH")
+
+# Create directory if it doesn't exist
+mkdir -p "$DIRNAME"
+
+# Write HTML content to the file
+cat &lt;&lt; 'EOF' &gt; "$FILEPATH"
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+EOF
+
+echo "HTML file '$FILEPATH' created successfully."
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Usage Example:</h2>
+            <pre><code>
+./create_index.sh ./site/pages/index.html
+            </code></pre>
+
+            <p>This will:</p>
+            <ul>
+                <li>Create the directory ./site/pages/ if it doesn't exist.</li>
+                <li>Generate the index.html file at that path.</li>
+            </ul>
+
+            <p>Your Bash script is well-written and functions correctly to:</p>
+            <ol>
+                <li>Check if a file path argument is provided.</li>
+                <li>Create the target directory if it doesn't exist.</li>
+                <li>Write a basic HTML template into the specified file.</li>
+            </ol>
+            <p>Key Features That Work:</p>
+            <ul>
+                <li>Usage message for missing argument.</li>
+                <li>Directory creation with mkdir -p</li>
+                <li>Heredoc (cat &lt;&lt; 'EOF') to insert static HTML.</li>
+                <li>Success message after completion.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Suggestions for Enhancement (Optional)</h2>
+            <p>If you're looking to expand or refine the script:</p>
+            <ol>
+                <li>
+                    Prevent Overwriting Existing Files
+                    <p>To avoid accidentally overwriting existing HTML files:</p>
+                    <pre><code>
+if [ -e "$FILEPATH" ]; then
+    echo "Error: File '$FILEPATH' already exists."
+    exit 1
+fi
+                    </code></pre>
+                </li>
+
+                <li>
+                    <p>Make &lt;title&gt; Dynamic</p>
+                    <p>Allow the user to specify the HTML title as an optional second argument</p>
+                    <pre><code>
+TITLE=${2:-Document}
+                    </code></pre>
+
+                    <p>Then update the heredoc:</p>
+                    <pre><code>
+&lt;title&gt;$TITLE&lt;/title&gt;
+                    </code></pre>
+
+                    <p>Note: Remove single quotes from 'EOF' if you want variable expansion.</p>
+                    <pre><code>
+cat &lt;&lt; EOF &gt; "$FILEPATH"
+...
+&lt;title&gt;$TITLE&lt;/title&gt;
+...
+EOF
+                    </code></pre>
+                </li>
+
+                <li>
+                    <p>Add Executable Permissions (if needed)</p>
+                    <p>Make sure the script is executable:</p>
+                    <pre><code>
+chmod +x script.sh
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Example Usage:</h2>
+            <pre><code>
+./create-html.sh pages/about.html "About Us"
+            </code></pre>
+
+            <p>Would result in:</p>
+            <ul>
+                <li>pages/ directory created if missing.</li>
+                <li>about.html with a proper HTML5 skeleton and the title "About Us".</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

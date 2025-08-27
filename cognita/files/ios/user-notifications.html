@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>User Notifications</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">User Notifications</h1>
+                    <p class="subtitle">Push user-facing notifications to the user’s device from a server, or generate them locally from your app.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Overview</h2>
+            <p>User-facing notifications communicate important information to users of your app, regardless of whether your app is running on the user’s device. For example, a sports app can let the user know when their favorite team scores. Notifications can also tell your app to download information and update its interface. Notifications can display an alert, play a sound, or badge the app’s icon.</p>
+            <p>You can generate notifications locally from your app or remotely from a server that you manage. For local notifications, the app creates the notification content and specifies a condition, like a time or location, that triggers the delivery of the notification. For remote notifications, your company’s server generates push notifications, and Apple Push Notification service (APNs) handles the delivery of those notifications to the user’s devices.</p>
+        </section>
+
+        <section>
+            <h2>Use this framework to do the following:</h2>
+            <ul>
+                <li>Define the types of notifications that your app supports.</li>
+                <li>Define any custom actions associated with your notification types.</li>
+                <li>Schedule local notifications for delivery.</li>
+                <li>Process already delivered notifications.</li>
+                <li>Respond to user-selected actions.</li>
+            </ul>
+
+            <p>The system makes every attempt to deliver local and remote notifications in a timely manner, but delivery isn’t guaranteed. The PushKit framework offers a more timely delivery mechanism for specific types of notifications, such as those VoIP and watchOS complications use. For more information, see <a href="https://developer.apple.com/documentation/PushKit">PushKit</a>.</p>
+            <p>For webpages in Safari version 16.0 and higher, generate remote notifications from a server that you manage using <a href="https://www.w3.org/TR/push-api/">Push API</a> code that works in Safari and other browsers.</p>
+        </section>
+
+        <section>
+            <h2>Managing notifications</h2>
+            <p>Notifications can give people timely and important information, whether the device is locked or in use.</p>
+            <p>You need to get permission before sending any notification. The system lets people change this decision in settings, where they can also silence all notifications (except for government alerts in some locales).</p>
+        </section>
+
+        <section>
+            <h2>Explicitly request authorization in context</h2>
+            <p>
+                To ask for authorization, get the shared UNUserNotificationCenter instance and call its requestAuthorization(options:completionHandler:) method. Specify all of the interaction types that your app employs. For example, you can request authorization to display alerts, add a badge to the app icon, or play sounds:
+            </p>
+            <pre><code>
+let center = UNUserNotificationCenter.current()
+do {
+    try await center.requestAuthorization(options: [.alert, .sound, .badge])
+} catch {
+    // Handle the error here.
+}
+    
+// Enable or disable features based on the authorization.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Use provisional authorization to send trial notifications</h2>
+            <p>Use provisional authorization to send notifications on a trial basis. People can then evaluate the notifications and decide whether to authorize them.</p>
+            <p>The system delivers provisional notifications quietly — they don’t interrupt the person with a sound or banner, or appear on the lock screen. Instead, they only appear in the notification center’s history. These notifications also include buttons that prompt the person to keep or turn off the notification.</p>
+            <p>Deliver Immediately or Deliver in Scheduled Summary. Deliver Immediately delivers future notifications quietly. The system authorizes your app to send notifications, but it doesn’t give your app permission to show alerts, play sounds, or badge the app icon. Your notification only appears in the notification center history unless they change their notification settings. Deliver in Scheduled Summary only appears if the person has Scheduled Summary toggled On in Settings.</p>
+            <p>If the person presses the Turn Off button, the system confirms the selection before denying your app authorization to send additional notifications.</p>
+            <p>To request provisional authorization, add the <a href="https://developer.apple.com/documentation/usernotifications/unauthorizationoptions/provisional">provisional</a> option when requesting permission to send notifications.</p>
+            <pre><code>
+let center = UNUserNotificationCenter.current()
+
+
+do {
+    try await center.requestAuthorization(options: [.alert, .sound, .badge, .provisional])
+} catch {
+    // Handle errors that may occur during requestAuthorization.
+}
+            </code></pre>
+
+            <p>Unlike explicitly requesting authorization, this code doesn’t prompt the person for permission to receive notifications. Instead, the first time you call this method, it automatically grants authorization. However, until the person either explicitly keeps or turns off the notification, the authorization status is UNAuthorizationStatus.provisional. Because people can change the authorization status at any point, check the status before scheduling local notifications.</p>
+            <p>Additionally, if you request provisional authorization, you can request authorization when your app first launches. The person is only asked to keep or turn off notifications when they actually receive the notification.</p>
+        </section>
+
+        <section>
+            <h2>Customize notifications based on the current authorizations</h2>
+            <p>Always check your app’s authorization status before scheduling local notifications. People can change your app’s authorization settings at any time. They can also change the type of interactions allowed by your app — which may cause you to alter the number or type of notifications your app sends.</p>
+            <p>To provide the best experience for people, call the notification center’s getNotificationSettings(completionHandler:) method to get the current notification settings. Then customize the notification based on these settings.</p>
+        
+            <pre><code>
+let center = UNUserNotificationCenter.current()
+
+
+// Obtain the notification settings.
+let settings = await center.notificationSettings()
+
+
+// Verify the authorization status.
+guard (settings.authorizationStatus == .authorized) ||
+      (settings.authorizationStatus == .provisional) else { return }
+
+
+if settings.alertSetting == .enabled {
+    // Schedule an alert-only notification.
+} else {
+    // Schedule a notification with a badge and sound.
+}
+            </code></pre>
+            <p>The above example uses a guard condition to prevent the scheduling of notifications if the app isn’t authorized. The code then configures the notification based on the types of interactions allowed, preferring the use of an alert-based notification whenever possible.</p>
+            <p>You might want to configure your notification with alert, sound, and badge information even if your app isn’t authorized for some of the interactions. The system still displays alerts in Notification Center if your UNNotificationSettings instance’s notificationCenterSetting property is set to UNNotificationSetting.enabled. Your notification center delegate’s userNotificationCenter(_:willPresent:withCompletionHandler:) method also receives notifications when your app is in the foreground, and can still access the alert, sound, or badge information.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

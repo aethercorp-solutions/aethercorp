@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GitHub Pages</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">GitHub Pages</h1>
+                    <p class="subtitle">GitHub Pages is a free hosting service offered by GitHub that lets you deploy static websites directly from a GitHub repository.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Core Concepts</h2>
+            <ul>
+                <li>Static Site: GitHub Pages only supports static content—HTML, CSS, JavaScript, and static assets (images, fonts, etc.). No backend/server-side processing (e.g., PHP, Node.js).</li>
+                <li>Repository: Your website's files must be stored in a GitHub repository.</li>
+                <li>
+                    Branch: You can publish your site from:
+                    <ul>
+                        <li>main or master branch</li>
+                        <li>/docs folder in the main branch</li>
+                        <li>A gh-pages branch (often used for deployment)</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Domain & URLs</h2>
+            <ul>
+                <li>
+                    Default URL:
+                    <pre><code>
+https://&lt;username&gt;.github.io/&lt;repo-name&gt;/
+                    </code></pre>
+                </li>
+                <li>
+                    Custom Domain: You can configure a custom domain (e.g., mywebsite.com) via the repository settings and a CNAME file in your repo.
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Configuration & Deployment</h2>
+            <ul>
+                <li>
+                    <p>Settings > Pages:</p>
+                    <p>This is where you configure the source (branch/folder) for deployment and custom domain if applicable.</p>
+                </li>
+                <li>
+                    <p>CNAME File:</p>
+                    <p>A file that contains your custom domain name, required if you're using a custom domain.</p>
+                </li>
+                <li>
+                    <p>.nojekyll File:</p>
+                    <p>Optional file that tells GitHub Pages to skip Jekyll processing (useful for folders that start with _).</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Supported Tools & Workflows</h2>
+            <ul>
+                <li>Jekyll: GitHub Pages natively supports Jekyll, a popular static site generator. You can use _config.yml and other Jekyll-specific files for templating and blog functionality.</li>
+                <li>CI/CD with GitHub Actions: Automate build and deployment steps (especially useful for React, Vue, Next.js, or other build-step frameworks).</li>
+                <li>
+                    <p>Static Site Generators: If you're using something like React or Vue, you’ll need to:</p>
+                    <ul>
+                        <li>Build your site (npm run build)</li>
+                        <li>Deploy the build/ folder to gh-pages using a tool like gh-pages</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Advantages of GitHub Pages</h2>
+            <ul>
+                <li>Free hosting</li>
+                <li>Easy integration with Git workflows</li>
+                <li>Version control built-in</li>
+                <li>HTTPS by default</li>
+                <li>Supports custom domains</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Limitations</h2>
+            <ul>
+                <li>Static only (no server-side code)</li>
+                <li>1 GB size limit per repository</li>
+                <li>100 GB/month bandwidth limit</li>
+                <li>Not suitable for dynamic web apps requiring a backend</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

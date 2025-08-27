@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Native app using Firebase (FCM)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Native app using Firebase (FCM)</h1>
+                    <p class="subtitle">To implement push notifications in a React Native app using Firebase (FCM), you can use the react-native-firebase package along with @react-native-firebase/messaging. Below is a step-by-step guide for setting up Firebase Cloud Messaging (FCM) in a React Native app.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🚀 Step-by-Step: FCM Push Notifications in React Native</h2>
+            <ol>
+                <li>
+                    📦 1. Install Required Packages
+                    <pre><code>
+npm install @react-native-firebase/app @react-native-firebase/messaging
+                    </code></pre>
+
+                    If using iOS:
+
+                    <pre><code>
+cd ios && pod install && cd ..
+                    </code></pre>
+                </li>
+
+                <li>
+                    🔧 2. Firebase Setup
+                    <ul>
+                        <li>
+                            Go to <a href="https://console.firebase.google.com/">Firebase Console</a>
+                        </li>
+                        <li>Create a new project or select an existing one.</li>
+                        <li>Add your iOS and/or Android app to the Firebase project.</li>
+                        <li>
+                            Download the google-services.json (for Android) and GoogleService-Info.plist (for iOS) and place them in:
+                            <ul>
+                                <li>Android: android/app/google-services.json</li>
+                                <li>iOS: ios/YourApp/GoogleService-Info.plist</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <p>⚙️ 3. Android Setup</p>
+                    <p>android/build.gradle</p>
+
+                    <pre><code>
+buildscript {
+    dependencies {
+        classpath 'com.google.gms:google-services:4.3.15'
+    }
+}                          
+                    </code></pre>
+
+                    <p>android/app/build.gradle</p>
+
+                    <pre><code>
+apply plugin: 'com.google.gms.google-services'
+
+dependencies {
+  implementation 'com.google.firebase:firebase-messaging:23.1.1' // Ensure latest version
+}
+                    </code></pre>
+                </li>
+
+                <li>
+                    🍎 4. iOS Setup
+                    <ul>
+                        <li>Open your project in Xcode.</li>
+                        <li>Enable Push Notifications and Background Modes (remote notifications).</li>
+                        <li>Add GoogleService-Info.plist to the project via Xcode.</li>
+                        <li>
+                            <p>Add the following to AppDelegate.m for iOS versions below RN 0.71. For higher versions, check AppDelegate.mm.</p>
+                            <p>Run:</p>
+                            <pre><code>
+cd ios && pod install && cd ..
+                            </code></pre>
+                        </li>
+
+                        <li>
+                            🔌 5. Request Permissions
+                            <pre><code>
+import messaging from '@react-native-firebase/messaging';
+import { Platform } from 'react-native';
+
+async function requestUserPermission() {
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
+    getFCMToken(); // Fetch token after permission granted
+  }
+}
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    🔑 6. Get FCM Token
+                    <pre><code>
+async function getFCMToken() {
+    const fcmToken = await messaging().getToken();
+    if (fcmToken) {
+        console.log('FCM Token:', fcmToken);
+        // Send token to backend if needed
+    } else {
+        console.log('Failed to get FCM token');
+    }
+}                          
+                    </code></pre>
+                </li>
+
+                <li>
+                    <p>📥 7. Handle Notifications</p>
+                    <p>Foreground messages:</p>
+                    <pre><code>
+useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+        Alert.alert('New Notification', JSON.stringify(remoteMessage.notification));
+    });
+    
+    return unsubscribe;
+}, []);                   
+                    </code></pre>
+
+                    <p>Background & quit state:</p>
+                    <pre><code>
+// background handler
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('Message handled in background!', remoteMessage);
+});
+                    </code></pre>
+                </li>
+
+                <li>
+                    Notification when app is opened from a quit state:
+                    <pre><code>
+useEffect(() => {
+    messaging()
+        .getInitialNotification()
+        .then(remoteMessage => {
+        if (remoteMessage) {
+            console.log('Opened from quit state:', remoteMessage);
+        }
+        });
+    
+    messaging().onNotificationOpenedApp(remoteMessage => {
+        console.log('Opened from background state:', remoteMessage);
+    });
+}, []);                          
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧪 8. Test Push Notifications</h2>
+            <p>Use Firebase Console → Cloud Messaging:</p>
+            <ul>
+                <li>Target your app</li>
+                <li>Paste the FCM token</li>
+                <li>Send test notification</li>
+            </ul>
+            <p>Or use curl with your Firebase Server Key:</p>
+            <pre><code>
+curl -X POST -H "Authorization: key=YOUR_SERVER_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+        "to": "YOUR_DEVICE_FCM_TOKEN",
+        "notification": {
+            "title": "Hello",
+            "body": "You have a new message"
+        }
+    }' https://fcm.googleapis.com/fcm/send
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Done!</h2>
+            <p>You now have push notifications working in your React Native app using Firebase.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

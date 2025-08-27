@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Creating A Reusable React Component</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Creating A Reusable React Component</h1>
+                    <p class="subtitle">Sure! Let's walk through creating a reusable React component and deploying it to GitHub. We'll keep it simple, but this process can be applied to more complex components.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Create a Reusable React Component</h2>
+            <p>Let’s say we want to create a reusable Button component.</p>
+            <p>✅ Folder Structure</p>
+
+            <pre><code>
+my-button-component/
+├── src/
+│   ├── Button.jsx
+│   ├── Button.css
+│   └── index.js
+├── package.json
+├── README.md
+└── .gitignore
+            </code></pre>
+
+            <p>📄 src/Button.jsx</p>
+            <pre><code>
+import React from 'react';
+import './Button.css';
+
+const Button = ({ label, onClick, type = 'button', className = '' }) => {
+  return (
+    &lt;button type={type} onClick={onClick} className={`custom-button ${className}`}&gt;
+      {label}
+    &lt;/button&gt;
+  );
+};
+
+export default Button;
+            </code></pre>
+
+            <p>📄 src/Button.css</p>
+            <pre><code>
+.custom-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+    
+.custom-button:hover {
+    background-color: #0056b3;
+}                  
+            </code></pre>
+
+            <p>📄 src/index.js</p>
+            <pre><code>
+import Button from './Button';
+export default Button;
+            </code></pre>
+
+            <p>📄 package.json</p>
+            <pre><code>
+{
+    "name": "my-button-component",
+    "version": "1.0.0",
+    "description": "A reusable React button component",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "webpack serve --mode development",
+        "build": "webpack --mode production"
+    },
+    "keywords": ["react", "button", "component"],
+    "author": "Your Name",
+    "license": "MIT",
+    "peerDependencies": {
+        "react": "^17.0.0 || ^18.0.0",
+        "react-dom": "^17.0.0 || ^18.0.0"
+    }
+}                  
+            </code></pre>
+
+            <p>You can add Webpack config if you want to bundle it, or publish as-is for a module to be bundled by others.</p>
+        </section>
+
+        <section>
+            <h2>2. Deploy to GitHub</h2>
+            <p>A. Create a GitHub Repository</p>
+
+            <ol>
+                <li>
+                    Go to<a href="https://github.com/">GitHub</a>
+                </li>
+                <li>Create a new repository, e.g., my-button-component</li>
+            </ol>
+
+            <p>B. Push Code to GitHub</p>
+            <p>In your terminal:</p>
+
+            <pre><code>
+cd my-button-component
+git init
+git remote add origin https://github.com/your-username/my-button-component.git
+git add .
+git commit -m "Initial commit with reusable Button component"
+git push -u origin master
+            </code></pre>
+
+            <p>✅ Now your component is on GitHub!</p>
+
+            <p>📦 Optional: Publish to NPM</p>
+            <p>If you want others to install it via npm install, you can publish it:</p>
+
+            <pre><code>
+npm login
+npm publish --access public
+            </code></pre>
+
+            <p>Summary</p>
+            <p>You’ve created a reusable Button React component, added styling, and pushed it to GitHub. Let me know if you want:</p>
+            <ul>
+                <li>Webpack/TypeScript setup</li>
+                <li>Storybook for preview</li>
+                <li>Published to npm</li>
+                <li>Multiple components in a library</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

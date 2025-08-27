@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Handling Server Trust</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Handling Server Trust</h1>
+                    <p class="subtitle">"Handling Server Trust" typically refers to how a client (like a mobile app or web application) determines whether to trust a server it's communicating with, especially over HTTPS. This is critical to prevent man-in-the-middle attacks and ensure secure communication.</p>
+                
+                    <p>Below is a breakdown of what “Handling Server Trust” involves, especially in the context of platforms like iOS (Swift), Android (Java/Kotlin), or web apps:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>General Concept</h2>
+            <p>When a client connects to a server using HTTPS, it:</p>
+            <ol>
+                <li>Receives the server’s SSL/TLS certificate.</li>
+                <li>Validates the certificate’s trust chain.</li>
+                <li>Ensures the certificate is not expired or revoked.</li>
+                <li>Optionally checks that the server’s domain matches the certificate.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>iOS (Swift): Handling Server Trust</h2>
+            <p>In iOS (using URLSession), you can handle server trust like this:</p>
+            <pre><code>
+let session = URLSession(
+    configuration: .default,
+    delegate: self,
+    delegateQueue: nil
+)
+
+extension YourClass: URLSessionDelegate {
+    func urlSession(_ session: URLSession,
+                    didReceive challenge: URLAuthenticationChallenge,
+                    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+
+        let serverTrust = challenge.protectionSpace.serverTrust
+
+        // Example: Trust all certificates (NOT recommended for production)
+        if let serverTrust = serverTrust {
+            let credential = URLCredential(trust: serverTrust)
+            completionHandler(.useCredential, credential)
+        } else {
+            completionHandler(.cancelAuthenticationChallenge, nil)
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Important:</h2>
+            <ul>
+                <li>Never skip validation in production.</li>
+                <li>Use certificate pinning or public key pinning for higher security.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Android (Java/Kotlin): Handling Server Trust</h2>
+            <p>You can create a custom TrustManager, for example:</p>
+            <pre><code>
+TrustManager[] trustAllCerts = new TrustManager[]{
+    new X509TrustManager() {
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+    }
+};                
+            </code></pre>
+            <p>Then use it to build an SSLContext.</p>
+        </section>
+
+        <section>
+            <h2>Warning:</h2>
+            <ul>
+                <li>Trusting all certificates is dangerous unless it's strictly for development or testing.</li>
+                <li>Use Network Security Configuration to define trusted CAs and pinning policies.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Web: Handling Server Trust</h2>
+            <p>Browsers handle server trust automatically via the OS trust store. As a web developer, you should:</p>
+            <ul>
+                <li>Use HTTPS via a valid certificate.</li>
+                <li>Configure HSTS headers.</li>
+                <li>Consider Subresource Integrity (SRI) for third-party scripts.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Use valid SSL/TLS certificates from trusted Certificate Authorities (CAs).</li>
+                <li>Implement certificate pinning where applicable.</li>
+                <li>Handle certificate revocation (OCSP or CRLs) if required.</li>
+                <li>Don’t disable trust checks in production code.</li>
+                <li>Log and monitor SSL errors or certificate failures.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
