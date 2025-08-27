@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Near Field Communication (NFC)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Near Field Communication (NFC)</h1>
+                    <p class="subtitle">Implementing Near Field Communication (NFC) depends on your platform (e.g. Android, iOS, or hardware like Raspberry Pi/Arduino). Below is a high-level overview and example code for Android (the most common platform for NFC apps), followed by notes for iOS and hardware.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ NFC Implementation on Android</h2>
+            <p>📱 Use Case: Read NFC Tag</p>
+
+            <ol>
+                <li>
+                    1. Add Permissions in AndroidManifest.xml
+                    <pre><code>
+&lt;uses-permission android:name="android.permission.NFC" /&gt;
+&lt;uses-feature android:name="android.hardware.nfc" android:required="true" /&gt;
+                    </code></pre>
+                </li>
+
+                <li>
+                    Declare NFC Activity Filter (optional)
+                    <p>To launch your app when an NFC tag is scanned:</p>
+                    <pre><code>
+&lt;intent-filter&gt;
+    &lt;action android:name="android.nfc.action.TAG_DISCOVERED"/&gt;
+    &lt;category android:name="android.intent.category.DEFAULT"/&gt;
+&lt;/intent-filter&gt;                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Initialize NFC Adapter in MainActivity.java
+                    <pre><code>
+NfcAdapter nfcAdapter;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+    if (nfcAdapter == null) {
+        Toast.makeText(this, "NFC not supported", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+}
+                    </code></pre>
+                </li>
+
+                <li>
+                    Detect NFC Tags
+                    <pre><code>
+@Override
+protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+
+    if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        byte[] tagId = tag.getId();
+
+        StringBuilder tagInfo = new StringBuilder("Tag ID:\n");
+        for (byte b : tagId) {
+            tagInfo.append(String.format("%02X", b));
+        }
+
+        Toast.makeText(this, tagInfo.toString(), Toast.LENGTH_LONG).show();
+    }
+}
+                    </code></pre>
+                </li>
+
+                <li>
+                    Enable Foreground Dispatch
+                    <p>To prioritize your app when scanning tags:</p>
+                    <pre><code>
+@Override
+protected void onResume() {
+    super.onResume();
+    Intent intent = new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE);
+    IntentFilter[] filters = new IntentFilter[] { new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED) };
+    nfcAdapter.enableForegroundDispatch(this, pendingIntent, filters, null);
+}
+
+@Override
+protected void onPause() {
+    super.onPause();
+    nfcAdapter.disableForegroundDispatch(this);
+}
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🍏 NFC on iOS (Apple Pay / Tag Reading)</h2>
+            <ul>
+                <li>iOS supports NFC tag reading via Core NFC (iPhone 7 and newer).</li>
+                <li>Apple Pay (NFC payment) cannot be implemented by developers directly; it is system-handled via Apple Wallet.</li>
+                <li>
+                    To read NFC:
+                    <ul>
+                        <li>Use NFCNDEFReaderSession (Objective-C or Swift).</li>
+                        <li>Needs user permission and runs only in foreground.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ NFC Hardware (e.g., Arduino, Raspberry Pi)</h2>
+            <p>You can use modules like PN532 via I2C/SPI:</p>
+            <p>With Raspberry Pi (Python):</p>
+
+            <pre><code>
+import nfc
+
+def on_connect(tag):
+    print("Tag detected: ", tag)
+    return True
+
+clf = nfc.ContactlessFrontend('usb')
+clf.connect(rdwr={'on-connect': on_connect})
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 Security Note</h2>
+            <p>For payments, the NFC process is managed by secure elements (SE) or host card emulation (HCE), and you cannot directly access payment card data. Use Google Pay or Apple Pay SDKs.</p>
+        </section>
+
+        <section>
+            <h2>➕ Want to Implement HCE (Host Card Emulation)?</h2>
+            <p>You can emulate a card (for access control, tickets, etc.):</p>
+            <ul>
+                <li>Declare android:hostApduService in manifest.</li>
+                <li>Extend HostApduService.</li>
+                <li>Implement processCommandApdu().</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

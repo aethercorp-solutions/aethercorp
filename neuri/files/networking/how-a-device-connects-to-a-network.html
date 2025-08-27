@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How a Device Connects to a Network</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How a Device Connects to a Network</h1>
+                    <p class="subtitle">Let's break down how a device connects to a network, step by step, from powering it on to being fully online.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Physical or Wireless Connection</h2>
+            <p>The device first connects to the network physically or wirelessly:</p>
+            <ul>
+                <li>Wired (Ethernet): Connects using a network cable to a switch or router.</li>
+                <li>Wireless (Wi-Fi): Connects via a wireless access point (usually built into a router).</li>
+            </ul>
+        </section>
+    
+        <section>
+            <h2>2. Link Layer: Hardware Communication</h2>
+            <ul>
+                <li>The device's network interface card (NIC) uses a MAC address (unique hardware ID).</li>
+                <li>It checks for a link with the router or switch.</li>
+                <li>If successful, the link becomes active, and the device is now "physically" part of the local network.</li>
+            </ul>
+        </section>
+    
+        <section>
+            <h2>3. DHCP Request: Get IP Address</h2>
+            <p>If the device is set to use DHCP (which is the default):</p>
+            <ol>
+                <li>Sends a DHCPDISCOVER broadcast (usually to 255.255.255.255).</li>
+                <li>The DHCP server (often the router) responds with a DHCPOFFER.</li>
+                <li>The device replies with DHCPREQUEST to accept the offer.</li>
+                <li>The server confirms with DHCPACK, assigning:</li>
+                <ul>
+                    <li>IP address</li>
+                    <li>Subnet mask</li>
+                    <li>Default gateway</li>
+                    <li>DNS server(s)</li>
+                </ul>
+            </ol>
+            <p>Now the device has everything it needs to communicate on the network!</p>
+        </section>
+    
+        <section>
+            <h2>4. DNS Resolution & Internet Access</h2>
+            <ul>
+                <li>When you open a website (e.g., openai.com), the device asks a DNS server to translate the name into an IP address.</li>
+                <li>It then sends a request (like HTTP or HTTPS) through the default gateway (usually your router), out to the Internet.</li>
+            </ul>
+        </section>
+    
+        <section>
+            <h2>Summary: End-to-End Steps</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+    
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Connects physically or via Wi-Fi</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Establishes a link-layer connection</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Requests IP config from DHCP</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Receives IP, gateway, DNS info</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Uses DNS to resolve websites</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Sends/receives data through router to the Internet</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

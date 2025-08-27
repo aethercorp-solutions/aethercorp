@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CAPTCHAs</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">CAPTCHAs</h1>
+                    <p class="subtitle">CAPTCHAs (Completely Automated Public Turing test to tell Computers and Humans Apart) are tools used on websites to determine whether a user is a human or a bot. They help prevent automated abuse like spam, data scraping, or brute-force attacks.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Types of CAPTCHAs</h2>
+            <ol>
+                <li>
+                    Text-based CAPTCHAs:
+                    <ul>
+                        <li>Show distorted letters/numbers that humans can read but bots struggle with.</li>
+                    </ul>
+                </li>
+                <li>
+                    Image-based CAPTCHAs:
+                    <ul>
+                        <li>Ask users to select specific images (e.g., "Select all traffic lights").</li>
+                    </ul>
+                </li>
+                <li>
+                    reCAPTCHA (Google):
+                    <ul>
+                        <li>v2: "I'm not a robot" checkbox, sometimes followed by image challenges.</li>
+                        <li>v3: Invisible and score-based, runs in the background.</li>
+                        <li>Enterprise: More advanced risk analysis.</li>
+                    </ul>
+                </li>
+                <li>
+                    Audio CAPTCHAs:
+                    <ul>
+                        <li>Play distorted audio for users who may have visual impairments.</li>
+                    </ul>
+                </li>
+                <li>
+                    Puzzle or Game CAPTCHAs:
+                    <ul>
+                        <li>Simple tasks like dragging a slider or rotating an object.</li>
+                    </ul>
+                </li>
+                <li>
+                    Biometric/Behavioral CAPTCHAs:
+                    <ul>
+                        <li>Monitor mouse movement, typing patterns, or other behavior to infer humanity.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Why They Exist</h2>
+            <ul>
+                <li>Block bots from spamming forms.</li>
+                <li>Prevent credential stuffing.</li>
+                <li>Avoid ticket scalping or hoarding.</li>
+                <li>Protect online polls and registration forms.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Issues with CAPTCHAs</h2>
+            <ul>
+                <li>Accessibility: Can be hard for users with disabilities.</li>
+                <li>Frustration: Image CAPTCHAs can be slow and repetitive.</li>
+                <li>Privacy: Some, like reCAPTCHA, track user behavior and send data to third parties.</li>
+            </ul>
+
+            <p>Here’s how you can implement a basic CAPTCHA on a website. I'll give you both a simple custom CAPTCHA and an example using Google reCAPTCHA, which is widely used and secure.</p>
+        </section>
+
+        <section>
+            <h2>1. Custom CAPTCHA (Simple Text-Based)</h2>
+            <p>Backend: Python (Flask) Example</p>
+            <pre><code>
+from flask import Flask, render_template_string, request, session
+import random
+import string
+
+app = Flask(__name__)
+app.secret_key = 'your_secret_key'
+
+def generate_captcha():
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        user_input = request.form['captcha']
+        if user_input == session.get('captcha'):
+            return 'CAPTCHA passed ✅'
+        else:
+            return 'CAPTCHA failed ❌'
+
+    captcha = generate_captcha()
+    session['captcha'] = captcha
+    return render_template_string('''
+        &lt;form method="POST"&gt;
+            &lt;label&gt;Enter CAPTCHA: {{ captcha }}&lt;/label&gt;&lt;br&gt;
+            &lt;input type="text" name="captcha"&lt;&lt;br&gt;
+            &lt;input type="submit"&gt;
+        &lt;/form&gt;
+    ''', captcha=captcha)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+            </code></pre>
+            <p>This example:</p>
+            <ul>
+                <li>Generates a random CAPTCHA string</li>
+                <li>Stores it in session</li>
+                <li>Compares it on form submission</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Google reCAPTCHA (v2 Checkbox)</h2>
+            <p>Step-by-Step Setup</p>
+            <p>a. Register Your Site:</p>
+            <ul>
+                <li>Go to <a href="https://www.google.com/recaptcha/admin/create">Google reCAPTCHA Admin Console</a></li>
+                <li>Choose reCAPTCHA v2 (“I'm not a robot”)</li>
+                <li>Add your domain</li>
+                <li>Get Site Key and Secret Key</li>
+            </ul>
+
+            <p>b. HTML (Frontend)</p>
+            <pre><code>
+&lt;form action="/submit" method="POST"&gt;
+    &lt;div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY_HERE"&gt;&lt;/div&gt;
+    &lt;br/&gt;
+    &lt;input type="submit" value="Submit"&gt;
+&lt;/form&gt;
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>                
+            </code></pre>
+
+            <p>c. Backend: Python (Flask)</p>
+            <pre><code>
+import requests
+from flask import request
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    recaptcha_response = request.form['g-recaptcha-response']
+    data = {
+        'secret': 'YOUR_SECRET_KEY_HERE',
+        'response': recaptcha_response
+    }
+    r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+    result = r.json()
+
+    if result['success']:
+        return 'CAPTCHA verified ✅'
+    else:
+        return 'CAPTCHA failed ❌'
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Other implementations</h2>
+            <ul>
+                <li>Django</li>
+                <li>Express (Node.js)</li>
+                <li>React</li>
+                <li>PHP</li>
+                <li>WordPress</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

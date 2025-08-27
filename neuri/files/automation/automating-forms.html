@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Automating Forms</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Automating Forms</h1>
+                    <p class="subtitle">Automating forms can mean different things depending on the context, but generally, it involves automatically filling out or submitting web or PDF forms using scripts or tools. Here's a guide broken down by common scenarios:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Automating Web Forms</h2>
+            <p>Tools You Can Use:</p>
+            <ul>
+                <li>Selenium (Python, Java, etc.)</li>
+                <li>Puppeteer (Node.js)</li>
+                <li>Playwright (Node.js, Python, C#)</li>
+                <li>AutoHotkey (Windows scripting)</li>
+                <li>Browser Extensions (e.g., Autofill, Tampermonkey)</li>
+            </ul>
+            <p>How It Works (Using Selenium as an Example):</p>
+
+            <pre><code>
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+# Set up the browser
+driver = webdriver.Chrome()
+
+# Navigate to the form page
+driver.get("https://example.com/form")
+
+# Fill out the form fields
+driver.find_element(By.NAME, "username").send_keys("myusername")
+driver.find_element(By.NAME, "email").send_keys("me@example.com")
+
+# Submit the form
+driver.find_element(By.ID, "submit-button").click()
+            </code></pre>
+            <p>Note: If the form has captchas, 2FA, or bot protection, you may need more advanced methods.</p>
+        </section>
+
+        <section>
+            <h2>2. Automating PDF Forms</h2>
+            <p>Tools You Can Use:</p>
+            <ul>
+                <li>
+                    Python:
+                    <ul>
+                        <li>PyPDF2</li>
+                        <li>pdfplumber (reading)</li>
+                        <li>pdfrw</li>
+                        <li>reportlab (writing/creating)</li>
+                    </ul>
+                </li>
+                <li>Adobe Acrobat Pro (with Actions/Javascript)</li>
+                <li>PDFtk (PDF toolkit)</li>
+            </ul>
+
+            <pre><code>
+from pdfrw import PdfReader, PdfWriter, PageMerge
+
+# Load the PDF form
+template = PdfReader('form_template.pdf')
+template.Root.AcroForm.update(PdfDict(NeedAppearances=PdfObject('true')))
+
+# Fill form fields
+for page in template.pages:
+    annotations = page.Annots
+    if annotations:
+        for annotation in annotations:
+            if annotation.T:
+                key = annotation.T[1:-1]
+                if key == 'Name':
+                    annotation.V = PdfString.encode('John Doe')
+                if key == 'Email':
+                    annotation.V = PdfString.encode('john@example.com')
+
+# Save filled form
+PdfWriter().write('filled_form.pdf', template)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Automating Desktop Application Forms</h2>
+            <p>Tools You Can Use:</p>
+            <ul>
+                <li>AutoHotkey (Windows)</li>
+                <li>SikuliX (image-based automation)</li>
+                <li>PyAutoGUI (Python GUI automation)</li>
+                <li>Robot Framework</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Automating Form Submissions via API</h2>
+            <p>If the service offers an API, it's far more efficient to skip the UI and submit data directly.</p>
+            <p>Example:</p>
+            <pre><code>
+import requests
+
+data = {
+    "name": "John Doe",
+    "email": "john@example.com"
+}
+response = requests.post("https://api.example.com/form-submit", json=data)
+print(response.status_code)
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

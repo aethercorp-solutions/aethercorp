@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Singleton Pattern</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Singleton Pattern</h1>
+                    <p class="subtitle">The Singleton Pattern is a design pattern that ensures a class has only one instance and provides a global point of access to that instance. It’s commonly used in scenarios where exactly one object is needed to coordinate actions across a system (like a configuration manager, logging service, etc.).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Pros of Singleton Pattern</h2>
+            <ol>
+                <li>
+                    Controlled Access to the Single Instance
+                    <ul>
+                        <li>Ensures only one instance is created and gives a global point of access.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Reduces Memory Usage
+                    <ul>
+                        <li>Since only one object is created, it can be more memory-efficient, especially if the object is heavy.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Lazy Initialization
+                    <ul>
+                        <li>The instance is created only when it’s needed (if implemented with lazy loading).</li>
+                    </ul>
+                </li>
+                
+                <li>
+                    Global State Management
+                    <ul>
+                        <li>Useful for managing shared resources like configuration, logging, caches, etc.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Thread Safety (if properly implemented)
+                    <ul>
+                        <li>With proper synchronization (like using synchronized in Java or threading.Lock in Python), it can be made thread-safe.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Cons of Singleton Pattern</h2>
+            <ol>
+                <li>
+                    Global State (Considered Harmful)
+                    <ul>
+                        <li>It introduces global state into an application, which can make debugging and testing more difficult.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Hidden Dependencies
+                    <ul>
+                        <li>Classes using the singleton often do not declare their dependency explicitly, making the code less readable and harder to maintain.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Harder to Test
+                    <ul>
+                        <li>Singletons can make unit testing difficult because they carry state across tests unless reset manually or mocked.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Violation of Single Responsibility Principle
+                    <ul>
+                        <li>A Singleton can end up doing more than one job (controlling its instantiation and also business logic), leading to poor design.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Concurrency Issues
+                    <ul>
+                        <li>Without proper implementation, singletons can be vulnerable to race conditions in multi-threaded applications.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Inflexibility
+                    <ul>
+                        <li>You cannot subclass a singleton easily or create multiple instances for different use cases in testing or modular systems.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ When to Use</h2>
+            <ul>
+                <li>You need exactly one instance of a class.</li>
+                <li>You need to coordinate access to a shared resource (e.g., logging, config manager).</li>
+            </ul>
+
+            <h2>❌ When to Avoid</h2>
+            <ul>
+                <li>Your code needs to be easily testable or modular.</li>
+                <li>You’re working in a multi-threaded environment without robust thread safety.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Here’s a basic Singleton pattern implementation in Python, along with a brief explanation.</h2>
+
+            <p>🧪 Basic Singleton in Python (Classic Approach)</p>
+            <pre><code>
+class Singleton:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            print("Creating new instance")
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+# Usage
+s1 = Singleton()
+s2 = Singleton()
+
+print(s1 is s2)  # True — both refer to the same instance
+            </code></pre>
+
+            <p>⚙️ Explanation</p>
+            
+            <ul>
+                <li>__new__ is called before __init__, and it is responsible for returning a new instance.</li>
+                <li>This pattern ensures that only one instance of the class is created, no matter how many times you try to instantiate it.</li>
+            </ul>
+
+            <p>✅ Pros of This Python Singleton</p>
+            <ul>
+                <li>Simple to implement</li>
+                <li>Ensures only one instance exists</li>
+            </ul>
+
+            <p>❌ Cons</p>
+            <ul>
+                <li>Not thread-safe (two threads could simultaneously call __new__ before _instance is set)</li>
+            </ul>
+
+            <p>🔐 Thread-Safe Singleton (Using Lock)</p>
+            <pre><code>
+import threading
+
+class Singleton:
+    _instance = None
+    _lock = threading.Lock()
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            with cls._lock:
+                if not cls._instance:
+                    print("Creating thread-safe singleton")
+                    cls._instance = super().__new__(cls)
+        return cls._instance
+
+# Usage
+s1 = Singleton()
+s2 = Singleton()
+
+print(s1 is s2)  # True
+            </code></pre>
+
+            <p>🔁 Alternative: Using a Decorator</p>
+            <pre><code>
+def singleton(cls):
+    instances = {}
+
+    def wrapper(*args, **kwargs):
+        if cls not in instances:
+            print(f"Creating instance of {cls.__name__}")
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+    return wrapper
+
+@singleton
+class MyClass:
+    pass
+
+# Usage
+a = MyClass()
+b = MyClass()
+
+print(a is b)  # True
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Singleton Pattern in Swift</h2>
+
+            <pre><code>
+class MySingleton {
+
+    // MARK: - Shared Instance
+    static let shared = MySingleton()
+
+    // MARK: - Initializer
+    private init() {
+        // Private to prevent external instantiation
+    }
+
+    // MARK: - Example Function
+    func doSomething() {
+        print("Singleton is working!")
+    }
+}                
+            </code></pre>
+            <p>🔍 How to Use</p>
+
+            <pre><code>
+MySingleton.shared.doSomething()
+            </code></pre>
+
+            <p>🔐 Why private init()?</p>
+            <p>The private init() ensures that no other instance of the class can be created from outside, enforcing the singleton pattern.</p>
+
+            <p>🧵 Thread-Safety?</p>
+            <p>Yes, using static let in Swift is lazy and thread-safe by default — no extra locking is needed.</p>
+
+            <p>In Swift, when you declare a static let property, it is lazy and thread-safe by default due to how Swift handles the initialization of static constants at the language and runtime level.</p>
+            <p>Let’s break down why:</p>
+
+            <p>✅ 1. Lazy Initialization</p>
+            <p>When you write:</p>
+
+            <pre><code>
+class MyClass {
+    static let shared = MyClass()
+}                
+            </code></pre>
+
+            <p>Swift does not create shared immediately when the program starts. Instead:</p>
+            <ul>
+                <li>The shared instance is only created the first time it is accessed.</li>
+                <li>This is lazy initialization, which helps reduce memory usage and startup time.</li>
+            </ul>
+
+            <p>✅ Why lazy?</p>
+            <p>Because static let is a constant, and Swift can guarantee it will only be initialized once. So the compiler defers its creation until it’s needed.</p>
+
+            <p>✅ 2. Thread Safety</p>
+            <p>Swift ensures that static let is thread-safe. That means:</p>
+
+            <ul>
+                <li>Even if multiple threads try to access the property at the same time (for example, during the first access), Swift ensures the initialization happens exactly once, and only one thread does it.</li>
+                <li>This is done internally using something like dispatch_once or lock-free atomic initialization at the runtime level.</li>
+            </ul>
+
+            <p>✅ Why thread-safe?</p>
+            <p>Because Swift guarantees this behavior to avoid race conditions. You don’t need to manually add locks or synchronization to protect the initialization of static let.</p>
+
+            <p>Summary</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Explanation</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Lazy</td>
+                        <td>The value is initialized only when first accessed, not at program start.</td>
+                    </tr>
+                    <tr>
+                        <td>Thread-safe</td>
+                        <td>Swift ensures only one thread initializes the value, even with concurrent access.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Bonus: static var vs static let</p>
+            <ul>
+                <li>static **let**: Lazy and thread-safe by default (immutable after initialization).</li>
+                <li>static **var**: Not necessarily lazy or thread-safe. You must manage synchronization if needed.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

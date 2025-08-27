@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Intelligent Document Processing (IDP)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Intelligent Document Processing (IDP)</h1>
+                    <p class="subtitle">Intelligent Document Processing (IDP) refers to the use of advanced technologies such as Artificial Intelligence (AI), Machine Learning (ML), Optical Character Recognition (OCR), Natural Language Processing (NLP), and Computer Vision to automate the capture, extraction, and processing of data from various document formats.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What IDP Does</h2>
+            <p>IDP automates the end-to-end document lifecycle, which includes:</p>
+            <ul>
+                <li>Document Ingestion: Capturing documents from multiple sources (emails, scanners, portals).</li>
+                <li>Classification: Categorizing documents by type (invoices, contracts, forms, etc.).</li>
+                <li>Data Extraction: Identifying and extracting relevant information (names, dates, totals).</li>
+                <li>Validation: Cross-checking extracted data with other systems/rules.</li>
+                <li>Integration: Feeding clean data into downstream systems like ERP, CRM, or databases.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key Technologies in IDP</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Role in IDP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OCR</td>
+                        <td>Converts scanned images or PDFs into machine-readable text</td>
+                    </tr>
+                    <tr>
+                        <td>NLP</td>
+                        <td>Understands and interprets language in documents</td>
+                    </tr>
+                    <tr>
+                        <td>Machine Learning</td>
+                        <td>Improves accuracy over time through pattern recognition</td>
+                    </tr>
+                    <tr>
+                        <td>Computer Vision</td>
+                        <td>Recognizes layout, structure, and visual elements</td>
+                    </tr>
+                    <tr>
+                        <td>RPA (Robotic Process Automation)</td>
+                        <td>Often used alongside IDP to automate workflows</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Common Use Cases</h2>
+            <ul>
+                <li>Invoice Processing (AP automation)</li>
+                <li>Loan Applications in banking</li>
+                <li>KYC Document Handling</li>
+                <li>Insurance Claims</li>
+                <li>Medical Record Management</li>
+                <li>Legal Document Review</li>
+                <li>HR Onboarding Documentation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Benefits of IDP</h2>
+            <ul>
+                <li>Reduces manual data entry and human error</li>
+                <li>Increases processing speed and efficiency</li>
+                <li>Improves accuracy through self-learning</li>
+                <li>Enhances compliance and auditability</li>
+                <li>Scales easily with document volume</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Leading IDP Platforms</h2>
+            <ul>
+                <li>ABBYY</li>
+                <li>Kofax</li>
+                <li>Automation Anywhere (with IQ Bot)</li>
+                <li>UiPath Document Understanding</li>
+                <li>Microsoft Azure Form Recognizer</li>
+                <li>Google Document AI</li>
+                <li>IBM Datacap</li>
+                <li>OpenText</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Technical Architecture</h2>
+            <p>Here's a breakdown of a typical Technical Architecture for an Intelligent Document Processing (IDP) system. This will help you understand how the components interact to process unstructured and semi-structured documents end-to-end.</p>
+        
+            <p>IDP Technical Architecture Overview</p>
+            <pre><code>
+┌─────────────────────────────┐
+│ 1. Document Ingestion Layer │
+└─────────────────────────────┘
+           ↓
+┌───────────────────────────────┐
+│ 2. Pre-processing Layer       │
+└───────────────────────────────┘
+           ↓
+┌───────────────────────────────┐
+│ 3. Classification Layer       │
+└───────────────────────────────┘
+           ↓
+┌───────────────────────────────┐
+│ 4. Data Extraction Layer      │
+└───────────────────────────────┘
+           ↓
+┌───────────────────────────────┐
+│ 5. Validation & Enrichment    │
+└───────────────────────────────┘
+           ↓
+┌───────────────────────────────┐
+│ 6. Human-in-the-Loop (HITL)   │
+└───────────────────────────────┘
+           ↓
+┌───────────────────────────────┐
+│ 7. Integration Layer          │
+└───────────────────────────────┘
+           ↓
+┌───────────────────────────────┐
+│ 8. Storage & Audit            │
+└───────────────────────────────┘
+            </code></pre>
+
+            <ol>
+                <li>
+                    Document Ingestion Layer
+                    <ul>
+                        <li>Input Sources: Emails, Scanners, APIs, Portals, FTP, RPA bots</li>
+                        <li>Formats Supported: PDFs, Images (JPG, PNG), Word, Excel, JSON, XML</li>
+                        <li>Tools: Document capture tools, email parsers, REST APIs</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Pre-processing Layer
+                    <ul>
+                        <li>Image Enhancements: Deskewing, noise reduction, binarization</li>
+                        <li>Text Normalization: Removing headers, footers, fixing alignment</li>
+                        <li>Purpose: Prepare documents for accurate OCR & NLP</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Classification Layer
+                    <ul>
+                        <li>What It Does: Determines document type (invoice, resume, contract)</li>
+                        <li>
+                            How:
+                            <ul>
+                                <li>Rule-based (keywords, layout)</li>
+                                <li>ML-based (text & layout classification)</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Tools: NLP models (BERT), layout parsers (LayoutLM, Donut)
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Data Extraction Layer
+                    <ul>
+                        <li>Core of IDP: Extracts fields, tables, entities</li>
+                        <li>
+                            Approaches:
+                            <ul>
+                                <li>Template-based extraction (for structured docs)</li>
+                                <li>AI/ML-based extraction (for unstructured/semi-structured)</li>
+                                <li>OCR engines (e.g., Tesseract, ABBYY, Google Vision)</li>
+                            </ul>
+                        </li>
+                        <li>NLP used to identify relationships and context (e.g., dates, names)</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Validation & Enrichment Layer
+                    <ul>
+                        <li>Business Rule Validation: Are values within expected ranges?</li>
+                        <li>Cross-Referencing: Check against databases (e.g., vendor DB, CRM)</li>
+                        <li>Data Enrichment: Add missing info using lookups, APIs, or ML models</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Human-in-the-Loop (HITL)
+                    <ul>
+                        <li>Review Interface: Users correct low-confidence fields</li>
+                        <li>Feedback Loop: Corrections feed ML models to improve over time</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Integration Layer
+                    <ul>
+                        <li>
+                            Output Formats: JSON, XML, CSV, or directly to:
+                            <ul>
+                                <li>ERP systems (SAP, Oracle)</li>
+                                <li>CRMs (Salesforce)</li>
+                                <li>RPA bots (UiPath, AA)</li>
+                                <li>Databases / Data lakes</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Tools: API calls, RPA scripts, webhooks
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Storage & Audit Layer
+                    <ul>
+                        <li>
+                            Purpose:
+                            <ul>
+                                <li>Store original and processed documents</li>
+                                <li>Maintain logs for traceability, compliance (e.g., GDPR, HIPAA)</li>
+                            </ul>
+                        </li>
+                        <li>Tools: Cloud storage (Azure Blob, AWS S3), logging frameworks</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Supporting Technologies</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Technologies</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OCR</td>
+                        <td>Tesseract, ABBYY, Google Cloud Vision, Azure Form Recognizer</td>
+                    </tr>
+                    <tr>
+                        <td>NLP</td>
+                        <td>spaCy, BERT, GPT-based models</td>
+                    </tr>
+                    <tr>
+                        <td>ML</td>
+                        <td>Scikit-learn, TensorFlow, PyTorch</td>
+                    </tr>
+                    <tr>
+                        <td>RPA</td>
+                        <td>UiPath, Automation Anywhere, Blue Prism</td>
+                    </tr>
+                    <tr>
+                        <td>Integration</td>
+                        <td>REST APIs, Webhooks, Kafka, ETL tools</td>
+                    </tr>
+                    <tr>
+                        <td>Monitoring</td>
+                        <td>ELK Stack, Prometheus, Grafana</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Use Case: Automating Invoice Processing with IDP</h2>
+            <p>Business Objective</p>
+            <p>To reduce manual effort, minimize errors, speed up processing, and ensure compliance in handling vendor invoices.</p>
+        </section>
+
+        <section>
+            <h2>Step-by-Step Implementation</h2>
+            <ol>
+                <li>
+                    Document Ingestion
+                    <ul>
+                        <li>
+                            Sources: Invoices arrive via email (PDF), scanned documents, or vendor portals.
+                            <li>
+                                Tools:
+                                <ul>
+                                    <li>Email Listener (e.g., MS Outlook API)</li>
+                                    <li>Document Capture (e.g., Kofax, UiPath Action Center)</li>
+                                </ul>
+                            </li>
+                            <li>
+                                Output: Standardized digital input (PDFs, images, etc.)
+                            </li>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Preprocessing
+                    <ul>
+                        <li>
+                            Tasks:
+                            <ul>
+                                <li>Clean scanned documents: deskew, denoise, OCR prep</li>
+                                <li>Convert image to text using OCR</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Tools:
+                            <ul>
+                                <li>OpenCV for image cleanup</li>
+                                <li>OCR: Tesseract, ABBYY, Azure OCR</li>
+                            </ul>
+                        </li>
+                        <li>Output: Machine-readable text</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Document Classification
+                    <ul>
+                        <li>Goal: Confirm it's an invoice (vs. credit note, PO, etc.)</li>
+                        <li>
+                            Approach:
+                            <ul>
+                                <li>Rule-based: Look for keywords like "Invoice #", "Total Due"</li>
+                                <li>ML-based: Train model using labeled examples</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            Tools:
+                            <li>LayoutLMv3 (for layout-aware classification)</li>
+                            <li>Custom ML/NLP models</li>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Data Extraction
+                    <ul>
+                        <li>
+                            Fields to Extract:
+                            <ul>
+                                <li>Vendor name, invoice number, invoice date</li>
+                                <li>Line items: item, quantity, price, tax</li>
+                                <li>Total amount, due date</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            Approach:
+                            <ul>
+                                <li>Use NLP and pattern recognition</li>
+                                <li>For tables, use deep learning models or libraries (e.g., Camelot, PaddleOCR)</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            Tools:
+                            <ul>
+                                <li>Azure Form Recognizer / Google Document AI</li>
+                                <li>Custom ML/NLP pipelines with spaCy, transformers</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Validation & Business Rules
+                    <ul>
+                        <li>
+                            Check Examples:
+                            <ul>
+                                <li>Is the vendor in the approved vendor list?</li>
+                                <li>Is the invoice total > purchase order value?</li>
+                                <li>Is the due date valid?</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Tools:
+                            <ul>
+                                <li>Custom validation scripts</li>
+                                <li>APIs to ERP for vendor/PO checks</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Human-in-the-Loop (HITL) Review
+                    <ul>
+                        <li>When: If confidence score &lt; threshold (e.g., 85%)</li>
+                        <li>UI: Web app/dashboard where user reviews and corrects data</li>
+                        <li>
+                            Tools:
+                            <ul>
+                                <li>UiPath Validation Station</li>
+                                <li>Custom Angular/React frontend</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Integration
+                    <ul>
+                        <li>Goal: Push validated data to ERP system (SAP, Oracle)</li>
+                        <li>
+                            Methods:
+                            <ul>
+                                <li>REST API calls</li>
+                                <li>RPA bots for systems with no APIs</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <ul>
+                                <li>UiPath / Automation Anywhere bots</li>
+                                <li>Direct ERP connectors (e.g., SAP BAPI, OData)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Storage & Compliance
+                    <ul>
+                        <li>
+                            Store:
+                            <ul>
+                                <li>Original invoice</li>
+                                <li>Extracted data</li>
+                                <li>Audit log of actions</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Tools:
+                            <ul>
+                                <li>AWS S3 / Azure Blob for document storage</li>
+                                <li>MongoDB / PostgreSQL for metadata</li>
+                                <li>ELK Stack for logging</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>High-Level Workflow Diagram</h2>
+            <pre><code>
+[Email/Scanner/Portal]
+        ↓
+[OCR + Preprocessing]
+        ↓
+[Classification Engine]
+        ↓
+[Field/Data Extraction]
+        ↓
+[Validation Rules]
+        ↓
+[Human Review (if needed)]
+        ↓
+[ERP/API Integration]
+        ↓
+[Audit + Document Storage]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Tech Stack Example</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Tools/Tech</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OCR</td>
+                        <td>Azure Form Recognizer, ABBYY</td>
+                    </tr>
+                    <tr>
+                        <td>NLP & ML</td>
+                        <td>spaCy, Hugging Face Transformers (BERT, LayoutLM)</td>
+                    </tr>
+                    <tr>
+                        <td>RPA</td>
+                        <td>UiPath, Automation Anywhere</td>
+                    </tr>
+                    <tr>
+                        <td>APIs</td>
+                        <td>RESTful services for ERP</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td>AWS S3, Azure Blob, PostgreSQL</td>
+                    </tr>
+                    <tr>
+                        <td>Review UI</td>
+                        <td>Angular + Flask/FastAPI</td>
+                    </tr>
+                    <tr>
+                        <td>Monitoring</td>
+                        <td>ELK, Prometheus, Grafana</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Expected Benefits</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Before IDP</th>
+                        <th>After IDP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Processing Time</td>
+                        <td>10–20 mins/invoice</td>
+                        <td>&lt;2 mins/invoice</td>
+                    </tr>
+                    <tr>
+                        <td>Error Rate</td>
+                        <td>5–10%</td>
+                        <td><1%</td>
+                    </tr>
+                    <tr>
+                        <td>Manual Involvement</td>
+                        <td>100%</td>
+                        <td>~10–20% (exception handling)</td>
+                    </tr>
+                    <tr>
+                        <td>Processing Cost</td>
+                        <td>High (manual labor)</td>
+                        <td>Reduced (~70–80%)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
