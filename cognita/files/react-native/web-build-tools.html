@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Web Build Tools</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Web Build Tools</h1>
+                    <p class="subtitle">Great question! Web build tools are essential for modern web development. They automate, optimize, and streamline the process of preparing your code for deployment and development. Let me break down how they work, their usage, and implementation.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What are Web Build Tools?</h2>
+            <p>Web build tools are software that automate tasks such as:</p>
+            <ul>
+                <li>Compiling (e.g., converting Sass to CSS, TypeScript to JavaScript)</li>
+                <li>Bundling (combining multiple files into one or a few files)</li>
+                <li>Minifying (removing whitespace/comments to reduce file size)</li>
+                <li>Transpiling (e.g., converting modern JS (ES6+) to older versions for compatibility)</li>
+                <li>Optimizing assets (compressing images, optimizing fonts)</li>
+                <li>Running development servers with live reload</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>How Do They Work?</h2>
+            <ul>
+                <li>Configuration: You define rules (usually in a config file) specifying how to process your files.</li>
+                <li>Dependency graph creation: The tool scans your code to understand dependencies between files.</li>
+                <li>Transformation & bundling: It processes files (transpile, minify, compile) and bundles them according to config.</li>
+                <li>Output: It outputs optimized files ready for browsers.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Common Web Build Tools</h2>
+            <ul>
+                <li>Webpack: Highly configurable bundler for JavaScript and assets.</li>
+                <li>Rollup: Focused on bundling libraries with tree-shaking for dead code elimination.</li>
+                <li>Parcel: Zero-config bundler, easier for beginners.</li>
+                <li>Vite: Modern build tool focusing on speed using native ES modules.</li>
+                <li>Gulp: Task runner for automating build tasks.</li>
+                <li>Grunt: Older task runner similar to Gulp.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Usage & Implementation Example: Webpack</h2>
+            <ol>
+                <li>
+                    Install Webpack
+                    <pre><code>
+npm install --save-dev webpack webpack-cli
+                    </code></pre>
+                </li>
+
+                <li>
+                    Create a config file webpack.config.js
+                    <pre><code>
+const path = require('path');
+
+module.exports = {
+  entry: './src/index.js', // entry point of your app
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'), // output folder
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/, // handle CSS files
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.js$/, // transpile JS with Babel
+        exclude: /node_modules/,
+        use: 'babel-loader',
+      },
+    ],
+  },
+  mode: 'development', // or 'production' for minified output
+};
+                    </code></pre>
+                </li>
+
+                <li>
+                    Add build script to package.json
+                    <pre><code>
+"scripts": {
+    "build": "webpack"
+}                          
+                    </code></pre>
+                </li>
+
+                <li>
+                    Run the build
+                    <pre><coode>
+npm run build
+                    </coode></pre>
+                    <p>Webpack bundles your files starting from ./src/index.js, processes CSS and JS with loaders, and outputs bundle.js to the dist folder.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Typical Workflow</h2>
+            <ul>
+                <li>Write your code in modular files.</li>
+                <li>Run build tool commands (or use dev server).</li>
+                <li>The tool compiles, bundles, and optimizes your assets.</li>
+                <li>Serve optimized files in production.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why Use Build Tools?</h2>
+            <ul>
+                <li>Better browser compatibility (via transpiling)</li>
+                <li>Faster load times (minification & bundling)</li>
+                <li>Use modern syntax and preprocessors (Sass, TypeScript)</li>
+                <li>Automate repetitive tasks (image optimization, code linting)</li>
+                <li>Hot module replacement (HMR) during development</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>npm init -y</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">npm init -y</h1>
+                    <p class="subtitle">Running npm init -y is a quick way to create a package.json file in your current directory with all the default settings.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Here’s what it does:</h2>
+            <ul>
+                <li>Initializes a new Node.js project.</li>
+                <li>Creates a package.json file with default values.</li>
+                <li>Skips the interactive questionnaire and answers “yes” to all prompts automatically.</li>
+            </ul>
+
+            <p>Here’s a quick rundown of what the default package.json looks like after running npm init -y:</p>
+            <pre><code>
+{
+    "name": "your-folder-name",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}  
+            </code></pre>
+
+            <p>What these fields mean:</p>
+            <ul>
+                <li>name: Your project’s name (usually the folder name).</li>
+                <li>version: Current version of your project.</li>
+                <li>description: A brief description (you can fill this in).</li>
+                <li>main: The entry point for your app (default is index.js).</li>
+                <li>scripts: Commands you can run using npm run &lt;script&gt; (like tests).</li>
+                <li>keywords: An array of keywords for your project (optional).</li>
+                <li>author: Your name or author info (optional).</li>
+                <li>license: The license type for your project (default is ISC).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>"test": "jest"</h2>
+            <p>"test": "jest" in the scripts section of your package.json means that when you run npm test (or yarn test), it will execute the Jest testing framework.</p>
+        
+            <p>What is Jest?</p>
+            <p><a href="https://jestjs.io/?utm_source=chatgpt.com">Jest</a> is a popular JavaScript testing framework developed by Facebook. It’s widely used for testing JavaScript code, especially React apps, but it works well for any JavaScript project.</p>
+
+            <p>Jest helps you write and run tests for your code, making sure your functions and components behave as expected.</p>
+            <p>How it works:</p>
+            <ul>
+                <li>When you run npm test and your package.json has "test": "jest", it runs the Jest command.</li>
+                <li>Jest looks for test files (usually files ending with .test.js or .spec.js).</li>
+                <li>It runs the tests and shows you the results in the console.</li>
+                <li>It helps catch bugs early by making sure your code behaves correctly.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>Suppose you have a function like this in a file called sum.js:</p>
+            <pre><code>
+function sum(a, b) {
+    return a + b;
+}
+module.exports = sum;                  
+            </code></pre>
+            <p>And a test file called sum.test.js:</p>
+
+            <pre><code>
+const sum = require('./sum');
+
+test('adds 1 + 2 to equal 3', () => {
+  expect(sum(1, 2)).toBe(3);
+});
+            </code></pre>
+            
+            <p>If you have "test": "jest" in your package.json, running npm test will run the test and tell you if it passes or fails.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

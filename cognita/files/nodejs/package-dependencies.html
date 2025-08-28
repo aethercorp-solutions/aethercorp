@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>package.json dependencies</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">package.json dependencies</h1>
+                    <p class="subtitle">This is a list of dependencies from a package.json file for a Node.js project. Here's a brief rundown of what these dependencies do, grouped by general purpose:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Core Backend Frameworks & Middleware</h2>
+            <ul>
+                <li>express: Web application framework for Node.js.</li>
+                <li>body-parser: Parses incoming request bodies (though deprecated now — use built-in express.json() and express.urlencoded()).</li>
+                <li>cors: Enables Cross-Origin Resource Sharing.</li>
+                <li>express-fileupload: Middleware for handling file uploads.</li>
+                <li>serverless-http: Helps run Express apps in AWS Lambda/serverless environments.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 Authentication & Authorization</h2>
+            <ul>
+                <li>jsonwebtoken: For creating and verifying JWTs (JSON Web Tokens).</li>
+                <li>google-auth-library: Google's authentication library (e.g., for OAuth2, Google Sign-In).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Data Storage & ORM</h2>
+            <ul>
+                <li>mongoose: MongoDB object modeling tool.</li>
+                <li>mongoose-unique-validator: Plugin for Mongoose to ensure unique fields.</li>
+                <li>fs: File system access (built-in Node module; using fs as a dependency is discouraged — can be removed).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📲 Notifications & Push Services</h2>
+            <ul>
+                <li>apn: Apple Push Notification provider.</li>
+                <li>fcm-node: Firebase Cloud Messaging for Node.js.</li>
+                <li>expo-server-sdk: Expo's push notification SDK for sending to mobile devices.</li>
+                <li>pusher: Real-time WebSocket-based messaging.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🌍 API & External Service Handling</h2>
+            <ul>
+                <li>axios: Promise-based HTTP client.</li>
+                <li>aws-sdk: SDK to interact with AWS services.</li>
+                <li>googleapis: Access to Google's REST APIs.</li>
+                <li>in-app-purchase: Library for validating in-app purchases (iOS, Android).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📄 Documentation & Swagger</h2>
+            <ul>
+                <li>swagger-ui-express: Serves auto-generated Swagger API docs.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📤 Email</h2>
+            <p>nodemailer: Send emails from Node.js.</p>
+        </section>
+
+        <section>
+            <h2>⚙️ Utilities</h2>
+            <ul>
+                <li>dotenv: Loads environment variables from .env.</li>
+                <li>node-uuid: For generating UUIDs (deprecated; use uuid instead).</li>
+                <li>sync-request: Makes synchronous HTTP requests (not recommended in production — blocks event loop).</li>
+                <li>hammerjs: Adds touch gestures support (typically used client-side — unusual in server apps).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Potential Issues / Recommendations</h2>
+            <ul>
+                <li>body-parser is outdated — now integrated into Express.</li>
+                <li>fs should not be listed as a dependency — it’s built into Node.js.</li>
+                <li>node-uuid is deprecated — replace with uuid.</li>
+                <li>sync-request is blocking — avoid in server code if possible.</li>
+                <li>hammerjs is a browser library — consider if it’s needed on the backend.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>devDependencies</h2>
+            <p>In a Node.js (JavaScript) project using npm or yarn, devDependencies are packages that are only needed during development, not in production.</p>
+            <p>Where You See Them</p>
+            <p>In package.json:</p>
+
+            <pre><code>
+{
+    "devDependencies": {
+        "eslint": "^8.50.0",
+        "webpack": "^5.89.0",
+        "jest": "^29.7.0"
+    }
+}                  
+            </code></pre>
+
+            <p>Purpose</p>
+            <p>devDependencies typically include tools like:</p>
+            <ul>
+                <li>Build tools (e.g. Webpack, Vite, Babel)</li>
+                <li>Linters (e.g. ESLint, Prettier)</li>
+                <li>Testing frameworks (e.g. Jest, Mocha)</li>
+                <li>Type checkers (e.g. TypeScript)</li>
+                <li>Code formatters (e.g. Prettier)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Installing a Package as a Dev Dependency</h2>
+            <p>Use one of the following commands:</p>
+            <pre><code>
+npm install --save-dev &lt;package-name&gt;
+# or
+yarn add --dev &lt;package-name&gt;                    
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Difference from dependencies</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>dependencies</th>
+                        <th>devDependencies</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Installed in prod?</td>
+                        <td>✅ Yes</td>
+                        <td>❌ No</td>
+                    </tr>
+                    <tr>
+                        <td>Used at runtime?</td>
+                        <td>✅ Yes</td>
+                        <td>❌ No</td>
+                    </tr>
+                    <tr>
+                        <td>Examples</td>
+                        <td>React, Express</td>
+                        <td>ESLint, Jest, Webpack</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>ESLint</h2>
+            <p>ESLint is a powerful tool used to analyze, catch, and fix problems in JavaScript or TypeScript code, especially related to code quality, potential bugs, and coding style.</p>
+            <p>🧠 What It Does</p>
+            <p>ESLint lints your code — that is, it checks your code against a set of rules and reports problems (and sometimes fixes them).</p>
+            <p>It helps with:</p>
+            <ul>
+                <li>Catching common bugs</li>
+                <li>Enforcing consistent code style</li>
+                <li>Preventing bad practices</li>
+                <li>Integrating with Prettier to auto-format code</li>
+            </ul>
+
+            <p>📦 Installing ESLint</p>
+            <p>To install as a devDependency:</p>
+            <pre><code>
+npm install --save-dev eslint
+# or
+yarn add --dev eslint
+            </code></pre>
+
+            <p>⚙️ Setup</p>
+            <p>To set up ESLint in your project:</p>
+            <pre><code>
+npx eslint --init
+            </code></pre>
+
+            <p>This interactive CLI will ask:</p>
+            <ul>
+                <li>What type of project? (JavaScript, TypeScript, React, etc.)</li>
+                <li>Which style guide? (Airbnb, Standard, etc.)</li>
+                <li>Use TypeScript? Babel?</li>
+                <li>Format code with Prettier?</li>
+                <li>Where to store config? (.eslintrc file, JSON, YAML, or JS)</li>
+            </ul>
+            <p>This generates a config file like .eslintrc.json or .eslintrc.js.</p>
+        </section>
+
+        <section>
+            <h2>🧪 Example ESLint Config</h2>
+            <p>.eslintrc.json:</p>
+            <pre><code>
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:prettier/recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+        "no-unused-vars": "warn",
+        "no-console": "off"
+    }
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🛠️ Usage</h2>
+            <p>To lint your files:</p>
+            <pre><code>
+npx eslint .              # Check all files
+npx eslint . --fix        # Automatically fix problems
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🤝 ESLint + Prettier</h2>
+            <p>To make ESLint and Prettier work together:</p>
+            <ol>
+                <li>
+                    Install required packages:
+                    <pre><code>
+npm install --save-dev eslint-config-prettier eslint-plugin-prettier prettier
+                    </code></pre>
+                </li>
+
+                <li>
+                    Extend config:
+                    <pre><code>
+"extends": ["plugin:prettier/recommended"]
+                    </code></pre>
+                </li>
+            </ol>
+            <p>This disables ESLint rules that conflict with Prettier and lets ESLint run Prettier as a plugin.</p>
+        </section>
+
+        <section>
+            <h2>🔁 VS Code Integration</h2>
+            <ol>
+                <li>Install the ESLint extension.</li>
+                <li>
+                    Enable "Lint on Save":
+                    <pre><code>
+"editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+}                          
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>.env file</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">.env file</h1>
+                    <p class="subtitle">A .env file is a plain text file used to store environment variables for an application, typically during development.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>These variables can include things like:</h2>
+            <ul>
+                <li>API keys</li>
+                <li>Database URLs</li>
+                <li>Secret tokens</li>
+                <li>Configuration options (e.g., DEBUG=true, PORT=3000)</li>
+            </ul>
+
+            <p>Purpose of .env</p>
+            <p>It helps separate configuration from your application code, making it easier to manage different environments (development, testing, production).</p>
+        </section>
+
+        <section>
+            <h2>Example .env file</h2>
+            <pre><code>
+DATABASE_URL=postgres://user:pass@localhost:5432/mydb
+API_KEY=abc123secret
+DEBUG=true
+PORT=8000
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How it’s used</h2>
+            <p>In most programming environments, especially in web development (Node.js, Python, etc.), a library is used to load these variables from the .env file into the system's environment so that your app can use them.</p>
+            <p>For example:</p>
+            <ul>
+                <li>
+                    Node.js: Uses the dotenv package
+                    <pre><code>
+require('dotenv').config();
+console.log(process.env.API_KEY);
+                    </code></pre>
+                </li>
+
+                <li>
+                    Python: Uses packages like python-dotenv
+                    <pre><code>
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+api_key = os.getenv("API_KEY")
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Best practices</h2>
+            <ul>
+                <li>Do not commit .env files to version control (e.g., Git). Use .gitignore.</li>
+                <li>Use different .env files for different environments (e.g., .env.production, .env.local).</li>
+                <li>Keep sensitive credentials secure.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

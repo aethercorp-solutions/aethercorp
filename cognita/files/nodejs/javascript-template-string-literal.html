@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JavaScript Template String Literal</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JavaScript Template String Literal</h1>
+                    <p class="subtitle">A JavaScript template string literal (also known as a template literal) is a way to define strings that allows embedded expressions, multi-line strings, and improved readability.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 Syntax</h2>
+            <p>Template literals use backticks ` instead of single ' or double " quotes.</p>
+            <pre><code>
+const name = "Alice";
+const greeting = `Hello, ${name}!`;
+console.log(greeting); // Output: Hello, Alice!
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Key Features & Usage</h2>
+            <ol>
+                <li>
+                    String Interpolation (Expression Embedding)
+                    <p>You can embed variables or expressions inside a string using ${...}.</p>
+                    <pre><code>
+const a = 5;
+const b = 10;
+console.log(`The sum of ${a} and ${b} is ${a + b}.`);
+// Output: The sum of 5 and 10 is 15.
+                    </code></pre>
+                </li>
+
+                <li>
+                    Multi-line Strings
+                    <p>Template literals preserve newlines and whitespace.</p>
+                    <pre><code>
+const multiLine = `This is
+a string that spans
+multiple lines.`;
+console.log(multiLine);
+                    </code></pre>
+                </li>
+
+                <li>
+                    Function Calls Inside Expressions
+                    <p>You can run functions inside ${...}.</p>
+                    <pre><code>
+function getUser() {
+    return "Bob";
+}
+console.log(`Welcome, ${getUser()}!`);
+// Output: Welcome, Bob!                          
+                    </code></pre>
+                </li>
+
+                <li>
+                    Tagged Template Literals
+                    <p>You can use a function (tag) to process the template string.</p>
+                    <pre><code>
+function emphasize(strings, ...values) {
+    return strings.reduce((result, str, i) => result + str + (values[i]?.toUpperCase() || ""), "");
+}
+    
+const name = "jane";
+console.log(emphasize`Hello, ${name}!`);
+// Output: Hello, JANE!  
+                    </code></pre>
+                </li>
+
+                <li>
+                    HTML Templates (e.g., for front-end frameworks)
+                    <p>You can build HTML fragments easily:</p>
+                    <pre><code>
+const title = "Welcome";
+const html = `
+  &lt;div&gt;
+    &lt;h1>${title}&lt;/h1&gt;
+&lt;/div&gt;
+`;
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ When to Use Template Literals</h2>
+            <ul>
+                <li>When concatenating strings and variables</li>
+                <li>When building HTML templates or code snippets</li>
+                <li>When formatting multi-line strings</li>
+                <li>When writing code that benefits from better readability</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

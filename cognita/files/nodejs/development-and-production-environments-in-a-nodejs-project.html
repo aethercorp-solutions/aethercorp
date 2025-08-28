@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Development and Production Environments in a Node.js Project</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Development and Production Environments in a Node.js Project</h1>
+                    <p class="subtitle"> 
+                        To support development and production environments in a Node.js project, you typically:
+                        <ol>
+                            <li>Use environment variables to distinguish environments.</li>
+                            <li>Configure your app to behave differently depending on the environment (e.g., logging level, database URL, API keys).</li>
+                            <li>Use .env files and a library like dotenv to manage these settings.</li>
+                        </ol>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Step-by-Step Guide</h2>
+
+            <ol>
+                <li>
+                    Install dotenv
+                    <pre><code>
+npm install dotenv
+                    </code></pre>
+                </li>
+
+                <li>
+                    Create Environment Files
+                    <p>Create two files in your project root:</p>
+                    
+                    <ul>
+                        <li>
+                            .env.development
+                            <pre><code>
+NODE_ENV=development
+PORT=3000
+DB_URL=mongodb://localhost/dev-db
+DEBUG=true
+                            </code></pre>
+                        </li>
+
+                        <li>
+                            .env.production
+                            <pre><code>
+NODE_ENV=production
+PORT=80
+DB_URL=mongodb://prod-db-host/prod-db
+DEBUG=false
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Load the Correct Environment File
+                    <p>In your entry point (e.g., index.js or app.js):</p>
+                    <pre><code>
+const path = require('path');
+const dotenv = require('dotenv');
+
+// Load environment-specific .env file
+const env = process.env.NODE_ENV || 'development';
+dotenv.config({ path: path.resolve(process.cwd(), `.env.${env}`) });
+
+// Access environment variables
+console.log('Environment:', process.env.NODE_ENV);
+console.log('DB URL:', process.env.DB_URL);
+                    </code></pre>
+
+                    <pre><code>
+dotenv.config({ path: path.resolve(process.cwd(), `.env.${env}`) });
+                    </code></pre>
+
+                    <p>is configuring the dotenv
+                        package in a Node.js project to load environment variables from a specific .env file based on the current environment (e.g., development, production, test).</p>
+                    <p>process.cwd() returns the current working directory of the Node.js process (typically the root of your project).</p>    
+                </li>
+
+                <li>
+                    Use NODE_ENV in Your Code
+                    <pre><code>
+if (process.env.NODE_ENV === 'development') {
+    console.log('Running in development mode');
+} else if (process.env.NODE_ENV === 'production') {
+    console.log('Running in production mode');
+}                          
+                    </code></pre>
+                </li>
+
+                <li>
+                    Start the App with the Correct Environment
+                    <p>Development:</p>
+                    <pre><code>
+NODE_ENV=development node index.js
+                    </code></pre>
+
+                    <p>Production:</p>
+                    <pre><code>
+NODE_ENV=production node index.js
+                    </code></pre>
+
+                    <p>Or use npm scripts in package.json:</p>
+                    <pre><code>
+"scripts": {
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development node index.js"
+}                          
+                    </code></pre>
+                </li>
+
+                <li>
+                    Then run:
+                    <pre><code>
+npm run dev      # for development
+npm start        # for production
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Development</th>
+                        <th>Production</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>NODE_ENV</td>
+                        <td>development</td>
+                        <td>production</td>
+                    </tr>
+                    <tr>
+                        <td>Config file</td>
+                        <td>.env.development</td>
+                        <td>.env.production</td>
+                    </tr>
+                    <tr>
+                        <td>Logging</td>
+                        <td>Verbose (debugging)</td>
+                        <td>Minimal or error-only</td>
+                    </tr>
+                    <tr>
+                        <td>DB/Services</td>
+                        <td>Dev/test instances</td>
+                        <td>Live/prod instances</td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td>Less strict</td>
+                        <td>Hardened (e.g., no debug info)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

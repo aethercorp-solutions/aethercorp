@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Webpack Loader</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Webpack Loader</h1>
+                    <p class="subtitle">A Webpack loader is a tool that transforms the files you import or require in your JavaScript code into modules that Webpack can understand and include in your final bundle.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 What does a loader do?</h2>
+            <p>Loaders let you preprocess files as you import or load them. This is especially useful for:</p>
+            <ul>
+                <li>Transpiling modern JavaScript (e.g., with Babel)</li>
+                <li>Converting TypeScript to JavaScript</li>
+                <li>Loading CSS or SASS</li>
+                <li>Optimizing images</li>
+                <li>Handling Vue, React, or Angular components</li>
+            </ul>
+
+            <p>🧱 Basic Usage in Webpack Config</p>
+            <p>Loaders are defined in the module.rules array inside the webpack.config.js file:</p>
+
+            <pre><code>
+module.exports = {
+    module: {
+        rules: [
+        {
+            test: /\.js$/,              // Which files to apply the loader to
+            exclude: /node_modules/,    // Exclude certain paths
+            use: {
+            loader: 'babel-loader',   // Which loader to use
+            options: {
+                presets: ['@babel/preset-env']
+            }
+            }
+        }
+        ]
+    }
+};                  
+            </code></pre>
+
+            <p>🔄 Chain of Loaders</p>
+            <p>You can use multiple loaders on the same file, applying them from right to left (last to first in the array):</p>
+            <pre><code>
+use: ['style-loader', 'css-loader']
+            </code></pre>
+
+            <p>This example does:</p>
+            <ol>
+                <li>css-loader processes the CSS file (resolves @import and url())</li>
+                <li>style-loader injects CSS into the DOM</li>
+            </ol>
+
+            <p>📦 Popular Webpack Loaders</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Loader</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>babel-loader</td>
+                        <td>Transpile modern JS</td>
+                    </tr>
+                    <tr>
+                        <td>ts-loader</td>
+                        <td>Transpile TypeScript</td>
+                    </tr>
+                    <tr>
+                        <td>css-loader</td>
+                        <td>Allows importing CSS in JS</td>
+                    </tr>
+                    <tr>
+                        <td>style-loader</td>
+                        <td>Injects CSS into the DOM</td>
+                    </tr>
+                    <tr>
+                        <td>sass-loader</td>
+                        <td>Compiles Sass/SCSS to CSS</td>
+                    </tr>
+                    <tr>
+                        <td>file-loader</td>
+                        <td>Handles file imports (deprecated in favor of asset modules)</td>
+                    </tr>
+                    <tr>
+                        <td>url-loader</td>
+                        <td>Inlines files as Base64 URIs</td>
+                    </tr>
+                    <tr>
+                        <td>html-loader</td>
+                        <td>Exports HTML as string</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

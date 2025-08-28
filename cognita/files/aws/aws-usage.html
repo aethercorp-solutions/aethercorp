@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS Usage</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS Usage</h1>
+                    <p class="subtitle">If you're a beginner trying to understand and implement actual AWS usage, here's a simple but real-world example of using AWS services with hands-on implementation steps.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Use Case: Host a Static Website on AWS</h2>
+            <p>This is one of the easiest and most practical beginner projects. It involves:</p>
+            <ul>
+                <li>Amazon S3 – to store website files</li>
+                <li>Amazon Route 53 (optional) – for custom domains</li>
+                <li>CloudFront (optional) – to deliver content fast via CDN</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🎯 Objective:</h2>
+            <p>Host a simple HTML/CSS static website using AWS S3.</p>
+        </section>
+
+        <section>
+            <h2>🔧 Step-by-Step Implementation</h2>
+            <ol>
+                <li>
+                    Create an AWS Account
+                    <ul>
+                        <li>Go to: <a href="https://aws.amazon.com/">https://aws.amazon.com/</a></li>
+                        <li>Sign up and set up billing alerts (important to avoid surprise charges).</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Create an S3 Bucket
+                    <ul>
+                        <li>Go to S3 from the AWS Console.</li>
+                        <li>
+                            Click "Create bucket"
+                            <ul>
+                                <li>Give it a unique name (e.g., my-portfolio-site).</li>
+                                <li>Choose a region (close to your users).</li>
+                                <li>Uncheck "Block all public access" under permissions (you’ll make it public).</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Upload Website Files
+                    <ul>
+                        <li>Prepare simple HTML/CSS files (e.g., index.html, styles.css).</li>
+                        <li>Upload them into the S3 bucket.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Configure Static Website Hosting
+                    <ul>
+                        <li>Go to Properties of the S3 bucket.</li>
+                        <li>
+                            Scroll to Static website hosting and enable it.
+                            <ul>
+                                <li>Set index.html as the Index Document.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Save and note the endpoint URL AWS provides (e.g., <a href="http://your-bucket-name.s3-website-us-east-1.amazonaws.com">http://your-bucket-name.s3-website-us-east-1.amazonaws.com</a>)
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Make Files Public
+                    <ul>
+                        <li>Go to the "Permissions" tab of the bucket.</li>
+                        <li>Click "Bucket Policy" and paste the following (update bucket name):</li>
+                    </ul>
+                    <pre><code>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Sid": "PublicReadGetObject",
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::your-bucket-name/*"
+        }
+    ]
+}                          
+                    </code></pre>
+                </li>
+
+                <li>
+                    Access Your Website
+                    <ul>
+                        <li>Visit the S3 website endpoint.</li>
+                        <li>You should see your static site live!</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>(Optional) Use a Custom Domain</h2>
+            <p>If you have a domain (e.g., from Namecheap or GoDaddy), you can:</p>
+            <ul>
+                <li>Point it to your S3 static site using Route 53 or domain registrar settings.</li>
+                <li>Use CloudFront to serve over HTTPS.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Why This Matters</h2>
+            <p>This project helps you learn:</p>
+            <ul>
+                <li>How AWS storage (S3) works</li>
+                <li>Bucket permissions and policies</li>
+                <li>Static website hosting configuration</li>
+                <li>Real-world deployment of a site</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 What’s Next?</h2>
+            <p>Once you’re comfortable with this, try:</p>
+            <ul>
+                <li>Deploying a serverless API with AWS Lambda + API Gateway</li>
+                <li>Hosting a React app on S3 + CloudFront</li>
+                <li>Using AWS Lightsail for a simple Linux server</li>
+                <li>Launching an EC2 instance and SSH into it</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

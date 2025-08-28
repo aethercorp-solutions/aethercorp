@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Webpack Configuration File</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Webpack Configuration File</h1>
+                    <p class="subtitle">This is a Webpack configuration file that sets up a basic development environment for a JavaScript project. Here's a breakdown of what each part does:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Configuration Breakdown</h2>
+            <p>webpack.config.js</p>
+            <pre><code>
+const path = require('path');
+
+module.exports = {
+  entry: './src/index.js', // entry point of your app
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'), // output folder
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/, // handle CSS files
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.js$/, // transpile JS with Babel
+        exclude: /node_modules/,
+        use: 'babel-loader',
+      },
+    ],
+  },
+  mode: 'development', // or 'production' for minified output
+};
+            </code></pre>
+
+            <ol>
+                <li>
+                    Entry Point
+                    <pre><code>
+entry: './src/index.js',
+                    </code></pre>
+                    <ul>
+                        <li>Webpack starts building the dependency graph from this file.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Output
+                    <pre><code>
+output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+},                          
+                    </code></pre>
+                    <ul>
+                        <li>Bundled output is written as bundle.js in the dist/ directory.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <p>Loaders (under module.rules)</p>
+                    <p>a. CSS Loader</p>
+                    <pre><code>
+{
+    test: /\.css$/,
+    use: ['style-loader', 'css-loader'],
+}                          
+                    </code></pre>
+                    <ul>
+                        <li>css-loader: Interprets @import and url() like import/require() and resolves them.</li>
+                        <li>style-loader: Injects CSS into the DOM via &lt;style&gt; tags.</li>
+                    </ul>
+
+                    b. JavaScript with Babel
+<pre><code>
+{
+    test: /\.js$/,              // Target all files ending in .js
+    exclude: /node_modules/,    // Ignore files in node_modules folder
+    use: 'babel-loader',        // Use babel-loader to transpile the JS files
+}                          
+                    </code></pre>
+                    <ul>
+                        <li>babel-loader: Transpiles ES6+/JSX into ES5 using Babel.</li>
+                        <li>exclude: /node_modules/: Speeds up the build process by ignoring external dependencies.</li>
+                    </ul>
+
+                    <p>🔧 What it does:</p>
+                    <ul>
+                        <li>It matches .js files with the test regular expression.</li>
+                        <li>It excludes node_modules (since you usually don't want to transpile third-party packages).</li>
+                        <li>It uses babel-loader, which allows Babel to transpile ES6+ JavaScript down to ES5 so it can run in older browsers.</li>
+                    </ul>
+                    <p>When Webpack encounters a .js file, babel-loader:</p>
+                    <ol>
+                        <li>Passes the file to Babel.</li>
+                        <li>Babel applies the configured presets/plugins (like @babel/preset-env).</li>
+                        <li>The transformed (older) JavaScript is then bundled by Webpack.</li>
+                    </ol>
+
+                    <p>🔄 Why Use It?</p>
+                    <p>Modern JavaScript (ES6/ES7+ or JSX for React) often uses syntax/features that older browsers don’t understand (e.g., import, async/await, arrow functions).</p>
+                    <p>✅ babel-loader ensures that:</p>
+                    <ul>
+                        <li>You can write modern, clean code.</li>
+                        <li>It still works on older browsers (like IE11, if needed).</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Mode
+                    <pre><code>
+mode: 'development',
+                    </code></pre>
+                    <ul>
+                        <li>Sets Webpack’s built-in optimizations for development (e.g., readable output, no minification).</li>
+                        <li>Change to 'production' for optimized/minified bundles.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ Suggestions for Improvement (Optional)</h2>
+            <p>If you plan to expand, consider:</p>
+            <ul>
+                <li>
+                    Adding source maps for easier debugging:
+                    <pre><code>
+devtool: 'source-map',
+                    </code></pre>
+                </li>
+
+                <li>
+                    Supporting images or fonts:
+                    <pre><code>
+{
+    test: /\.(png|jpg|gif|svg|woff|woff2|eot|ttf|otf)$/,
+    type: 'asset/resource',
+}  
+                    </code></pre>
+                </li>
+                <ul>
+                    <li>Using HtmlWebpackPlugin to auto-generate the index.html with the correct &lt;script&gt; tag.</li>
+                </ul>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

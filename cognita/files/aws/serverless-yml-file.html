@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>serverless.yml</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">serverless.yml</h1>
+                    <p class="subtitle">serverless.yml is a configuration file used by the Serverless Framework, a popular open-source tool for building and deploying serverless applications.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Purpose</h2>
+            <p>The file defines how your serverless application should be deployed — specifying cloud provider settings (like AWS), functions (e.g., Lambda), resources (e.g., DynamoDB tables, S3 buckets), events (e.g., HTTP endpoints, schedules), and other infrastructure details.</p>
+        </section>
+
+        <section>
+            <h2>Basic Example (serverless.yml)</h2>
+            <p>Here’s a simple example for an AWS Lambda function triggered by an HTTP request:</p>
+            <pre><code>
+service: hello-world
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
+
+plugins:
+  - serverless-offline
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Main Sections</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Section</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>service</td>
+                        <td>Name of the service or project</td>
+                    </tr>
+                    <tr>
+                        <td>provider</td>
+                        <td>Cloud provider (e.g., AWS) and runtime (e.g., Node.js, Python)</td>
+                    </tr>
+                    <tr>
+                        <td>functions</td>
+                        <td>Defines one or more serverless functions and how they're triggered</td>
+                    </tr>
+                    <tr>
+                        <td>resources</td>
+                        <td>Optional. Defines additional infrastructure (CloudFormation syntax)</td>
+                    </tr>
+                    <tr>
+                        <td>plugins</td>
+                        <td>Lists plugins to extend Serverless functionality (e.g., offline testing)</td>
+                    </tr>
+                    <tr>
+                        <td>custom</td>
+                        <td>Custom variables and configuration values</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Benefits of serverless.yml</h2>
+            <ul>
+                <li>Infrastructure as Code (IaC): Everything about your backend is defined in a version-controlled YAML file.</li>
+                <li>Automation: Makes deployment easy with one command (serverless deploy).</li>
+                <li>Extensibility: Supports plugins, variables, stages, and more.</li>
+            </ul>
+
+            <p>Here's a complete example of a serverless.yml file for deploying a REST API using Node.js (AWS Lambda + API Gateway) with the Serverless Framework:</p>
+            <pre><code>
+service: nodejs-rest-api
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: dev
+  apiGateway:
+    minimumCompressionSize: 1024  # Optional: enables compression
+  environment:
+    NODE_ENV: production
+
+functions:
+  getUser:
+    handler: handler.getUser
+    events:
+      - http:
+          path: users/{id}
+          method: get
+          cors: true
+
+  createUser:
+    handler: handler.createUser
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+
+  deleteUser:
+    handler: handler.deleteUser
+    events:
+      - http:
+          path: users/{id}
+          method: delete
+          cors: true
+
+plugins:
+  - serverless-offline  # Optional: enables local development
+
+custom:
+  serverless-offline:
+    httpPort: 3000
+
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📁 File Structure Example</h2>
+            <pre><code>
+nodejs-rest-api/
+│
+├── handler.js
+├── serverless.yml
+├── package.json
+└── node_modules/
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Example handler.js</h2>
+            <pre><code>
+// handler.js
+
+module.exports.getUser = async (event) => {
+  const { id } = event.pathParameters;
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: `User ${id} fetched` }),
+  };
+};
+
+module.exports.createUser = async (event) => {
+  const data = JSON.parse(event.body);
+  return {
+    statusCode: 201,
+    body: JSON.stringify({ message: 'User created', user: data }),
+  };
+};
+
+module.exports.deleteUser = async (event) => {
+  const { id } = event.pathParameters;
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: `User ${id} deleted` }),
+  };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 How to Deploy</h2>
+            <ol>
+                <li>
+                    Install dependencies:
+                    <pre><code>
+npm init -y
+npm install serverless -g
+npm install serverless-offline
+                    </code></pre>
+                </li>
+
+                <li>
+                    Deploy to AWS:
+                    <pre><code>
+serverless deploy
+                    </code></pre>
+                </li>
+
+                <li>
+                    Run locally:
+                    <pre><code>
+serverless offline
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <pre><code>
+module.exports.getUser = async (event) => {
+    const { id } = event.pathParameters;
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: `User ${id} fetched` }),
+    };
+};                  
+            </code></pre>
+
+            <p>Your code is a simple AWS Lambda function written in Node.js that fetches a user by ID from the pathParameters of the event. It works correctly for basic usage, returning a 200 status with a message. Here's a breakdown and a couple of suggestions for improvement:</p>
+            
+            <p>✅ What the code does:</p>
+            <ul>
+                <li>Takes an HTTP request event (e.g., from API Gateway)</li>
+                <li>Extracts the user ID from the URL path (e.g., /users/{id})</li>
+                <li>Returns a response with a message saying the user was fetched</li>
+            </ul>
+
+            <p>🔍 Sample Input and Output</p>
+            <p>Request:</p>
+            <pre><code>
+GET /users/123
+            </code></pre>
+
+            <p>event object:</p>
+            <pre><code>
+{
+    "pathParameters": {
+        "id": "123"
+    }
+}                  
+            </code></pre>
+
+            <p>Response:</p>
+            <pre><code>
+{
+    "statusCode": 200,
+    "body": "{\"message\":\"User 123 fetched\"}"
+}                  
+            </code></pre>
+
+            <p>💡 Suggested Improvements:</p>
+            <ol>
+                <li>
+                    Handle missing id:
+                    <p>If the ID isn’t provided, return a 400 Bad Request.</p>
+                </li>
+
+                <li>
+                    Set headers (e.g., CORS, content-type):
+                    <p>Useful for cross-origin requests and proper content handling.</p>
+                </li>
+
+                <li>
+                    (Optional) Logging for debugging:
+                    <p>Helps with tracing issues in AWS CloudWatch.</p>
+                </li>
+
+                <p>✅ Updated version with enhancements:</p>
+                <pre><code>
+module.exports.getUser = async (event) => {
+    const { id } = event.pathParameters || {};
+    
+    if (!id) {
+        return {
+        statusCode: 400,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ error: "User ID is required" }),
+        };
+    }
+    
+    // Simulate fetching user (replace with DB logic as needed)
+    return {
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: `User ${id} fetched` }),
+    };
+};  
+                </code></pre>
+            </ol>
+
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
