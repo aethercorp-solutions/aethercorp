@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Nodejs exports</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Nodejs exports</h1>
+                    <p class="subtitle">In Node.js, exports are used to expose functions, objects, or variables from a file (or module) so that they can be used in other files. This is part of the CommonJS module system, which is the default in Node.js (though ES Modules are also supported now).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Basic Concepts</h2>
+            <p>Node.js modules use two key objects for exporting:</p>
+            <ul>
+                <li>exports</li>
+                <li>module.exports</li>
+            </ul>
+            <p>These are used to define what a module makes available to other files when it is require()d.</p>
+        </section>
+
+        <section>
+            <h2>✅ 1. module.exports – The Main Export Object</h2>
+            <pre><code>
+// math.js
+function add(a, b) {
+  return a + b;
+}
+
+module.exports = add;
+            </code></pre>
+
+            <pre><code>
+// app.js
+const add = require('./math');
+console.log(add(2, 3)); // 5
+            </code></pre>
+
+            <p>Here, you're exporting the add function directly.</p>
+        </section>
+
+        <section>
+            <h2>✅ 2. Exporting Multiple Things</h2>
+            <p>You can export an object with multiple properties or methods:</p>
+
+            <pre><code>
+// math.js
+function add(a, b) {
+  return a + b;
+}
+
+function subtract(a, b) {
+  return a - b;
+}
+
+module.exports = {
+  add,
+  subtract,
+};
+            </code></pre>
+
+            <pre><code>
+// app.js
+const math = require('./math');
+console.log(math.add(4, 2));      // 6
+console.log(math.subtract(4, 2)); // 2
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 3. Shortcut: exports (alias for module.exports)</h2>
+            <pre><code>
+// math.js
+exports.add = (a, b) => a + b;
+exports.subtract = (a, b) => a - b;
+            </code></pre>
+            <p>This works as long as you don't reassign exports.</p>
+            <p>❗ If you do module.exports = something, then exports no longer points to the export object.</p>
+
+            <p>❌ Mixing module.exports and exports</p>
+            <p>This is a common mistake:</p>
+
+            <pre><code>
+// This will NOT work as intended
+exports.hello = () => console.log('Hello');
+module.exports = () => console.log('Hi'); // This overwrites `exports`
+            </code></pre>
+
+            <p>Only module.exports will be exported — the hello function on exports is ignored.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Usage</th>
+                        <th>When to Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>module.exports = value</td>
+                        <td>When exporting a single value (function, class, object)</td>
+                    </tr>
+                    <tr>
+                        <td>module.exports = { a, b }</td>
+                        <td>When exporting multiple things in one object</td>
+                    </tr>
+                    <tr>
+                        <td>exports.a = ...</td>
+                        <td>When incrementally adding properties (avoid if you're reassigning module.exports)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Let’s go over how ES Modules (ECMAScript Modules) work in Node.js.</h2>
+            <p>✅ 1. Enable ES Modules in Node.js</p>
+
+            <p>Before you can use ES Modules (import / export) in Node.js, you need to opt in, because CommonJS is still the default.</p>
+            <p>You can enable ES Modules in two ways:</p>
+            <p>Option A: Use .mjs extension</p>
+
+            <pre><code>
+node myfile.mjs
+            </code></pre>
+
+            <p>Option B: Use .js extension + set "type": "module" in package.json</p>
+            <pre><code>
+{
+    "type": "module"
+}                  
+            </code></pre>
+
+            <p>Now .js files will be treated as ES Modules.</p>
+        </section>
+
+        <section>
+            <h2>🔄 Common Syntax</h2>
+            <p>📤 Exporting from a module</p>
+            <p>Named exports:</p>
+
+            <pre><code>
+// math.js
+export function add(a, b) {
+  return a + b;
+}
+
+export const PI = 3.14;
+            </code></pre>
+
+            <p>Default export:</p>
+            <pre><code>
+// logger.js
+export default function log(message) {
+  console.log(message);
+}
+            </code></pre>
+
+            <p>You can also combine both:</p>
+            <pre><code>
+export { add, PI };        // named
+export default logMessage; // default
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📥 Importing into another file</h2>
+            <p>Importing named exports:</p>
+
+            <pre><code>
+// app.js
+import { add, PI } from './math.js';
+
+console.log(add(2, 3)); // 5
+console.log(PI);        // 3.14
+            </code></pre>
+
+            <h2>Importing the default export:</h2>
+            <pre><code>
+import log from './logger.js';
+log('Hello'); // Hello
+            </code></pre>
+
+            <h2>Import all as an object:</h2>
+            <pre><code>
+import * as math from './math.js';
+console.log(math.add(5, 5)); // 10
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔒 Key Differences vs CommonJS</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>CommonJS (require)</th>
+                        <th>ES Modules (import)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Synchronous</td>
+                        <td>✅ Yes</td>
+                        <td>❌ No (asynchronous loading)</td>
+                    </tr>
+                    <tr>
+                        <td>Top-level await</td>
+                        <td>❌ No (in older versions)</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>File extension required?</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes (e.g., ./math.js)</td>
+                    </tr>
+                    <tr>
+                        <td>Can be conditionally imported?</td>
+                        <td>✅ Yes</td>
+                        <td>❌ Not without dynamic import()</td>
+                    </tr>
+                    <tr>
+                        <td>Default Export</td>
+                        <td>module.exports = ...</td>
+                        <td>export default ...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>⚠️ Common Pitfalls</h2>
+            <ol>
+                <li>Must include file extension in import paths (.js, .mjs, etc.)</li>
+                <li>Can't use require() or __dirname in ES modules directly (you need workarounds)</li>
+                <li>Top-level await is only allowed in ES Modules (handy for fetching, DB connections)</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧪 Example: package.json</h2>
+            <pre><code>
+{
+    "type": "module"
+}                  
+            </code></pre>
+            <pre><code>
+// math.js
+export function multiply(a, b) {
+  return a * b;
+}
+            </code></pre>
+
+            <pre><code>
+// app.js
+import { multiply } from './math.js';
+
+console.log(multiply(3, 4)); // 12
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

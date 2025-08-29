@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MongoDB vs SQL databases</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">MongoDB vs SQL databases</h1>
+                    <p class="subtitle">The choice between MongoDB (a NoSQL database) and SQL databases (like MySQL, PostgreSQL, SQL Server) depends on your application’s needs, scalability requirements, data structure, and more. Here's a breakdown of the key differences:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🗄️ Data Model</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>MongoDB (NoSQL)</th>
+                        <th>SQL Databases (Relational)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Structure</td>
+                        <td>Document-based (JSON-like BSON)</td>
+                        <td>Table-based (rows and columns)</td>
+                    </tr>
+                    <tr>
+                        <td>Schema</td>
+                        <td>Schema-less or flexible schema</td>
+                        <td>Fixed schema (defined in advance)</td>
+                    </tr>
+                    <tr>
+                        <td>Relationships</td>
+                        <td>Embedded documents or manual references</td>
+                        <td>JOINs between tables (normalized data)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Use MongoDB if your data is hierarchical or semi-structured.</p>
+            <p>Use SQL if you need strict relationships and structured data integrity.</p>
+        </section>
+
+        <section>
+            <h2>⚙️ Query Language</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>MongoDB</th>
+                        <th>SQL Databases</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Language</td>
+                        <td>MongoDB Query Language (MQL)</td>
+                        <td>SQL (Structured Query Language)</td>
+                    </tr>
+                    <tr>
+                        <td>Ease of Use</td>
+                        <td>More intuitive for developers used to JSON</td>
+                        <td>Standardized and powerful, but more rigid</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🚀 Scalability</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>MongoDB</th>
+                        <th>SQL Databases</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Horizontal Scaling</td>
+                        <td>Designed for horizontal scaling (sharding)</td>
+                        <td>Typically vertical scaling, though some support horizontal scaling (e.g., via partitioning)</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>High performance with large, distributed data</td>
+                        <td>Strong performance for complex queries and transactions</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>MongoDB scales out easily across multiple nodes.</p>
+            <p>SQL is more traditional and may need more effort to scale horizontally.</p>
+        </section>
+
+        <section>
+            <h2>🔐 Transactions & ACID Compliance</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>MongoDB</th>
+                        <th>SQL Databases</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ACID Transactions</td>
+                        <td>Full ACID support since v4.0, but not default</td>
+                        <td>Full ACID compliance is a core feature</td>
+                    </tr>
+                    <tr>
+                        <td>Use Case</td>
+                        <td>Better for less complex or distributed transactions</td>
+                        <td>Better for financial or highly consistent operations</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠️ Use Cases</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>MongoDB</th>
+                        <th>SQL Databases</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Real-time analytics, IoT, content management, catalogs, product catalogs, mobile apps</td>
+                        <td>Banking systems, ERP, CRM, e-commerce systems, anything requiring strong consistency</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Pros & Cons Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>MongoDB (NoSQL)</th>
+                        <th>SQL Databases</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>✅ Flexible schema, high performance, good for hierarchical data, easy horizontal scaling</td>
+                        <td>✅ Strong consistency, standardized query language, powerful for complex queries</td>
+                    </tr>
+                    <tr>
+                        <td>❌ Weaker support for complex joins, may require more manual indexing</td>
+                        <td>❌ Less flexible schema, vertical scaling can be expensive</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📌 When to Use What?</h2>
+            <ul>
+                <li>
+                    Use MongoDB when:
+                    <ul>
+                        <li>You have unstructured or semi-structured data.</li>
+                        <li>You want fast iteration and flexibility.</li>
+                        <li>You need to scale horizontally and serve high-volume apps.</li>
+                    </ul>
+                </li>
+                <li>
+                    Use SQL when:
+                    <ul>
+                        <li>Data is structured and well-defined.</li>
+                        <li>You need complex queries and transactions.</li>
+                        <li>Data integrity and consistency are critical.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here’s a clear comparison between MongoDB (a popular NoSQL database) and SQL databases (like MySQL, PostgreSQL, SQL Server):</p>
+            <p>🔍 Core Difference</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>MongoDB (NoSQL)</th>
+                        <th>SQL Databases (Relational)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Data Model</td>
+                        <td>Document-oriented (JSON-like documents)</td>
+                        <td>Table-based (rows and columns)</td>
+                    </tr>
+                    <tr>
+                        <td>Schema</td>
+                        <td>Schema-less (flexible structure)</td>
+                        <td>Fixed schema (defined in advance)</td>
+                    </tr>
+                    <tr>
+                        <td>Query Language</td>
+                        <td>MongoDB Query Language (MQL)</td>
+                        <td>Structured Query Language (SQL)</td>
+                    </tr>
+                    <tr>
+                        <td>Relationships</td>
+                        <td>Uses embedding or referencing</td>
+                        <td>Uses JOINs and foreign keys</td>
+                    </tr>
+                    <tr>
+                        <td>Scalability</td>
+                        <td>Horizontal (easier to scale out)</td>
+                        <td>Vertical (more difficult to scale out)</td>
+                    </tr>
+                    <tr>
+                        <td>Transactions</td>
+                        <td>Supports multi-doc transactions (since v4.0)</td>
+                        <td>Strong ACID compliance</td>
+                    </tr>
+                    <tr>
+                        <td>Use Case Fit</td>
+                        <td>Unstructured / semi-structured data, fast dev</td>
+                        <td>Structured data with complex relationships</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠️ When to Use MongoDB</h2>
+            <ul>
+                <li>When your data structure changes frequently.</li>
+                <li>When performance and speed are more critical than strict data consistency.</li>
+                <li>For modern applications: IoT, real-time analytics, content management systems, etc.</li>
+                <li>If you're dealing with large-scale unstructured data (e.g., user-generated content).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ When to Use SQL Databases</h2>
+            <ul>
+                <li>When data consistency and integrity are essential (banking, e-commerce transactions).</li>
+                <li>If your application requires complex queries, multi-table JOINs, or constraints.</li>
+                <li>When you already have relational data models defined and normalized.</li>
+                <li>For legacy applications or compliance-heavy industries.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 Example</h2>
+            <p>MongoDB (JSON-style document):</p>
+            <pre><code>
+{
+    "name": "Alice",
+    "email": "alice@example.com",
+    "orders": [
+        { "product": "Laptop", "price": 1200 },
+        { "product": "Mouse", "price": 20 }
+    ]
+}                  
+            </code></pre>
+
+            <p>SQL (relational structure):</p>
+            <pre><code>
+-- Users Table
+id | name  | email
+1  | Alice | alice@example.com
+
+-- Orders Table
+id | user_id | product | price
+1  |    1    | Laptop  | 1200
+2  |    1    | Mouse   | 20
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚖️ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Choose MongoDB if...</th>
+                        <th>Choose SQL if...</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>You want flexibility in schema</td>
+                        <td>You need strong data integrity & structure</td>
+                    </tr>
+                    <tr>
+                        <td>You're building fast, iterative products</td>
+                        <td>You're managing complex business logic</td>
+                    </tr>
+                    <tr>
+                        <td>You prefer JSON-like storage</td>
+                        <td>You need reliable ACID-compliant transactions</td>
+                    </tr>
+                    <tr>
+                        <td>Scalability and performance are a priority</td>
+                        <td>You need relational consistency</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Fundamental Tree Algorithm</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Fundamental Tree Algorithm</h1>
+                    <p class="subtitle">Here's a basic overview of trees and a fundamental tree algorithm to get you started:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🌳 What is a Tree?</h2>
+            <p>A tree is a hierarchical data structure made up of nodes, with the following properties:</p>
+            <ul>
+                <li>Each tree has a root node (top of the tree).</li>
+                <li>Each node can have zero or more child nodes.</li>
+                <li>Nodes with no children are called leaves.</li>
+                <li>There are no cycles (i.e., it's a connected acyclic graph).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Common Tree Types</h2>
+            <ul>
+                <li>Binary Tree – Each node has at most 2 children.</li>
+                <li>Binary Search Tree (BST) – A binary tree where the left child < parent < right child.</li>
+                <li>N-ary Tree – Each node can have up to N children.</li>
+                <li>Balanced Tree, AVL Tree, Red-Black Tree – Optimized trees.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Basic Tree Algorithm: Depth-First Search (DFS)</h2>
+            <p>Goal:</p>
+            <p>Traverse all nodes in the tree (preorder, inorder, or postorder for binary trees).</p>
+            <p>Example: Preorder Traversal (Root → Left → Right)</p>
+            <p>Python Code (Binary Tree)</p>
+
+            <pre><code>
+class TreeNode:
+    def __init__(self, val):
+        self.val = val
+        self.left = None
+        self.right = None
+
+def preorder_traversal(root):
+    if root is None:
+        return []
+    
+    result = []
+    def dfs(node):
+        if node:
+            result.append(node.val)      # Visit root
+            dfs(node.left)              # Traverse left subtree
+            dfs(node.right)             # Traverse right subtree
+    
+    dfs(root)
+    return result
+
+# Example usage:
+#     1
+#    / \
+#   2   3
+#  / \
+# 4   5
+
+root = TreeNode(1)
+root.left = TreeNode(2)
+root.right = TreeNode(3)
+root.left.left = TreeNode(4)
+root.left.right = TreeNode(5)
+
+print(preorder_traversal(root))  # Output: [1, 2, 4, 5, 3]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🌲 Other Common Tree Algorithms</h2>
+            <ul>
+                <li>Inorder / Postorder traversal</li>
+                <li>Breadth-First Search (BFS) – Level-order traversal using a queue.</li>
+                <li>Insert / Delete in BST</li>
+                <li>Find height of a tree</li>
+                <li>Check if a tree is balanced</li>
+                <li>Lowest Common Ancestor (LCA)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

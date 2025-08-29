@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>exports.routesConfig = function (app) { ... }</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">exports.routesConfig = function (app) { ... }</h1>
+                    <p class="subtitle">The line exports.routesConfig = function (app) { ... } is a common pattern used in Node.js (often with Express.js) to modularize route definitions.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Here’s a basic example to explain it:</h2>
+
+            <p>📄 routes.js</p>
+
+            <pre><code>
+exports.routesConfig = function (app) {
+    app.get('/', (req, res) => {
+        res.send('Hello from the home route!');
+    });
+
+    app.get('/about', (req, res) => {
+        res.send('About page');
+    });
+};   
+            </code></pre>
+
+            <p>📄 server.js (or index.js)</p>
+
+            <pre><code>
+const express = require('express');
+const app = express();
+const port = 3000;
+
+const routes = require('./routes'); // Import routes.js
+
+routes.routesConfig(app); // Pass the app to the route configuration function
+
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔍 What’s happening?</h2>
+            <ul>
+                <li>exports.routesConfig = function (app) { ... } defines a function that accepts an Express app object and sets up the routes on it.</li>
+                <li>By exporting this function, you can keep your routing logic separate from your main server file, making the code more modular and easier to maintain.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Let’s expand your Node.js + Express app to use modular routing for RESTful APIs, including middleware and separate route files for resources like /users and /products.</p>
+            <p>✅ Project Structure Example</p>
+
+            <pre><code>
+my-app/
+├── server.js
+├── routes/
+│   ├── index.js
+│   ├── users.routes.js
+│   └── products.routes.js
+            </code></pre>
+
+            <p>📄 server.js – Entry Point</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+const port = 3000;
+
+// Middleware
+app.use(express.json()); // To parse JSON request bodies
+
+// Load all routes
+require('./routes').routesConfig(app);
+
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
+            </code></pre>
+
+            <p>📄 routes/index.js – Main Route Config</p>
+
+            <pre><code>
+const usersRoutes = require('./users.routes');
+const productsRoutes = require('./products.routes');
+
+exports.routesConfig = function (app) {
+    app.use('/api/users', usersRoutes);
+    app.use('/api/products', productsRoutes);
+};
+            </code></pre>
+
+            <p>📄 routes/users.routes.js – Users Route File</p>
+
+            <pre><code>
+const express = require('express');
+const router = express.Router();
+
+// Middleware (example)
+router.use((req, res, next) => {
+    console.log(`User route hit: ${req.method} ${req.originalUrl}`);
+    next();
+});
+
+// RESTful routes
+router.get('/', (req, res) => {
+    res.json({ message: 'Get all users' });
+});
+
+router.post('/', (req, res) => {
+    const user = req.body;
+    res.status(201).json({ message: 'User created', user });
+});
+
+router.get('/:id', (req, res) => {
+    res.json({ message: `Get user with ID ${req.params.id}` });
+});
+
+router.put('/:id', (req, res) => {
+    res.json({ message: `Update user with ID ${req.params.id}` });
+});
+
+router.delete('/:id', (req, res) => {
+    res.json({ message: `Delete user with ID ${req.params.id}` });
+});
+
+module.exports = router;
+            </code></pre>
+
+            <p>📄 routes/products.routes.js – Products Route File</p>
+            <pre><code>
+const express = require('express');
+const router = express.Router();
+
+router.get('/', (req, res) => {
+    res.json({ message: 'Get all products' });
+});
+
+router.post('/', (req, res) => {
+    res.status(201).json({ message: 'Product created' });
+});
+
+router.get('/:id', (req, res) => {
+    res.json({ message: `Get product with ID ${req.params.id}` });
+});
+
+router.put('/:id', (req, res) => {
+    res.json({ message: `Update product with ID ${req.params.id}` });
+});
+
+router.delete('/:id', (req, res) => {
+    res.json({ message: `Delete product with ID ${req.params.id}` });
+});
+
+module.exports = router;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 Test Example</h2>
+            <ul>
+                <li>GET /api/users → List users</li>
+                <li>POST /api/products with JSON body → Create product</li>
+                <li>PUT /api/users/123 → Update user 123</li>
+            </ul>
+
+            <p>If you want to add:</p>
+            <ul>
+                <li>Validation</li>
+                <li>Database integration (MongoDB, MySQL, etc.)</li>
+                <li>Authentication (JWT, OAuth)</li>
+                <li>Error handling middleware</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>.use()</h2>
+            <p>In Node.js (specifically with Express.js), the .use() method is used to:</p>
+
+            <h2>🔧 Mount Middleware or Routes</h2>
+            <p>📌 Syntax:</p>
+
+            <pre><code>
+app.use([path], middlewareFunction)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔍 1. Middleware Usage</h2>
+            <p>Middleware functions are functions that have access to the req, res, and next objects. They can:</p>
+            <ul>
+                <li>Modify the request or response.</li>
+                <li>End the request-response cycle.</li>
+                <li>Call next() to pass control to the next middleware.</li>
+            </ul>
+
+            <p>✅ Example:</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+// Global middleware
+app.use((req, res, next) => {
+    console.log('Request URL:', req.originalUrl);
+    next(); // Pass to the next middleware or route
+});
+            </code></pre>
+
+            <p>This will run for every request.</p>
+        </section>
+
+        <section>
+            <h2>🔍 2. Serving Static Files</h2>
+            <pre><code>
+app.use(express.static('public'));
+            </code></pre>
+
+            <p>Serves static files from the public directory (like index.html, images, CSS, etc.)</p>
+        </section>
+
+        <section>
+            <h2>🔍 3. Mounting Routers</h2>
+            <p>You use .use() to mount a route module (like in modularized apps):</p>
+            <p>✅ Example:</p>
+            <pre><code>
+const userRoutes = require('./routes/users.routes');
+
+app.use('/api/users', userRoutes);
+            </code></pre>
+
+            <p>All routes in users.routes will be prefixed with /api/users.</p>
+            <p>So if you define router.get('/') inside users.routes.js, it will respond to GET /api/users.</p>
+        </section>
+
+        <section>
+            <h2>🚨 Important Notes:</h2>
+            <ul>
+                <li>app.use() matches all HTTP methods (GET, POST, PUT, etc.).</li>
+                <li>If you want to handle only specific methods, use app.get(), app.post(), etc.</li>
+            </ul>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>app.use() is used for:</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Registering middleware</td>
+                        <td>app.use(myMiddleware)</td>
+                    </tr>
+                    <tr>
+                        <td>Serving static files</td>
+                        <td>app.use(express.static(...))</td>
+                    </tr>
+                    <tr>
+                        <td>Mounting a router to a path prefix</td>
+                        <td>app.use('/api', myRouter)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

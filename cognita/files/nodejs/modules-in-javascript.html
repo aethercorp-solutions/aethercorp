@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Modules in JavaScript</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Modules in JavaScript</h1>
+                    <p class="subtitle">Here’s a clear breakdown of ES Modules (ESM) vs CommonJS, including how they work, their differences, and when to use each.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ 1. What Are Modules in JavaScript?</h2>
+            <p>Modules allow you to split your code into separate files, making it more maintainable and reusable. There are two main systems in use:</p>
+            <ul>
+                <li>CommonJS (CJS) – used by default in Node.js (prior to v13+)</li>
+                <li>ES Modules (ESM) – the modern, standard approach (used in browsers and supported in Node.js v12+ with .mjs or "type": "module")</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 2. CommonJS (CJS)</h2>
+            <ul>
+                <li>Used by default in Node.js.</li>
+                <li>Uses require() and module.exports.</li>
+            </ul>
+            <p>Example:</p>
+            <p>math.js</p>
+
+            <pre><code>
+function add(a, b) {
+    return a + b;
+}
+    
+module.exports = { add };                  
+            </code></pre>
+
+            <p>main.js</p>
+            <pre><code>
+const math = require('./math');
+
+console.log(math.add(2, 3)); // 5
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 3. ES Modules (ESM)</h2>
+            <ul>
+                <li>Uses import and export.</li>
+                <li>Works natively in modern browsers and newer versions of Node.js (with .mjs or "type": "module" in package.json).</li>
+            </ul>
+
+            <p>Example:</p>
+            <p>math.mjs</p>
+
+            <pre><code>
+export function add(a, b) {
+    return a + b;
+}                  
+            </code></pre>
+
+            <p>main.mjs</p>
+            <pre><code>
+import { add } from './math.mjs';
+
+console.log(add(2, 3)); // 5
+            </code></pre>
+
+            <p>Node.js tip: To use .js files with ESM syntax, add "type": "module" to your package.json.</p>
+
+            <pre><code>
+{
+    "type": "module"
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔍 4. Key Differences</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>CommonJS</th>
+                        <th>ES Modules (ESM)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Syntax</td>
+                        <td>require, module.exports</td>
+                        <td>import, export</td>
+                    </tr>
+                    <tr>
+                        <td>Loaded</td>
+                        <td>Synchronously</td>
+                        <td>Asynchronously</td>
+                    </tr>
+                    <tr>
+                        <td>Default in Node.js</td>
+                        <td>Yes (for .js)</td>
+                        <td>Only with .mjs or "type": "module"</td>
+                    </tr>
+                    <tr>
+                        <td>Browser Support</td>
+                        <td>No (without bundler)</td>
+                        <td>Yes (modern browsers)</td>
+                    </tr>
+                    <tr>
+                        <td>Top-level await</td>
+                        <td>❌ Not supported</td>
+                        <td>✅ Supported</td>
+                    </tr>
+                    <tr>
+                        <td>Tree shaking</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes (in bundlers)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 5. When to Use What?</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Recommendation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>New browser-based projects</td>
+                        <td>✅ Use ESM</td>
+                    </tr>
+                    <tr>
+                        <td>New Node.js projects</td>
+                        <td>✅ Prefer ESM</td>
+                    </tr>
+                    <tr>
+                        <td>Legacy Node.js codebases</td>
+                        <td>✅ Stick to CommonJS</td>
+                    </tr>
+                    <tr>
+                        <td>Building libraries for NPM</td>
+                        <td>✅ Consider both or ESM with fallback</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

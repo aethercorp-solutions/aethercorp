@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is Tailwind CSS?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is Tailwind CSS?</h1>
+                    <p class="subtitle">Tailwind CSS is a utility-first CSS framework for rapidly building custom designs. Instead of writing custom CSS, you compose styles by applying classes directly in your HTML.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🚀 Getting Started with Tailwind CSS</h2>
+            <p>✅ Option 1: Use Tailwind via CDN (for quick prototyping)</p>
+            <p>You can add Tailwind directly into an HTML file using a CDN:</p>
+            <pre><code>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+  &lt;title&gt;Tailwind CDN&lt;/title&gt;
+  &lt;script src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body class=&quot;bg-gray-100 text-center p-10&quot;&gt;
+
+  &lt;h1 class=&quot;text-4xl font-bold text-blue-600&quot;&gt;Hello Tailwind!&lt;/h1&gt;
+  &lt;button class=&quot;mt-5 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600&quot;&gt;
+    Click Me
+  &lt;/button&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Option 2: Install Tailwind in a Project (for real development)</h2>
+            <p>1. Set up your project</p>
+            <pre><code>
+mkdir my-tailwind-project
+cd my-tailwind-project
+npm init -y
+npm install -D tailwindcss
+npx tailwindcss init
+            </code></pre>
+
+            <p>2. Create your folder structure</p>
+            <pre><code>
+mkdir src
+touch src/index.html
+mkdir styles
+touch styles/tailwind.css
+            </code></pre>
+
+            <p>3. Configure Tailwind</p>
+            <p>In tailwind.config.js, update:</p>
+            <pre><code>
+module.exports = {
+    content: ["./src/**/*.{html,js}"],
+    theme: {
+        extend: {},
+    },
+    plugins: [],
+}                  
+            </code></pre>
+
+            <p>4. Add Tailwind directives to CSS</p>
+            <p>In styles/tailwind.css:</p>
+
+            <pre><code>
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+            </code></pre>
+
+            <p>5. Build your CSS</p>
+            <p>Install PostCSS and autoprefixer:</p>
+            <pre><code>
+npm install -D postcss autoprefixer
+npx tailwindcss -i ./styles/tailwind.css -o ./dist/output.css --watch
+            </code></pre>
+
+            <p>6. Use in HTML</p>
+            <p>Create src/index.html:</p>
+
+            <pre><code>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+  &lt;title&gt;Tailwind Setup&lt;/title&gt;
+  &lt;link href=&quot;../dist/output.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;/head&gt;
+&lt;body class=&quot;bg-gray-100 p-10&quot;&gt;
+
+  &lt;h1 class=&quot;text-3xl font-bold text-indigo-700&quot;&gt;Hello from Tailwind!&lt;/h1&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 Common Tailwind Utilities</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Purpose</th>
+                        <th>Class Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Text size</td>
+                        <td>text-sm, text-xl, text-4xl</td>
+                    </tr>
+                    <tr>
+                        <td>Font weight</td>
+                        <td>font-light, font-bold</td>
+                    </tr>
+                    <tr>
+                        <td>Padding</td>
+                        <td>p-4, pt-2, px-6</td>
+                    </tr>
+                    <tr>
+                        <td>Margin</td>
+                        <td>m-2, mt-5, mx-10</td>
+                    </tr>
+                    <tr>
+                        <td>Colors</td>
+                        <td>text-blue-500, bg-gray-200</td>
+                    </tr>
+                    <tr>
+                        <td>Flexbox</td>
+                        <td>flex, justify-between, items-center</td>
+                    </tr>
+                    <tr>
+                        <td>Borders</td>
+                        <td>border, rounded, border-red-500</td>
+                    </tr>
+                    <tr>
+                        <td>Hover</td>
+                        <td>hover:bg-blue-600, hover:underline</td>
+                    </tr>
+                    <tr>
+                        <td>Responsive</td>
+                        <td>md:text-lg, lg:flex</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

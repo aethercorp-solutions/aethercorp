@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MongoDB Embedded Documents or Manual References</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">MongoDB Embedded Documents or Manual References</h1>
+                    <p class="subtitle">In MongoDB, data is stored in documents (similar to JSON). These documents can contain embedded documents or use manual references to model relationships between data — essentially MongoDB's alternatives to SQL-style JOINs.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Embedded Documents (also called Denormalization)</h2>
+            <p>An embedded document is when related data is stored inside the same document.</p>
+
+            <p>📦 Example:</p>
+            <p>You have a User and their Address. Instead of putting them in two separate tables like in SQL, you store the address inside the user document:</p>
+            <pre><code>
+{
+    "_id": 1,
+    "name": "Alice",
+    "email": "alice@example.com",
+    "address": {
+        "street": "123 Main St",
+        "city": "Metropolis",
+        "zip": "12345"
+    }
+}                  
+            </code></pre>
+
+            <p>✅ Pros:</p>
+            <ul>
+                <li>Faster read performance (everything is in one place).</li>
+                <li>Easier to fetch related data (no need for joins).</li>
+            </ul>
+
+            <p>❌ Cons:</p>
+            <ul>
+                <li>If embedded documents grow too large or are updated often, this can cause issues.</li>
+                <li>Can cause data duplication if reused elsewhere.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔗 2. Manual References (also called Normalization)</h2>
+            <p>A manual reference means storing a reference to another document (like a foreign key in SQL), often by ID.</p>
+
+            <p>🧱 Example:</p>
+            <p>You have two collections: Users and Addresses.</p>
+
+            <p>Users Collection:</p>
+            <pre><code>
+{
+    "_id": 1,
+    "name": "Alice",
+    "email": "alice@example.com",
+    "address_id": 101
+}                  
+            </code></pre>
+
+            <p>Addresses Collection:</p>
+            <pre><code>
+{
+    "_id": 101,
+    "street": "123 Main St",
+    "city": "Metropolis",
+    "zip": "12345"
+}                  
+            </code></pre>
+
+            <p>When you query the user, you have to manually query the Addresses collection using the address_id.</p>
+            <pre><code>
+// In MongoDB, you'd have to do something like:
+const user = db.users.findOne({ _id: 1 });
+const address = db.addresses.findOne({ _id: user.address_id });
+            </code></pre>
+
+            <p>✅ Pros:</p>
+            <ul>
+                <li>More modular, reduces duplication.</li>
+                <li>Good for large or shared data structures (like tags, categories, etc.).</li>
+            </ul>
+
+            <p>❌ Cons:</p>
+            <ul>
+                <li>Slower reads (multiple queries).</li>
+                <li>MongoDB doesn’t support automatic JOINs (though $lookup in aggregation helps with this).</li>
+            </ul>
+        </section>
+
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Embedded Document</th>
+                        <th>Manual Reference</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Structure</td>
+                        <td>Nested inside parent</td>
+                        <td>Stored in separate collection</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>Fast reads</td>
+                        <td>Slower reads (multiple lookups)</td>
+                    </tr>
+                    <tr>
+                        <td>Data Duplication</td>
+                        <td>Yes, possible</td>
+                        <td>Avoids duplication</td>
+                    </tr>
+                    <tr>
+                        <td>Flexibility</td>
+                        <td>Less flexible</td>
+                        <td>More modular</td>
+                    </tr>
+                    <tr>
+                        <td>Best For</td>
+                        <td>Small, tightly coupled data</td>
+                        <td>Large, shared or complex data</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

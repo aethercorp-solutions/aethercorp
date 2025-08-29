@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Recommendation Systems</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Recommendation Systems</h1>
+                    <p class="subtitle">Recommendation Systems are algorithms designed to suggest relevant items to users. They're widely used in platforms like Netflix (movies), Amazon (products), Spotify (music), and YouTube (videos). Here's a breakdown of the key concepts, types, and techniques involved:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔍 What is a Recommendation System?</h2>
+            <p>A Recommendation System analyzes user preferences, behavior, or item characteristics to suggest content or products a user is likely to engage with or purchase.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Types of Recommendation Systems</h2>
+            <ol>
+                <li>
+                    Content-Based Filtering
+                    <ul>
+                        <li>Recommends items similar to what the user liked in the past.</li>
+                        <li>Example: If you watched a sci-fi movie, you'll get recommendations for other sci-fi movies.</li>
+                        <li>Uses item features (genre, keywords, descriptions).</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Collaborative Filtering
+                    <ul>
+                        <li>User-Based: Finds users similar to you and recommends what they liked.</li>
+                        <li>Item-Based: Finds items similar to what you liked and recommends those.</li>
+                        <li>Doesn’t require item metadata—relies purely on user-item interactions (like ratings or clicks).</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Hybrid Systems
+                    <ul>
+                        <li>Combine both content-based and collaborative filtering.</li>
+                        <li>Often more accurate and robust.</li>
+                        <li>Example: Netflix uses a hybrid system.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Knowledge-Based Systems
+                    <ul>
+                        <li>Use explicit knowledge about users and items (e.g., rules or constraints).</li>
+                        <li>Common in domains where user history is sparse or non-existent (e.g., real estate).</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Context-Aware Recommender Systems
+                    <ul>
+                        <li>Consider additional contextual information (location, time, device, mood).</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🛠️ Core Techniques and Algorithms</h2>
+            <ul>
+                <li>Matrix Factorization (e.g., SVD, ALS): Decomposes the user-item matrix to find latent features.</li>
+                <li>Nearest Neighbors (k-NN): Finds users/items close to each other in some metric space.</li>
+                <li>Deep Learning: Uses neural networks (e.g., autoencoders, RNNs, transformers) to learn complex patterns.</li>
+                <li>Association Rule Mining (e.g., Apriori): "People who bought X also bought Y".</li>
+                <li>Reinforcement Learning: Adapts recommendations based on ongoing user interactions.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📊 Evaluation Metrics</h2>
+            <ul>
+                <li>Precision / Recall / F1 Score</li>
+                <li>MAP (Mean Average Precision)</li>
+                <li>NDCG (Normalized Discounted Cumulative Gain)</li>
+                <li>RMSE / MAE (for rating prediction)</li>
+                <li>A/B Testing (in production environments)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📚 Popular Tools and Libraries</h2>
+            <ul>
+                <li>Surprise: Python scikit for building and analyzing recommender systems.</li>
+                <li>LightFM: Hybrid model combining matrix factorization with content-based filtering.</li>
+                <li>TensorFlow Recommenders / PyTorch Lightning</li>
+                <li>Scikit-learn (basic models)</li>
+                <li>RecBole, Microsoft Recommenders</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🌐 Real-World Use Cases</h2>
+            <ul>
+                <li>E-Commerce: Product suggestions (Amazon, eBay)</li>
+                <li>Streaming Services: Movie/music recommendations (Netflix, Spotify)</li>
+                <li>Social Media: Friend suggestions, content feed (Facebook, TikTok)</li>
+                <li>News Aggregators: Personalized news feeds</li>
+                <li>Online Learning: Course or tutorial recommendations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Theory-Focused Recommendation System Project Ideas</h2>
+            <ol>
+                <li>
+                    Comparative Study of Recommendation Algorithms
+                    <p>Goal: Compare the theoretical foundations of major recommendation algorithms:</p>
+                    <ul>
+                        <li>Content-Based Filtering</li>
+                        <li>Collaborative Filtering (User vs. Item-based)</li>
+                        <li>Matrix Factorization</li>
+                        <li>Neural Collaborative Filtering</li>
+                    </ul>
+                    Theoretical Angle:
+                    <ul>
+                        <li>Analyze computational complexity</li>
+                        <li>Explore mathematical modeling (cosine similarity, SVD, etc.)</li>
+                        <li>Discuss pros/cons in terms of cold start, sparsity, scalability</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Cold Start Problem in Recommender Systems
+                    <p>Goal: Study the cold start problem from a theoretical standpoint and survey existing solutions:</p>
+                    <ul>
+                        <li>Content-based approaches</li>
+                        <li>Hybrid models</li>
+                        <li>Meta-learning or few-shot learning</li>
+                    </ul>
+                    <p>Bonus: Propose a new framework or enhancement to existing techniques.</p>
+                </li>
+
+                <li>
+                    Explainable Recommendation Systems
+                    <p>Goal: Investigate how to make recommendations interpretable to users.</p>
+                    <ul>
+                        <li>What techniques are used for explainability (e.g., SHAP, LIME, attention mechanisms)?</li>
+                        <li>How does explainability affect user trust?</li>
+                    </ul>
+
+                    <p>Theoretical Focus:</p>
+                    <ul>
+                        <li>Formal models of trust and transparency</li>
+                        <li>Trade-off between accuracy and interpretability</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Fairness, Bias, and Ethics in Recommendations
+                    <p>Goal: Analyze how recommender systems can perpetuate or mitigate bias.</p>
+                    <ul>
+                        <li>Study metrics for fairness (demographic parity, equal opportunity)</li>
+                        <li>Explore algorithmic bias (popularity bias, selection bias)</li>
+                    </ul>
+
+                    <p>Suggested Topics:</p>
+                    <ul>
+                        <li>Theoretical framework for fair recommendation</li>
+                        <li>Case study: filter bubbles, echo chambers</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Temporal Dynamics in Recommender Systems
+                    <p>Goal: Explore how user preferences and item relevance change over time.</p>
+                    <ul>
+                        <li>Study time-aware collaborative filtering, time decay models</li>
+                        <li>Examine recurrent models or transformers in temporal settings</li>
+                    </ul>
+
+                    <p>Theory Link:</p>
+                    <ul>
+                        <li>Time series modeling</li>
+                        <li>Markov chains, dynamic latent factor models</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Information Retrieval vs. Recommender Systems
+                    <p>Goal: Theoretically contrast the foundations of IR systems (search engines) and recommendation systems.</p>
+                    <ul>
+                        <li>Utility functions, ranking metrics (NDCG, MAP)</li>
+                        <li>Relevance modeling: explicit vs. implicit feedback</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Graph-Based Recommendation Systems
+                    <p>Goal: Explore the use of graphs in modeling user-item interactions.</p>
+                    <ul>
+                        <li>Graph theory for bipartite networks</li>
+                        <li>Graph neural networks (GNNs)</li>
+                    </ul>
+
+                    <p>Theoretical Topics:</p>
+                    <ul>
+                        <li>Random walks, Personalized PageRank</li>
+                        <li>Spectral theory, adjacency matrices</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Recommender Systems as a Game-Theoretic Problem
+                    <p>Goal: Model recommendation as a game between the user and the system.</p>
+                    <ul>
+                        <li>Utility maximization</li>
+                        <li>Multi-agent systems</li>
+                        <li>Explore incentives, strategic manipulation</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Reinforcement Learning in Recommendation
+                    <p>Goal: Theoretically analyze how reinforcement learning (RL) models sequential recommendations.</p>
+                    <ul>
+                        <li>MDP (Markov Decision Process) modeling</li>
+                        <li>Policy learning, bandit algorithms</li>
+                    </ul>
+
+                    <p>Deep Dive:</p>
+                    <ul>
+                        <li>Compare RL vs. supervised learning in this context</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Scalability and Efficiency in Large-Scale Recommendation
+                    <p>Goal: Study algorithmic and architectural techniques to scale recommendation algorithms.</p>
+                    <ul>
+                        <li>Distributed systems (e.g., MapReduce, Spark)</li>
+                        <li>Approximate nearest neighbors (e.g., locality-sensitive hashing)</li>
+                    </ul>
+
+                    <p>Theory Topics:</p>
+                    <ul>
+                        <li>Complexity analysis</li>
+                        <li>Trade-offs in approximate vs. exact methods</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
