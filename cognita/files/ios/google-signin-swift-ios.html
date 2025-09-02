@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Implement Google Sign-In in a Swift-based iOS app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Implement Google Sign-In in a Swift-based iOS app</h1>
+                    <p class="subtitle">To implement Google Sign-In in a Swift-based iOS app, you need to follow these steps. This will include setting up your project in the Google Developer Console, installing dependencies, and writing the necessary code in Swift.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>AppDelegate</h2>
+            <pre><code>
+//
+//  AppDelegate.swift
+//  AetherCorp
+//
+//  Created by Paul Dionisio on 8/30/25.
+//
+
+import UIKit
+import GoogleSignIn
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+                
+        return true
+    }
+    
+    func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+            return GIDSignIn.sharedInstance.handle(url)
+    }
+
+    // MARK: UISceneSession Lifecycle
+
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+
+    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
+        
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Info.plist</h2>
+            <pre><code>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+	&lt;key&gt;UIApplicationSceneManifest&lt;/key&gt;
+	&lt;dict&gt;
+		&lt;key&gt;UIApplicationSupportsMultipleScenes&lt;/key&gt;
+		&lt;false/&gt;
+		&lt;key&gt;UISceneConfigurations&lt;/key&gt;
+		&lt;dict&gt;
+			&lt;key&gt;UIWindowSceneSessionRoleApplication&lt;/key&gt;
+			&lt;array&gt;
+				&lt;dict&gt;
+					&lt;key&gt;UISceneConfigurationName&lt;/key&gt;
+					&lt;string&gt;Default Configuration&lt;/string&gt;
+					&lt;key&gt;UISceneDelegateClassName&lt;/key&gt;
+					&lt;string&gt;$(PRODUCT_MODULE_NAME).SceneDelegate&lt;/string&gt;
+					&lt;key&gt;UISceneStoryboardFile&lt;/key&gt;
+					&lt;string&gt;Main&lt;/string&gt;
+				&lt;/dict&gt;
+			&lt;/array&gt;
+		&lt;/dict&gt;
+	&lt;/dict&gt;
+    &lt;key&gt;GIDClientID&lt;/key&gt;
+    &lt;string&gt;846496202975-ucupe5f1q7f8pd8uand8raeg373fbb2t.apps.googleusercontent.com&lt;/string&gt;
+    &lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+    &lt;array&gt;
+        &lt;dict&gt;
+            &lt;key&gt;CFBundleURLSchemes&lt;/key&gt;
+            &lt;array&gt;
+                &lt;string&gt;com.googleusercontent.apps.846496202975-ucupe5f1q7f8pd8uand8raeg373fbb2t&lt;/string&gt;
+            &lt;/array&gt;
+        &lt;/dict&gt;
+    &lt;/array&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>LoginViewController</h2>
+            <pre><code>
+import UIKit
+import GoogleSignIn
+
+class LoginViewController: UIViewController {
+
+    private var googleSignInButton: GIDSignInButton!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupUI()
+    }
+
+    private func setupUI() {
+        googleSignInButton = GIDSignInButton()
+        googleSignInButton.translatesAutoresizingMaskIntoConstraints = false
+        googleSignInButton.addTarget(self, action: #selector(signInTapped), for: .touchUpInside)
+
+        view.addSubview(googleSignInButton)
+
+        NSLayoutConstraint.activate([
+            googleSignInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            googleSignInButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            googleSignInButton.widthAnchor.constraint(equalToConstant: 200),
+            googleSignInButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+
+    @objc private func signInTapped() {
+        GIDSignIn.sharedInstance.signIn(withPresenting: self) { [weak self] user, error in
+            if let error = error {
+                self?.showErrorAlert(error)
+                return
+            }
+            
+            guard let user = user else {
+                self?.showErrorAlert(NSError(domain: "com.aethercorp", code: 0, userInfo: [NSLocalizedDescriptionKey: "User info not found."]))
+                return
+            }
+
+            print("Google Sign-In successful! User info: \(user.user.profile?.name ?? "No Name")")
+
+            // Example of navigation after successful login
+            self?.navigateToMainScreen()
+        }
+    }
+
+    private func showErrorAlert(_ error: Error) {
+        let alert = UIAlertController(title: "Sign-In Failed", message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+
+    private func navigateToMainScreen() {
+        // Assuming the main screen is a UIViewController
+        let mainVC = UIViewController() // Replace with your actual main screen
+        let navController = UINavigationController(rootViewController: mainVC)
+        self.present(navController, animated: true)
+    }
+}
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

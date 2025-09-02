@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Identifiable Protocol</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Identifiable Protocol</h1>
+                    <p class="subtitle">In Swift, an identifiable protocol typically refers to the Identifiable protocol from the Swift standard library, which is commonly used to uniquely identify instances of a type—especially in contexts like SwiftUI lists, ForEach loops, or data binding.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Definition of Identifiable</h2>
+            <p>Here's how the protocol is defined:</p>
+
+            <pre><code>
+public protocol Identifiable {
+    associatedtype ID: Hashable
+    var id: ID { get }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ How to Use Identifiable</h2>
+            <p>You conform a struct or class to Identifiable by providing an id property that uniquely identifies each instance.</p>
+            <p>Example:</p>
+            <pre><code>
+struct User: Identifiable {
+    var id: UUID
+    var name: String
+}                
+            </code></pre>
+
+            <p>Or if you want a simpler ID, like an integer:</p>
+            <pre><code>
+struct Product: Identifiable {
+    var id: Int
+    var name: String
+}                
+            </code></pre>
+
+            <p>You can even make id a computed property:</p>
+            <pre><code>
+struct Book: Identifiable {
+    var title: String
+    var author: String
+    var id: String {
+        "\(title)-\(author)"
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Why Use Identifiable?</h2>
+            <ul>
+                <li>SwiftUI uses it extensively in views like List and ForEach.</li>
+                <li>It helps SwiftUI track and update views efficiently.</li>
+                <li>It provides clarity and consistency in how unique instances are handled in collections.</li>
+            </ul>
+
+            <p>Example in SwiftUI:</p>
+            <pre><code>
+struct ContentView: View {
+    let users: [User] = [
+        User(id: UUID(), name: "Alice"),
+        User(id: UUID(), name: "Bob")
+    ]
+
+    var body: some View {
+        List(users) { user in
+            Text(user.name)
+        }
+    }
+}                
+            </code></pre>
+
+            <p>Here, SwiftUI uses the id from the Identifiable conformance to track each row.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

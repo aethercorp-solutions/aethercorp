@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS Lambda is a serverless compute service provided by Amazon Web Services</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS Lambda is a serverless compute service provided by Amazon Web Services</h1>
+                    <p class="subtitle">AWS Lambda is a serverless compute service provided by Amazon Web Services that lets you run code without provisioning or managing servers. It automatically handles the infrastructure for you — including scaling, fault tolerance, and maintenance.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 How AWS Lambda Works (Step-by-Step):</h2>
+            <ol>
+                <li>
+                    Write Your Code (Function)
+                    <p>You write your code in a supported language like:</p>
+                    <ul>
+                        <li>Python</li>
+                        <li>Node.js</li>
+                        <li>Java</li>
+                        <li>Go</li>
+                        <li>C#</li>
+                        <li>Ruby</li>
+                        <li>Custom Runtime (via container images or Lambda layers)</li>
+                    </ul>
+                    Lambda functions have a specific structure — they must define a handler, which AWS Lambda uses as the entry point.
+                </li>
+
+                <li>
+                    <p>Deploy the Function</p>
+                    <p>You upload your code:</p>
+                    <ul>
+                        <li>Directly in the AWS Console</li>
+                        <li>Using the AWS CLI or SDKs</li>
+                        <li>As a container image (up to 10 GB)</li>
+                        <li>Via infrastructure-as-code tools (like Terraform or CloudFormation)</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <p>Set a Trigger (Event Source)</p>
+                    <p>Lambda is event-driven. It runs in response to events, such as:</p>
+                    <ul>
+                        <li>API Gateway (HTTP requests)</li>
+                        <li>S3 (file uploads)</li>
+                        <li>DynamoDB (data changes)</li>
+                        <li>CloudWatch (cron jobs)</li>
+                        <li>SNS/SQS (messages)</li>
+                        <li>Step Functions, and more</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <p>Execution</p>
+                    <p>When an event is triggered:</p>
+                    <ul>
+                        <li>AWS Lambda instantiates an execution environment (a sandboxed container).</li>
+                        <li>
+                            The handler function is invoked with:
+                            <ul>
+                                <li>The event data</li>
+                                <li>A context object with runtime info</li>
+                            </ul>
+                        </li>
+                        <li>Your code runs and returns a result (or error).</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Automatic scaling
+                    <ul>
+                        <li>AWS Lambda automatically scales horizontally based on the number of events.</li>
+                        <li>Each function invocation runs in a separate, isolated environment.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Pricing
+                    <ul>
+                        <li>You pay only for compute time used — metered in milliseconds.</li>
+                        <li>Free tier: 1 million requests & 400,000 GB-seconds/month.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <h2>⚙️ Example Use Case: API Endpoint with Lambda</h2>
+                    <ol>
+                        <li>You connect Lambda to API Gateway.</li>
+                        <li>A user sends an HTTP request.</li>
+                        <li>API Gateway triggers your Lambda.</li>
+                        <li>Lambda runs your code (e.g., fetches from a DB, processes data).</li>
+                        <li>Lambda returns a response to API Gateway → back to the user.</li>
+                    </ol>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 Key Concepts</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Handler</td>
+                        <td>The main function Lambda calls to process an event.</td>
+                    </tr>
+                    <tr>
+                        <td>Execution Role (IAM)</td>
+                        <td>Permissions your function needs to access other AWS services.</td>
+                    </tr>
+                    <tr>
+                        <td>Cold Start</td>
+                        <td>Delay that occurs when a new container is started (first request after idle).</td>
+                    </tr>
+                    <tr>
+                        <td>Concurrency</td>
+                        <td>Number of executions that can run at the same time.</td>
+                    </tr>
+                    <tr>
+                        <td>Environment Variables</td>
+                        <td>You can store secrets or configs in the Lambda function settings.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

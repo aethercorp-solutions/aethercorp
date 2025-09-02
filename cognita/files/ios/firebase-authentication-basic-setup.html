@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Firebase Authentication Basic Setup</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Firebase Authentication Basic Setup</h1>
+                    <p class="subtitle"> Subtitle </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>AppDelegate</h2>
+            <pre><code>
+//
+//  AppDelegate.swift
+//  AetherCorp
+//
+//  Created by Paul Dionisio on 8/30/25.
+//
+
+import UIKit
+import Firebase
+import GoogleSignIn
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        FirebaseApp.configure()
+        
+        return true
+    }
+    
+    func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        return GIDSignIn.sharedInstance.handle(url)
+    }
+
+    // MARK: UISceneSession Lifecycle
+
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        // Called when a new scene session is being created.
+        // Use this method to select a configuration to create the new scene with.
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+
+    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
+        // Called when the user discards a scene session.
+        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
+        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>SceneDelegate</h2>
+            <pre><code>
+//
+//  SceneDelegate.swift
+//  AetherCorp
+//
+//  Created by Paul Dionisio on 8/30/25.
+//
+
+import UIKit
+
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+
+    var window: UIWindow?
+
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
+        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
+        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+        guard let _ = (scene as? UIWindowScene) else { return }
+    }
+
+    func sceneDidDisconnect(_ scene: UIScene) {
+        // Called as the scene is being released by the system.
+        // This occurs shortly after the scene enters the background, or when its session is discarded.
+        // Release any resources associated with this scene that can be re-created the next time the scene connects.
+        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
+    }
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        // Called when the scene has moved from an inactive state to an active state.
+        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+    }
+
+    func sceneWillResignActive(_ scene: UIScene) {
+        // Called when the scene will move from an active state to an inactive state.
+        // This may occur due to temporary interruptions (ex. an incoming phone call).
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        // Called as the scene transitions from the background to the foreground.
+        // Use this method to undo the changes made on entering the background.
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        // Called as the scene transitions from the foreground to the background.
+        // Use this method to save data, release shared resources, and store enough scene-specific state information
+        // to restore the scene back to its current state.
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>ViewController</h2>
+            <pre><code>
+//
+//  ViewController.swift
+//  AetherCorp
+//
+//  Created by Paul Dionisio on 8/30/25.
+//
+
+import UIKit
+import Firebase
+import FirebaseAuth
+import GoogleSignIn
+
+class ViewController: UIViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Add a Google Sign-In button programmatically
+        let signInButton = GIDSignInButton()
+        signInButton.addTarget(self, action: #selector(signInButtonTapped), for: .touchUpInside)
+        signInButton.center = view.center
+        view.addSubview(signInButton)
+        
+        
+    }
+    
+    @IBAction func signInButtonTapped(_ sender: UIButton) {
+        GIDSignIn.sharedInstance.signIn(withPresenting: self, completion: { user, error in
+            if let error = error {
+                // Handle error here
+                print("Google Sign-In failed: \(error.localizedDescription)")
+                return
+            }
+            
+            // Check if the user is signed in
+            guard let user = user else {
+                print("Google Sign-In failed: User not found.")
+                return
+            }
+            
+            // Get the Google ID token and access token
+            guard let idToken = user.user.idToken?.tokenString else {
+                print("Google Sign-In failed: ID Token is nil.")
+                return
+            }
+            
+            let accessToken = user.user.accessToken.tokenString
+            
+            // Create a Firebase credential with the Google ID token and access token
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+            // Authenticate with Firebase
+            Auth.auth().signIn(with: credential) { (authResult, error) in
+                if let error = error {
+                    print("Firebase authentication failed: \(error.localizedDescription)")
+                    return
+                }
+                
+                // Successful sign-in
+                print("User signed in with Firebase: \(authResult?.user.displayName ?? "")")
+            }
+        })
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>To refactor your ViewController using the MVVM (Model-View-ViewModel) architecture, we’ll break your code into:</h2>
+            <p>✅ MVVM Structure</p>
+            <ol>
+                <li>Model – Not much needed here yet since you're just authenticating.</li>
+                <li>View – Your ViewController (UI handling).</li>
+                <li>ViewModel – Logic for Google Sign-In and Firebase Auth.</li>
+            </ol>
+
+            <p>🔧 Refactored Files</p>
+            <p>📄 AuthViewModel.swift (ViewModel)</p>
+
+            <pre><code>
+import Foundation
+import FirebaseAuth
+import GoogleSignIn
+import UIKit
+
+class AuthViewModel {
+
+    var onSignInSuccess: ((User) -> Void)?
+    var onSignInFailure: ((String) -> Void)?
+
+    func signInWithGoogle(presentingViewController: UIViewController) {
+        GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { result, error in
+            if let error = error {
+                self.onSignInFailure?("Google Sign-In failed: \(error.localizedDescription)")
+                return
+            }
+
+            guard let user = result?.user else {
+                self.onSignInFailure?("Google Sign-In failed: User not found.")
+                return
+            }
+
+            guard let idToken = user.idToken?.tokenString else {
+                self.onSignInFailure?("Google Sign-In failed: ID Token is nil.")
+                return
+            }
+
+            let accessToken = user.accessToken.tokenString
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+
+            Auth.auth().signIn(with: credential) { authResult, error in
+                if let error = error {
+                    self.onSignInFailure?("Firebase authentication failed: \(error.localizedDescription)")
+                    return
+                }
+
+                if let user = authResult?.user {
+                    self.onSignInSuccess?(user)
+                } else {
+                    self.onSignInFailure?("Firebase authentication failed: User object is nil.")
+                }
+            }
+        }
+    }
+}
+            </code></pre>
+
+            <p>📄 ViewController.swift (View)</p>
+            <pre><code>
+import UIKit
+import GoogleSignIn
+import FirebaseAuth
+
+class ViewController: UIViewController {
+
+    private let viewModel = AuthViewModel()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setupUI()
+        bindViewModel()
+    }
+
+    private func setupUI() {
+        let signInButton = GIDSignInButton()
+        signInButton.addTarget(self, action: #selector(signInButtonTapped), for: .touchUpInside)
+        signInButton.center = view.center
+        view.addSubview(signInButton)
+    }
+
+    private func bindViewModel() {
+        viewModel.onSignInSuccess = { user in
+            print("User signed in with Firebase: \(user.displayName ?? "")")
+            // Optionally transition to next screen
+        }
+
+        viewModel.onSignInFailure = { errorMessage in
+            print(errorMessage)
+            // Optionally show alert
+        }
+    }
+
+    @objc func signInButtonTapped() {
+        viewModel.signInWithGoogle(presentingViewController: self)
+    }
+}
+            </code></pre>
+
+            <p>✅ Summary</p>
+            <ul>
+                <li>ViewModel handles all the logic.</li>
+                <li>ViewController only binds UI and reacts to outcomes.</li>
+                <li>Decoupled and Testable: You can now test AuthViewModel independently of UI.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

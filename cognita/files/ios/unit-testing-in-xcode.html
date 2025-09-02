@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Unit Testing in Xcode (for iOS/macOS development)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Unit Testing in Xcode (for iOS/macOS development)</h1>
+                    <p class="subtitle">Xcode includes built-in support for unit testing using XCTest, Apple’s official testing framework. It allows you to write tests for Swift (and Objective-C) code to verify functionality, detect regressions, and ensure stability.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🛠️ Basic Steps to Add Unit Testing in Xcode</h2>
+            <ol>
+                <li>
+                    Create a New Xcode Project (or open existing one)
+                    <p>When creating a new project, make sure to check:</p>
+                    <p>✅ Include Tests</p>
+                    <p>This automatically creates a test target with a ProjectNameTests group.</p>
+                </li>
+
+                <li>
+                    Locate or Create Test Files
+                    <p>Xcode adds a folder named ProjectNameTests which typically contains:</p>
+                    <pre><code>
+import XCTest
+@testable import YourProjectName
+
+class YourProjectNameTests: XCTestCase {
+    
+    override func setUp() {
+        // Called before each test method
+    }
+
+    override func tearDown() {
+        // Called after each test method
+    }
+
+    func testExample() {
+        XCTAssertEqual(2 + 2, 4)
+    }
+}
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✍️ How to Write a Simple Unit Test in Swift</h2>
+            <p>Assume you have a function in your app:</p>
+            <pre><code>
+// Calculator.swift
+class Calculator {
+    func add(_ a: Int, _ b: Int) -> Int {
+        return a + b
+    }
+}
+            </code></pre>
+
+            <p>Create a test case for it:</p>
+            <pre><code>
+// CalculatorTests.swift
+import XCTest
+@testable import YourProjectName
+
+class CalculatorTests: XCTestCase {
+
+    func testAddition() {
+        let calc = Calculator()
+        let result = calc.add(2, 3)
+        XCTAssertEqual(result, 5, "Expected 2 + 3 to equal 5")
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>▶️ Run the Tests</h2>
+            <p>You can run your tests in three main ways:</p>
+            <ul>
+                <li>From the menu: Product → Test (Cmd + U)</li>
+                <li>From the test navigator (⌘ + 6) → Click the play button next to the test</li>
+                <li>Automatically via CI/CD pipelines or bots</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 Useful XCTest Assertions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Assertion</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>XCTAssertEqual(a, b)</td>
+                        <td>Passes if a == b</td>
+                    </tr>
+                    <tr>
+                        <td>XCTAssertTrue(condition)</td>
+                        <td>Passes if condition is true</td>
+                    </tr>
+                    <tr>
+                        <td>XCTAssertNil(value)</td>
+                        <td>Passes if value is nil</td>
+                    </tr>
+                    <tr>
+                        <td>XCTAssertThrowsError()</td>
+                        <td>Passes if an error is thrown</td>
+                    </tr>
+                    <tr>
+                        <td>XCTFail()</td>
+                        <td>Always fails the test</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📌 Best Practices</h2>
+            <ul>
+                <li>Use descriptive test method names like testLoginFailsWithWrongPassword()</li>
+                <li>Keep tests small and focused on a single behavior</li>
+                <li>Avoid relying on UI or network in unit tests (use mocks/stubs instead)</li>
+                <li>Run tests frequently, especially after changes</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

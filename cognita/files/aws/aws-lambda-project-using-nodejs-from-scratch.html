@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Setting up an AWS Lambda project using Node.js</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Setting up an AWS Lambda project using Node.js</h1>
+                    <p class="subtitle">Here's a step-by-step guide to setting up an AWS Lambda project using Node.js from scratch. This includes project structure, dependencies, and how to deploy using the AWS CLI or the Serverless Framework (optional).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Prerequisites</h2>
+            <p>Before you start:</p>
+            <ul>
+                <li>Node.js installed (v14.x or later)</li>
+                <li>AWS CLI configured (aws configure)</li>
+                <li>IAM role with Lambda permissions (or use default Lambda execution role)</li>
+                <li>(Optional) <a href="https://www.serverless.com/framework/docs/getting-started?utm_source=chatgpt.com">Serverless Framework</a></li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📁 1. Project Setup</h2>
+            <p>1.1 Initialize Project</p>
+            <pre><code>
+mkdir my-lambda-project
+cd my-lambda-project
+npm init -y
+            </code></pre>
+
+            <p>1.2 Install Dependencies (if needed)</p>
+            <pre><code>
+npm install axios # example: if you need external HTTP requests
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📝 2. Create Lambda Handler</h2>
+            <p>Create a file named index.js (or handler.js, your choice):</p>
+            <pre><code>
+// index.js
+
+exports.handler = async (event) => {
+  console.log("Event:", JSON.stringify(event, null, 2));
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: "Hello from Lambda!" }),
+  };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 3. Local Test (Optional)</h2>
+            <p>You can test your handler locally:</p>
+            <pre><code>
+// test.js
+const { handler } = require("./index");
+
+const event = {}; // mock event
+
+handler(event).then((response) => console.log(response));
+            </code></pre>
+
+            <p>Run:</p>
+            <pre><code>
+node test.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 4. Package the Lambda</h2>
+            <p>To deploy manually, zip your code:</p>
+            <pre><code>
+zip -r function.zip .
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 5. Deploy to AWS (Using CLI)</h2>
+            <pre><code>
+aws lambda create-function \
+  --function-name myNodeLambda \
+  --runtime nodejs18.x \
+  --role arn:aws:iam::<account-id>:role/<lambda-execution-role> \
+  --handler index.handler \
+  --zip-file fileb://function.zip
+            </code></pre>
+
+            <p>If the function already exists:</p>
+            <pre><code>
+aws lambda update-function-code \
+  --function-name myNodeLambda \
+  --zip-file fileb://function.zip
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📡 6. (Optional) Use Serverless Framework</h2>
+            <p>Install:</p>
+            <pre><code>
+npm install -g serverless
+            </code></pre>
+
+            <p>Setup:</p>
+            <pre><code>
+sls create --template aws-nodejs --path my-lambda-serverless
+cd my-lambda-serverless
+npm install
+            </code></pre>
+
+            <p>Example handler.js:</p>
+            <pre><code>
+module.exports.hello = async (event) => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Hello from Serverless Framework!" }),
+    };
+};                  
+            </code></pre>
+
+            <p>Example serverless.yml:</p>
+            <pre><code>
+service: my-lambda-serverless
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+
+functions:
+  hello:
+    handler: handler.hello
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Deploy:</h2>
+            <pre><code>
+sls deploy
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Done!</h2>
+            <p>You now have a functioning AWS Lambda using Node.js, either deployed manually or via Serverless.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

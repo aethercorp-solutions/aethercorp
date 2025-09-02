@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ObservableObject with UIKit</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">ObservableObject with UIKit</h1>
+                    <p class="subtitle">
+                        Great — if you want to use ObservableObject with UIKit, your AuthViewModel can still follow the same structure, and you can observe its changes using Combine (e.g., with @Published properties and KVO/combine subscribers in UIKit).
+                        <p>Below is a version that works for UIKit and is also SwiftUI-compatible, using ObservableObject and @Published, while also being cleanly usable from view controllers.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Updated AuthViewModel (UIKit + SwiftUI compatible)</h2>
+            <pre><code>
+import Foundation
+import FirebaseAuth
+import GoogleSignIn
+import Combine
+
+@MainActor
+class AuthViewModel: ObservableObject {
+
+    @Published var currentUser: User? = nil
+    @Published var errorMessage: String? = nil
+    @Published var isSignedIn: Bool = false
+
+    func signInWithGoogle(presentingViewController: UIViewController) {
+        GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { result, error in
+            if let error = error {
+                Task { @MainActor in
+                    self.errorMessage = "Google Sign-In failed: \(error.localizedDescription)"
+                    self.isSignedIn = false
+                }
+                return
+            }
+
+            guard let user = result?.user else {
+                Task { @MainActor in
+                    self.errorMessage = "Google Sign-In failed: User not found."
+                    self.isSignedIn = false
+                }
+                return
+            }
+
+            guard let idToken = user.idToken?.tokenString else {
+                Task { @MainActor in
+                    self.errorMessage = "Google Sign-In failed: ID Token is nil."
+                    self.isSignedIn = false
+                }
+                return
+            }
+
+            let accessToken = user.accessToken.tokenString
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+
+            Auth.auth().signIn(with: credential) { authResult, error in
+                Task { @MainActor in
+                    if let error = error {
+                        self.errorMessage = "Firebase authentication failed: \(error.localizedDescription)"
+                        self.isSignedIn = false
+                        return
+                    }
+
+                    if let user = authResult?.user {
+                        self.currentUser = user
+                        self.isSignedIn = true
+                        self.errorMessage = nil
+                    } else {
+                        self.errorMessage = "Firebase authentication failed: User object is nil."
+                        self.isSignedIn = false
+                    }
+                }
+            }
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ How to Use in UIKit</h2>
+            <p>In a UIKit view controller, observe AuthViewModel using Combine:</p>
+            <pre><code>
+import UIKit
+import Combine
+import FirebaseAuth
+
+class LoginViewController: UIViewController {
+
+    private var viewModel = AuthViewModel()
+    private var cancellables = Set<AnyCancellable>()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        bindViewModel()
+    }
+
+    private func bindViewModel() {
+        viewModel.$currentUser
+            .removeDuplicates { $0?.id == $1?.id } // Avoid repeated navigations for same user
+            .compactMap { $0 }                     // Skip nils, unwrap safely
+            .receive(on: RunLoop.main)            // Ensure UI updates are on main thread
+            .sink { [weak self] user in
+                print("Signed in as: \(user.email ?? "Unknown")")
+                self?.navigateToMainScreen()
+            }
+            .store(in: &cancellables)
+
+        viewModel.$errorMessage
+            .sink { [weak self] errorMessage in
+                if let error = errorMessage {
+                    self?.showError(message: error)
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    @IBAction func signInButtonTapped(_ sender: UIButton) {
+        viewModel.signInWithGoogle(presentingViewController: self)
+    }
+
+    private func navigateToMainScreen() {
+        // Present or push to main screen
+    }
+
+    private func showError(message: String) {
+        let alert = UIAlertController(title: "Sign-In Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <ul>
+                <li>✅ @Published properties let SwiftUI or UIKit know when sign-in state changes.</li>
+                <li>✅ Compatible with UIKit using Combine (.sink).</li>
+                <li>✅ SwiftUI-ready if needed later.</li>
+                <li>✅ Cleanly separates logic (ViewModel) from UI (ViewController or View).</li>
+            </ul>
+        </section>
+
+        <section>
+            <pre><code>
+Task { @MainActor in
+    self.errorMessage = "Google Sign-In failed: \(error.localizedDescription)"
+    self.isSignedIn = false
+}                
+            </code></pre>
+            <p>Breakdown:</p>
+            <ul>
+                <li>Task { @MainActor in ... }: This ensures that the code inside runs on the main thread, which is required for updating @State or @Published properties that affect the UI.</li>
+                <li>self.errorMessage = ...: Sets an error message that can be displayed to the user.</li>
+                <li>self.isSignedIn = false: Reflects the failed sign-in attempt.</li>
+            </ul>
+            <p>When would you use this?</p>
+            <p>If you're calling a Google Sign-In function that runs off the main thread (like a background async operation), but need to update UI-bound state afterwards, wrapping the updates in Task { @MainActor in ... } is the right approach.</p>
+        </section>
+
+        <section>
+            <h2>The difference between GIDSignIn.sharedInstance.signIn and Auth.auth().signIn lies in what each method is responsible for and what services they belong to:</h2>
+            <p>🔹 GIDSignIn.sharedInstance.signIn</p>
+            <ul>
+                <li>Belongs to: Google Sign-In SDK (GoogleSignIn framework)</li>
+                <li>Purpose: Authenticates a user with Google (i.e. their Google Account).</li>
+                <li>Usage: Starts the Google sign-in flow, allowing the user to log in using their Google credentials (like Gmail).</li>
+                <li>
+                    Result: Returns a GIDGoogleUser object which includes:
+                    <ul>
+                        <li>Google profile info (name, email, etc.)</li>
+                        <li>An ID token and access token (used to authenticate with backend services)</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>✅ Used when you want users to sign in via their Google account.</p>
+        </section>
+
+        <section>
+            <p>🔹 Auth.auth().signIn</p>
+            <ul>
+                <li>Belongs to: Firebase Authentication (FirebaseAuth framework)</li>
+                <li>
+                    Purpose: Signs a user into Firebase using different providers:
+                    <ul>
+                        <li>Email/password</li>
+                        <li>Google</li>
+                        <li>Facebook</li>
+                        <li>Apple</li>
+                        <li>Anonymous, etc.</li>
+                    </ul>
+                </li>
+                <li>Usage: Used to authenticate users with Firebase, which lets you control access to Firebase services (like Firestore, Realtime Database, Storage, etc.)</li>
+                <li>Result: Returns a Firebase User object.</li>
+            </ul>
+            <p>✅ Used when you want to manage authentication in your Firebase backend.</p>
+        </section>
+
+        <section>
+            <h2>🔁 How They Work Together (When Using Google Sign-In with Firebase)</h2>
+            <p>If you're using Google Sign-In with Firebase, you use both:</p>
+            <ol>
+                <li>
+                    First, sign in the user with Google:
+                    <pre><code>
+GIDSignIn.sharedInstance.signIn(with: config, presenting: viewController) { user, error in
+    // Get the ID token and access token from `user`
+}                    
+                    </code></pre>
+                </li>
+
+                <li>
+                    Then, authenticate with Firebase using the credentials from Google:
+                    <pre><code>
+let authentication = user.authentication
+let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
+                                                accessToken: authentication.accessToken)
+
+Auth.auth().signIn(with: credential) { authResult, error in
+    // Now the user is signed into Firebase
+}
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Belongs to</th>
+                        <th>Purpose</th>
+                        <th>When to Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GIDSignIn.sharedInstance.signIn</td>
+                        <td>Google Sign-In SDK</td>
+                        <td>Log in with Google account</td>
+                        <td>To get Google user credentials</td>
+                    </tr>
+                    <tr>
+                        <td>Auth.auth().signIn(with:)</td>
+                        <td>Firebase Auth SDK</td>
+                        <td>Log in to Firebase backend</td>
+                        <td>To authenticate with Firebase (optionally using Google credentials)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <pre><code>
+viewModel.$currentUser
+    .removeDuplicates { $0?.id == $1?.id } // Avoid repeated navigations for same user
+    .compactMap { $0 }                     // Skip nils, unwrap safely
+    .receive(on: RunLoop.main)            // Ensure UI updates are on main thread
+    .sink { [weak self] user in
+        print("Signed in as: \(user.email ?? "Unknown")")
+        self?.navigateToMainScreen()
+    }
+    .store(in: &cancellables)
+            </code></pre>
+            <p>Your bindViewModel() function is a typical Combine-based data binding in Swift, where you're subscribing to two @Published properties: currentUser and errorMessage. Here's a breakdown and some possible improvements or considerations:</p>
+        </section>
+
+        <section>
+            <h2>✅ What it does:</h2>
+            <ol>
+                <li>
+                    currentUser binding:
+                    <ul>
+                        <li>When currentUser is updated (e.g., after a login), it prints the user's email and navigates to the main screen.</li>
+                    </ul>
+                </li>
+                <li>
+                    errorMessage binding:
+                    <ul>
+                        <li>When errorMessage is updated (e.g., login failure), it shows an error message to the user.</li>
+                    </ul>
+                </li>
+            </ol>
+            <ol>
+                <li>
+                    .removeDuplicates { $0?.id == $1?.id }
+                    <p>Prevents triggering the navigation if the same User object (based on id) is published again. This is useful when:</p>
+                    <ul>
+                        <li>Your view model reassigns the same user.</li>
+                        <li>You want to avoid multiple navigations.</li>
+                    </ul>
+                </li>
+                <li>
+                    .compactMap { $0 }
+                    <ul>
+                        <li>This skips over nil values cleanly, so you don’t need the if let user = user check in the sink block. Cleaner and clearer.</li>
+                    </ul>
+                </li>
+                <li>
+                    .receive(on: RunLoop.main)
+                    <ul>
+                        <li>Ensures your UI interaction (navigateToMainScreen) happens on the main thread. Combine doesn't automatically deliver on the main thread unless explicitly told.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧪 Optional Debug Logging:</h2>
+            <p>If you're troubleshooting or testing:</p>
+            <pre><code>
+.handleEvents(receiveOutput: { user in
+    print("[DEBUG] Received user update: \(user.email ?? "Unknown")")
+})                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔧 What is sink in Combine?</h2>
+            <p>sink is a subscriber in the Combine framework that allows you to react to values emitted by a publisher.</p>
+            <p>When you call .sink, you're telling the publisher:</p>
+            <p>"When you send me a value (or an error), I want to run this code."</p>
+
+            <pre><code>
+viewModel.$currentUser
+    .sink { user in
+        print("User updated: \(user?.email ?? "None")")
+    }
+            </code></pre>
+            <p>Here’s what’s happening:</p>
+            <ul>
+                <li>viewModel.$currentUser is a publisher — it publishes a new value every time currentUser changes.</li>
+                <li>.sink { ... } is the subscriber — it takes each new value and executes the closure.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 What Does sink Handle?</h2>
+            <p>sink can handle two things depending on which version you use:</p>
+            <ol>
+                <li>
+                    Only Values (Output) – common for @Published:
+                    <pre><code>
+.sink { value in 
+    // Do something with the value
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Completion & Values – if you're dealing with Result-style streams (e.g., from a network request):
+                    <pre><code>
+.sink(receiveCompletion: { completion in
+    switch completion {
+    case .finished:
+        print("Stream finished.")
+    case .failure(let error):
+        print("Stream failed with error: \(error)")
+    }
+}, receiveValue: { value in
+    print("Got value: \(value)")
+})                        
+                    </code></pre>
+                </li>
+            </ol>
+            <p>For @Published, which never fails, the first simpler form is enough.</p>
+        </section>
+
+        <section>
+            <h2>🔒 Memory Management: Why .store(in:)?</h2>
+            <p>Combine uses subscriptions, and those need to be stored somewhere. Otherwise, they'll get deallocated immediately, and your .sink won't do anything.</p>
+            <p>That’s why you use:</p>
+            <pre><code>
+.store(in: &cancellables)
+            </code></pre>
+            <p>You typically declare this at the class level:</p>
+            <pre><code>
+private var cancellables = Set&lt;AnyCancellable&gt;()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📝 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Publisher</td>
+                        <td>Emits values over time (e.g. $currentUser)</td>
+                    </tr>
+                    <tr>
+                        <td>sink</td>
+                        <td>Subscribes to a publisher; handles values</td>
+                    </tr>
+                    <tr>
+                        <td>store(in:)</td>
+                        <td>Keeps the subscription alive</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔍 What is store(in:)?</h2>
+            <p>store(in:) is a method that keeps your subscription alive by storing it inside a collection of cancellables — usually a Set&lt;AnyCancellable&gt;.</p>
+            <p>Why do you need it?</p>
+            <p>
+                When you use Combine’s sink (or other subscribers), it returns an object called an AnyCancellable. This object represents your subscription, and when it gets deallocated, the subscription cancels automatically.
+            </p>
+            <p>
+                If you don’t keep a reference to the subscription, it will be immediately cancelled, and you won’t receive any events.
+            </p>
+        </section>
+
+        <section>
+            <h2>How does store(in:) work?</h2>
+            <p>Instead of manually keeping a reference to each subscription, you store them all inside a property, often called cancellables:</p>
+            <pre><code>
+private var cancellables = Set&lt;AnyCancellable&gt;()
+            </code></pre>
+
+            <p>Then you add subscriptions like this:</p>
+            <pre><code>
+    viewModel.$currentUser
+    .sink { user in
+        print("User updated: \(user?.email ?? "None")")
+    }
+    .store(in: &cancellables)
+            </code></pre>
+
+            <p>Here, store(in:) inserts the returned AnyCancellable into the cancellables set, so it stays alive as long as the cancellables set exists.</p>
+        </section>
+
+        <section>
+            <h2>What happens if you don’t use store(in:)?</h2>
+            <p>If you just write:</p>
+            <pre><code>
+    viewModel.$currentUser
+    .sink { user in
+        print("User updated: \(user?.email ?? "None")")
+    }
+            </code></pre>
+
+            <p>The AnyCancellable returned by sink isn’t stored anywhere — it gets immediately deallocated, cancelling the subscription. So your closure never gets called.</p>
+        </section>
+
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AnyCancellable</td>
+                        <td>A subscription that can be cancelled</td>
+                    </tr>
+                    <tr>
+                        <td>store(in:)</td>
+                        <td>Keeps the subscription alive by storing it</td>
+                    </tr>
+                    <tr>
+                        <td>cancellables</td>
+                        <td>A set where you keep your subscriptions</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Bonus tip:</h2>
+            <p>If you want to cancel all subscriptions manually, you can do:</p>
+            <pre><code>
+cancellables.forEach { $0.cancel() }
+cancellables.removeAll()
+            </code></pre>
+
+            <p>This is handy when your view is disappearing, and you want to stop observing changes.</p>
+        </section>
+
+        <section>
+            <p>AnyCancellable is a type from Apple’s Combine framework, which is used for handling asynchronous events and reactive programming in Swift.</p>
+            <p>🧠 What is AnyCancellable?</p>
+            <p>
+                AnyCancellable is a token that represents the lifecycle of a subscription. When this token is deallocated, the subscription is cancelled automatically.
+            </p>
+            <p>🔍 Why Use AnyCancellable?</p>
+
+            <p>
+                Combine pipelines create subscriptions that need to be explicitly managed. Without proper management, they can lead to memory leaks or unwanted behavior.
+            </p>
+
+            <p>AnyCancellable helps by:</p>
+            <ul>
+                <li>Storing cancellables in a collection like Set<AnyCancellable>.</li>
+                <li>Cancelling the subscription automatically when the token is deallocated (or manually if needed).</li>
+            </ul>
+
+            <p>✅ Basic Usage Example</p>
+            <pre><code>
+import Combine
+
+var cancellables = Set&lt;AnyCancellable&gt;()
+
+Just("Hello Combine")
+    .sink { value in
+        print(value)
+    }
+    .store(in: &cancellables)
+            </code></pre>
+
+            <p>In this example:</p>
+            <ul>
+                <li>Just("Hello Combine") is a publisher.</li>
+                <li>.sink subscribes to it.</li>
+                <li>.store(in:) stores the returned AnyCancellable in a Set so it stays alive as long as needed.</li>
+            </ul>
+
+            <p>🧰 When Is AnyCancellable Used?</p>
+            <ul>
+                <li>Inside ViewModel or ObservableObject in SwiftUI</li>
+                <li>To manage the lifecycle of subscribers</li>
+                <li>When chaining publishers and need to cancel work when no longer needed</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

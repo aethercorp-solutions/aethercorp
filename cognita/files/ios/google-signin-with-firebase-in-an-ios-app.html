@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Integrate Google Sign-In with Firebase in an iOS app using Swift</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Integrate Google Sign-In with Firebase in an iOS app using Swift</h1>
+                    <p class="subtitle">To integrate Google Sign-In with Firebase in an iOS app using Swift, follow these steps. This guide assumes you are familiar with using Xcode and Firebase, but I'll walk you through the process.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Step 1: Set up Firebase Project</h2>
+            <ol>
+                <li>Go to Firebase Console: <a href="https://console.firebase.google.com/?utm_source=chatgpt.com">Firebase Console</a></li>
+                <li>Create a New Firebase Project (if you don’t already have one).</li>
+                <li>
+                    Add Your iOS App:
+                    <ul>
+                        <li>In the Firebase Console, click on "Add App" and select iOS.</li>
+                        <li>Enter your iOS app's bundle ID and register the app.</li>
+                        <li>Download the GoogleService-Info.plist and add it to your Xcode project. Make sure the file is included in your project’s target.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Enable Firebase Authentication:
+                    <ul>
+                        <li>In Firebase Console, navigate to Authentication > Sign-in method.</li>
+                        <li>Enable Google sign-in under the "Sign-in providers" section.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 2: Install Firebase SDK and Google Sign-In SDK</h2>
+            <ol>
+                <li>Open your Xcode project.</li>
+                <li>
+                    Install Firebase using CocoaPods (or Swift Package Manager if you prefer, but CocoaPods is more common).
+                    <ul>
+                        <li>
+                            If you're using CocoaPods, open your project’s directory in Terminal and run:
+                            <pre><code>
+pod init
+                            </code></pre>
+                        </li>
+
+                        <li>
+                            In your Podfile, add the following dependencies:
+                            <pre><code>
+pod 'Firebase/Auth'
+pod 'GoogleSignIn'
+                            </code></pre>
+                        </li>
+
+                        <li>
+                            Run:
+                            <pre><code>
+pod install
+                            </code></pre>
+                        </li>
+
+                        <li>
+                            Open the .xcworkspace file that CocoaPods generates.
+                        </li>
+                    </ul>
+
+                    <li>
+                        Make sure the following frameworks are linked in your Xcode project:
+                        <ul>
+                            <li>FirebaseCore</li>
+                            <li>FirebaseAuth</li>
+                            <li>GoogleSignIn</li>
+                        </ul>
+                    </li>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 3: Configure Firebase and Google Sign-In in Your App</h2>
+            <ol>
+                <li>
+                    Update the AppDelegate.swift:
+                    <p>Import Firebase and GoogleSignIn at the top of your AppDelegate.swift:</p>
+                    <pre><code>
+import Firebase
+import GoogleSignIn
+                    </code></pre>
+                    <p>Then, inside the didFinishLaunchingWithOptions method, configure Firebase:</p>
+                    <pre><code>
+FirebaseApp.configure()
+                    </code></pre>
+
+                    <p>You'll also need to handle Google Sign-In URL opening:</p>
+                    <pre><code>
+func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    return GIDSignIn.sharedInstance.handle(url)
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Update the SceneDelegate.swift (if your app uses a scene-based life cycle):
+                    <p>Inside scene(_:willConnectTo:options:), make sure to configure Google Sign-In:</p>
+                    <pre><code>
+GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+    if let error = error {
+        print("Error restoring previous sign-in: \(error)")
+    } else if let user = user {
+        print("Restored user: \(user)")
+    }
+}                        
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 4: Google Sign-In Button</h2>
+            <ul>
+                <li>
+                    Add the Google Sign-In button to your ViewController.swift.
+                    <p>Import GoogleSignIn at the top:</p>
+                    <pre><code>
+import GoogleSignIn
+                    </code></pre>
+                </li>
+
+                <li>
+                    Create a Google Sign-In button in your UI (either programmatically or via Storyboard). If using the button programmatically:
+                    <pre><code>
+let signInButton = GIDSignInButton()
+signInButton.center = self.view.center
+self.view.addSubview(signInButton)
+                    </code></pre>
+                </li>
+
+                <li>
+                    Handle Google Sign-In flow: In your ViewController.swift, implement the signIn action to handle Google Sign-In:
+                    <pre><code>
+GIDSignIn.sharedInstance.signIn(withPresenting: self) { user, error in
+    if let error = error {
+        print("Google Sign-In Error: \(error.localizedDescription)")
+        return
+    }
+
+    guard let authentication = user?.authentication else { return }
+    let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken!,
+                                                    accessToken: authentication.accessToken!)
+
+    // Sign in to Firebase with Google credentials
+    Auth.auth().signIn(with: credential) { (result, error) in
+        if let error = error {
+            print("Firebase Sign-In Error: \(error.localizedDescription)")
+            return
+        }
+
+        print("User signed in to Firebase with Google: \(String(describing: result?.user))")
+    }
+}                        
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 5: Testing the Integration</h2>
+            <ol>
+                <li>Run the App on a physical device (since Google Sign-In won’t work in the simulator unless you’re using a URL scheme).</li>
+                <li>When the user taps the Google Sign-In button, they should be prompted to authenticate via their Google account, and once authenticated, Firebase will handle the rest.</li>
+            </ol>
+
+            <p>Optional: Handle Sign-Out</p>
+            <p>To sign out the user:</p>
+            <pre><code>
+GIDSignIn.sharedInstance.signOut()
+            </code></pre>
+
+            <p>To sign out from Firebase as well:</p>
+            <pre><code>
+try? Auth.auth().signOut()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common Issues and Fixes</h2>
+            <ul>
+                <li>App Delegate Issues: Ensure you've correctly configured the AppDelegate.swift and SceneDelegate.swift for the iOS lifecycle.</li>
+                <li>GoogleService-Info.plist: Double-check that this file is included and properly configured.</li>
+                <li>Sign-In Button Not Showing: Ensure that you are using the correct size and positioning for the Google Sign-In button, especially if you're adding it programmatically.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

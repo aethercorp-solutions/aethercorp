@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>idToken and accessToken</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">idToken and accessToken</h1>
+                    <p class="subtitle">The terms idToken and accessToken are often used in the context of authentication and authorization protocols like OAuth 2.0 and OpenID Connect (OIDC). They serve different purposes even though they are both issued by an authorization server (like Auth0, Firebase, AWS Cognito, etc.).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Here’s a breakdown of the key differences:</h2>
+
+            <p>🔐 idToken – Identity Token</p>
+            <ul>
+                <li>Purpose: To authenticate the user and convey who the user is.</li>
+                <li>Used By: The client application (frontend, SPA, mobile app) to identify the user.</li>
+                <li>
+                    Contains:
+                    <ul>
+                        <li>User's identity info (e.g., sub, name, email)</li>
+                        <li>Issuer info (who issued the token)</li>
+                        <li>Expiry time</li>
+                    </ul>
+                </li>
+                <li>Format: Usually a JWT (JSON Web Token)</li>
+                <li>Issued When: Using OpenID Connect (OIDC)</li>
+                <li>Sent To: Client application after login (not to APIs)</li>
+            </ul>
+            <p>🔸 Think of it as the user's profile, digitally signed by the identity provider.</p>
+        </section>
+
+        <section>
+            <h2>🔓 accessToken – Access Token</h2>
+            <ul>
+                <li>Purpose: To authorize access to protected resources (like APIs).</li>
+                <li>Used By: The client application to access APIs on behalf of the user.</li>
+                <li>
+                    Contains:
+                    <ul>
+                        <li>Scopes (permissions granted)</li>
+                        <li>Resource access claims</li>
+                        <li>
+                            Expiry time
+                            <p>Authorization: Bearer &lt;accessToken&gt;</p>
+                        </li>
+                    </ul>
+                </li>
+                <li>Format: Often a JWT, but not always (depends on provider)</li>
+                <li>Issued When: Using OAuth 2.0 or OIDC</li>
+                <li>Sent To: API servers in the Authorization header:</li>
+            </ul>
+            <p>🔸 Think of it as a key to access resources, not a source of identity.</p>
+        </section>
+
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>idToken</th>
+                        <th>accessToken</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Purpose</td>
+                        <td>Authentication (who is the user)</td>
+                        <td>Authorization (what can user access)</td>
+                    </tr>
+                    <tr>
+                        <td>Used by</td>
+                        <td>Client app</td>
+                        <td>APIs</td>
+                    </tr>
+                    <tr>
+                        <td>Standard</td>
+                        <td>OpenID Connect</td>
+                        <td>OAuth 2.0 / OpenID Connect</td>
+                    </tr>
+                    <tr>
+                        <td>Contains</td>
+                        <td>User info (claims)</td>
+                        <td>Permissions, scopes, resource info</td>
+                    </tr>
+                    <tr>
+                        <td>Sent to</td>
+                        <td>Client app</td>
+                        <td>API (via Authorization header)</td>
+                    </tr>
+                    <tr>
+                        <td>Format</td>
+                        <td>Usually JWT</td>
+                        <td>JWT or opaque</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Example Use Case</h2>
+            <p>When a user logs in:</p>
+            <ol>
+                <li>idToken is used by the frontend to display user info like name, email.</li>
+                <li>accessToken is sent to the backend API to prove the user is allowed to make the request.</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

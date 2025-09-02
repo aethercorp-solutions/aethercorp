@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Regressions in Software</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Regressions in Software</h1>
+                    <p class="subtitle">A regression in software occurs when a previously working feature stops functioning correctly after a change in the codebase—such as a bug fix, update, new feature, or refactoring.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>📉 Types of Software Regressions</h2>
+            <ol>
+                <li>
+                    Functional Regression
+                    <ul>
+                        <li>A specific feature that used to work now behaves incorrectly or fails entirely.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Performance Regression
+                    <ul>
+                        <li>The software becomes slower or consumes more resources after a change.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    UI Regression
+                    <ul>
+                        <li>Changes unintentionally break layout, style, or user interaction on the interface.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Security Regression
+                    <ul>
+                        <li>A change unintentionally reintroduces a previously fixed vulnerability.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Integration Regression
+                    <ul>
+                        <li>A module works alone but fails when integrated with other parts of the system due to changes.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧪 How Regressions Happen</h2>
+            <ul>
+                <li>Code changes without proper testing</li>
+                <li>Fixing one bug that introduces another</li>
+                <li>Refactoring without test coverage</li>
+                <li>Merging conflicting code changes</li>
+                <li>Incomplete or misunderstood requirements</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>🛡️ How to Prevent Regressions</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prevention Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Unit Testing</td>
+                        <td>Validates individual components work correctly.</td>
+                    </tr>
+                    <tr>
+                        <td>Regression Testing</td>
+                        <td>Re-runs previously passed tests to ensure no new bugs have been introduced.</td>
+                    </tr>
+                    <tr>
+                        <td>Integration Testing</td>
+                        <td>Checks interaction between modules.</td>
+                    </tr>
+                    <tr>
+                        <td>Test Automation</td>
+                        <td>Enables frequent and fast regression testing in CI/CD pipelines.</td>
+                    </tr>
+                    <tr>
+                        <td>Code Reviews</td>
+                        <td>Helps catch logic errors and unintended consequences of changes.</td>
+                    </tr>
+                    <tr>
+                        <td>Version Control & Branching</td>
+                        <td>Isolates features and changes to reduce conflicts and test impact.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Example:</h2>
+            <p>Imagine you're building a calculator app:</p>
+            <ul>
+                <li>✅ Version 1: The subtract() function works.</li>
+                <li>🔧 You update the add() function.</li>
+                <li>❌ Now subtract() returns the wrong result.</li>
+                <li>This is a regression—a change in one area affected another.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠 Tools That Help Detect Regressions</h2>
+            <ul>
+                <li>Automated Testing Frameworks: JUnit, PyTest, Mocha, etc.</li>
+                <li>CI/CD Pipelines: GitHub Actions, GitLab CI, Jenkins</li>
+                <li>Regression Testing Tools: Selenium (UI), TestNG, JUnit (unit), Postman (API)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

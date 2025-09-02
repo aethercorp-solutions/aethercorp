@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Designing a ViewModel in Swift (iOS)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Designing a ViewModel in Swift (iOS)</h1>
+                    <p class="subtitle">Designing a ViewModel in Swift (iOS) involves applying the MVVM (Model-View-ViewModel) architectural pattern. The goal is to separate business logic and presentation logic from the UI layer, making your app more modular, testable, and maintainable.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Understanding MVVM Layers</h2>
+            <p>
+                🔹 Model
+                <ul>
+                    <li>Your data layer — structs/classes representing your data, API models, database models, etc.</li>
+                </ul>
+            </p>
+
+            <p>
+                🔹 View
+                <ul>
+                    <li>SwiftUI View or UIKit UIViewController.</li>
+                    <li>Only responsible for rendering the UI and reacting to state changes.</li>
+                </ul>
+            </p>
+
+            <p>
+                🔹 ViewModel
+                <ul>
+                    <li>Sits between the View and Model.</li>
+                    <li>Holds the business logic, transforms data from the model to something the view can present.</li>
+                    <li>Typically uses @Published properties or ObservableObject (in SwiftUI).</li>
+                </ul>
+            </p>
+        </section>
+
+        <section>
+            <h2>🛠️ Basic ViewModel Example (SwiftUI)</h2>
+            <p>Step 1: Define a Model</p>
+            <pre><code>
+struct User: Identifiable {
+    let id: Int
+    let name: String
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2: Create a ViewModel</h2>
+            <pre><code>
+import Foundation
+import Combine
+
+class UserViewModel: ObservableObject {
+    @Published var users: [User] = []
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
+
+    // Simulating network/data fetch
+    func fetchUsers() {
+        isLoading = true
+        errorMessage = nil
+        
+        // Simulate API delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            let success = Bool.random()
+
+            if success {
+                self.users = [
+                    User(id: 1, name: "Alice"),
+                    User(id: 2, name: "Bob"),
+                    User(id: 3, name: "Charlie")
+                ]
+            } else {
+                self.errorMessage = "Failed to load users"
+            }
+
+            self.isLoading = false
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3: SwiftUI View</h2>
+            <pre><code>
+import SwiftUI
+
+struct UserListView: View {
+    @StateObject private var viewModel = UserViewModel()
+
+    var body: some View {
+        VStack {
+            if viewModel.isLoading {
+                ProgressView("Loading...")
+            } else if let error = viewModel.errorMessage {
+                Text(error)
+                    .foregroundColor(.red)
+            } else {
+                List(viewModel.users) { user in
+                    Text(user.name)
+                }
+            }
+
+            Button("Reload Users") {
+                viewModel.fetchUsers()
+            }
+            .padding()
+        }
+        .onAppear {
+            viewModel.fetchUsers()
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Benefits of ViewModel</h2>
+            <ol>
+                <li>Keeps your View logic simple.</li>
+                <li>Easier to write unit tests.</li>
+                <li>Reusable logic (e.g., same ViewModel in different views).</li>
+                <li>Works naturally with Combine and Swift Concurrency.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧪 Unit Testing ViewModel</h2>
+            <p>Example with XCTest:</p>
+            <pre><code>
+func testFetchUsersSuccess() {
+    let vm = UserViewModel()
+    let expectation = XCTestExpectation(description: "Users loaded")
+
+    vm.fetchUsers()
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+        XCTAssertFalse(vm.users.isEmpty)
+        XCTAssertFalse(vm.isLoading)
+        XCTAssertNil(vm.errorMessage)
+        expectation.fulfill()
+    }
+
+    wait(for: [expectation], timeout: 5)
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧵 UIKit Version (Quick Look)</h2>
+            <p>For UIKit, your ViewModel can still conform to ObservableObject, or you can use delegation, bindings (with Combine), or callback closures to communicate changes.</p>
+            <p>Would you like an example using UIKit + ViewModel instead of SwiftUI?</p>
+            <p>Or would you prefer an example with Swift Concurrency (async/await) instead of DispatchQueue?</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

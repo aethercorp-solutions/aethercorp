@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FIRUser is a class in the Firebase Authentication SDK</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">FIRUser is a class in the Firebase Authentication SDK</h1>
+                    <p class="subtitle">FIRUser is a class in the Firebase Authentication SDK used primarily in iOS (Swift/Objective-C) development. It represents an authenticated user and provides access to user-related data and operations.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Key Concepts</h2>
+            <ul>
+                <li>Platform: iOS (Firebase SDK for Apple platforms)</li>
+                <li>SDKs: Firebase Auth (FirebaseAuth)</li>
+                <li>Languages: Swift, Objective-C</li>
+                <li>Purpose: Represents a currently signed-in user</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔧 Common Use of FIRUser</h2>
+            <p>When a user signs in (via email/password, Google, Apple, etc.), Firebase returns a FIRUser object that contains user information and allows you to perform various account-related operations.</p>
+        </section>
+
+        <section>
+            <h2>🔍 Example in Swift</h2>
+            <pre><code>
+import FirebaseAuth
+
+if let user = Auth.auth().currentUser {
+    print("User ID: \(user.uid)")
+    print("Email: \(user.email ?? "No Email")")
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧰 FIRUser - Common Properties</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>uid</td>
+                        <td>Unique user ID assigned by Firebase</td>
+                    </tr>
+                    <tr>
+                        <td>email</td>
+                        <td>User’s email address</td>
+                    </tr>
+                    <tr>
+                        <td>displayName</td>
+                        <td>User’s display name</td>
+                    </tr>
+                    <tr>
+                        <td>photoURL</td>
+                        <td>URL to user's profile photo</td>
+                    </tr>
+                    <tr>
+                        <td>isAnonymous</td>
+                        <td>Indicates if the user signed in anonymously</td>
+                    </tr>
+                    <tr>
+                        <td>providerData</td>
+                        <td>Info about linked sign-in providers</td>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔧 FIRUser - Common Methods</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>updateEmail(to:completion:)</td>
+                        <td>Updates the user’s email</td>
+                    </tr>
+                    <tr>
+                        <td>updatePassword(to:completion:)</td>
+                        <td>Updates the user’s password</td>
+                    </tr>
+                    <tr>
+                        <td>sendEmailVerification(completion:)</td>
+                        <td>Sends a verification email</td>
+                    </tr>
+                    <tr>
+                        <td>delete(completion:)</td>
+                        <td>Deletes the user account</td>
+                    </tr>
+                    <tr>
+                        <td>link(with:completion:)</td>
+                        <td>Links another credential to the user</td>
+                    </tr>
+                    <tr>
+                        <td>reauthenticate(with:completion:)</td>
+                        <td>Reauthenticates the user</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Example: Send Verification Email</h2>
+            <pre><code>
+Auth.auth().currentUser?.sendEmailVerification { error in
+    if let error = error {
+        print("Error: \(error.localizedDescription)")
+    } else {
+        print("Verification email sent.")
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>model for a FIRUser (Firebase Auth User) in Swift</h2>
+            <p>To create a model for a FIRUser (Firebase Auth User) in Swift, you typically define a custom User struct or class that extracts and stores the necessary properties from the FIRUser (now just User in recent Firebase versions).</p>
+            <p>Here’s how you can do that:</p>
+            <p>✅ Step 1: Import Firebase</p>
+
+            <pre><code>
+import FirebaseAuth
+            </code></pre>
+
+            <p>✅ Step 2: Create a User Model</p>
+            <pre><code>
+struct AppUser {
+    let uid: String
+    let email: String?
+    let displayName: String?
+    let photoURL: URL?
+    let phoneNumber: String?
+
+    init(from user: User) {
+        self.uid = user.uid
+        self.email = user.email
+        self.displayName = user.displayName
+        self.photoURL = user.photoURL
+        self.phoneNumber = user.phoneNumber
+    }
+}
+            </code></pre>
+
+            <p>⚠️ User here refers to FirebaseAuth.User, so be careful not to name your struct User to avoid confusion or conflicts.</p>
+        
+            <p>✅ Step 3: Example Usage</p>
+            <pre><code>
+if let currentUser = Auth.auth().currentUser {
+    let appUser = AppUser(from: currentUser)
+    print("User ID: \(appUser.uid)")
+    print("Email: \(appUser.email ?? "No email")")
+}
+            </code></pre>
+
+            <p>✅ Optional: Add Codable Conformance</p>
+            <p>If you want to store the user model in Firestore or locally:</p>
+            <pre><code>
+struct AppUser: Codable {
+    let uid: String
+    let email: String?
+    let displayName: String?
+    let photoURL: String?
+    let phoneNumber: String?
+
+    init(from user: User) {
+        self.uid = user.uid
+        self.email = user.email
+        self.displayName = user.displayName
+        self.photoURL = user.photoURL?.absoluteString
+        self.phoneNumber = user.phoneNumber
+    }
+}
+            </code></pre>
+
+            <p>✅ Bonus: To Dictionary (for Firestore storage)</p>
+            <pre><code>
+extension AppUser {
+    var dictionary: [String: Any] {
+        return [
+            "uid": uid,
+            "email": email as Any,
+            "displayName": displayName as Any,
+            "photoURL": photoURL?.absoluteString as Any,
+            "phoneNumber": phoneNumber as Any
+        ]
+    }
+}
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

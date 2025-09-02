@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>App Lifecycle Management in iOS</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">App Lifecycle Management in iOS</h1>
+                    <p class="subtitle">App lifecycle management refers to how your iOS app responds to system events — such as launching, going into the background, being suspended, or terminating. iOS apps don’t run continuously; instead, the system controls when your app is active to save resources.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔄 Key App Lifecycle States</h2>
+            <ol>
+                <li>
+                    Not Running
+                    <p>The app is not launched yet or has been terminated by the system/user.</p>
+                </li>
+                <li>
+                    Inactive
+                    <p>The app is in the foreground but not receiving events.</p>
+                    <ul>
+                        <li>Example: During a phone call or when the app is transitioning between states.</li>
+                    </ul>
+                </li>
+                <li>
+                    Active
+                    <p>The app is in the foreground and receiving user events.</p>
+                    <ul>
+                        <li>This is the normal state when your app is in use.</li>
+                    </ul>
+                </li>
+                <li>
+                    Background
+                    <p>The app is still running but not visible to the user.</p>
+                    <ul>
+                        <li>Ideal for finishing up tasks like saving data or downloading content.</li>
+                    </ul>
+                </li>
+                <li>
+                    Suspended
+                    <p>The app is in memory but not executing any code.</p>
+                    <ul>
+                        <li>The system can terminate your app at any time in this state to free up resources.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚙️ App Lifecycle Methods in AppDelegate</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>When It’s Called</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>application(_:didFinishLaunchingWithOptions:)</td>
+                        <td>After app launches</td>
+                    </tr>
+                    <tr>
+                        <td>applicationDidBecomeActive(_:)</td>
+                        <td>App moved to foreground and became active</td>
+                    </tr>
+                    <tr>
+                        <td>applicationWillResignActive(_:)</td>
+                        <td>App will move to inactive (e.g., phone call)</td>
+                    </tr>
+                    <tr>
+                        <td>applicationDidEnterBackground(_:)</td>
+                        <td>App entered background</td>
+                    </tr>
+                    <tr>
+                        <td>applicationWillEnterForeground(_:)</td>
+                        <td>App moving from background to active</td>
+                    </tr>
+                    <tr>
+                        <td>applicationWillTerminate(_:)</td>
+                        <td>App is about to terminate</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Example:</h2>
+            <pre><code>
+func applicationDidEnterBackground(_ application: UIApplication) {
+    // Save data, release shared resources
+    print("App went to background")
+}
+
+func applicationDidBecomeActive(_ application: UIApplication) {
+    // Restart tasks or refresh UI
+    print("App became active")
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📱 With SceneDelegate (iOS 13+)</h2>
+            <p>If your app supports multiple scenes (windows), much of the UI lifecycle is handled in SceneDelegate:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>SceneDelegate Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>sceneDidBecomeActive(_:)</td>
+                        <td>Scene (window) is active</td>
+                    </tr>
+                    <tr>
+                        <td>sceneWillResignActive(_:)</td>
+                        <td>Scene will go inactive</td>
+                    </tr>
+                    <tr>
+                        <td>sceneDidEnterBackground(_:)</td>
+                        <td>Scene entered background</td>
+                    </tr>
+                    <tr>
+                        <td>sceneWillEnterForeground(_:)</td>
+                        <td>Scene moving to foreground</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <ul>
+                <li>App lifecycle ensures smooth transitions between states like launch, background, and termination.</li>
+                <li>Proper management is essential for performance, data integrity, and user experience.</li>
+                <li>Use AppDelegate and/or SceneDelegate methods to respond appropriately.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Let's clarify the difference between AppDelegate and SceneDelegate in iOS.</h2>
+            <p>✅ Quick Summary</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>AppDelegate</th>
+                        <th>SceneDelegate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Introduced In</td>
+                        <td>iOS 2 (original iOS SDK)</td>
+                        <td>✅ iOS 13+</td>
+                    </tr>
+                    <tr>
+                        <td>Scope</td>
+                        <td>Whole App</td>
+                        <td>Individual UI scene (window)</td>
+                    </tr>
+                    <tr>
+                        <td>Used For</td>
+                        <td>App-level events (launch, push, background, etc.)</td>
+                        <td>UI lifecycle (window, foreground/background transitions)</td>
+                    </tr>
+                    <tr>
+                        <td>Required In All Apps</td>
+                        <td>Yes</td>
+                        <td>Only in multi-scene (UIKit) apps (default since iOS 13)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧩 What Is AppDelegate?</h2>
+            <p>AppDelegate manages global app behavior, such as:</p>
+            <ul>
+                <li>App launch</li>
+                <li>Push notification registration</li>
+                <li>Receiving remote notifications</li>
+                <li>App entering background/foreground</li>
+                <li>App termination</li>
+                <li>Handling incoming URLs</li>
+            </ul>
+
+            <p>Example:</p>
+            <pre><code>
+func applicationDidEnterBackground(_ application: UIApplication) {
+    print("App is in background")
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧱 What Is SceneDelegate?</h2>
+            <p>SceneDelegate manages the lifecycle of a UI window or "scene". It allows multiple UI windows (especially on iPadOS or macOS with Catalyst).</p>
+            <p>It handles:</p>
+            <ul>
+                <li>Connecting and disconnecting a scene (UI)</li>
+                <li>Scene entering foreground or background</li>
+                <li>Scene becoming active/inactive</li>
+                <li>Providing the root view controller</li>
+            </ul>
+
+            <p>Example:</p>
+            <pre><code>
+func sceneDidBecomeActive(_ scene: UIScene) {
+    print("Scene became active")
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>💡 Why Did Apple Introduce SceneDelegate?</h2>
+            <p>Before iOS 13:</p>
+            <ul>
+                <li>Apps had only one window, so AppDelegate handled everything.</li>
+            </ul>
+            <p>Since iOS 13:</p>
+            <ul>
+                <li>Apple added multi-window support (especially for iPad).</li>
+                <li>Each window is now a “scene” and has its own lifecycle — handled via SceneDelegate.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠 App Structure With UIKit (iOS 13+)</h2>
+            <p>Here's how it typically looks:</p>
+
+            <p>AppDelegate.swift:</p>
+            <ul>
+                <li>Sets up shared services (e.g., Firebase, Google Sign-In)</li>
+                <li>Handles push notifications, background tasks</li>
+            </ul>
+
+            <p>SceneDelegate.swift:</p>
+            <ul>
+                <li>Sets up the main UI (UIWindow, root view controller)</li>
+                <li>Handles per-scene state (e.g., saving UI state)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🆕 SwiftUI Note</h2>
+            <p>If you're using SwiftUI, you might not see AppDelegate or SceneDelegate by default. SwiftUI apps use:</p>
+            <pre><code>
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+            </code></pre>
+            <p>But you can still add an AppDelegate to handle push notifications and other system events.</p>
+        </section>
+        
+        <section>
+            <h2>🧠 Summary Analogy</h2>
+            <p>Think of AppDelegate as your building manager (managing the whole app), and SceneDelegate as the room manager (managing individual UI windows).</p>
+        </section>
+
+        <section>
+            <h2>🧰 What Are Shared Services in iOS Apps?</h2>
+            <p>Shared services refer to core components or third-party SDKs that provide app-wide functionality — typically initialized once at app launch and used throughout the app.</p>
+            <p>These are not tied to the UI or any specific screen. They usually go into the AppDelegate or a central service layer because they are shared across the entire app lifecycle.</p>
+
+            <p>🧩 Examples of Shared Services</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Shared Service</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🔥 Firebase</td>
+                        <td>Analytics, authentication, crash reporting</td>
+                    </tr>
+                    <tr>
+                        <td>📡 Push Notifications</td>
+                        <td>Registering for and handling notifications</td>
+                    </tr>
+                    <tr>
+                        <td>🌐 Networking Clients</td>
+                        <td>Setting up Alamofire/URLSession-based API clients</td>
+                    </tr>
+                    <tr>
+                        <td>🔑 Authentication SDKs</td>
+                        <td>Google Sign-In, Facebook Login, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>📦 Dependency Injection</td>
+                        <td>Setting up shared containers (e.g., Swinject)</td>
+                    </tr>
+                    <tr>
+                        <td>🛠 Analytics</td>
+                        <td>Mixpanel, Amplitude, or custom tracking setup</td>
+                    </tr>
+                    <tr>
+                        <td>🧠 Core Data / Realm</td>
+                        <td>Initializing persistent database stacks</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠 Where Are Shared Services Initialized?</h2>
+            <p>✅ Usually in AppDelegate:</p>
+            <pre><code>
+func application(_ application: UIApplication,
+                 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+    FirebaseApp.configure()
+    UNUserNotificationCenter.current().delegate = self
+    setupNetworkClient()
+    setupAnalytics()
+
+    return true
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🗂 Common Shared Services Setup Pattern</h2>
+            <pre><code>
+class ServiceManager {
+    static let shared = ServiceManager()
+
+    let apiClient: APIClient
+    let analytics: AnalyticsService
+
+    private init() {
+        apiClient = APIClient()
+        analytics = AnalyticsService()
+    }
+}                
+            </code></pre>
+            <p>Use it anywhere in the app like:</p>
+            <p>ServiceManager.shared.analytics.trackEvent("ButtonClicked")</p>
+        </section>
+
+        <section>
+            <h2>🚫 What Shared Services Are Not</h2>
+            <ul>
+                <li>
+                    Shared services are not things like:
+                    <ul>
+                        <li>View controllers</li>
+                        <li>Per-scene data</li>
+                        <li>UI-specific objects</li>
+                    </ul>
+                    <p>These belong in the SceneDelegate or view layers.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Best Practices</h2>
+            <ul>
+                <li>Use dependency injection where possible to avoid tight coupling.</li>
+                <li>Centralize config to avoid duplicated setup code.</li>
+                <li>Be cautious with global singletons — use them thoughtfully.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

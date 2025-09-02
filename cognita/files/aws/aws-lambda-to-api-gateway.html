@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS Lambda to API Gateway</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS Lambda to API Gateway</h1>
+                    <p class="subtitle">To connect AWS Lambda to API Gateway, you typically follow these steps:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Step-by-Step: Connect Lambda to API Gateway</h2>
+            <ol>
+                <li>Create Your Lambda Function</li>
+                <p>If you don’t already have one:</p>
+                <ul>
+                    <li>Go to AWS Console > Lambda.</li>
+                    <li>Click Create function.</li>
+                    <li>Choose Author from scratch.</li>
+                    <li>Set a name, choose a runtime (e.g., Python, Node.js).</li>
+                    <li>Create or choose an IAM role with basic Lambda execution permissions.</li>
+                    <li>Click Create function.</li>
+                </ul>
+            </ol>
+        </section>
+
+        <section>
+            <h2>2. Create an API Gateway</h2>
+            <p>Go to API Gateway:</p>
+            <ul>
+                <li>
+                    Choose HTTP API (for simpler use cases) or REST API (for more features).
+                    <ul>
+                        <li>HTTP API is recommended for most modern apps (faster and cheaper).</li>
+                    </ul>
+                </li>
+                <li>Click Build for the API type you choose.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Integrate API Gateway with Lambda</h2>
+            <p>Option A: HTTP API</p>
+            <ol>
+                <li>
+                    In the HTTP API creation wizard:
+                    <ul>
+                        <li>Choose Add integration > Lambda function.</li>
+                        <li>Select the region and your Lambda function.</li>
+                        <li>Click Add.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Configure routes:
+                    <ul>
+                        <li>Set a route (e.g., GET /hello).</li>
+                        <li>Attach the Lambda integration to this route.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Deploy the API:
+                    <ul>
+                        <li>
+                            Deploy the API:
+                            <ul>
+                                <li>Click Next until you can name and deploy the API.</li>
+                                <li>Once deployed, you’ll get an Invoke URL.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+
+            <p>Option B: REST API</p>
+            <ol>
+                <li>In REST API, create a new resource (e.g., /hello).</li>
+                <li>
+                    Under the resource:
+                    <ul>
+                        <li>Click Create Method (e.g., GET or POST).</li>
+                        <li>Choose Lambda Function integration.</li>
+                        <li>Enter your Lambda function name.</li>
+                        <li>Allow permissions when prompted.</li>
+                    </ul>
+                </li>
+                <li>
+                    Click Deploy API:
+                    <ul>
+                        <li>Create a new stage (e.g., dev).</li>
+                        <li>Note the Invoke URL.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>4. Test the Setup</h2>
+            <p>Use a browser or tool like curl or Postman:</p>
+            <pre><code>
+curl https://your-api-id.execute-api.region.amazonaws.com/route
+            </code></pre>
+            <p>You should see the response from your Lambda function.</p>
+        </section>
+
+        <section>
+            <h2>✅ Tips</h2>
+            <ul>
+                <li>
+                    Permissions: API Gateway automatically adds permission for itself to invoke your Lambda if you integrate through the console. If doing it manually or via code, make sure to add:
+                    <pre><code>
+{
+    "Effect": "Allow",
+    "Principal": {
+        "Service": "apigateway.amazonaws.com"
+    },
+    "Action": "lambda:InvokeFunction",
+    "Resource": "arn:aws:lambda:region:account-id:function:function-name"
+}                          
+                    </code></pre>
+                </li>
+                <li>CORS: If you're calling the API from a browser frontend, don’t forget to enable CORS.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Firebase Firestore</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Firebase Firestore</h1>
+                    <p class="subtitle">Firebase Firestore is a NoSQL, cloud-hosted database provided by Google as part of the Firebase platform. It's designed to store, sync, and query data for web, mobile, and server development at scale.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔥 Key Features of Firestore:</h2>
+            <ol>
+                <li>
+                    Cloud-based NoSQL Database
+                    <ul>
+                        <li>Stores data in documents, which are organized into collections.</li>
+                        <li>Documents are like JSON objects (key-value pairs).</li>
+                    </ul>
+                </li>
+                <li>
+                    Real-time Synchronization
+                    <ul>
+                        <li>Automatically syncs data across all clients in real time.</li>
+                        <li>Great for chat apps, collaborative tools, etc.</li>
+                    </ul>
+                </li>
+                <li>
+                    Offline Support
+                    <ul>
+                        <li>Built-in support for offline data access and sync.</li>
+                        <li>Apps can continue functioning without network connectivity.</li>
+                    </ul>
+                </li>
+                <li>
+                    Powerful Queries
+                    <ul>
+                        <li>Query collections with filters, ordering, and limits.</li>
+                        <li>Indexed automatically for fast performance.</li>
+                    </ul>
+                </li>
+                <li>
+                    Scalable
+                    <ul>
+                        <li>Firestore scales automatically to handle large data sets and high traffic.</li>
+                    </ul>
+                </li>
+                <li>
+                    Security with Firestore Rules
+                    <ul>
+                        <li>Secure your data with Firebase Security Rules.</li>
+                        <li>Define access control per document/collection level.</li>
+                    </ul>
+                </li>
+                <li>
+                    Multi-region & Strong Consistency
+                    <ul>
+                        <li>Data is replicated across regions for high availability.</li>
+                        <li>Offers strong consistency guarantees.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧱 Firestore Data Structure</h2>
+            <pre><code>
+[Collection]
+   └── [Document]
+         └── Fields (key-value pairs)
+         └── [Sub-collection]
+               └── [Document]...
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example:</h2>
+            <pre><code>
+// Collection: users
+{
+  "name": "Alice",
+  "age": 30,
+  "isAdmin": true,
+  "address": {
+    "city": "New York",
+    "zip": "10001"
+  }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 Example Use (JavaScript/Node):</h2>
+            <pre><code>
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+
+const firebaseConfig = {
+  // your config here
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Add a document
+await addDoc(collection(db, "users"), {
+  name: "John Doe",
+  age: 25
+});
+
+// Read documents
+const querySnapshot = await getDocs(collection(db, "users"));
+querySnapshot.forEach((doc) => {
+  console.log(`${doc.id} => `, doc.data());
+});
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

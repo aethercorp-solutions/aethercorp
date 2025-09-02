@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dependency Injection (DI)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Dependency Injection (DI)</h1>
+                    <p class="subtitle">Dependency Injection (DI) is a design pattern used to decouple components in your code by injecting dependencies from the outside, rather than having a class create or find them itself.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>In Swift (and iOS development in general), DI is used to:</h2>
+            <ul>
+                <li>Improve testability</li>
+                <li>Promote loose coupling</li>
+                <li>Simplify code maintenance and reuse</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Real-World Example: Dependency Injection in iOS</h2>
+            <p>Let’s look at an example involving a networking service injected into a view model.</p>
+
+            <p>✅ Without Dependency Injection (Tightly Coupled)</p>
+            <pre><code>
+class NetworkManager {
+    func fetchData() {
+        print("Fetching data...")
+    }
+}
+
+class MyViewModel {
+    let networkManager = NetworkManager() // Bad: tightly coupled
+
+    func loadData() {
+        networkManager.fetchData()
+    }
+}                
+            </code></pre>
+
+            <ul>
+                <li>❌ Hard to test (can’t mock NetworkManager)</li>
+                <li>❌ Tightly coupled to a specific implementation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ With Constructor-Based Dependency Injection</h2>
+            <pre><code>
+protocol NetworkService {
+    func fetchData()
+}
+
+class NetworkManager: NetworkService {
+    func fetchData() {
+        print("Fetching data...")
+    }
+}
+
+class MyViewModel {
+    let networkService: NetworkService
+
+    init(networkService: NetworkService) {
+        self.networkService = networkService
+    }
+
+    func loadData() {
+        networkService.fetchData()
+    }
+}                
+            </code></pre>
+
+            <p>Usage:</p>
+            <pre><code>
+let networkManager = NetworkManager()
+let viewModel = MyViewModel(networkService: networkManager)
+viewModel.loadData()
+            </code></pre>
+            <ul>
+                <li>✅ Easily testable (can inject mock)</li>
+                <li>✅ Loosely coupled</li>
+            </ul>
+
+            <p>✅ With Property Injection (Less common)</p>
+            <pre><code>
+class MyViewModel {
+    var networkService: NetworkService!
+
+    func loadData() {
+        networkService.fetchData()
+    }
+}
+
+let vm = MyViewModel()
+vm.networkService = NetworkManager()                
+            </code></pre>
+
+            <ul>
+                <li>😐 Useful when you can’t use constructor injection</li>
+                <li>❌ Less safe (risk of nil before setting)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ With SwiftUI / Environment Injection</h2>
+            <p>In SwiftUI, you can use @EnvironmentObject, @Environment, or @ObservedObject to achieve a form of DI:</p>
+            <pre><code>
+class AuthManager: ObservableObject {
+    @Published var isLoggedIn = false
+}
+
+struct HomeView: View {
+    @EnvironmentObject var authManager: AuthManager
+
+    var body: some View {
+        Text(authManager.isLoggedIn ? "Welcome!" : "Please log in.")
+    }
+}                
+            </code></pre>
+
+            <h2>🧪 Mocking for Unit Tests</h2>
+            <p>You can inject a mock version during testing:</p>
+
+            <pre><code>
+class MockNetworkService: NetworkService {
+    func fetchData() {
+        print("Mock fetch")
+    }
+}
+
+let mock = MockNetworkService()
+let viewModel = MyViewModel(networkService: mock)                
+            </code></pre>
+
+            <p>🛠 DI Frameworks (Optional)</p>
+            <ul>
+                <li><a href="https://github.com/Swinject/Swinject?utm_source=chatgpt.com">Swinject</a> A popular DI container for Swift</li>
+                <li>Useful for large projects but overkill for small ones</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💡 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Pros</th>
+                        <th>Cons</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Constructor Injection</td>
+                        <td>Safe, testable, recommended</td>
+                        <td>More boilerplate</td>
+                    </tr>
+                    <tr>
+                        <td>Property Injection</td>
+                        <td>Flexible</td>
+                        <td>Can be nil / runtime errors</td>
+                    </tr>
+                    <tr>
+                        <td>DI Framework</td>
+                        <td>Scalable</td>
+                        <td>Extra complexity</td>
+                    </tr>
+                    <tr>
+                        <td>SwiftUI Environment</td>
+                        <td>Clean for global objects</td>
+                        <td>Implicit, harder to trace</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <p>Let’s build a complete example showing Dependency Injection (DI) in action using Swift, MVVM architecture, and unit tests. We'll focus on a realistic use case: loading user data from a network (mocked), and we'll demonstrate how DI makes it easier to test and scale.</p>
+            <p>🧱 App Structure Overview</p>
+
+            <pre><code>
+Model:     User
+Service:   UserService (protocol) → APIUserService / MockUserService
+ViewModel: UserViewModel
+View:      SwiftUI or UIKit View (optional)
+            </code></pre>
+
+            <p>✅ 1. Define the Model</p>
+            <pre><code>
+struct User: Codable {
+    let id: Int
+    let name: String
+}                
+            </code></pre>
+
+            <p>✅ 2. Define the Protocol (Abstraction)</p>
+            <pre><code>
+protocol UserService {
+    func fetchUser(completion: @escaping (Result<User, Error>) -> Void)
+}                
+            </code></pre>
+
+            <p>✅ 3. Real Implementation</p>
+            <pre><code>
+class APIUserService: UserService {
+    func fetchUser(completion: @escaping (Result<User, Error>) -> Void) {
+        // Simulated API call
+        let dummyUser = User(id: 1, name: "Alice Johnson")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            completion(.success(dummyUser))
+        }
+    }
+}                
+            </code></pre>
+
+            <p>✅ 4. Mock Implementation (for Testing)</p>
+            <pre><code>
+class MockUserService: UserService {
+    let mockUser: User
+    
+    init(mockUser: User) {
+        self.mockUser = mockUser
+    }
+
+    func fetchUser(completion: @escaping (Result<User, Error>) -> Void) {
+        completion(.success(mockUser))
+    }
+}                
+            </code></pre>
+
+            <p>✅ 5. ViewModel with Dependency Injection</p>
+            <pre><code>
+class UserViewModel: ObservableObject {
+    @Published var userName: String = ""
+    
+    private let userService: UserService
+
+    init(userService: UserService) {
+        self.userService = userService
+    }
+
+    func loadUser() {
+        userService.fetchUser { [weak self] result in
+            switch result {
+            case .success(let user):
+                DispatchQueue.main.async {
+                    self?.userName = user.name
+                }
+            case .failure(let error):
+                print("Error: \(error)")
+            }
+        }
+    }
+}                
+            </code></pre>
+
+            <p>✅ 6. SwiftUI View Example (Optional)</p>
+            <pre><code>
+import SwiftUI
+
+struct ContentView: View {
+    @StateObject var viewModel: UserViewModel
+
+    var body: some View {
+        VStack {
+            Text("User: \(viewModel.userName)")
+                .padding()
+
+            Button("Load User") {
+                viewModel.loadUser()
+            }
+        }
+    }
+}
+
+// Example of injecting the real service
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView(viewModel: UserViewModel(userService: APIUserService()))
+        }
+    }
+}
+            </code></pre>
+
+            <p>✅ 7. Unit Test with Dependency Injection</p>
+            <pre><code>
+import XCTest
+
+class UserViewModelTests: XCTestCase {
+    func testLoadUser_withMockService_setsUserName() {
+        // Arrange
+        let mockUser = User(id: 42, name: "Test User")
+        let mockService = MockUserService(mockUser: mockUser)
+        let viewModel = UserViewModel(userService: mockService)
+
+        // Act
+        let expectation = XCTestExpectation(description: "User loaded")
+        viewModel.loadUser()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            // Assert
+            XCTAssertEqual(viewModel.userName, "Test User")
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1)
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>💡 Key Benefits Shown</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Benefit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Dependency Injection</td>
+                        <td>Replaces real service with mock easily</td>
+                    </tr>
+                    <tr>
+                        <td>Loose Coupling</td>
+                        <td>ViewModel doesn’t know how data is fetched</td>
+                    </tr>
+                    <tr>
+                        <td>Testability</td>
+                        <td>You control the data, isolate logic</td>
+                    </tr>
+                    <tr>
+                        <td>Scalability</td>
+                        <td>Easily swap out services (e.g., API, local cache, testing)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
