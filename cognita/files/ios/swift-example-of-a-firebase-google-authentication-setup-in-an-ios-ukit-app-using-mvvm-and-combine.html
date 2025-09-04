@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Swift example of a Firebase Google Authentication setup in an iOS UIKit app using MVVM and Combine</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Swift example of a Firebase Google Authentication setup in an iOS UIKit app using MVVM and Combine</h1>
+                    <p class="subtitle">Here's a complete Swift example of a Firebase Google Authentication setup in an iOS UIKit app using MVVM and Combine.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ What You'll Get:</h2>
+            <ul>
+                <li>Firebase + Google Sign-In integrated</li>
+                <li>MVVM pattern</li>
+                <li>Combine-based ViewModel</li>
+                <li>UIKit-based UI</li>
+                <li>Login with Google button</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ 1. Prerequisites</h2>
+            <p>Ensure you have:</p>
+            <ul>
+                <li>Firebase added to your iOS project (via CocoaPods or Swift Package Manager)</li>
+                <li>GoogleService-Info.plist added to your Xcode project</li>
+                <li>Firebase Authentication + Google sign-in enabled in Firebase Console</li>
+            </ul>
+            <p>Add to Info.plist:</p>
+            <pre><code>
+&lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+&lt;array&gt;
+  &lt;dict&gt;
+    &lt;key&gt;CFBundleURLSchemes&lt;/key&gt;
+    &lt;array&gt;
+      &lt;string&gt;YOUR_REVERSED_CLIENT_ID&lt;/string&gt; &lt;!-- From GoogleService-Info.plist --&gt;
+    &lt;/array&gt;
+  &lt;/dict&gt;
+&lt;/array&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 Dependencies (SPM/CocoaPods)</h2>
+            <p>You need these packages:</p>
+            <ul>
+                <li>Firebase/Auth</li>
+                <li>GoogleSignIn</li>
+                <li>GoogleSignInSwift (Optional for SwiftUI, not needed in UIKit)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 MVVM + Combine + UIKit Google Auth (Firebase)</h2>
+            <p>🔒 AuthViewModel.swift</p>
+            <pre><code>
+import Foundation
+import Combine
+import FirebaseAuth
+import GoogleSignIn
+
+class AuthViewModel {
+    @Published var isSignedIn: Bool = false
+    @Published var errorMessage: String?
+
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        // Observe Firebase auth state
+        Auth.auth().addStateDidChangeListener { _, user in
+            self.isSignedIn = (user != nil)
+        }
+    }
+
+    func signInWithGoogle(presentingVC: UIViewController) {
+        guard let clientID = FirebaseApp.app()?.options.clientID else {
+            self.errorMessage = "Missing Firebase Client ID"
+            return
+        }
+
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+
+        GIDSignIn.sharedInstance.signIn(withPresenting: presentingVC) { result, error in
+            if let error = error {
+                self.errorMessage = error.localizedDescription
+                return
+            }
+
+            guard
+                let user = result?.user,
+                let idToken = user.idToken?.tokenString
+            else {
+                self.errorMessage = "Failed to retrieve Google user"
+                return
+            }
+
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken,
+                                                           accessToken: user.accessToken.tokenString)
+
+            Auth.auth().signIn(with: credential) { authResult, error in
+                if let error = error {
+                    self.errorMessage = error.localizedDescription
+                    return
+                }
+                self.isSignedIn = true
+            }
+        }
+    }
+
+    func signOut() {
+        do {
+            try Auth.auth().signOut()
+            GIDSignIn.sharedInstance.signOut()
+            self.isSignedIn = false
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+    }
+}
+            </code></pre>
+
+            <p>🎛️ LoginViewController.swift</p>
+            <pre><code>
+import UIKit
+import Combine
+
+class LoginViewController: UIViewController {
+
+    private let signInButton = UIButton(type: .system)
+    private let statusLabel = UILabel()
+
+    private let viewModel = AuthViewModel()
+    private var cancellables = Set<AnyCancellable>()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+
+        setupUI()
+        bindViewModel()
+    }
+
+    private func setupUI() {
+        signInButton.setTitle("Sign in with Google", for: .normal)
+        signInButton.addTarget(self, action: #selector(signInTapped), for: .touchUpInside)
+        signInButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(signInButton)
+
+        statusLabel.textAlignment = .center
+        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(statusLabel)
+
+        NSLayoutConstraint.activate([
+            signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            signInButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            statusLabel.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 20),
+            statusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
+    }
+
+    private func bindViewModel() {
+        viewModel.$isSignedIn
+            .receive(on: RunLoop.main)
+            .sink { [weak self] signedIn in
+                self?.statusLabel.text = signedIn ? "Signed In ✅" : "Not Signed In ❌"
+            }
+            .store(in: &cancellables)
+
+        viewModel.$errorMessage
+            .compactMap { $0 }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] error in
+                self?.showError(error)
+            }
+            .store(in: &cancellables)
+    }
+
+    @objc private func signInTapped() {
+        viewModel.signInWithGoogle(presentingVC: self)
+    }
+
+    private func showError(_ message: String) {
+        let alert = UIAlertController(title: "Error",
+                                      message: message,
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+}
+            </code></pre>
+
+            <p>🏁 AppDelegate.swift</p>
+            <pre><code>
+import UIKit
+import Firebase
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        FirebaseApp.configure()
+        return true
+    }
+
+    // iOS 9.0+
+    func application(_ app: UIApplication,
+                     open url: URL,
+                     options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        return GIDSignIn.sharedInstance.handle(url)
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 Bonus: Show Logged-In User Info</h2>
+            <p>You can expand the view model or controller to show Auth.auth().currentUser?.displayName, etc.</p>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <p>With this setup:</p>
+            <ul>
+                <li>Firebase + Google Sign-In works</li>
+                <li>MVVM and Combine are used to separate logic</li>
+                <li>UIKit is clean and reactive</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Would you like:</p>
+            <ul>
+                <li>Logout button added?</li>
+                <li>SwiftUI version?</li>
+                <li>Email/Password support?</li>
+            </ul>
+        </section>
+
+        <section>
+            <pre><code>
+Auth.auth().addStateDidChangeListener { [weak self] _, user in
+    self?.isSignedIn = (user != nil)
+}
+            </code></pre>
+
+            <p>The Swift code you posted is using Firebase Authentication to listen for authentication state changes. Here's a breakdown and explanation of what it does:</p>
+            <p>🧠 What it does:</p>
+            <p>This line sets up a listener that monitors changes in the user's authentication state (such as login, logout, or when the app launches and checks if a user is already signed in).</p>
+            <ul>
+                <li>Auth.auth() is the singleton instance of Firebase Authentication.</li>
+                <li>addStateDidChangeListener is a method that takes a closure. This closure gets called whenever the authentication state changes.</li>
+                <li>
+                    The closure receives two parameters:
+                    <ul>
+                        <li>_ (the first parameter is the Auth instance, but it's unused here)</li>
+                        <li>user (the currently signed-in User?, or nil if no user is signed in)</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>✅ What the closure does:</p>
+            <pre><code>
+self.isSignedIn = (user != nil)
+            </code></pre>
+            <ul>
+                <li>This line sets a Boolean property isSignedIn to true if the user is not nil, meaning someone is signed in.</li>
+                <li>Otherwise, it sets it to false.</li>
+            </ul>
+
+            <p>🧩 Common use case:</p>
+            <p>This is often used in SwiftUI apps to update the UI (like switching between login and home screens) based on the user's sign-in status.</p>
+        </section>
+
+        <section>
+            <p>The clientID you're accessing here:</p>
+            <pre><code>
+guard let clientID = FirebaseApp.app()?.options.clientID else {
+    self.errorMessage = "Missing Firebase Client ID"
+    return
+}                
+            </code></pre>
+            <p>comes from your Firebase configuration file, specifically:</p>
+
+            <p>🔹 Where clientID comes from:</p>
+            <p>It's defined in the GoogleService-Info.plist file for iOS projects.</p>
+
+            <p>🔹 What is clientID?</p>
+            <ul>
+                <li>It’s the OAuth 2.0 client ID that Firebase uses, especially for Firebase Authentication when integrating with Google Sign-In or other OAuth-based providers.</li>
+            </ul>
+
+            <p>🔹 How it's loaded:</p>
+            <p>When you configure Firebase in your app using:</p>
+            <pre><code>
+FirebaseApp.configure()
+            </code></pre>
+
+            <p>Firebase reads the GoogleService-Info.plist file and sets up various properties — including the clientID.</p>
+            <p>You can access it like this:</p>
+
+            <pre><code>
+FirebaseApp.app()?.options.clientID
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 How to find or confirm it:</h2>
+            <ol>
+                <li>Go to the Firebase Console → Your Project.</li>
+                <li>Click the Gear icon → Project settings.</li>
+                <li>Scroll down to Your apps → Select your iOS app.</li>
+                <li>
+                    You can:
+                    <ul>
+                        <li>Re-download GoogleService-Info.plist.</li>
+                        <li>Open it in Xcode or a text editor and look for the CLIENT_ID key.</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>Example in GoogleService-Info.plist:</p>
+            <pre><code>
+&lt;key&gt;CLIENT_ID&lt;/key&gt;
+&lt;string&gt;1234567890-abc123def456.apps.googleusercontent.com&lt;/string&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary:</h2>
+            <ul>
+                <li>clientID is from the GoogleService-Info.plist.</li>
+                <li>It's needed for authentication flows (like Google Sign-In).</li>
+                <li>Firebase reads it during FirebaseApp.configure().</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Code Explanation</p>
+            <pre><code>
+let config = GIDConfiguration(clientID: clientID)
+GIDSignIn.sharedInstance.configuration = config
+            </code></pre>
+
+            <ul>
+                <li>clientID – This should be your OAuth 2.0 client ID from the Google Developer Console (specifically, the one for iOS).</li>
+                <li>GIDConfiguration – This initializes the configuration with your client ID.</li>
+                <li>GIDSignIn.sharedInstance.configuration – This assigns the configuration to the shared Google Sign-In instance, making it ready for use in sign-in calls.</li>
+            </ul>
+
+            <p>Don't Forget:</p>
+            <ol>
+                <li>Add the required URL scheme in your Info.plist (so Google Sign-In can return to your app).</li>
+                <li>Enable the correct APIs in the Google Developer Console.</li>
+                <li>Make sure you’ve added the GoogleService-Info.plist if using Firebase Auth too.</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

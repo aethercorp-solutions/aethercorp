@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Setting up Firebase Crashlytics in an iOS app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Setting up Firebase Crashlytics in an iOS app</h1>
+                    <p class="subtitle">Setting up Firebase Crashlytics in an iOS app using Xcode and Swift involves several steps. Below is a complete, up-to-date guide as of 2025.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Step-by-Step: Set Up Crashlytics in iOS (Xcode, Swift)</h2>
+            <p>🔧 1. Create a Firebase Project</p>
+            <ul>
+                <li>Go to <a href="https://console.firebase.google.com">https://console.firebase.google.com</a></li>
+                <li>Click “Add project”, and follow the prompts.</li>
+                <li>Once created, click “Add app” → Select iOS.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📱 2. Register Your iOS App</h2>
+            <p>In the Firebase console:</p>
+            <ul>
+                <li>Enter your iOS bundle ID (you can find this in Xcode: TARGETS > General > Bundle Identifier)</li>
+                <li>Optionally add App nickname and App Store ID</li>
+                <li>Click Register App</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📄 3. Download GoogleService-Info.plist</h2>
+            <ul>
+                <li>Download the file after registering the app.</li>
+                <li>Drag and drop GoogleService-Info.plist into your Xcode project (ensure it's added to all targets).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 4. Install Firebase SDK (with Crashlytics)</h2>
+            <p>Using Swift Package Manager (Recommended):</p>
+            <ol>
+                <li>In Xcode, go to:</li>
+                <ul>
+                    <li>File > Add Packages</li>
+                </ul>
+                <li>
+                    Enter Firebase SDK URL:
+                    <pre><code>
+https://github.com/firebase/firebase-ios-sdk
+                    </code></pre>
+                </li>
+                <li>Select FirebaseCrashlytics, FirebaseAnalytics, and any other Firebase services you use.</li>
+                <li>Click Add Package.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔥 5. Initialize Firebase in Your App</h2>
+            <p>Open your AppDelegate.swift (or main entry point for SwiftUI) and initialize Firebase:</p>
+            <pre><code>
+import UIKit
+import Firebase
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        FirebaseApp.configure()
+        return true
+    }
+}
+            </code></pre>
+            <p>For SwiftUI (iOS 14+), do it in App.swift:</p>
+            <pre><code>
+import SwiftUI
+import Firebase
+
+@main
+struct YourApp: App {
+    init() {
+        FirebaseApp.configure()
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>💥 6. Enable Crashlytics</h2>
+            <p>No extra code is needed for basic crash reporting.</p>
+            <p>To test it, you can force a crash (for development only):</p>
+            <pre><code>
+import FirebaseCrashlytics
+
+Crashlytics.crashlytics().log("Testing Crashlytics")
+fatalError("Test Crash")
+            </code></pre>
+            <p>❗ Make sure you're running the app on a real device for the crash to be reported.</p>
+        </section>
+
+        <section>
+            <h2>☁️ 7. Upload Debug Symbols (dSYMs)</h2>
+            <p>Crashlytics needs dSYM files to symbolicate crashes.</p>
+            <p>✅ Recommended:</p>
+            <p>Add a Run Script Phase in Xcode:</p>
+            <ol>
+                <li>Open your project in Xcode.</li>
+                <li>Go to TARGETS > Build Phases</li>
+                <li>Click ➕ → New Run Script Phase</li>
+                <li>
+                    Add the following script:
+                    <pre><code>
+"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+                    </code></pre>
+                </li>
+                <li>Make sure it's after “Embed Frameworks” phase.</li>
+            </ol>
+            <p>Alternatively, you can manually upload dSYMs later using Firebase CLI.</p>
+        </section>
+
+        <section>
+            <h2>📊 8. View Crashes in Firebase Console</h2>
+            <p>Go to:</p>
+            <p><a href="https://console.firebase.google.com">https://console.firebase.google.com</a>
+                → Select Project → Crashlytics</p>
+            <p>You’ll see crashes, logs, device info, etc.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

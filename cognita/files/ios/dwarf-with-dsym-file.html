@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is DWARF with dSYM File in Xcode?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is DWARF with dSYM File in Xcode?</h1>
+                    <p class="subtitle">DWARF with dSYM File is a debug information format used in Apple's development ecosystem (Xcode, iOS, macOS, etc.) to help with symbolication, debugging, and crash analysis.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Breakdown</h2>
+            <ol>
+                <li>
+                    DWARF
+                    <ul>
+                        <li>Stands for: Debugging With Attributed Record Formats</li>
+                        <li>It's a standard format used to store debugging information.</li>
+                        <li>
+                            Includes things like:
+                            <ul>
+                                <li>Function names</li>
+                                <li>Variable names and types</li>
+                                <li>Line numbers</li>
+                                <li>Call stacks</li>
+                            </ul>
+                            <p>This info is used by debuggers like LLDB to help you trace through your source code during runtime or crash analysis.</p>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    dSYM File
+                    <ul>
+                        <li>A dSYM file is a separate file that contains DWARF debug information.</li>
+                        <li>
+                            When you build with "DWARF with dSYM File", Xcode:
+                            <ul>
+                                <li>Generates a .dSYM bundle</li>
+                                <li>Keeps it separate from the main binary</li>
+                                <li>This helps reduce app size (since symbols aren’t embedded in the binary)</li>
+                            </ul>
+                        </li>
+                        <li>The dSYM file is used after the fact, e.g., to symbolicate crash logs from TestFlight or App Store users.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

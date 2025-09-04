@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Comparing RxSwift and Combine</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Comparing RxSwift and Combine</h1>
+                    <p class="subtitle">When comparing RxSwift and Combine, you’re essentially comparing two reactive programming frameworks used in iOS/macOS development. Both are powerful, but they differ in key ways. Here's a breakdown to help you decide which is right for your project:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔁 RxSwift vs Combine: Overview</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>RxSwift</th>
+                        <th>Combine</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Publisher Type</td>
+                        <td>Observable</td>
+                        <td>Publisher</td>
+                    </tr>
+                    <tr>
+                        <td>Owned By</td>
+                        <td>Community (ReactiveX)</td>
+                        <td>Apple</td>
+                    </tr>
+                    <tr>
+                        <td>Introduced In</td>
+                        <td>~2015</td>
+                        <td>iOS 13 / macOS 10.15 (2019)</td>
+                    </tr>
+                    <tr>
+                        <td>Platform Support</td>
+                        <td>iOS 8+</td>
+                        <td>iOS 13+</td>
+                    </tr>
+                    <tr>
+                        <td>Open Source</td>
+                        <td>✅ Yes</td>
+                        <td>❌ No</td>
+                    </tr>
+                    <tr>
+                        <td>SwiftUI Support</td>
+                        <td>❌ Not natively</td>
+                        <td>✅ Native integration</td>
+                    </tr>
+                    <tr>
+                        <td>Documentation</td>
+                        <td>Extensive, community-driven</td>
+                        <td>Official Apple documentation</td>
+                    </tr>
+                    <tr>
+                        <td>Learning Curve</td>
+                        <td>Moderate to steep</td>
+                        <td>Slightly easier if familiar with Swift</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔧 Technical Differences</h2>
+            <ol>
+                <li>
+                    1. Type System and Syntax
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>RxSwift</th>
+                                <th>Combine</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Basic Type</td>
+                                <td>Observable&lt;T&gt;</td>
+                                <td>AnyPublisher&lt;Output, Failure&gt;</td>
+                            </tr>
+                            <tr>
+                                <td>Error Handling</td>
+                                <td>Errors are part of the stream</td>
+                                <td>Strongly typed errors</td>
+                            </tr>
+                            <tr>
+                                <td>Memory Management</td>
+                                <td>DisposeBag</td>
+                                <td>AnyCancellable</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </li>
+                <li>
+                    Operators
+                    <p>Both offer similar operators (map, flatMap, filter, etc.), but:</p>
+                    <ul>
+                        <li>RxSwift has more operators out of the box, due to maturity and longer development.</li>
+                        <li>Combine is still growing, but has tighter Swift integration.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚙️ Tooling & Ecosystem</h2>
+            <ul>
+                <li>
+                    RxSwift:
+                    <ul>
+                        <li>Works with RxCocoa for UIKit bindings</li>
+                        <li>Works pre-iOS 13</li>
+                        <li>Mature ecosystem (e.g., RxAlamofire, RxRealm)</li>
+                    </ul>
+                </li>
+                <li>
+                    Combine:
+                    <ul>
+                        <li>Works best with SwiftUI</li>
+                        <li>Limited 3rd-party library support compared to Rx</li>
+                        <li>No need to import external frameworks</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ When to Use Which?</h2>
+            <p>Use RxSwift if:</p>
+            <ul>
+                <li>You need to support iOS versions earlier than 13</li>
+                <li>You're already invested in the Rx ecosystem</li>
+                <li>You want advanced operators or cross-platform reactive programming (e.g., with Kotlin/Java or JS)</li>
+            </ul>
+            <p>Use Combine if:</p>
+            <ul>
+                <li>You're targeting iOS 13+</li>
+                <li>You want native Apple support and SwiftUI integration</li>
+                <li>You prefer minimal dependencies</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔚 Final Thoughts</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Situation</th>
+                        <th>Best Choice</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Legacy or multi-platform project</td>
+                        <td>RxSwift</td>
+                    </tr>
+                    <tr>
+                        <td>Modern SwiftUI app (iOS 14+)</td>
+                        <td>Combine</td>
+                    </tr>
+                    <tr>
+                        <td>UIKit app but no external dependencies</td>
+                        <td>Combine (iOS 13+)</td>
+                    </tr>
+                    <tr>
+                        <td>Need deep reactive features</td>
+                        <td>RxSwift</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>If you're starting fresh and targeting only iOS 13+, Combine is usually the better bet due to native integration. But if you're dealing with legacy codebases or need more power/flexibility, RxSwift is still highly relevant.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

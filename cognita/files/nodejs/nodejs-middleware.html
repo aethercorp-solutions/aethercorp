@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Node.js, middleware</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Node.js, middleware</h1>
+                    <p class="subtitle">In Node.js, middleware generally refers to functions that have access to the request and response objects in an HTTP server. Middleware is most commonly used in the context of the Express.js framework, though the concept can apply more broadly.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧱 What is Middleware?</h2>
+            <p>A middleware function in Express is a function that can:</p>
+            <ul>
+                <li>Execute any code.</li>
+                <li>Modify the request (req) and/or response (res) objects.</li>
+                <li>End the request-response cycle.</li>
+                <li>Call the next middleware function in the stack.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Basic Middleware Syntax (Express.js)</h2>
+            <pre><code>
+function myMiddleware(req, res, next) {
+    console.log('Middleware executed');
+    next(); // Pass control to the next middleware
+}                  
+            </code></pre>
+
+            <p>Use it in an Express app:</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+// Register middleware
+app.use(myMiddleware);
+
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
+app.listen(3000);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔄 Types of Middleware in Express</h2>
+            <ol>
+                <li>
+                    Application-level middleware
+                    <pre><code>
+app.use((req, res, next) => {
+    console.log('App-level middleware');
+    next();
+});                          
+                    </code></pre>
+                </li>
+                <li>
+                    Router-level middleware
+                    <pre><code>
+const router = express.Router();
+
+router.use((req, res, next) => {
+  console.log('Router-level middleware');
+  next();
+});
+                    </code></pre>
+                </li>
+                <li>
+                    Error-handling middleware
+                    <p>Has four parameters (including err):</p>
+                    <pre><code>
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});                          
+                    </code></pre>
+                </li>
+                <li>
+                    Built-in middleware
+                    <p>Examples:</p>
+                    <ul>
+                        <li>express.static() for serving static files</li>
+                        <li>express.json() to parse JSON bodies</li>
+                        <li>
+                            express.urlencoded() to parse URL-encoded bodies
+                            <pre><code>
+app.use(express.json());
+app.use(express.static('public'));
+                            </code></pre>
+                            <pre><code>
+const morgan = require('morgan');
+app.use(morgan('dev'));
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Third-party middleware
+                    <p>Use via npm. Example: morgan for logging.</p>
+                    <pre><code>
+npm install morgan
+                    </code></pre>
+                </li>
+                <li>
+                    🚦 Middleware Flow
+                    <p>Middleware is executed in the order it is defined. If next() is not called, the request ends there.</p>
+                    <pre><code>
+app.use((req, res, next) => {
+    console.log('1st middleware');
+    next();
+});
+    
+app.use((req, res, next) => {
+    console.log('2nd middleware');
+    res.send('Handled here'); // No next() — request ends
+});                          
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+        <section>
+            <h2>✅ Real-World Use Cases</h2>
+            <ul>
+                <li>Authentication/authorization</li>
+                <li>Logging</li>
+                <li>Body parsing</li>
+                <li>Compression</li>
+                <li>CORS headers</li>
+                <li>Error handling</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

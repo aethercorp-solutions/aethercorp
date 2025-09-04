@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What Is Serverless Deploy?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What Is Serverless Deploy?</h1>
+                    <p class="subtitle">Serverless deploy refers to the process of deploying an application using a serverless architecture — meaning you don't manage the underlying servers. Instead, you write functions or services, and the cloud provider runs them on-demand, scaling them automatically.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Common Tools / Platforms</h2>
+            <ul>
+                <li>Serverless Framework (popular CLI tool)</li>
+                <li>AWS Lambda</li>
+                <li>Azure Functions</li>
+                <li>Google Cloud Functions</li>
+                <li>Vercel / Netlify (for frontend/serverless functions)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ When you run serverless deploy (with Serverless Framework):</h2>
+            <p>This command typically:</p>
+            <ol>
+                <li>Packages your app (e.g. functions, configs, dependencies).</li>
+                <li>Creates/updates infrastructure (like API Gateway, Lambda functions, IAM roles).</li>
+                <li>Uploads your code to the cloud provider (e.g. AWS).</li>
+                <li>Deploys it so it’s ready to receive traffic.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📦 Example: serverless.yml</h2>
+            <pre><code>
+service: my-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
+            </code></pre>
+
+            <p>When you run serverless deploy, it:</p>
+            <ul>
+                <li>Creates a Lambda function called hello</li>
+                <li>Sets up an API Gateway endpoint at /hello</li>
+                <li>Deploys everything to AWS</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Why Use Serverless?</h2>
+            <p>Pros:</p>
+            <ul>
+                <li>No server management</li>
+                <li>Scales automatically</li>
+                <li>Pay-per-execution</li>
+                <li>Faster to deploy small services or APIs</li>
+            </ul>
+            <p>Cons:</p>
+            <ul>
+                <li>Cold starts (slight delay on first call)</li>
+                <li>Harder to debug locally sometimes</li>
+                <li>Vendor lock-in (e.g. AWS-specific features)</li>
+            </ul>
+        </section>
+
+        <section>
+            <pre><code>
+service: castanet
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: us-east-2 #ap-southeast-1
+  stage: api
+  environment:
+    REGION: "${self:provider.region}"
+  role: arn:aws:iam::803303263828:role/castanet #arn:aws:iam::980797910617:role/castanet-dev
+  apiGateway:
+   apiKeys:
+    - name: CastanetDevKey
+      value: cmzdOfrIz75cA4kt6vFSS5seBOWmJFN45CMygE6K
+
+plugins:
+  - serverless-domain-manager
+custom:
+  customDomain:
+    domainName: api.trycastanet.com
+    basePath: ""
+    stage: ${self:provider.stage}
+    certificateName: "*.trycastanet.com"
+    createRoute53Record: true
+
+functions:
+  app:
+    handler: server.handler
+    memorySize: 1600
+    timeout: 60
+    events:
+      - http:
+          method: ANY
+          path: /
+          private: true
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Api-Key
+              - Authorization
+      - http:
+          method: GET
+          path: /disclosure
+          private: false
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+      - http:
+          method: ANY
+          path: "{proxy+}"
+          private: true
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Api-Key
+              - Authorization
+  queue-last-contacted-date:
+    handler: server.queueLastContactedDate
+    events:
+      - schedule: cron(0/60 * * * ? *)
+  latest-contacted-date-receiver:
+    handler: server.receiveSQSLastContactedDate
+    events:
+      - sqs:
+          arn: arn:aws:sqs:us-east-2:803303263828:CastanetQueue.fifo #arn:aws:sqs:ap-southeast-1:980797910617:CastanetQueue.fifo
+          batchSize: 1
+
+  notifications:
+    handler: server.schedule_notification
+    events:
+      - schedule: cron(0/30 * ? * * *)
+  # receiver-content:
+  #   handler: server.receiver
+  #   events:
+  #     - schedule: cron(0/5 * * * ? *)
+  
+package:
+  patterns:
+    - "!node_modules/aws-sdk/**"
+    - "!node_modules/**/aws-sdk/**"
+    - "!node_modules/swagger-ui-express/**"
+    - "!node_modules/**/swagger-ui-express/**"
+    - "!node_modules/snyk/**"
+    - "!node_modules/**/snyk/**"
+            </code></pre>
+        </section>
+
+        <section>
+            <p>Thanks for sharing your serverless.yml configuration — it’s a well-structured setup for deploying an AWS-based Node.js serverless application using the Serverless Framework. Here's a breakdown of what's happening, some useful clarifications, and potential improvement tips.</p>
+            <h2>What This Does</h2>
+            <p>When you run serverless deploy, this configuration:</p>
+            <ol>
+                <li>Deploys to AWS Lambda in us-east-2</li>
+                <li>Uses Node.js 16 runtime</li>
+                <li>
+                    Sets up an API Gateway with:
+                    <ul>
+                        <li>Custom domain api.trycastanet.com</li>
+                        <li>Private and public endpoints</li>
+                        <li>API key (CastanetDevKey)</li>
+                    </ul>
+                </li>
+                <li>
+                    Defines 4 Lambda functions:
+                    <ul>
+                        <li>app: HTTP API (main handler)</li>
+                        <li>queue-last-contacted-date: Runs every hour</li>
+                        <li>latest-contacted-date-receiver: SQS listener</li>
+                        <li>notifications: Runs every 30 minutes</li>
+                    </ul>
+                </li>
+                <li>Uses a specific IAM role (arn:aws:iam::803303263828:role/castanet)</li>
+                <li>Excludes AWS SDK and some large dev dependencies from the deploy package</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📦 Breakdown of Key Sections</h2>
+            <p>🧠 service: castanet</p>
+            <p>Names your service in Serverless. Helpful for identifying resources in AWS.</p>
+        </section>
+
+        <section>
+            <h2>☁️ provider</h2>
+            <p>You're using:</p>
+            <ul>
+                <li>AWS as your provider</li>
+                <li>Node.js 16.x runtime</li>
+                <li>us-east-2 as the region</li>
+                <li>An explicit IAM role (role: arn:aws:iam::803...)</li>
+                <li>An API key (private endpoints require this)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🌐 customDomain (via serverless-domain-manager)</h2>
+            <p>This section sets up a custom API Gateway domain:</p>
+            <ul>
+                <li>Domain: api.trycastanet.com</li>
+                <li>SSL certificate: "*.trycastanet.com"</li>
+                <li>Creates a Route53 record to map the domain automatically</li>
+            </ul>
+
+            <p>⚠️ This requires:</p>
+            <ul>
+                <li>A valid ACM certificate in us-east-1</li>
+                <li>Proper hosted zone in Route53 for trycastanet.com</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 functions</h2>
+            <p>🔹 app</p>
+            <p>Main HTTP handler with:</p>
+            <ul>
+                <li>Root path: / (private)</li>
+                <li>/disclosure: public GET route</li>
+                <li>/{proxy+}: wildcard catch-all (private)</li>
+            </ul>
+            <p>You’ve added proper CORS and private access on most endpoints.</p>
+            <p>🔹 queue-last-contacted-date</p>
+            <p>Scheduled to run every hour using a CloudWatch cron event.</p>
+
+            <p>🔹 latest-contacted-date-receiver</p>
+            <p>Triggered by SQS messages from CastanetQueue.fifo. Uses batchSize: 1.</p>
+            <p>🔹 notifications</p>
+            <p>Runs every 30 minutes via CloudWatch Events.</p>
+        </section>
+
+        <section>
+            <h2>📦 package.patterns</h2>
+            <p>You’re excluding large/unused dependencies to reduce deployment size — good practice.</p>
+            <p>Example:</p>
+            <ul>
+                <li>aws-sdk is already available in Lambda, so you're excluding it.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Things to Double-Check</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🧪 IAM Role</td>
+                        <td>Make sure the role castanet has proper permissions for Lambda, SQS, CloudWatch Events, API Gateway, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>🔐 API Keys</td>
+                        <td>Anyone calling private endpoints must provide the X-API-Key header with value cmzdOfrIz75cA4kt6vFSS5seBOWmJFN45CMygE6K.</td>
+                    </tr>
+                    <tr>
+                        <td>🌍 SSL Cert</td>
+                        <td>ACM certificate for *.trycastanet.com must be in us-east-1, regardless of Lambda region.</td>
+                    </tr>
+                    <tr>
+                        <td>🧪 Test sls deploy</td>
+                        <td>Try running locally with serverless deploy --stage api and make sure all functions, routes, and domain configs are working.</td>
+                    </tr>
+                    <tr>
+                        <td>📦 Node Modules</td>
+                        <td>Ensure critical dependencies aren’t excluded in package.patterns.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Recommended Next Commands</h2>
+            <ol>
+                <li>
+                    Deploy to AWS
+                    <pre><code>
+serverless deploy
+                    </code></pre>
+                </li>
+                <li>
+                    View the endpoints
+                    <pre><code>
+serverless info
+                    </code></pre>
+                </li>
+                <li>
+                    Setup domain (first-time only or if config changed)
+                    <pre><code>
+serverless create_domain
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🚀 Final Tip: Use .env + serverless-dotenv-plugin</h2>
+            <p>If you want to manage secrets or configs cleanly, use the serverless-dotenv-plugin to load environment variables.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

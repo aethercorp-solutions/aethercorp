@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Comparing ViewModel callbacks and Combine</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Comparing ViewModel callbacks and Combine</h1>
+                    <p class="subtitle">When comparing ViewModel callbacks and Combine (or other reactive frameworks like RxSwift) observables in terms of efficiency, the answer depends on what kind of efficiency you're referring to:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 1. Performance Efficiency (CPU, memory)</h2>
+            <p>✅ Callbacks</p>
+            <ul>
+                <li>Lower overhead: Callbacks are essentially function pointers or closures. They are lightweight and have minimal runtime overhead.</li>
+                <li>Faster execution: Because there's no subscription management, operator chaining, or event streams, callbacks are generally more performant for simple use cases.</li>
+            </ul>
+            <p>❌ Combine Observables</p>
+            <ul>
+                <li>More overhead: Combine introduces more runtime complexity — maintaining subscriptions, managing backpressure, memory for publishers/subscribers, etc.</li>
+                <li>Slow in small/simple cases: For simple, one-off events, Combine can be overkill and slightly less performant.</li>
+            </ul>
+            <p>📝 Conclusion: If you only care about raw performance (e.g., in critical paths), callbacks are more efficient.</p>
+        </section>
+
+        <section>
+            <h2>🧠 2. Code Maintainability & Scalability</h2>
+            <p>❌ Callbacks</p>
+            <ul>
+                <li>Harder to manage: As complexity grows (e.g., multiple async streams, dependent data), callback chains can get messy (callback hell).</li>
+                <li>Not composable: You often need to write custom code to combine results or coordinate multiple callbacks.</li>
+            </ul>
+            <p>✅ Combine Observables</p>
+            <ul>
+                <li>Composability: Combine excels in complex data flows. You can merge, debounce, map, filter, etc., easily.</li>
+                <li>Better for MVVM: Combine fits naturally in a reactive MVVM architecture, where ViewModels expose @Published or AnyPublisher values for the View to bind to.</li>
+                <li>Declarative and testable: Easier to unit test and reason about in many cases.</li>
+            </ul>
+            <p>📝 Conclusion: If you're building a scalable app with multiple asynchronous data sources, Combine is more maintainable and scalable.</p>
+        </section>
+
+        <section>
+            <h2>🧼 3. Memory Management</h2>
+            <p>Callbacks</p>
+            <ul>
+                <li>You have to manage reference cycles manually with [weak self].</li>
+                <li>Fewer allocations overall.</li>
+            </ul>
+            <p>Combine</p>
+            <ul>
+                <li>Subscriptions can leak memory if not handled properly (e.g., not storing AnyCancellables correctly).</li>
+                <li>More allocation but manageable with best practices.</li>
+            </ul>
+            <p>📝 Conclusion: Callbacks are more memory-efficient, but Combine is fine if you know what you’re doing.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Callbacks</th>
+                        <th>Combine (Observables)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Raw performance</td>
+                        <td>✅ Faster, less overhead</td>
+                        <td>❌ Slower in small cases</td>
+                    </tr>
+                    <tr>
+                        <td>Scalability</td>
+                        <td>❌ Messy in complex logic</td>
+                        <td>✅ Ideal for complex flows</td>
+                    </tr>
+                    <tr>
+                        <td>Memory usage</td>
+                        <td>✅ Minimal allocations</td>
+                        <td>❌ More allocations, leaks possible</td>
+                    </tr>
+                    <tr>
+                        <td>Testability</td>
+                        <td>❌ Harder to mock/track</td>
+                        <td>✅ Easier to test with publishers</td>
+                    </tr>
+                    <tr>
+                        <td>Best use case</td>
+                        <td>Simple events / UI actions</td>
+                        <td>Reactive data binding / streams</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>🧠 Rule of Thumb:</h2>
+            <ul>
+                <li>Use callbacks for simple, one-off communication between ViewModel and View (e.g., "show alert", "navigate").</li>
+                <li>Use Combine for reactive data binding, form validation, or combining multiple async sources.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is Debug Information Format in Xcode?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is Debug Information Format in Xcode?</h1>
+                    <p class="subtitle">
+                        The Debug Information Format setting in Xcode controls how and where debug symbols are generated when you build your app. These symbols are critical for:
+                        <ul>
+                            <li>Debugging in Xcode (stepping through code, inspecting variables)</li>
+                            <li>Symbolicating crash logs</li>
+                            <li>Profiling with Instruments</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Location in Xcode</h2>
+            <ul>
+                <li>Go to Build Settings</li>
+                <li>Search for: Debug Information Format</li>
+                <li>You'll see this under both Project and Target settings</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Available Debug Information Formats</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Format</th>
+                        <th>Technical Name</th>
+                        <th>What It Does</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>None</td>
+                        <td>none</td>
+                        <td>No debug info generated.</td>
+                        <td>Smallest binary size, but no debugging.</td>
+                    </tr>
+                    <tr>
+                        <td>DWARF</td>
+                        <td>dwarf</td>
+                        <td>Embeds debug symbols directly in the binary.</td>
+                        <td>OK for local debugging, but not ideal for symbolication.</td>
+                    </tr>
+                    <tr>
+                        <td>DWARF with dSYM File</td>
+                        <td>dwarf-with-dsym</td>
+                        <td>Generates a separate .dSYM bundle containing full symbol information.</td>
+                        <td>✅ Best for production builds and symbolication.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Why This Setting Matters</h2>
+            <ol>
+                <li>
+                    Symbolication of crash logs
+                    <ul>
+                        <li>Without proper symbols (like .dSYM), crash logs will show raw memory addresses.</li>
+                        <li>With them, you see readable function names and line numbers.</li>
+                    </ul>
+                </li>
+                <li>
+                    Debugging in Xcode
+                    <ul>
+                        <li>Enables breakpoints, stack traces, and variable inspection.</li>
+                    </ul>
+                </li>
+                <li>
+                    Performance
+                    <ul>
+                        <li>Including symbols in the binary (DWARF) can bloat app size.</li>
+                        <li>Separating them (DWARF with dSYM File) keeps the app smaller and cleaner for release.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🎯 Best Practices</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Build Configuration</th>
+                        <th>Recommended Setting</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Debug</td>
+                        <td>DWARF or DWARF with dSYM File</td>
+                    </tr>
+                    <tr>
+                        <td>Release / Archive</td>
+                        <td>DWARF with dSYM File ✅</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <ol>
+                <li>Open your Xcode project.</li>
+                <li>Go to your target → Build Settings.</li>
+                <li>Search for: Debug Information Format.</li>
+                <li>Change the value per configuration (Debug, Release, etc.) using the dropdown.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔗 What is the relationship between Debug Information Format, .dSYM files, and Firebase Crashlytics?</h2>
+            <p>Firebase Crashlytics helps you track and analyze crashes in your iOS app — but to make those crash reports human-readable, it needs debug symbols.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Crashlytics Needs Your dSYM Files</h2>
+            <p>When a crash occurs on a user’s device, the crash log will contain memory addresses instead of function names (e.g., 0x103a6f2b8).</p>
+            <p>To symbolicate (translate) those addresses into readable code (e.g., MyViewController.swift:42), Crashlytics needs the .dSYM files that match the app version.</p>
+        </section>
+
+        <section>
+            <h2>🔁 How It Works</h2>
+            <ol>
+                <li>
+                    You build your app with Xcode
+                    <ul>
+                        <li>If Debug Information Format is set to DWARF with dSYM File, Xcode creates a .dSYM file.</li>
+                    </ul>
+                </li>
+                <li>You archive and upload the app (e.g., to TestFlight or App Store)</li>
+                <li>
+                    You upload the .dSYM files to Crashlytics
+                    <ul>
+                        <li>Crashlytics matches the .dSYM with the build UUID.</li>
+                        <li>When a crash happens, Crashlytics symbolicates the stack trace using those symbols.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚠️ If You Don’t Upload .dSYM</h2>
+            <ul>
+                <li>
+                    Crash reports will appear obfuscated, like this:
+                    <pre><code>
+0x104bd9c 0x1040000 + 55644
+                    </code></pre>
+                </li>
+                <li>
+                    Instead of this:
+                    <pre><code>
+MyApp/ViewController.swift line 42
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ How to Ensure dSYM Upload to Crashlytics</h2>
+            <ol>
+                <li>
+                    Use “DWARF with dSYM File”
+                    <ul>
+                        <li>This is the critical Build Setting in Xcode.</li>
+                        <li>It ensures .dSYM files are generated.</li>
+                    </ul>
+                </li>
+                <li>
+                    Enable Automatic Upload (Recommended)
+                    <ul>
+                        <li>
+                            If you installed Crashlytics via CocoaPods, Swift Package Manager, or Firebase CLI, it usually includes a build script:
+                            <pre><code>
+"${PODS_ROOT}/FirebaseCrashlytics/run"
+                            </code></pre>
+                        </li>
+                        <li>This uploads .dSYM files automatically when you build or archive.</li>
+                    </ul>
+                </li>
+                <li>
+                    Manually Upload (if needed)
+                    <p>If you need to upload manually, use the Firebase CLI:</p>
+                    <pre><code>
+firebase crashlytics:symbols:upload \
+  --app=<your-app-id> \
+  --symbol-file /path/to/YourApp.dSYM.zip
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🛠 Where to Check in Xcode</h2>
+            <ul>
+                <li>
+                    In your target’s Build Settings, check:
+                    <ul>
+                        <li>In your target’s Build Settings, check:</li>
+                    </ul>
+                </li>
+                <li>Under Build Phases, make sure the Crashlytics run script is included and runs after dSYM generation</li>
+            </ul>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Debug Information Format</td>
+                        <td>Controls whether .dSYM is generated</td>
+                    </tr>
+                    <tr>
+                        <td>.dSYM file</td>
+                        <td>Contains debug symbols for Crashlytics</td>
+                    </tr>
+                    <tr>
+                        <td>Crashlytics</td>
+                        <td>Needs .dSYM to symbolicate crash logs</td>
+                    </tr>
+                    <tr>
+                        <td>You</td>
+                        <td>Must ensure the setting is correct and upload .dSYM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Integrating MongoDB with a Node.js application</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Integrating MongoDB with a Node.js application</h1>
+                    <p class="subtitle">Great — integrating MongoDB with a Node.js application is a very common setup. Here's a step-by-step guide to get you up and running using the official MongoDB Node.js driver or using Mongoose, a popular ODM (Object Data Modeling) library.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🚀 Option 1: Using Mongoose (Recommended for structured applications)</h2>
+            <ol>
+                <li>
+                    Install dependencies
+                    <pre><code>
+npm init -y
+npm install mongoose
+                    </code></pre>
+                </li>
+                <li>
+                    Connect to MongoDB
+                    <pre><code>
+// db.js
+const mongoose = require('mongoose');
+
+const connectDB = async () => {
+  try {
+    await mongoose.connect('mongodb://localhost:27017/myapp', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('MongoDB Connected');
+  } catch (err) {
+    console.error('MongoDB connection failed:', err);
+    process.exit(1);
+  }
+};
+
+module.exports = connectDB;
+                    </code></pre>
+                </li>
+                <li>
+                    Define a Schema and Model
+                    <pre><code>
+// models/User.js
+const mongoose = require('mongoose');
+
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  age: Number,
+});
+
+const User = mongoose.model('User', UserSchema);
+module.exports = User;
+                    </code></pre>
+                </li>
+
+                <li>
+                    Use in your app
+                    <pre><code>
+// app.js
+const express = require('express');
+const connectDB = require('./db');
+const User = require('./models/User');
+
+const app = express();
+app.use(express.json());
+
+connectDB();
+
+app.post('/users', async (req, res) => {
+  const user = new User(req.body);
+  await user.save();
+  res.send(user);
+});
+
+app.get('/users', async (req, res) => {
+  const users = await User.find();
+  res.send(users);
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧩 Option 2: Using MongoDB Native Driver</h2>
+            <ol>
+                <li>
+                    Install
+                    <pre><code>
+npm install mongodb
+                    </code></pre>
+                </li>
+                <li>
+                    Basic usage
+                    <pre><code>
+// app.js
+const { MongoClient } = require('mongodb');
+
+const uri = 'mongodb://localhost:27017';
+const client = new MongoClient(uri);
+
+async function run() {
+  try {
+    await client.connect();
+    console.log('Connected to MongoDB');
+
+    const db = client.db('myapp');
+    const users = db.collection('users');
+
+    // Insert a user
+    await users.insertOne({ name: 'Alice', email: 'alice@example.com' });
+
+    // Find all users
+    const allUsers = await users.find().toArray();
+    console.log(allUsers);
+
+  } finally {
+    await client.close();
+  }
+}
+
+run().catch(console.dir);
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🌐 If you're using MongoDB Atlas (cloud):</h2>
+            <p>Replace your local URI with something like:</p>
+            <pre><code>
+const uri = 'mongodb+srv://<username>:<password>@cluster0.mongodb.net/myapp?retryWrites=true&w=majority';
+            </code></pre>
+            <p>Make sure to whitelist your IP in Atlas and use correct credentials.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

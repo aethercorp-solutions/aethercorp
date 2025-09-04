@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GoogleService-Info.plist</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">GoogleService-Info.plist</h1>
+                    <p class="subtitle">✅ No, the GoogleService-Info.plist is not different for Authentication vs Analytics.
+                        🔹 It's a single configuration file used to connect your iOS app to Firebase, and that includes all Firebase services you choose to use — like Authentication, Analytics, Firestore, Storage, etc.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔍 Breakdown:</h2>
+            <p>🔹 GoogleService-Info.plist</p>
+            <ul>
+                <li>This file is downloaded from the Firebase Console
+                    when you add an iOS app to your Firebase project.</li>
+                <li>It contains your app’s unique identifiers and configuration settings needed to connect to Firebase.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 What Services Does It Apply To?</h2>
+            <p>The same file is used for all the following (if enabled in your Firebase project):</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Firebase Service</th>
+                        <th>Uses GoogleService-Info.plist?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Firebase Analytics</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase Authentication</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Firestore / Realtime DB</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Storage</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase Crashlytics</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Remote Config</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>App Check</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠️ How It Works</h2>
+            <ul>
+                <li>When you initialize Firebase in your app (usually in AppDelegate.swift or @main with SwiftUI):</li>
+            </ul>
+            <pre><code>
+import Firebase
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        FirebaseApp.configure()
+        return true
+    }
+}
+            </code></pre>
+            <ul>
+                <li>Firebase automatically looks for GoogleService-Info.plist in your app bundle.</li>
+                <li>It uses this file to initialize all the Firebase services your app uses.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 But Wait — What If I Only Use Authentication or Only Use Analytics?</h2>
+            <p>Even if you're only using one Firebase service, you still use the same plist file. That file tells the Firebase SDK how to find your app’s project in Firebase, and then it enables only the services you’re using (you control that in the Firebase console).</p>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Answer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Is there a different GoogleService-Info.plist for Firebase Authentication vs Analytics?</td>
+                        <td>❌ No</td>
+                    </tr>
+                    <tr>
+                        <td>Can the same plist be used for both?</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Should I download different plists for different services?</td>
+                        <td>❌ No — just one per Firebase project per iOS app</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

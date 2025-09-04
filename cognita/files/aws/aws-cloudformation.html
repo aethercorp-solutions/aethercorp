@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS CloudFormation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS CloudFormation</h1>
+                    <p class="subtitle">AWS CloudFormation is a service that enables you to model, provision, and manage AWS resources using infrastructure as code (IaC). A CloudFormation stack is a collection of AWS resources that are created, updated, or deleted together as a single unit based on a CloudFormation template.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 Key Concepts</h2>
+            <ol>
+                <li>
+                    CloudFormation Template
+                    <ul>
+                        <li>A JSON or YAML file that describes the AWS resources you want to provision.</li>
+                        <li>
+                            Contains:
+                            <ul>
+                                <li>Resources: The actual AWS services to deploy (EC2, S3, RDS, etc.).</li>
+                                <li>Parameters (optional): Input values you can pass at runtime.</li>
+                                <li>Outputs (optional): Values you want returned (like resource IDs or URLs).</li>
+                                <li>Mappings, Conditions, Metadata, etc.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Stack
+                    <ul>
+                        <li>A stack is the instantiation of a CloudFormation template.</li>
+                        <li>All resources defined in the template are provisioned and managed together.</li>
+                        <li>You can create, update, or delete the stack to manage the lifecycle of the resources.</li>
+                    </ul>
+                </li>
+                <li>
+                    StackSet
+                    <ul>
+                        <li>Used to deploy a CloudFormation stack across multiple AWS accounts and/or regions.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+        <section>
+            <h2>🔹 Example Template (YAML)</h2>
+            <pre><code>
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create an S3 bucket
+
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: my-unique-bucket-name-123456
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Creating a Stack (CLI)</h2>
+            <pre><code>
+aws cloudformation create-stack \
+  --stack-name MyTestStack \
+  --template-body file://template.yaml
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Use Cases</h2>
+            <ul>
+                <li>Automate infrastructure provisioning (servers, databases, networks)</li>
+                <li>Ensure consistent environments across dev/staging/prod</li>
+                <li>Version control your infrastructure in Git</li>
+                <li>Roll back infrastructure changes safely</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Benefits</h2>
+            <ul>
+                <li>IaC: Repeatable, testable deployments</li>
+                <li>Automation: Reduces manual errors</li>
+                <li>Drift Detection: Identify differences between actual resources and template</li>
+                <li>Change Sets: Preview changes before applying</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

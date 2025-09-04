@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>OAuth 2.0 client</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">OAuth 2.0 client</h1>
+                    <p class="subtitle">An OAuth 2.0 client is an application that accesses a resource (like an API) on behalf of a user by obtaining authorization through the OAuth 2.0 protocol. It's one of the key roles defined in the OAuth 2.0 framework.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔑 Key Roles in OAuth 2.0</h2>
+            <p>To understand the client, it's helpful to know the main entities in OAuth:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Resource Owner</td>
+                        <td>The user who owns the data (e.g., a person).</td>
+                    </tr>
+                    <tr>
+                        <td>Client</td>
+                        <td>The app requesting access to the resource owner's data.</td>
+                    </tr>
+                    <tr>
+                        <td>Authorization Server</td>
+                        <td>The server that authenticates the user and issues access tokens.</td>
+                    </tr>
+                    <tr>
+                        <td>Resource Server</td>
+                        <td>The server hosting the protected resources (e.g., an API).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ What the Client Does</h2>
+            <p>The OAuth client:</p>
+            <ul>
+                <li>Initiates the authorization flow.</li>
+                <li>Redirects the user to the authorization server.</li>
+                <li>Exchanges an authorization code (or other credentials) for an access token.</li>
+                <li>Uses the access token to access protected resources on behalf of the user.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ Common OAuth 2.0 Grant Types for Clients</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Grant Type</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Authorization Code</td>
+                        <td>Most secure; used by web/mobile apps with server-side component.</td>
+                    </tr>
+                    <tr>
+                        <td>Client Credentials</td>
+                        <td>Used for server-to-server communication; no user involved.</td>
+                    </tr>
+                    <tr>
+                        <td>Implicit</td>
+                        <td>Deprecated; previously used by client-side apps (e.g., SPAs).</td>
+                    </tr>
+                    <tr>
+                        <td>Resource Owner Password</td>
+                        <td>Deprecated; used when the app asks for user credentials directly.</td>
+                    </tr>
+                    <tr>
+                        <td>Device Authorization</td>
+                        <td>Used on devices with limited input (e.g., TVs, IoT).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔐 Example Flow (Authorization Code)</h2>
+            <ol>
+                <li>Client redirects user to Authorization Server.</li>
+                <li>User logs in and authorizes the client.</li>
+                <li>Server redirects back with authorization code.</li>
+                <li>Client exchanges code for access token.</li>
+                <li>Client uses access token to call Resource Server.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧩 Example OAuth Client Libraries</h2>
+            <ul>
+                <li>Node.js: passport, simple-oauth2</li>
+                <li>Python: requests-oauthlib</li>
+                <li>Java: Spring Security OAuth2</li>
+                <li>.NET: IdentityModel</li>
+                <li>Frontend (JS): oidc-client-ts, Auth0, MSAL.js</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Yes, Google Sign-In is based on OAuth 2.0 and OpenID Connect (OIDC), which is an identity layer built on top of OAuth 2.0.</p>
+        
+            <h2>✅ How Google Sign-In Uses OAuth 2.0</h2>
+            <p>When a user signs into your app with Google, the flow typically involves:</p>
+            <ol>
+                <li>OAuth 2.0: Handles authorization — i.e., granting access to Google APIs (like Gmail, Calendar).</li>
+                <li>OpenID Connect (OIDC): Adds authentication — confirming the user's identity and returning an ID token.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔑 Key Tokens in Google Sign-In</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Access Token</td>
+                        <td>Lets your app access Google APIs on behalf of the user.</td>
+                    </tr>
+                    <tr>
+                        <td>ID Token</td>
+                        <td>Confirms the user's identity (contains their email, name, etc.).</td>
+                    </tr>
+                    <tr>
+                        <td>Refresh Token</td>
+                        <td>(optional) Lets your app get a new access token without re-authenticating.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔁 Example Flow (Web App)</h2>
+            <ol>
+                <li>User clicks "Sign in with Google".</li>
+                <li>Your app redirects them to Google’s OAuth 2.0 Authorization Endpoint.</li>
+                <li>User authenticates and consents.</li>
+                <li>
+                    Google redirects back to your app with:
+                    <ul>
+                        <li>An authorization code (for server-side apps).</li>
+                    </ul>
+                </li>
+                <li>
+                    Your backend exchanges the code for:
+                    <ul>
+                        <li>Access Token</li>
+                        <li>ID Token</li>
+                        <li>(Optional) Refresh Token</li>
+                    </ul>
+                </li>
+                <li>
+                    You use:
+                    <ul>
+                        <li>ID Token to verify the user's identity.</li>
+                        <li>Access Token to call Google APIs.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔒 Why OAuth + OpenID Connect?</h2>
+            <ul>
+                <li>OAuth 2.0 = Authorization (what the app can do)</li>
+                <li>OpenID Connect = Authentication (who the user is)</li>
+            </ul>
+            <p>Google Sign-In combines both to give you identity and access in one flow.</p>
+        </section>
+
+        <section>
+            <h2>🧰 Google OAuth Endpoints</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Purpose</th>
+                        <th>Endpoint</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Authorization</td>
+                        <td>https://accounts.google.com/o/oauth2/v2/auth</td>
+                    </tr>
+                    <tr>
+                        <td>Token Exchange</td>
+                        <td>https://oauth2.googleapis.com/token</td>
+                    </tr>
+                    <tr>
+                        <td>User Info (OIDC)</td>
+                        <td>https://openidconnect.googleapis.com/v1/userinfo</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <p>Firebase and Google Authentication work together to make it easy for developers to authenticate users using their Google accounts. This is a part of Firebase Authentication, which supports several authentication methods, including email/password, phone number, and federated identity providers like Google, Facebook, Apple, etc.</p>
+            <p>Here’s a breakdown of how Firebase Authentication with Google works:</p>
+
+            <h2>🔐 1. What Is Firebase Authentication?</h2>
+            <p>Firebase Authentication is a service that provides backend services, easy-to-use SDKs, and ready-made UI libraries to authenticate users to your app. It supports:</p>
+            <ul>
+                <li>Email and password</li>
+                <li>Phone number</li>
+                <li>Google, Facebook, Twitter, Apple, GitHub (federated identity providers)</li>
+                <li>Anonymous authentication</li>
+                <li>Custom authentication system</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 2. How Google Sign-In Works with Firebase</h2>
+            <p>🔄 Flow Overview:</p>
+            <ol>
+                <li>
+                    User Clicks “Sign In with Google”
+                    <ul>
+                        <li>Your app presents a Google sign-in UI (either via popup or redirect).</li>
+                    </ul>
+                </li>
+                <li>
+                    Google Sign-In
+                    <ul>
+                        <li>The user selects their Google account and grants permissions.</li>
+                        <li>Google returns an ID token and an access token.</li>
+                    </ul>
+                </li>
+                <li>
+                    Firebase Auth Handles the Token
+                    <ul>
+                        <li>Your app sends the ID token to Firebase.</li>
+                        <li>Firebase verifies the token with Google and signs in the user.</li>
+                    </ul>
+                </li>
+                <li>
+                    Firebase Returns a User Object
+                    <ul>
+                        <li>Firebase returns a User object, including UID, email, display name, photo URL, etc.</li>
+                        <li>The user is now authenticated in your app.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

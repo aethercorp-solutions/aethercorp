@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Firebase Crashlytics in a development build in Xcode</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Firebase Crashlytics in a development build in Xcode</h1>
+                    <p class="subtitle">Yes, you can use Firebase Crashlytics in a development build in Xcode, but there are a few things you should know to make it work properly and to understand what to expect:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Using Crashlytics in Development (Dev) Builds – What You Need to Know</h2>
+            <ol>
+                <li>
+                    Crashlytics Works in Dev Mode
+                    <p>Crashlytics will report crashes and non-fatal issues in development builds. This is helpful for debugging and testing before production releases.</p>
+                </li>
+                <li>
+                    Symbolication Still Happens
+                    <p>As long as you're uploading your dSYM files (which Xcode usually does automatically with the Firebase SDK), the crashes will be symbolicated just like in release builds.</p>
+                </li>
+                <li>
+                    Set a Custom Build Type / Environment
+                    <p>To help differentiate dev vs prod crashes in the Crashlytics dashboard, it’s a good idea to set a custom key or log:</p>
+                    <pre><code>
+Crashlytics.crashlytics().setCustomValue("development", forKey: "build_environment")
+                    </code></pre>
+                    <p>Or:</p>
+                    <pre><code>
+Crashlytics.crashlytics().log("Running development build")
+                    </code></pre>
+                </li>
+                <li>
+                    Force a Test Crash
+                    <p>To verify it's working in dev, you can force a test crash:</p>
+                    <pre><code>
+Crashlytics.crashlytics().log("Testing crash in dev")
+fatalError("Test crash for dev build")
+                    </code></pre>
+                </li>
+                <li>
+                    Crashes May Not Appear Instantly
+                    <p>Crash reports are not sent immediately — they are sent on the next app launch after a crash, and it can take a few minutes for them to show up in the Firebase Console.</p>
+                </li>
+                <li>
+                    Make Sure Debug Symbols Are Uploaded
+                    <p>For dev builds, Debug Info must be present. If symbolication isn’t working:</p>
+                    <ul>
+                        <li>Check that DWARF with dSYM File is set in Build Settings.</li>
+                        <li>Ensure dSYMs are uploaded (automatic with Firebase Run Script).</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🛠️ Optional: Only Enable in Certain Schemes</h2>
+            <p>If you only want to use Crashlytics in certain environments, you can guard it:</p>
+            <pre><code>
+#if DEBUG
+Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(true)
+#endif
+            </code></pre>
+
+            <p>Or use build configurations and environment variables.</p>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Available in Dev Builds</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Crash reporting</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Custom logs/keys</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Symbolication</td>
+                        <td>✅ Yes (if dSYMs uploaded)</td>
+                    </tr>
+                    <tr>
+                        <td>Real-time visibility</td>
+                        <td>⚠️ Some delay (~5–10 min)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <p>Great question — the term "release build" can mean different things depending on context. Let's break it down:</p>
+            <h2>✅ What Is a Release Build?</h2>
+            <p>In the context of iOS development with Xcode, a release build typically refers to a version of your app built using the Release configuration, as opposed to the Debug configuration.</p>
+            <p>📦 1. "Release Build" (Technical Definition in Xcode)</p>
+
+            <ul>
+                <li>
+                    In Xcode, there are usually two build configurations:
+                    <ul>
+                        <li>Debug → used for development, with extra logs, debugger support, etc.</li>
+                        <li>Release → optimized for performance, with debugging disabled.</li>
+                    </ul>
+                </li>
+                <li>
+                    You can view/edit these in:
+                    <pre><code>
+Xcode > Project > Build Settings > Configurations
+                    </code></pre>
+                </li>
+            </ul>
+            <p>So, a release build is just:</p>
+            <p>A version of the app built using the Release configuration — usually for TestFlight, App Store, or production use.</p>
+        </section>
+
+        <section>
+            <h2>📤 2. Is a Release Build Only One Uploaded to the App Store?</h2>
+            <p>No. A release build doesn't have to be uploaded to the App Store. It could also be:</p>
+            <ul>
+                <li>Uploaded to TestFlight</li>
+                <li>Shared with testers via ad hoc distribution</li>
+                <li>Installed locally with tools like Xcode Organizer or Diawi</li>
+                <li>Shared using Firebase App Distribution</li>
+            </ul>
+            <p>The key is: if the app was built using the Release configuration, it’s considered a release build, regardless of whether it’s live on the App Store.</p>
+        </section>
+
+        <section>
+            <h2>🧪 3. What About Dev Builds?</h2>
+            <p>Dev (development) builds are typically:</p>
+            <ul>
+                <li>Built with the Debug configuration</li>
+                <li>Run locally in the Simulator or on a connected device via Xcode</li>
+                <li>Have debugging and logging enabled</li>
+                <li>Not optimized for performance</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 Crashlytics & Release vs Dev</h2>
+            <p>Firebase Crashlytics works with both:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Build Type</th>
+                        <th>Description</th>
+                        <th>Crashlytics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Debug Build</td>
+                        <td>Built for development/testing in Xcode</td>
+                        <td>✅ Yes (optional)</td>
+                    </tr>
+                    <tr>
+                        <td>Release Build</td>
+                        <td>Built for distribution (TestFlight/App Store)</td>
+                        <td>✅ Yes (default)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>You can enable Crashlytics selectively based on your build type if needed.</p>
+        </section>
+
+        <section>
+            <ul>
+                <li>"Release build" = any build using the Release configuration (not necessarily App Store).</li>
+                <li>Crashlytics works in both dev and release builds.</li>
+                <li>Use setCustomValue() or flags to track what environment a crash came from.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

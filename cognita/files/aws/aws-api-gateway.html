@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>API Gateway</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">API Gateway</h1>
+                    <p class="subtitle">API Gateway enables you to connect and access data, business logic, and functionality from backend services such as workloads running on Amazon Elastic Compute Cloud (Amazon EC2), code running on AWS Lambda, any web application, or real-time communication applications.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>API types</h2>
+            <p>REST APIs</p>
+            <p>Use REST APIs to send request to public or private HTTP endpoints, AWS Lambda functions, or other AWS services. Supports API keys, per-client throttling, request validation, and AWS WAF integration.</p>
+        
+            <p>HTTP APIs</p>
+            <p>Use HTTP APIs to send requests to AWS Lambda functions or to any routable HTTP endpoint. HTTP APIs are designed with minimal features so that they can be offered at a lower price.</p>
+        
+            <p>WebSocket APIs</p>
+            <p>Use WebSocket APIs to build real-time two-way communication applications, such as chat apps and streaming dashboards. API Gateway maintains a persistent connection to handle message transfer between your backend service and your clients.</p>
+        </section>
+
+        <section>
+            <p>Creating and managing APIs at scale using AWS API Gateway requires a combination of architectural planning, automation, monitoring, and security best practices. Here's a breakdown of the end-to-end approach to handle this effectively:</p>
+            <h1>✅ 1. Choose the Right API Type</h1>
+            <p>AWS API Gateway supports:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>API Type</th>
+                        <th>Best For</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>REST APIs</td>
+                        <td>Legacy systems, fine-grained control</td>
+                        <td>More expensive, supports API Keys</td>
+                    </tr>
+                    <tr>
+                        <td>HTTP APIs</td>
+                        <td>Modern, faster, cheaper</td>
+                        <td>Limited features vs REST</td>
+                    </tr>
+                    <tr>
+                        <td>WebSocket APIs</td>
+                        <td>Real-time, two-way communication</td>
+                        <td>Used in chat, IoT apps</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>For scale, HTTP APIs are preferred due to lower latency and cost.</p>
+        </section>
+
+        <section>
+            <h2>✅ 2. Design for Scale</h2>
+            <p>a. Use Microservices</p>
+            <p>Split functionality across multiple APIs (e.g., user-service, order-service, payment-service).</p>
+            <p>b. Define Resource Models</p>
+            <p>Use consistent naming conventions and versioning:</p>
+            <pre><code>
+/v1/users
+/v1/orders
+            </code></pre>
+            <p>c. Leverage Lambda or VPC Backends</p>
+            <ul>
+                <li>Use Lambda for lightweight compute.</li>
+                <li>Use VPC integration for private services (e.g., EC2/ECS).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 3. Infrastructure as Code (IaC)</h2>
+            <p>Manage APIs using:</p>
+            <ul>
+                <li>AWS CloudFormation</li>
+                <li>AWS CDK</li>
+                <li>Terraform</li>
+                <li>Serverless Framework</li>
+            </ul>
+            <p>Example (CDK in TypeScript):</p>
+            <pre><code>
+const api = new apigateway.HttpApi(this, 'MyHttpApi', {
+    corsPreflight: {
+        allowOrigins: ['*'],
+        allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.POST],
+    },
+});                  
+            </code></pre>
+            <p>This allows version control and deployment automation.</p>
+        </section>
+
+        <section>
+            <h2>✅ 4. Authentication & Authorization</h2>
+            <p>Secure your APIs at scale:</p>
+            <p>a. Use Amazon Cognito or JWT authorizers</p>
+            <p>For user-based auth.</p>
+            <p>b. Use IAM roles/policies</p>
+            <p>For internal AWS service-to-service communication.</p>
+            <p>c. Use API Keys & Usage Plans</p>
+            <p>For monetized or rate-limited APIs.</p>
+        </section>
+
+        <section>
+            <h2>✅ 5. Throttling & Rate Limiting</h2>
+            <p>Control usage at different levels:</p>
+            <ul>
+                <li>Per API Stage (e.g., dev, prod)</li>
+                <li>Per Method</li>
+                <li>Per Usage Plan</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+{
+    "throttle": {
+        "rateLimit": 1000,
+        "burstLimit": 200
+    }
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 6. Custom Domains & Versioning</h2>
+            <p>Use custom domains for user-friendly URLs:</p>
+            <ul>
+                <li>Map /v1, /v2 to different stages or APIs.</li>
+                <li>Manage versions cleanly for backward compatibility.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 7. Monitoring & Logging</h2>
+            <p>Use:</p>
+            <ul>
+                <li>AWS CloudWatch Logs for request-level info.</li>
+                <li>AWS X-Ray for tracing.</li>
+                <li>
+                    API Gateway Metrics for:
+                    <ul>
+                        <li>Latency</li>
+                        <li>Integration latency</li>
+                        <li>4xx/5xx errors</li>
+                        <li>Cache hit/miss rates</li>
+                    </ul>
+                    <p>Set up CloudWatch Alarms for anomalies.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 8. Caching</h2>
+            <p>Enable API Gateway caching to reduce backend load:</p>
+            <ul>
+                <li>Per-method caching</li>
+                <li>Set TTLs</li>
+                <li>Use for GET-heavy APIs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 9. Deploying Across Regions (for Scale)</h2>
+            <ul>
+                <li>Use Route 53 latency-based routing</li>
+                <li>Deploy APIs in multiple regions</li>
+                <li>Replicate data backend (via DynamoDB global tables or Aurora global DBs)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 10. Lifecycle Management</h2>
+            <ul>
+                <li>Use Stages (dev, qa, prod)</li>
+                <li>Use canary deployments for safe releases</li>
+                <li>Use stage variables to customize behavior per stage</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 11. Cost Optimization Tips</h2>
+            <ul>
+                <li>Use HTTP APIs over REST if features allow</li>
+                <li>Use Lambda Power Tuning for cost/performance</li>
+                <li>Enable caching for frequently read data</li>
+                <li>Set throttling to avoid overuse</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 12. Tooling & Automation</h2>
+            <ul>
+                <li>CI/CD pipelines using CodePipeline or GitHub Actions</li>
+                <li>Automated tests via Postman or Newman</li>
+                <li>Integrate with API Gateway SDK Generation for clients</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example Architecture Diagram (High-Level)</h2>
+            <pre><code>
+Client --> API Gateway --> Lambda --> DynamoDB
+        |
+CloudWatch Logs
+        |
+    X-Ray
+            </code></pre>
+            <p>If you'd like, I can help generate:</p>
+            <ul>
+                <li>A CDK/Terraform template</li>
+                <li>A Postman collection for testing</li>
+                <li>A monitoring dashboard setup</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Setting up an AWS API Gateway HTTP API with Node.js involves several steps, including configuring the API Gateway, creating a Lambda function in Node.js to handle requests, and deploying your API. Here's a complete guide to help you set up a working HTTP API in AWS using Node.js.</p>
+            <h2>🛠️ Prerequisites</h2>
+            <ol>
+                <li>AWS Account</li>
+                <li>AWS CLI configured – <a href="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html?utm_source=chatgpt.com">Install AWS CLI</a></li>
+                <li>Node.js Installed – <a href="https://nodejs.org/?utm_source=chatgpt.com">Download Node.js</a></li>
+                <li>(Optional) Serverless Framework or AWS SAM CLI if you want to use Infrastructure as Code (IaC)</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🚀 Step-by-Step Guide</h2>
+            <p>✅ Step 1: Create a Node.js Lambda Function</p>
+            <ul>
+                <li>
+                    Create a project directory:
+                    <pre><code>
+mkdir my-http-api && cd my-http-api
+                    </code></pre>
+                </li>
+                <li>
+                    Initialize a Node.js project:
+                    <pre><code>
+npm init -y
+                    </code></pre>
+                </li>
+                <li>
+                    Create the Lambda handler:
+                    <p>index.js</p>
+                    <pre><code>
+exports.handler = async (event) => {
+    return {
+        statusCode: 200,
+        headers: {
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+        message: "Hello from Node.js Lambda via HTTP API Gateway!",
+        event,
+        }),
+    };
+};
+                    </code></pre>
+                </li>
+                <li>
+                    Zip your function:
+                    <pre><code>
+zip function.zip index.js
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
