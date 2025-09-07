@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Global Authentication State</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Global Authentication State</h1>
+                    <p class="subtitle">
+                        To handle global authentication state (e.g. signed in/out) across your entire app using MVVM-C (Model-View-ViewModel-Coordinator) in UIKit, you’ll need to create a centralized system that allows the app to:
+                        <ul>
+                            <li>✅ Track authentication state globally.</li>
+                            <li>🚦 React to auth changes and transition between login and main (home) flows.</li>
+                            <li>📡 Expose this state to Coordinators for navigation decisions.</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Key Components You’ll Need</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Responsibility</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AppCoordinator</td>
+                        <td>The root coordinator, owns all flow coordinators</td>
+                    </tr>
+                    <tr>
+                        <td>AuthManager (Singleton)</td>
+                        <td>Global auth state + Firebase handling</td>
+                    </tr>
+                    <tr>
+                        <td>AuthCoordinator / MainCoordinator</td>
+                        <td>Handles login or main app flow</td>
+                    </tr>
+                    <tr>
+                        <td>SceneDelegate</td>
+                        <td>Sets up AppCoordinator on launch</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔁 Global Architecture Flow (Simplified):</h2>
+            <pre><code>
+SceneDelegate
+    ↓
+AppCoordinator
+    ↓
+┌──────────────┬───────────────┐
+│ AuthCoordinator │ MainCoordinator │
+└──────────────┴───────────────┘
+        ↑
+  listens to
+AuthManager.shared.$isAuthenticated
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>1. 🔒 Global AuthManager Singleton</h2>
+            <pre><code>
+import Foundation
+import FirebaseAuth
+import Combine
+
+final class AuthManager {
+    static let shared = AuthManager()
+
+    @Published private(set) var isAuthenticated: Bool = false
+    private var authListener: AuthStateDidChangeListenerHandle?
+
+    private init() {
+        authListener = Auth.auth().addStateDidChangeListener { _, user in
+            self.isAuthenticated = (user != nil)
+        }
+    }
+
+    func signIn(with credential: AuthCredential, completion: @escaping (Result<Void, Error>) -> Void) {
+        Auth.auth().signIn(with: credential) { result, error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                self.isAuthenticated = true
+                completion(.success(()))
+            }
+        }
+    }
+
+    func signOut() {
+        do {
+            try Auth.auth().signOut()
+            self.isAuthenticated = false
+        } catch {
+            print("Error signing out: \(error)")
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. 🧭 AppCoordinator.swift</h2>
+            <pre><code>
+import UIKit
+import Combine
+
+class AppCoordinator: Coordinator {
+    var navigationController: UINavigationController
+    private var cancellables = Set<AnyCancellable>()
+    
+    private var authCoordinator: AuthCoordinator?
+    private var mainCoordinator: MainCoordinator?
+
+    init(navigationController: UINavigationController) {
+        self.navigationController = navigationController
+    }
+
+    func start() {
+        observeAuthState()
+        launchInitialFlow()
+    }
+
+    private func observeAuthState() {
+        AuthManager.shared.$isAuthenticated
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] isAuthenticated in
+                if isAuthenticated {
+                    self?.showMain()
+                } else {
+                    self?.showLogin()
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    private func launchInitialFlow() {
+        // AuthManager already listens to FirebaseAuth
+        // Just trigger current state
+        if AuthManager.shared.isAuthenticated {
+            showMain()
+        } else {
+            showLogin()
+        }
+    }
+
+    private func showLogin() {
+        authCoordinator = AuthCoordinator(navigationController: navigationController)
+        authCoordinator?.start()
+    }
+
+    private func showMain() {
+        mainCoordinator = MainCoordinator(navigationController: navigationController)
+        mainCoordinator?.start()
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. 🎯 AuthCoordinator and MainCoordinator Examples</h2>
+            <p>AuthCoordinator.swift</p>
+            <pre><code>
+class AuthCoordinator: Coordinator {
+    var navigationController: UINavigationController
+
+    init(navigationController: UINavigationController) {
+        self.navigationController = navigationController
+    }
+
+    func start() {
+        let loginVC = LoginViewController()
+        loginVC.viewModel = AuthViewModel()
+        navigationController.setViewControllers([loginVC], animated: false)
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>MainCoordinator.swift</h2>
+            <pre><code>
+class MainCoordinator: Coordinator {
+    var navigationController: UINavigationController
+
+    func start() {
+        let homeVC = HomeViewController()
+        homeVC.onLogout = {
+            AuthManager.shared.signOut()
+        }
+        navigationController.setViewControllers([homeVC], animated: true)
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. 👀 LoginViewController & ViewModel</h2>
+            <p>LoginViewController.swift</p>
+
+            <pre><code>
+class LoginViewController: UIViewController {
+    var viewModel: AuthViewModel!
+
+    // UI & bindings...
+    @objc private func signInTapped() {
+        viewModel.signInWithGoogle(presentingVC: self)
+    }
+}                
+            </code></pre>
+
+            <p>AuthViewModel.swift (Simplified)</p>
+            <pre><code>
+class AuthViewModel {
+    @Published var errorMessage: String?
+
+    func signInWithGoogle(presentingVC: UIViewController) {
+        // Fetch token...
+
+        let credential = GoogleAuthProvider.credential(
+            withIDToken: idToken,
+            accessToken: accessToken
+        )
+
+        AuthManager.shared.signIn(with: credential) { result in
+            switch result {
+            case .success():
+                // AuthManager handles state change
+                break
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
+            }
+        }
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. 🚪 HomeViewController with Logout</h2>
+            <pre><code>
+class HomeViewController: UIViewController {
+    var onLogout: (() -> Void)?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let logoutButton = UIButton(type: .system)
+        logoutButton.setTitle("Logout", for: .normal)
+        logoutButton.addTarget(self, action: #selector(logoutTapped), for: .touchUpInside)
+
+        view.addSubview(logoutButton)
+        // Layout...
+    }
+
+    @objc private func logoutTapped() {
+        onLogout?()
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. 🎬 SceneDelegate.swift</h2>
+            <pre><code>
+func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+    guard let windowScene = (scene as? UIWindowScene) else { return }
+
+    let navController = UINavigationController()
+    let coordinator = AppCoordinator(navigationController: navController)
+    coordinator.start()
+
+    let window = UIWindow(windowScene: windowScene)
+    window.rootViewController = navController
+    self.window = window
+    window.makeKeyAndVisible()
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Handles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AuthManager</td>
+                        <td>Global Firebase auth state</td>
+                    </tr>
+                    <tr>
+                        <td>AppCoordinator</td>
+                        <td>Central flow controller for login/main</td>
+                    </tr>
+                    <tr>
+                        <td>AuthCoordinator</td>
+                        <td>Login flow</td>
+                    </tr>
+                    <tr>
+                        <td>MainCoordinator</td>
+                        <td>Post-login flow</td>
+                    </tr>
+                    <tr>
+                        <td>ViewModels</td>
+                        <td>UI logic, inject AuthManager as needed</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>This architecture is robust and scalable. You can now:</p>
+            <ul>
+                <li>Handle login/logout transitions automatically.</li>
+                <li>Navigate based on authentication state.</li>
+                <li>Keep auth logic out of your ViewControllers and Coordinators.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

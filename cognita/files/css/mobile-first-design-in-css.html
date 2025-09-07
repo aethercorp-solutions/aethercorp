@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Mobile-first design in CSS</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Mobile-first design in CSS</h1>
+                    <p class="subtitle">
+                        <p>Mobile-first design in CSS means you design your website starting with styles for the smallest (mobile) screens, and then use media queries to progressively enhance the layout for tablets, laptops, and desktops.</p>
+                        <p>This is a best practice because it ensures your site is accessible and fast for mobile users first, who often have limited bandwidth and smaller screens.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Example: Mobile-First CSS</h2>
+            <pre><code>
+/* Base styles: Mobile first */
+body {
+  font-family: sans-serif;
+  font-size: 16px;
+  margin: 0;
+  padding: 1rem;
+  background-color: #f4f4f4;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Tablet styles (min-width: 600px) */
+@media (min-width: 600px) {
+  .container {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    flex: 1 1 calc(50% - 1rem);
+  }
+}
+
+/* Desktop styles (min-width: 1024px) */
+@media (min-width: 1024px) {
+  .card {
+    flex: 1 1 calc(33.33% - 1rem);
+  }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <p>1rem is a CSS unit of measurement used in web development to set sizes (like fonts, spacing, margins, etc.). It stands for "root em".</p>
+            <h2>What does 1rem mean?</h2>
+            <ul>
+                <li>1rem equals the font size of the root element (<html> tag).</li>
+                <li>
+                    By default, most browsers set the root font size to 16px, so:
+                    <ul>
+                        <li>1rem = 16px (unless the default is changed)</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>Example:</p>
+            <pre><code>
+html {
+    font-size: 16px; /* Default */
+}
+    
+p {
+    font-size: 1rem; /* 16px */
+}                  
+            </code></pre>
+
+            <p>If you changed the root font size like this:</p>
+            <pre><code>
+html {
+    font-size: 18px;
+}                  
+            </code></pre>
+
+            <p>Then:</p>
+            <pre><code>
+p {
+    font-size: 1rem; /* 18px */
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why use rem instead of px?</h2>
+            <ul>
+                <li>Scalability: It's easier to make your design responsive and accessible by adjusting just the root font size.</li>
+                <li>Consistency: All elements scale based on one central value.</li>
+                <li>Accessibility: Users can change base font size in browser settings, and your site will respond correctly.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here's a comparison between rem, em, px, and % with clear examples and use cases.</p>
+            <h2>🔹 Quick Definitions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Unit</th>
+                        <th>Meaning</th>
+                        <th>Relative To</th>
+                        <th>Common Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>px</td>
+                        <td>Pixels</td>
+                        <td>Absolute unit</td>
+                        <td>Fixed sizes</td>
+                    </tr>
+                    <tr>
+                        <td>em</td>
+                        <td>Element em</td>
+                        <td>Parent element's font size</td>
+                        <td>Nested sizing</td>
+                    </tr>
+                    <tr>
+                        <td>rem</td>
+                        <td>Root em</td>
+                        <td>Root element's font size (html)</td>
+                        <td>Scalable, consistent sizing</td>
+                    </tr>
+                    <tr>
+                        <td>%</td>
+                        <td>Percentage</td>
+                        <td>Parent element's size</td>
+                        <td>Relative layouts</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔹 When to Use What?</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Responsive typography</td>
+                        <td>rem</td>
+                    </tr>
+                    <tr>
+                        <td>One-off fixed size (icon, border)</td>
+                        <td>px</td>
+                    </tr>
+                    <tr>
+                        <td>Relative to parent</td>
+                        <td>em, %</td>
+                    </tr>
+                    <tr>
+                        <td>Consistent spacing/padding</td>
+                        <td>rem</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔹 Summary</h2>
+            <ul>
+                <li>Use rem for consistent, root-based scaling.</li>
+                <li>Use em for scaling based on parent.</li>
+                <li>Use px when you need precise control.</li>
+                <li>Use % mainly for layouts (like width/height).</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

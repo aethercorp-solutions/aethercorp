@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Title </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Title </h1>
+                    <p class="subtitle"> Subtitle </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <pre><code>
+const UserRepo = require('./../../../modules/user/repositories/user.repository');
+const GoogleService = require('./../../../common/services/google.service');
+
+async function validTokenParameter(req, res, next) {
+    console.log('>>>>>',req.url);
+    console.log('>>>>>',req.headers);
+    if (typeof req.headers.platform === 'undefined' || typeof req.headers.access_token === 'undefined' ||
+        typeof req.headers.device_id === 'undefined' || typeof req.headers.device_token_id === 'undefined' ||
+        typeof req.headers.email === 'undefined') {
+        return res.status(403).send({ status: false, statusCode: 403, message: 'Missing required headers parameters.', data: [] });
+    } else {
+        if (req.headers.platform.toLowerCase() !== 'ios' && (req.headers.platform.toLowerCase() !== 'android')) {
+            req.headers.platform = 'web';
+        }
+        GoogleService.instance.setPlatform(req.headers.platform);
+        next();
+    }
+}
+
+exports.validTokenParameter = validTokenParameter;
+
+exports.validCodeParameter = async (req, res, next) => {
+    console.log(req.headers);
+    if (typeof req.headers.platform === 'undefined' || typeof req.headers.code === 'undefined' ||
+        typeof req.headers.device_id === 'undefined' || typeof req.headers.device_token_id === 'undefined'
+        ) {
+        return res.status(403).send({ status: false, statusCode: 403, message: 'Missing required headers parameters.', data: [] });
+    } else {
+        if (req.headers.platform.toLowerCase() !== 'ios' && (req.headers.platform.toLowerCase() !== 'android')) {
+            req.headers.platform = 'web';
+        }
+        GoogleService.instance.setPlatform(req.headers.platform);
+        next();
+    }
+}
+
+async function userTokenMustExist(req, res, next) {
+    // Run header validation
+    if (
+        typeof req.headers.platform === 'undefined' ||
+        typeof req.headers.access_token === 'undefined' ||
+        typeof req.headers.device_id === 'undefined' ||
+        typeof req.headers.device_token_id === 'undefined' ||
+        typeof req.headers.email === 'undefined'
+    ) {
+        return res.status(403).send({ status: false, statusCode: 403, message: 'Missing required headers parameters.', data: [] });
+    }
+
+    // Normalize platform
+    if (req.headers.platform.toLowerCase() !== 'ios' && req.headers.platform.toLowerCase() !== 'android') {
+        req.headers.platform = 'web';
+    }
+
+    GoogleService.instance.setPlatform(req.headers.platform);
+
+    // Now check user token
+    const user = await UserRepo.findUserToken(
+        req.headers.email,
+        req.headers.device_id,
+        req.headers.platform,
+        req.headers.access_token
+    );
+
+    if (!user) {
+        return res.status(403).send({ status: false, statusCode: 403, message: 'Invalid device.', data: [] });
+    }
+
+    req.user = user;
+    next();  // Only call next if all above succeeds
+}
+
+exports.userTokenMustExist = userTokenMustExist;
+
+exports.isLogon = async (req, res, next) => {
+    try {
+        await userTokenMustExist(req, res, async () => {
+            // Check if token is still valid
+            const token = req.user?.UserToken;
+
+            if (!token) {
+                return res.status(403).send({
+                    status: false,
+                    statusCode: 403,
+                    message: 'Missing required headers parameters. User token not found',
+                    data: []
+                });
+            }
+
+            const now = Date.now();
+            const expiration = new Date(token.ExpirationDate).getTime();
+
+            if ((now - expiration) &lt; 3600000) {
+                GoogleService.instance.setCredentials({
+                    access_token: token.AccessToken,
+                    id_token: token.IdToken,
+                    refresh_token: token.RefreshToken
+                });
+
+                return next();
+            } else {
+                return res.status(403).send({
+                    status: false,
+                    statusCode: 403,
+                    message: 'Token was expired.',
+                    data: []
+                });
+            }
+        });
+    } catch (err) {
+        return res.status(500).send({
+            status: false,
+            statusCode: 500,
+            message: 'Failed to validate user login.',
+            data: []
+        });
+    }
+};
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

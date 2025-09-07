@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>HTTP header</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">HTTP header</h1>
+                    <p class="subtitle">An HTTP header is a part of the information sent between a client (like a web browser) and a server when making an HTTP request or response. Headers are used to pass metadata—information about the data—rather than the actual content itself.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 How HTTP Headers Work:</h2>
+            <p>When a client sends a request to a server (e.g., when you open a website), it includes request headers. The server responds with response headers, before sending the actual content (HTML, images, JSON, etc.).</p>
+        </section>
+        
+        <section>
+            <h2>📦 Structure of an HTTP Header:</h2>
+            <p>Headers are key-value pairs, separated by a colon (:), and are placed before the body of the request or response.</p>
+            <p>Example (Request Header):</p>
+            <pre><code>
+GET /index.html HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0
+Accept: text/html
+            </code></pre>
+
+            <p>Example (Response Header):</p>
+
+            <pre><code>
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1234
+Cache-Control: no-cache
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧰 Common HTTP Request Headers</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Header</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Host</td>
+                        <td>Specifies the domain name of the server</td>
+                    </tr>
+                    <tr>
+                        <td>User-Agent</td>
+                        <td>Identifies the browser/client making the request</td>
+                    </tr>
+                    <tr>
+                        <td>Accept</td>
+                        <td>Tells the server what content types the client can handle</td>
+                    </tr>
+                    <tr>
+                        <td>Authorization</td>
+                        <td>Used for sending credentials (like tokens)</td>
+                    </tr>
+                    <tr>
+                        <td>Cookie</td>
+                        <td>Sends cookies from client to server</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧰 Common HTTP Response Headers</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Header</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Content-Type</td>
+                        <td>Describes the format of the returned content (e.g., text/html, application/json)</td>
+                    </tr>
+                    <tr>
+                        <td>Content-Length</td>
+                        <td>Size of the response body in bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Set-Cookie</td>
+                        <td>Sets cookies in the browser</td>
+                    </tr>
+                    <tr>
+                        <td>Cache-Control</td>
+                        <td>Tells client how to cache the response</td>
+                    </tr>
+                    <tr>
+                        <td>Access-Control-Allow-Origin</td>
+                        <td>Used in CORS to specify allowed domains</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Why HTTP Headers Matter</h2>
+            <ul>
+                <li>Control caching</li>
+                <li>Handle content negotiation (e.g., language, encoding)</li>
+                <li>Send authentication data</li>
+                <li>Enable cross-origin requests (CORS)</li>
+                <li>Improve security (e.g., via CSP, HSTS headers)</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Sure! Here's a basic example of using the fetch() API in JavaScript to send an HTTP request with custom headers.</p>
+            <h2>📦 Example: fetch() with custom request headers</h2>
+            <pre><code>
+fetch('https://api.example.com/data', {
+    method: 'GET', // or 'POST', 'PUT', etc.
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+        'Accept': 'application/json'
+    }
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json(); // Parse the JSON from the response
+    })
+    .then(data => {
+    console.log('Received data:', data);
+    })
+    .catch(error => {
+    console.error('Fetch error:', error);
+});                  
+            </code></pre>
+
+            <p>🧠 Breakdown:</p>
+            <ul>
+                <li>method: Type of HTTP request (GET, POST, etc.)</li>
+                <li>
+                    headers: Custom HTTP headers sent with the request
+                    <ul>
+                        <li>Content-Type: Tells the server what format you're sending (for POST, PUT, etc.)</li>
+                        <li>Authorization: Often used for API tokens</li>
+                        <li>Accept: Tells the server what kind of response you expect (e.g., application/json)</li>
+                    </ul>
+                </li>
+                <li>response.json(): Converts the response body to a JavaScript object</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 Example with a POST request and body</h2>
+            <pre><code>
+fetch('https://api.example.com/login', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        username: 'john_doe',
+        password: 'secret123'
+    })
+})
+    .then(response => response.json())
+    .then(data => {
+    console.log('Login successful:', data);
+    })
+    .catch(error => {
+    console.error('Login error:', error);
+});                  
+            </code></pre>
+        </section>
+
+        <section>
+            <p>Great! Here's how you can do the same thing using Axios, a popular JavaScript library for making HTTP requests.</p>
+            <h2>📦 Example: axios.get() with custom headers</h2>
+            <pre><code>
+import axios from 'axios';
+
+axios.get('https://api.example.com/data', {
+  headers: {
+    'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+    'Accept': 'application/json'
+  }
+})
+.then(response => {
+  console.log('Received data:', response.data);
+})
+.catch(error => {
+  console.error('Error fetching data:', error);
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 Example: axios.post() with body and headers</h2>
+            <pre><code>
+import axios from 'axios';
+
+axios.post('https://api.example.com/login', {
+  username: 'john_doe',
+  password: 'secret123'
+}, {
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+.then(response => {
+  console.log('Login successful:', response.data);
+})
+.catch(error => {
+  console.error('Login error:', error);
+});
+            </code></pre>
+
+            <p>🧠 Axios Response Object</p>
+            <p>When the request is successful, Axios gives you a response object like:</p>
+            <pre><code>
+{
+    data: {...},         // The response body
+    status: 200,         // HTTP status code
+    statusText: 'OK',
+    headers: {...},      // Response headers
+    config: {...},       // Axios config for the request
+    request: {...}       // The request object
+}                  
+            </code></pre>
+            <p>You can access response headers like this:</p>
+            <pre><code>
+axios.get('https://api.example.com/data')
+  .then(response => {
+    console.log(response.headers); // All response headers
+    console.log(response.headers['content-type']); // Specific header
+});
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Rasa is an open-source framework</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Rasa is an open-source framework</h1>
+                    <p class="subtitle">Rasa is an open-source framework for building AI-powered conversational assistants (chatbots and voice assistants). It is especially popular among developers and enterprises for building contextual, flexible, and production-grade conversational systems.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 Overview of Rasa (Open Source Framework)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Core Components</td>
+                        <td>Rasa NLU (Natural Language Understanding), Rasa Core (Dialogue Management)</td>
+                    </tr>
+                    <tr>
+                        <td>Languages</td>
+                        <td>Python</td>
+                    </tr>
+                    <tr>
+                        <td>License</td>
+                        <td>Apache 2.0 (Open Source)</td>
+                    </tr>
+                    <tr>
+                        <td>Use Case</td>
+                        <td>Building contextual AI assistants (chatbots)</td>
+                    </tr>
+                    <tr>
+                        <td>Deployment</td>
+                        <td>Self-hosted or on cloud (via containers, Kubernetes, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>Integrations</td>
+                        <td>Slack, Facebook Messenger, WhatsApp, Webchat, custom channels</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠️ Core Concepts</h2>
+            <ol>
+                <li>
+                    NLU (Natural Language Understanding)
+                    <p>Rasa NLU is responsible for:</p>
+                    <ul>
+                        <li>Intent classification: What the user wants to do (book_flight, greet, etc.)</li>
+                        <li>Entity extraction: Extracting structured data (e.g., cities, dates)</li>
+                    </ul>
+                    Example:
+                    <pre><code>
+# nlu.yml
+- intent: book_flight
+  examples: |
+    - I want to book a flight to New York
+    - Book me a ticket for tomorrow
+                    </code></pre>
+                </li>
+
+                <li>
+                    Core (Dialogue Management)
+                    <p>Rasa Core handles the flow of the conversation using:</p>
+                    <ul>
+                        <li>Stories: Show possible conversation paths</li>
+                        <li>Rules: Define strict paths</li>
+                        <li>Policies: ML models or rules that predict the next action</li>
+                    </ul>
+                    <p>Example:</p>
+                    <pre><code>
+# stories.yml
+- story: book flight path
+  steps:
+    - intent: greet
+    - action: utter_greet
+    - intent: book_flight
+    - action: flight_form
+    - action: utter_confirm
+                    </code></pre>
+                </li>
+
+                <li>
+                    Actions
+                    <p>Custom Python code that your bot executes, e.g., calling APIs or databases.</p>
+                    <pre><code>
+# actions.py
+class ActionGetWeather(Action):
+    def name(self):
+        return "action_get_weather"
+
+    def run(self, dispatcher, tracker, domain):
+        city = tracker.get_slot("city")
+        dispatcher.utter_message(text=f"The weather in {city} is sunny!")
+        return []
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Forms & Slots</h2>
+            <p>Used to collect and track user input over multiple turns.</p>
+        </section>
+
+        <section>
+            <h2>⚙️ Typical Rasa Project Structure</h2>
+            <pre><code>
+project/
+├── data/
+│   ├── nlu.yml
+│   ├── rules.yml
+│   ├── stories.yml
+├── domain.yml
+├── actions/
+│   └── actions.py
+├── config.yml
+├── credentials.yml
+├── endpoints.yml
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 Rasa Ecosystem</h2>
+            <ul>
+                <li>Rasa X / Rasa Pro: UI and tools for improving models via real conversations (Rasa X was open-source; now Rasa Studio is commercial)</li>
+                <li>Tracker Store: Stores conversation history</li>
+                <li>Custom Connectors: Build connectors to any platform (e.g., WhatsApp, Telegram)</li>
+                <li>Middleware: Easily connect with backend systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Key Benefits</h2>
+            <ul>
+                <li>Full control over data and deployment</li>
+                <li>Designed for complex, contextual conversations</li>
+                <li>Highly extensible with custom Python code</li>
+                <li>Active open-source community</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Installation</h2>
+            <pre><code>
+pip install rasa
+            </code></pre>
+            <p>To create a new project:</p>
+            <pre><code>
+rasa init
+            </code></pre>
+            <p>To train your assistant:</p>
+            <pre><code>
+rasa train
+            </code></pre>
+            <p>To talk to your assistant:</p>
+            <pre><code>
+rasa shell
+            </code></pre>
+        </section>
+
+        <section>
+            📚 Resources
+            <p><a href="https://rasa.com/docs/?utm_source=chatgpt.com">Official Docs</a></p>
+            <p><a href="https://github.com/RasaHQ/rasa?utm_source=chatgpt.com">GitHub Repo</a></p>
+            <p><a href="https://forum.rasa.com/?utm_source=chatgpt.com">Rasa Community Forum</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

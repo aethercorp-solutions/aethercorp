@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Responsive layout design</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Responsive layout design</h1>
+                    <p class="subtitle">Responsive layout design is a web design approach that ensures a website or application looks and works well on all screen sizes and devices, from mobile phones to tablets to desktop monitors.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Core Idea:</h2>
+            <p>Instead of creating separate versions of a website for each device, a responsive layout adapts to the screen it’s being viewed on by using flexible grids, media queries, and scalable images.</p>
+        </section>
+
+        <section>
+            <h2>Key Features:</h2>
+            <ol>
+                <li>
+                    Fluid Grids
+                    <ul>
+                        <li>Layouts use relative units like percentages instead of fixed units like pixels.</li>
+                        <li>Example: A column might take up 50% of the width, rather than 500px.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Media Queries (CSS)
+                    <ul>
+                        <li>Rules that apply styles based on screen size, orientation, resolution, etc.</li>
+                        <li>
+                            Example:
+                            <pre><code>
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+}                                  
+                            </code></pre>
+                            <p>Explanation:</p>
+                            <p>This CSS snippet hides the .sidebar element on screens that are <b>768 pixels wide or smaller</b> (typically tablets and mobile devices).</p>
+                            <ul>
+                                <li>@media (max-width: 768px) → Targets screens that are 768px or narrower.</li>
+                                <li>.sidebar { display: none; } → Hides the element with the sidebar class when the media query condition is met.</li>
+                            </ul>
+
+                            <p>When this is useful:</p>
+                            <ul>
+                                <li>To improve mobile responsiveness.</li>
+                                <li>To remove non-essential UI elements on smaller screens.</li>
+                            </ul>
+
+                            <p>Optional Tip:</p>
+                            <p>If you're using this in a responsive layout and want the sidebar to reappear on larger screens, make sure its default display value is defined outside the media query:</p>
+                            <pre><code>
+.sidebar {
+    display: block; /* or flex/grid depending on layout */
+}                                
+                            </code></pre>
+                            <p>Let me know if you want the sidebar to turn into a hamburger menu or slide in/out instead of just disappearing.</p>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Flexible Images & Media
+                    <ul>
+                        <li>Images resize within their containers.</li>
+                        <li>
+                            Example:
+                            <pre><code>
+img {
+    max-width: 100%;
+    height: auto;
+}                                  
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Mobile-First Design
+                    <ul>
+                        <li>Start designing for small screens first, then scale up for larger devices using media queries.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Why It Matters:</h2>
+            <ul>
+                <li>Better User Experience (UX) on all devices.</li>
+                <li>SEO Benefits – Google favors mobile-friendly sites.</li>
+                <li>Cost-Efficient – One codebase works for all devices.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example:</h2>
+            <p>A responsive navigation bar might turn into a hamburger menu on mobile, stack vertically on tablets, and display horizontally on desktops.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

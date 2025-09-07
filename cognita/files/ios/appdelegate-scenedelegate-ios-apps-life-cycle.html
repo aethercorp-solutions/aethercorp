@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AppDelegate and SceneDelegate</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AppDelegate and SceneDelegate</h1>
+                    <p class="subtitle">In iOS development, AppDelegate and SceneDelegate are key components in an app’s life cycle and UI management. Understanding their usage and implementation is essential, especially since the introduction of multi-window support in iOS 13.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 AppDelegate</h2>
+            <p>✅ Usage</p>
+            <p>AppDelegate is responsible for:</p>
+            <ul>
+                <li>App-level life cycle events (e.g. launch, background, termination).</li>
+                <li>Setting up global services (e.g., Firebase, Analytics, Push Notifications).</li>
+                <li>Handling background tasks, URL schemes, and more.</li>
+            </ul>
+
+            <p>It's the entry point of your app.</p>
+        </section>
+
+        <section>
+            <h2>🛠 Implementation (Pre-iOS 13 or with SceneDelegate disabled)</h2>
+            <pre><code>
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    var window: UIWindow?
+
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        // Setup app state, services, initial view controller, etc.
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = MyInitialViewController()
+        window?.makeKeyAndVisible()
+        return true
+    }
+
+    func applicationWillTerminate(_ application: UIApplication) {
+        // Clean up
+    }
+
+    // More app lifecycle methods...
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <p>In iOS development, UIWindow is a fundamental class in UIKit used to manage and coordinate the views displayed on an iOS device's screen.</p>
+            <h2>✅ What is UIWindow?</h2>
+            <ul>
+                <li>A UIWindow is a special kind of UIView that acts as the root container for all visible content in an app.</li>
+                <li>It doesn't display anything itself but holds the root view controller's view, which in turn holds your entire interface.</li>
+                <li>Each iOS app typically has one main window, though you can have multiple windows (especially with multi-scene or multi-display support).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 Basic Structure</h2>
+            <pre><code>
+let window = UIWindow(frame: UIScreen.main.bounds)
+window.rootViewController = MyViewController()
+window.makeKeyAndVisible()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔑 Key Properties</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>rootViewController</td>
+                        <td>The main view controller displayed by the window.</td>
+                    </tr>
+                    <tr>
+                        <td>isKeyWindow</td>
+                        <td>Tells whether the window is currently receiving keyboard and non-touch events.</td>
+                    </tr>
+                    <tr>
+                        <td>windowLevel</td>
+                        <td>Determines the window’s position on the screen relative to other windows (e.g., normal, alert).</td>
+                    </tr>
+                    <tr>
+                        <td>screen</td>
+                        <td>The screen object the window is associated with (important for multi-screen setups).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Use Cases</h2>
+            <ul>
+                <li>Main Application Window: Typically created in the AppDelegate or SceneDelegate.</li>
+                <li>Overlay or Alert Windows: For custom alerts or floating UI (e.g., debug tools).</li>
+                <li>Multiple Windows: On iPadOS with multi-scene support (UIScene).</li>
+            </ul>
+
+            <p>📍 Example in SceneDelegate (iOS 13+)</p>
+            <pre><code>
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+
+    func scene(_ scene: UIScene,
+                willConnectTo session: UISceneSession,
+                options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+        
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = MyRootViewController()
+        window?.makeKeyAndVisible()
+    }
+}                
+            </code></pre>
+
+            <p>🆕 iOS 13+ and Scenes</p>
+            <p>Starting from iOS 13, apps can support multiple scenes, meaning multiple windows per app. You no longer manage the main window in AppDelegate; instead, it's done in SceneDelegate.</p>
+        
+            <p>🛑 Don't Forget</p>
+            <ul>
+                <li>You must call makeKeyAndVisible() to show the window.</li>
+                <li>UIKit manages the window automatically if you're using Storyboards or SwiftUI.</li>
+                <li>Avoid multiple key windows unless you know what you're doing (can lead to confusing behavior).</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

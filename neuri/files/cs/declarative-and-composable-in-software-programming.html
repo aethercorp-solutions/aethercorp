@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Declarative and Composable in software programming</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Declarative and Composable in software programming</h1>
+                    <p class="subtitle">In software programming, "declarative" and "composable" are two powerful concepts that often go hand-in-hand, especially in modern programming paradigms (like functional programming, UI frameworks, and data pipelines). Here's what each means and how they relate to each other:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 Declarative Programming</h2>
+            <p>Definition: Declarative programming is a style where you describe what you want to achieve, not how to achieve it.</p>
+            <ul>
+                <li>You specify the desired outcome, and the system figures out the steps.</li>
+                <li>It contrasts with imperative programming, where you give explicit instructions step-by-step.</li>
+            </ul>
+
+            <p>Examples:</p>
+            <ul>
+                <li>
+                    SQL: SELECT name FROM users WHERE age > 30;
+                    <p>(You're saying what you want, not how to get it.)</p>
+                </li>
+                <li>
+                    HTML: &lt;button&gt;Click me&lt;/button&gt;
+                    <p>(Describes structure, not behavior.)</p>
+                </li>
+                <li>
+                    React JSX:
+                    <pre><code>
+const Greeting = () => &lt;h1&gt;Hello, world!&lt;/h1&gt;
+                    </code></pre>
+                </li>
+            </ul>
+            <p>Benefits:</p>
+            <ul>
+                <li>Less code</li>
+                <li>Easier to reason about</li>
+                <li>Often more maintainable</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Composable Programming</h2>
+            <p>Definition: Composable programming is a design principle where small, reusable pieces of logic can be combined together to build more complex functionality.</p>
+            <ul>
+                <li>Inspired by mathematical function composition: f(g(x))</li>
+                <li>Promotes modularity and reusability.</li>
+            </ul>
+
+            <p>Examples:</p>
+            <ul>
+                <li>
+                    Functions: Writing small pure functions that can be combined.
+                    <pre><code>
+const double = x => x * 2;
+const square = x => x * x;
+const doubleThenSquare = x => square(double(x));
+                    </code></pre>
+                </li>
+
+                <li>
+                    React components: Small UI components composed into larger ones.
+                    <pre><code>
+&lt;Header /&gt;
+    &lt;Content /&gt;
+&lt;Footer /&gt;
+                    </code></pre>
+                </li>
+
+                <li>Middleware pipelines: Like in Express.js, Redux, or functional data flows.</li>
+            </ul>
+            <p>Benefits:</p>
+            <ul>
+                <li>Encourages separation of concerns</li>
+                <li>Easier to test, reuse, and maintain</li>
+                <li>Leads to clean, scalable systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Declarative + Composable Together</h2>
+            <p>When combined, these two ideas are extremely powerful:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Declarative</td>
+                        <td>Easier to understand & express intentions</td>
+                    </tr>
+                    <tr>
+                        <td>Composable</td>
+                        <td>Easier to build complex systems from simple parts</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Examples:</p>
+            <ol>
+                <li>
+                    React:
+                    <ul>
+                        <li>Declarative UI: Describe what the UI should look like based on state</li>
+                        <li>Composable: Build UIs using small reusable components</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Functional Programming (e.g., with JavaScript, Haskell, etc.):
+                    <ul>
+                        <li>
+                            Declarative data transformations:
+                            <pre><code>
+const result = data
+  .filter(isActive)
+  .map(toDTO)
+  .sort(byName);
+                            </code></pre>
+                        </li>
+                        <li>Each function is composable, and the whole flow is declarative.</li>
+
+                        <li>
+                            Infrastructure as Code (e.g., Terraform):
+                            <ul>
+                                <li>Declarative: Define what infrastructure should exist</li>
+                                <li>Composable: Use modules to reuse and organize configs</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Focus</th>
+                        <th>Benefit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Declarative</td>
+                        <td>What should happen</td>
+                        <td>Clarity, simplicity</td>
+                    </tr>
+                    <tr>
+                        <td>Composable</td>
+                        <td>How parts fit together</td>
+                        <td>Modularity, reusability</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>The goal: Write code that is easy to reason about and build upon. Declarative + composable code often leads to more robust, testable, and maintainable software systems.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

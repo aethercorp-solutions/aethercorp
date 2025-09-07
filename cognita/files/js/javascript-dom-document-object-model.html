@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JavaScript DOM (Document Object Model)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JavaScript DOM (Document Object Model)</h1>
+                    <p class="subtitle">The JavaScript DOM (Document Object Model) is a programming interface provided by web browsers that allows JavaScript to interact with and manipulate HTML and XML documents.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔍 What is the DOM?</h2>
+            <ul>
+                <li>The DOM represents the structure of a web page as a tree of objects (nodes).</li>
+                <li>Every element, attribute, and piece of text in an HTML document becomes a node in this tree.</li>
+                <li>JavaScript can use the DOM to access, change, add, or delete elements and content on a web page.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example Breakdown</h2>
+            <p>Given this HTML:</p>
+            <pre><code>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;body&gt;
+    &lt;h1 id=&quot;title&quot;&gt;Hello World&lt;/h1&gt;
+    &lt;button onclick=&quot;changeText()&quot;&gt;Click Me&lt;/button&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+
+            <p>You could use JavaScript + DOM like this:</p>
+            <pre><code>
+function changeText() {
+    document.getElementById("title").innerText = "You clicked the button!";
+}                  
+            </code></pre>
+
+            <ul>
+                <li>🔹 document – The global object representing the web page</li>
+                <li>🔹 getElementById("title") – Finds the element with ID title</li>
+                <li>🔹 .innerText – Accesses or changes the text inside that element</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✨ What Can You Do With the DOM?</h2>
+            <ul>
+                <li>Read or change content: element.innerText, element.innerHTML</li>
+                <li>Change styles: element.style.color = "red"</li>
+                <li>Handle events: element.addEventListener("click", callback)</li>
+                <li>Create or remove elements: document.createElement(), element.remove()</li>
+                <li>Navigate the tree: parentNode, childNodes, nextSibling</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💡 Summary</h2>
+            <p>The JavaScript DOM is how your scripts can dynamically interact with and change a web page after it's loaded, making web apps interactive and dynamic.</p>
+        </section>
+
+        <section>
+            <p>The JavaScript DOM (Document Object Model) is a programming interface that allows you to interact with and manipulate HTML and XML documents using JavaScript. It represents the structure of a web page as a tree of nodes, where each node is an object representing a part of the document (like an element, attribute, or text).</p>
+            <h2>🔹 Core Concepts</h2>
+
+            <p>1. Accessing Elements</p>
+            <p>Use DOM methods to select HTML elements:</p>
+            <pre><code>
+// By ID
+const heading = document.getElementById('main-title');
+
+// By class
+const items = document.getElementsByClassName('item');
+
+// By tag name
+const paragraphs = document.getElementsByTagName('p');
+
+// Modern way (returns first match)
+const firstItem = document.querySelector('.item');
+
+// Returns all matches as a NodeList
+const allItems = document.querySelectorAll('.item');
+            </code></pre>
+
+            <pre><code>
+const firstItem = document.querySelector('.item');
+            </code></pre>
+            <p>Explanation:</p>
+            <ul>
+                <li><b>document.querySelector()</b> is a method that returns the first element within the document that matches the specified CSS selector.</li>
+                <li>'.item' is the CSS selector used here. It selects elements with the class name item.</li>
+                <li>const firstItem stores a reference to that first matching element.</li>
+            </ul>
+            <p>What it does:</p>
+            <p>This code selects the first HTML element with the class item and assigns it to the firstItem variable. If no such element exists, firstItem will be null.</p>
+        
+            <p>Example HTML:</p>
+            <pre><code>
+&lt;div class="item"&gt;Item 1&lt;/div&gt;
+&lt;div class="item"&gt;Item 2&lt;/div&gt;
+            </code></pre>
+
+            <p>In this case, firstItem will refer to the first <div> with class item — i.e., "Item 1".</p>
+        </section>
+
+        <section>
+            <h2>2. Changing Content or Attributes</h2>
+            <p>You can change text, HTML, or element attributes.</p>
+            <pre><code>
+// Text content
+heading.textContent = "New Title";
+
+// Inner HTML
+heading.innerHTML = "&lt;span&gt;New &lt;em&gt;Title&lt;/em&gt;&lt;/span&gt;";
+
+// Set attribute
+heading.setAttribute("class", "highlighted");
+
+// Get attribute
+let className = heading.getAttribute("class");
+            </code></pre>
+        </section>
+        
+        <section>
+            <h2>3. Styling Elements</h2>
+            <p>Directly manipulate styles.</p>
+            <pre><code>
+heading.style.color = "red";
+heading.style.fontSize = "24px";
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Adding/Removing Elements</h2>
+            <p>Dynamically update the page.</p>
+            <pre><code>
+// Create element
+const newDiv = document.createElement('div');
+newDiv.textContent = "Hello, world!";
+document.body.appendChild(newDiv); // Add to body
+
+// Remove element
+document.body.removeChild(newDiv);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Event Handling</h2>
+            <p>Respond to user interactions.</p>
+            <pre><code>
+const button = document.querySelector('#click-me');
+
+button.addEventListener('click', function () {
+  alert("Button clicked!");
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Summary</h2>
+            <p>The DOM lets you:</p>
+            <ul>
+                <li>Read and change the page content.</li>
+                <li>React to user actions.</li>
+                <li>Dynamically create or delete content.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Great question! Understanding how the DOM relates to React Native components is key to grasping how web development differs from mobile development using React.</p>
+            <p>React (Web) uses the DOM (e.g., &lt;div&gt;, &ltp&gt;, &lt;button&gt;) to build UI in a browser.
+                React Native uses native components (e.g., &lt;View&gt;, &lt;Text&gt;, &ltButton&gt;) to build UI for mobile apps — no DOM involved.</p>
+            
+            <h2>🔍 Detailed Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>React (Web)</th>
+                        <th>React Native</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Underlying UI System</td>
+                        <td>HTML + CSS + DOM</td>
+                        <td>Native UI components (iOS/Android)</td>
+                    </tr>
+                    <tr>
+                        <td>Component Example</td>
+                        <td>&lt;div&gt;, &lt;h1&gt;, &lt;input&gt;, &lt;button&gt;&lt;/button&gt;</td>
+                        <td>&lt;View&gt;, &lt;Text&gt;, &lt;TextInput&gt;, &lt;Button&gt;&lt;/Button&gt;</td>
+                    </tr>
+                    <tr>
+                        <td>Rendered to</td>
+                        <td>Browser DOM</td>
+                        <td>Native platform's UI system</td>
+                    </tr>
+                    <tr>
+                        <td>Style System</td>
+                        <td>CSS / CSS-in-JS</td>
+                        <td>StyleSheet.create() / inline styles</td>
+                    </tr>
+                    <tr>
+                        <td>Event Handling</td>
+                        <td>DOM Events (onClick, onChange)</td>
+                        <td>React Native events (onPress, onChangeText)</td>
+                    </tr>
+                    <tr>
+                        <td>DOM Manipulation?</td>
+                        <td>Yes (via JavaScript)</td>
+                        <td>❌ No DOM — you use props/state only</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Similarities</h2>
+            <ul>
+                <li>Both use JSX (JavaScript XML syntax).</li>
+                <li>Both use components and props/state.</li>
+                <li>Both use React's rendering and reconciliation logic.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚫 Key Differences</h2>
+            <ul>
+                <li>
+                    No DOM in React Native:
+                    <p>React Native doesn't run in a browser, so there&rsquo;s no HTML or CSS. Instead, it maps components like &lt;View&gt; or &lt;Text&gt; to native platform components (e.g., UIView on iOS or View on Android).</p>
+                </li>
+                <li>
+                    No document.querySelector or document.getElementById:
+                    <p>These are DOM methods, which don&rsquo;t exist in React Native.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Analogy: DOM vs Native Components</h2>
+            <p>Imagine React is a translator.</p>
+            <ul>
+                <li>In React Web, it translates your JSX into DOM nodes.</li>
+                <li>In React Native, it translates your JSX into native UI elements on the mobile OS.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>👇 Example</h2>
+            <p>React (Web):</p>
+            <pre><code>
+&lt;function App() &#123;
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Hello, World!&lt;/h1&gt;
+      &lt;button onClick=&#123;() =&gt; alert(&#39;Clicked!&#39;)&#125;&gt;Click Me&lt;/button&gt;
+    &lt;/div&gt;
+  );
+&#125;
+            </code></pre>
+
+            <p>React Native:</p>
+            <pre><code>
+import &#123; View, Text, Button &#125; from 'react-native';
+
+function App() &#123;
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;Hello, World!&lt;/Text&gt;
+      &lt;Button title=&quot;Click Me&quot; onPress=&#123;() =&gt; alert(&#39;Clicked!&#39;)&#125; /&gt;
+    &lt;/View&gt;
+  );
+&#125;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <ul>
+                <li>DOM is not used in React Native.</li>
+                <li>React Native components are rendered via native APIs, not HTML.</li>
+                <li>The concepts of components, props, state, and events are shared, but the rendering targets are completely different.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

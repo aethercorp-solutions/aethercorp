@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Optional Binding</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Optional Binding</h1>
+                    <p class="subtitle">In Swift, if let is a common construct used for optional binding. It safely unwraps an optional value — that is, it checks if the optional contains a value, and if it does, it assigns that value to a new constant or variable, which you can then use inside the if block.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Basic Syntax</h2>
+            <pre><code>
+if let unwrapped = optionalValue {
+    // Use 'unwrapped' here — it's guaranteed to be non-nil
+} else {
+    // The optional was nil
+}                
+            </code></pre>
+
+            <p>Example</p>
+            <pre><code>
+var name: String? = "Alice"
+
+if let actualName = name {
+    print("Hello, \(actualName)!")
+} else {
+    print("No name provided.")
+}
+            </code></pre>
+
+            <p>Explanation:</p>
+            <ul>
+                <li>name is an optional String?.</li>
+                <li>if let actualName = name tries to unwrap name.</li>
+                <li>If name contains a non-nil value ("Alice"), it's unwrapped and assigned to actualName, and the if block runs.</li>
+                <li>If name is nil, the else block runs.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Optional Binding with Multiple Values</h2>
+            <p>You can unwrap multiple optionals in a single if let:</p>
+
+            <pre><code>
+let firstName: String? = "John"
+let lastName: String? = "Doe"
+
+if let f = firstName, let l = lastName {
+    print("Full name: \(f) \(l)")
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Optional Binding with guard let</h2>
+            <p>Sometimes, especially in functions, guard let is preferred for early exit:</p>
+            <pre><code>
+func greet(name: String?) {
+    guard let unwrappedName = name else {
+        print("No name")
+        return
+    }
+    print("Hello, \(unwrappedName)")
+}                
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

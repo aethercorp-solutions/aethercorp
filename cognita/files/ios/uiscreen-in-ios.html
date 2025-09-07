@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>UIScreen in iOS</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is UIScreen in iOS?</h1>
+                    <p class="subtitle">
+                        <p>UIScreen is a UIKit class that represents a physical screen (display) attached to the device. It provides information about the screen’s size, scale, brightness, and coordinate space.</p>
+                        <p>Most iPhones and iPads only have one screen, but UIScreen becomes especially useful when dealing with:</p>
+                        <ul>
+                            <li>External displays (e.g. AirPlay, HDMI)</li>
+                            <li>Multi-screen setups</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 Common Use</h2>
+            <p>Access the main screen:</p>
+
+            <pre><code>
+let screen = UIScreen.main
+            </code></pre>
+
+            <p>Get screen bounds:</p>
+
+            <pre><code>
+let bounds = UIScreen.main.bounds
+            </code></pre>
+
+            <p>Get screen scale (for retina):</p>
+
+            <pre><code>
+let scale = UIScreen.main.scale  // e.g., 2.0 or 3.0
+            </code></pre>
+        </section>
+
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>main</td>
+                        <td>The device’s primary screen.</td>
+                    </tr>
+                    <tr>
+                        <td>bounds</td>
+                        <td>The screen's bounds in points.</td>
+                    </tr>
+                    <tr>
+                        <td>scale</td>
+                        <td>The screen scale factor (points to pixels ratio).</td>
+                    </tr>
+                    <tr>
+                        <td>nativeBounds</td>
+                        <td>The screen size in actual pixels.</td>
+                    </tr>
+                    <tr>
+                        <td>nativeScale</td>
+                        <td>The actual scale factor for rendering.</td>
+                    </tr>
+                    <tr>
+                        <td>brightness</td>
+                        <td>Current screen brightness (0.0 to 1.0).</td>
+                    </tr>
+                    <tr>
+                        <td>mirrored</td>
+                        <td>Whether this screen mirrors another.</td>
+                    </tr>
+                    <tr>
+                        <td>availableModes</td>
+                        <td>List of screen resolution modes (used for external displays).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📐 Coordinate System</h2>
+            <ul>
+                <li>Screen coordinates are in points, not pixels.</li>
+                <li>The origin (0,0) is usually at the top-left corner.</li>
+                <li>Use scale or nativeScale if you need pixel-perfect layouts.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🖥️ External Display Example</h2>
+            <p>You can detect and display UI on a second screen:</p>
+            <pre><code>
+if let externalScreen = UIScreen.screens.last, UIScreen.screens.count > 1 {
+    let externalWindow = UIWindow(frame: externalScreen.bounds)
+    externalWindow.screen = externalScreen
+    externalWindow.rootViewController = ExternalDisplayViewController()
+    externalWindow.isHidden = false
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📌 UIScreen vs UIWindow vs UIScene</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>UIScreen</td>
+                        <td>A physical screen (main or external).</td>
+                    </tr>
+                    <tr>
+                        <td>UIWindow</td>
+                        <td>A container for views shown on a screen.</td>
+                    </tr>
+                    <tr>
+                        <td>UIScene</td>
+                        <td>A logical unit of UI (can live in a window, tied to a screen).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>🛠 Practical Uses</h2>
+            <ul>
+                <li>Detect screen size and adjust layouts dynamically.</li>
+                <li>Adjust UI for different screen resolutions or retina scaling.</li>
+                <li>Handle presentation on external displays.</li>
+                <li>Create full-screen overlays based on screen dimensions.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

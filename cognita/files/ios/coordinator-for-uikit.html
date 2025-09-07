@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Coordinator for your UIKit app using the MVVM-C architecture pattern</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Coordinator for your UIKit app using the MVVM-C architecture pattern</h1>
+                    <p class="subtitle">
+                        <p>To implement a Coordinator for your UIKit app using the MVVM-C architecture pattern, you'll want to create a class responsible for navigating between screens and managing the flow of your authentication process.</p>
+                        <p>Here's how you can build a simple AuthCoordinator to manage your LoginViewController and potentially a HomeViewController or similar after a successful login.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Step-by-step Breakdown:</h2>
+            <ol>
+                <li>Coordinator Protocol – A base protocol to enforce consistency.</li>
+                <li>AuthCoordinator – Handles showing the login screen and transitioning post-authentication.</li>
+                <li>Inject ViewModel – The coordinator handles ViewModel creation to keep control of the flow.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧱 1. Coordinator.swift</h2>
+            <pre><code>
+import UIKit
+
+protocol Coordinator {
+    var navigationController: UINavigationController { get set }
+    func start()
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧭 2. AuthCoordinator.swift</h2>
+            <pre><code>
+import UIKit
+import Combine
+
+class AuthCoordinator: Coordinator {
+    var navigationController: UINavigationController
+    private var cancellables = Set<AnyCancellable>()
+
+    init(navigationController: UINavigationController) {
+        self.navigationController = navigationController
+    }
+
+    func start() {
+        let loginVC = LoginViewController()
+        let authViewModel = AuthViewModel()
+
+        loginVC.viewModel = authViewModel  // inject ViewModel
+
+        authViewModel.$isSignedIn
+            .receive(on: RunLoop.main)
+            .sink { [weak self] signedIn in
+                if signedIn {
+                    self?.showHome()
+                }
+            }
+            .store(in: &cancellables)
+
+        navigationController.setViewControllers([loginVC], animated: false)
+    }
+
+    private func showHome() {
+        let homeVC = HomeViewController()
+        navigationController.pushViewController(homeVC, animated: true)
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧑‍💻 3. Update LoginViewController.swift to Accept ViewModel Injection</h2>
+            <pre><code>
+class LoginViewController: UIViewController {
+
+    let signInButton = UIButton(type: .system)
+    let statusLabel = UILabel()
+
+    var viewModel: AuthViewModel! // <-- Now injected from coordinator
+    private var cancellables = Set<AnyCancellable>()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+
+        setupUI()
+        bindViewModel()
+    }
+
+    ...
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🏁 4. App Entry Point: SceneDelegate.swift</h2>
+            <pre><code>
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+
+    var window: UIWindow?
+    var coordinator: AuthCoordinator?
+
+    func scene(_ scene: UIScene,
+                willConnectTo session: UISceneSession,
+                options connectionOptions: UIScene.ConnectionOptions) {
+
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+
+        let navController = UINavigationController()
+        coordinator = AuthCoordinator(navigationController: navController)
+        coordinator?.start()
+
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = navController
+        self.window = window
+        window.makeKeyAndVisible()
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🏡 5. Stub HomeViewController.swift</h2>
+            <pre><code>
+import UIKit
+
+class HomeViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .systemGreen
+
+        let label = UILabel()
+        label.text = "Welcome to Home!"
+        label.textAlignment = .center
+        label.font = .boldSystemFont(ofSize: 24)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Benefits of This Approach</h2>
+            <ul>
+                <li>Separation of Concerns: ViewControllers don’t manage navigation logic.</li>
+                <li>Easier Testing: ViewModels and Coordinators can be tested independently.</li>
+                <li>Scalability: Easy to extend for multiple flows (e.g. onboarding, profile, etc.)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

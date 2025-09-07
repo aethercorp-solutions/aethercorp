@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CSS Rules</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">CSS Rules</h1>
+                    <p class="subtitle">CSS (Cascading Style Sheets) rules are used to style HTML elements on a web page. A CSS rule consists of a selector and a declaration block.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 Basic Syntax of a CSS Rule</h2>
+            <pre><code>
+selector {
+    property: value;
+    property: value;
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Example</h2>
+            <pre><code>
+p {
+    color: blue;
+    font-size: 16px;
+}                  
+            </code></pre>
+            <p>This CSS rule styles all &lt;p&gt; elements to have blue text and a font size of 16 pixels.</p>
+        </section>
+
+        <section>
+            <h2>🔹 CSS Rule Components</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Selector</td>
+                        <td>Specifies which HTML element(s) the rule applies to</td>
+                    </tr>
+                    <tr>
+                        <td>Property</td>
+                        <td>The style attribute you want to change (e.g. color, margin)</td>
+                    </tr>
+                    <tr>
+                        <td>Value</td>
+                        <td>The value assigned to the property (e.g. red, 20px)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Selector Type</th>
+                        <th>Example</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>Universal</td>
+                        <td>*</td>
+                        <td>Applies to all elements</td>
+                    </tr>
+                    <tr>
+                        <td>Element</td>
+                        <td>h1</td>
+                        <td>Targets all &lt;h1&gt; tags</td>
+                    </tr>
+                    <tr>
+                        <td>Class</td>
+                        <td>.menu</td>
+                        <td>Targets elements with class="menu"</td>
+                    </tr>
+                    <tr>
+                        <td>ID</td>
+                        <td>#header</td>
+                        <td>Targets the element with id="header"</td>
+                    </tr>
+                    <tr>
+                        <td>Group</td>
+                        <td>h1, h2, p</td>
+                        <td>Applies same styles to multiple elements</td>
+                    </tr>
+                    <tr>
+                        <td>Descendant</td>
+                        <td>div p</td>
+                        <td>Targets <p> inside <div></div></td>
+                    </tr>
+                    <tr>
+                        <td>Child</td>
+                        <td>ul > li</td>
+                        <td>Targets direct children only</td>
+                    </tr>
+                    <tr>
+                        <td>Pseudo-class</td>
+                        <td>a:hover</td>
+                        <td>Targets state-based styles (e.g. hover)</td>
+                    </tr>
+                    <tr>
+                        <td>Attribute</td>
+                        <td>input[type="text"]</td>
+                        <td>Targets inputs with type="text"</td>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔹 Example with Multiple Selectors and Properties</h2>
+            <pre><code>
+.container, .sidebar {
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+    
+a:hover {
+    color: red;
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <p>In CSS, layout rules define how elements are arranged on the page — including their position, size, spacing, and how they interact with other elements. These rules are essential for building responsive and well-structured web pages.</p>
+            <h2>🔹 Common CSS Layout Rules</h2>
+            <p>Here are the key properties and techniques used for layout:</p>
+        </section>
+
+        <section>
+            <h2>1. Display</h2>
+            <p>Controls the box type and layout behavior of an element.</p>
+            <pre><code>
+display: block | inline | inline-block | flex | grid | none;
+            </code></pre>
+            <ul>
+                <li>block – Starts on a new line, takes full width (e.g. &lt;div&gt;)</li>
+                <li>inline – Flows within text (e.g. &lt;span&gt;)</li>
+                <li>flex – Enables Flexbox layout</li>
+                <li>grid – Enables Grid layout</li>
+                <li>none – Hides the element</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Position</h2>
+            <p>Controls how an element is positioned in the document.</p>
+            <pre><code>
+position: static | relative | absolute | fixed | sticky;
+            </code></pre>
+            <ul>
+                <li>static – Default (normal document flow)</li>
+                <li>relative – Positioned relative to itself</li>
+                <li>absolute – Positioned relative to the nearest positioned ancestor</li>
+                <li>fixed – Positioned relative to the viewport</li>
+                <li>sticky – Sticks to a position while scrolling</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Flexbox Layout</h2>
+            <p>Used for one-dimensional layouts (row or column).</p>
+            <pre><code>
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row | column;
+            </code></pre>
+
+            <p>✅ Example:</p>
+            <pre><code>
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Grid Layout</h2>
+            <p>Used for two-dimensional layouts (rows and columns).</p>
+            <pre><code>
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+grid-gap: 20px;
+            </code></pre>
+            <p>✅ Example:</p>
+            <pre><code>
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 10px;
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Margin and Padding</h2>
+            <p>Used for spacing outside and inside elements.</p>
+            <pre><code>
+margin: 20px;
+padding: 10px;
+            </code></pre>
+            <ul>
+                <li>margin: space outside the border</li>
+                <li>padding: space inside the border</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Width and Height</h2>
+            <p>Defines the size of elements.</p>
+            <pre><code>
+width: 100%;
+max-width: 1200px;
+height: auto;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Box-Sizing</h2>
+            <p>Controls how padding and border are included in element dimensions.</p>
+            <pre><code>
+box-sizing: border-box;
+            </code></pre>
+
+            <p>This is commonly used in resets:</p>
+            <pre><code>
+* {
+    box-sizing: border-box;
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Float (Legacy Layout)</h2>
+            <p>Still used occasionally, but mostly replaced by Flexbox and Grid.</p>
+            <pre><code>
+float: left;
+            </code></pre>
+            <p>You often need to clear floats:</p>
+            <pre><code>
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}                  
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

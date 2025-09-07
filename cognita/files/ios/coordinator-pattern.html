@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Coordinator Pattern</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Coordinator Pattern</h1>
+                    <p class="subtitle">The Coordinator Pattern is still robust and relevant in 2025, particularly in iOS development, where it originated and remains most widely used. However, whether it's considered "industry standard" depends on the context:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ When the Coordinator Pattern is a good fit:</h2>
+            <ol>
+                <li>
+                    iOS development (UIKit-based apps):
+                    <ul>
+                        <li>It decouples navigation logic from view controllers, solving the common issue of “massive view controllers”.</li>
+                        <li>Still widely used in MVVM or MVC architectures.</li>
+                        <li>Particularly beneficial in medium to large apps with complex navigation flows.</li>
+                    </ul>
+                </li>
+                <li>
+                    Modular architectures:
+                    <ul>
+                        <li>Encourages reusability and testability of navigation flows.</li>
+                        <li>Works well with dependency injection and composability.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>❌ When it might be less relevant or overkill:</h2>
+            <ol>
+                <li>
+                    SwiftUI-based apps:
+                    <ul>
+                        <li>SwiftUI introduces declarative navigation, which naturally reduces the need for an external coordinator.</li>
+                        <li>That said, State-driven Coordinators or Composable Architecture (TCA) can replace traditional coordinators in SwiftUI.</li>
+                    </ul>
+                </li>
+                <li>
+                    Very small apps or prototypes:
+                    <ul>
+                        <li>Adding coordinators may introduce unnecessary complexity.</li>
+                    </ul>
+                </li>
+                <li>
+                    Cross-platform frameworks (like Flutter or React Native):
+                    <ul>
+                        <li>Other navigation paradigms and state management tools are typically favored.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 Alternative Patterns Gaining Ground</h2>
+            <ul>
+                <li>The Composable Architecture (TCA) by Point-Free (Swift)</li>
+                <li>Router pattern (e.g., in Flutter or React)</li>
+                <li>Navigation stacks in SwiftUI (using .navigationDestination)</li>
+                <li>State machines for navigation (especially in state-driven apps)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🏁 Summary: Is the Coordinator Pattern still viable?</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Factor</th>
+                        <th>Verdict</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Relevance in UIKit apps</td>
+                        <td>✅ Strong</td>
+                    </tr>
+                    <tr>
+                        <td>Relevance in SwiftUI</td>
+                        <td>⚠️ Situational</td>
+                    </tr>
+                    <tr>
+                        <td>Complex apps/navigation</td>
+                        <td>✅ Recommended</td>
+                    </tr>
+                    <tr>
+                        <td>Industry standard?</td>
+                        <td>✅ In UIKit; ⚠️ Not dominant elsewhere</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

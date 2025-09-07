@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Protocol Swift</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Protocol Swift</h1>
+                    <p class="subtitle">In Swift, a protocol defines a blueprint of methods, properties, and other requirements that suit a particular task or piece of functionality. Classes, structs, or enums can adopt a protocol and provide actual implementations of the required elements.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🎯 Purpose of Protocols in Swift</h2>
+            <p>The main purposes of protocols are:</p>
+            <ol>
+                <li>
+                    Define shared behavior
+                    <p>Protocols let you specify a common interface that multiple types can conform to. For example:</p>
+                    <pre><code>
+protocol Drivable {
+    func drive()
+}                        
+                    </code></pre>
+                    <p>Any type that conforms to Drivable must implement the drive() method.</p>
+                    <p>In software programming, an interface is a contract or blueprint that defines what methods or functionalities a class should implement, without specifying how they should be implemented.</p>
+                    
+                    <p>🔑 Key Concepts:</p>
+                    <ul>
+                        <li>Defines method signatures (name, return type, parameters)</li>
+                        <li>No implementation — just the "what," not the "how"</li>
+                        <li>Used to enforce structure</li>
+                        <li>Promotes abstraction, decoupling, and polymorphism</li>
+                    </ul>
+
+                    <p>👨‍💻 In Object-Oriented Programming (OOP):</p>
+                    <p>For example, in Java:</p>
+                    <pre><code>
+public interface Animal {
+    void makeSound();
+}                        
+                    </code></pre>
+
+                    <p>Any class implementing this interface must define the makeSound() method:</p>
+                    <pre><code>
+public class Dog implements Animal {
+    public void makeSound() {
+        System.out.println("Bark");
+    }
+}                        
+                    </code></pre>
+
+                    <p>🧩 Purpose of Interfaces</p>
+                    <ol>
+                        <li>Abstraction: Hides implementation details.</li>
+                        <li>Decoupling: Code can depend on interfaces rather than specific classes.</li>
+                        <li>Polymorphism: Allows different classes to be treated the same through a common interface.</li>
+                        <li>Multiple inheritance: Since many languages (like Java) don't allow multiple class inheritance, interfaces provide a workaround.</li>
+                    </ol>
+
+                    <p>💡 Interface vs Abstract Class</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Interface</th>
+                                <th>Abstract Class</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Implementation</td>
+                                <td>No (before Java 8)</td>
+                                <td>Can have partial implementation</td>
+                            </tr>
+                            <tr>
+                                <td>Multiple Inheritance</td>
+                                <td>Yes</td>
+                                <td>No (in most OOP languages)</td>
+                            </tr>
+                            <tr>
+                                <td>Use Case</td>
+                                <td>Capability</td>
+                                <td>Common base class</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p>In Functional Languages or JavaScript</p>
+                    <p>Interfaces may not be a native language construct, but similar behavior is achieved via duck typing or type systems (like TypeScript).</p>
+                    <p>Example in TypeScript:</p>
+
+                    <pre><code>
+interface Animal {
+    makeSound(): void;
+}
+
+class Cat implements Animal {
+    makeSound() {
+        console.log("Meow");
+    }
+}                        
+                    </code></pre>
+
+                    <p>✅ Summary</p>
+                    <p>An interface defines what a class should do, not how it should do it. It’s a way to ensure that certain classes share a common structure, improving code modularity and flexibility.</p>
+                
+                    <p>In Swift, a protocol defines a blueprint of methods, properties, and other requirements that suit a particular task or piece of functionality. Classes, structs, or enums can adopt a protocol and provide actual implementations of the required elements.</p>
+                    
+                    <p>🎯 Purpose of Protocols in Swift</p>
+                    <p>The main purposes of protocols are:</p>
+
+                    <p>1. Define shared behavior</p>
+                    <p>Protocols let you specify a common interface that multiple types can conform to. For example:</p>
+
+                    <pre><code>
+protocol Drivable {
+    func drive()
+}                        
+                    </code></pre>
+
+                    <p>Any type that conforms to Drivable must implement the drive() method.</p>
+
+                    <p>2. Enable polymorphism (protocol-oriented programming)</p>
+
+                    <p>Swift emphasizes protocol-oriented programming, where behavior is abstracted into protocols rather than base classes. This allows you to write more flexible and reusable code.</p>
+                    <p>Example:</p>
+                    <pre><code>
+func startDriving(_ vehicle: Drivable) {
+    vehicle.drive()
+}                        
+                    </code></pre>
+                    <p>This function can accept any type that conforms to Drivable — not just subclasses of a specific class.</p>
+                
+                    <p>3. Improve testability and decoupling</p>
+                    <p>Protocols are heavily used in dependency injection and mocking, which improves testing and reduces tight coupling between components.</p>
+                
+                    <pre><code>
+protocol NetworkService {
+    func fetchData() -> Data
+}
+
+class MockNetworkService: NetworkService {
+    func fetchData() -> Data {
+        return Data()
+    }
+}                        
+                    </code></pre>
+
+                    <p>4. Multiple inheritance for behavior</p>
+                    <p>Swift doesn’t allow multiple class inheritance, but a type can conform to multiple protocols, allowing for composable behavior.</p>
+                    
+                    <pre><code>
+protocol Flyable {
+    func fly()
+}
+
+protocol Swimmable {
+    func swim()
+}
+
+struct Duck: Flyable, Swimmable {
+    func fly() { /* ... */ }
+    func swim() { /* ... */ }
+}                        
+                    </code></pre>
+
+                    <p>5. Associated types and generics</p>
+                    <p>Protocols can have associated types for generic behavior without specifying concrete types in the protocol itself.</p>
+                
+                    <pre><code>
+protocol Container {
+    associatedtype Item
+    mutating func append(_ item: Item)
+    var count: Int { get }
+    subscript(i: Int) -> Item { get }
+}                        
+                    </code></pre>
+
+                    <p>✅ In Summary:</p>
+                    <p>Protocols in Swift provide abstraction, flexibility, and a powerful way to write reusable, modular, and testable code. They’re central to Swift’s design philosophy, especially in protocol-oriented programming.</p>
+                </li>
+
+                <li>
+                    🔷 Basic Protocol Syntax
+                    <pre><code>
+protocol SomeProtocol {
+    var someProperty: String { get set }
+    func doSomething()
+}                        
+                    </code></pre>
+
+                    <p>Here’s how you would implement and use it:</p>
+                    <pre><code>
+// Define the protocol
+protocol Vehicle {
+    var name: String { get }
+    var currentSpeed: Double { get set }
+    
+    func description() -> String
+    mutating func accelerate(by amount: Double)
+}
+
+// Struct conforming to the protocol
+struct Car: Vehicle {
+    let name: String
+    var currentSpeed: Double
+    
+    func description() -> String {
+        return "\(name) is going at \(currentSpeed) km/h"
+    }
+    
+    mutating func accelerate(by amount: Double) {
+        currentSpeed += amount
+    }
+}
+
+// Usage
+var myCar = Car(name: "Tesla", currentSpeed: 50.0)
+print(myCar.description()) // Tesla is going at 50.0 km/h
+myCar.accelerate(by: 20.0)
+print(myCar.description()) // Tesla is going at 70.0 km/h
+                    </code></pre>
+
+                    <p>🔶 Protocol with Class-Only Conformance</p>
+                    <p>You can restrict a protocol to be used only by classes using AnyObject:</p>
+
+                    <pre><code>
+protocol MyClassOnlyProtocol: AnyObject {
+    func doWork()
+}                        
+                    </code></pre>
+
+                    <p>🔸 Protocol Inheritance</p>
+                    <p>Protocols can inherit from other protocols:</p>
+
+                    <pre><code>
+protocol Named {
+    var name: String { get }
+}
+
+protocol Aged {
+    var age: Int { get }
+}
+
+protocol Person: Named, Aged {}
+
+struct Employee: Person {
+    let name: String
+    let age: Int
+}                        
+                    </code></pre>
+
+                    <p>🔹 Protocol Extensions</p>
+                    <p>You can provide default implementations of methods using protocol extensions:</p>
+
+                    <pre><code>
+protocol Greetable {
+    func greet()
+}
+
+extension Greetable {
+    func greet() {
+        print("Hello!")
+    }
+}
+
+struct Greeter: Greetable {}
+let g = Greeter()
+g.greet()  // Hello!                        
+                    </code></pre>
+
+                    <p>🔸 Using Protocols as Types</p>
+                    <p>Protocols can be used as types for variables, parameters, or return types:</p>
+
+                    <pre><code>
+func printDescription(of vehicle: Vehicle) {
+    print(vehicle.description())
+}                        
+                    </code></pre>
+
+                    <p>🔺 Associated Types (Advanced)</p>
+                    <p>Protocols can define associated types when you want to keep types generic:</p>
+
+                    <pre><code>
+protocol Container {
+    associatedtype Item
+    mutating func add(_ item: Item)
+    var count: Int { get }
+    subscript(i: Int) -> Item { get }
+}
+
+struct IntStack: Container {
+    var items = [Int]()
+    
+    mutating func add(_ item: Int) {
+        items.append(item)
+    }
+    
+    var count: Int {
+        return items.count
+    }
+    
+    subscript(i: Int) -> Int {
+        return items[i]
+    }
+}                        
+                    </code></pre>
+
+                    <p>✅ When to Use Protocols</p>
+                    <p>Use protocols when:</p>
+                    <ul>
+                        <li>You want abstraction or decoupling</li>
+                        <li>You want multiple types to share a common interface</li>
+                        <li>You’re applying dependency injection</li>
+                        <li>You want to write testable or reusable code</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

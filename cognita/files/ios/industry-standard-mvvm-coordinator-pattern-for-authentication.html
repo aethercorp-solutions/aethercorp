@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Industry-standard MVVM Coordinator pattern for authentication</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Industry-standard MVVM Coordinator pattern for authentication</h1>
+                    <p class="subtitle">Sure! Let me explain how to design an industry-standard MVVM Coordinator pattern for authentication in a simple and detailed way.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Key Concepts to Understand First:</h2>
+            <ul>
+                <li>
+                    MVVM (Model-View-ViewModel):
+                    <p>Separates your UI code into three parts:</p>
+                    <ul>
+                        <li>Model: Data and business logic.</li>
+                        <li>View: UI layer (screens, buttons, labels).</li>
+                        <li>ViewModel: Connects Model and View, handles logic & data presentation.</li>
+                    </ul>
+                </li>
+                <li>Manages navigation and flow between screens, so ViewControllers (or Views) don't handle navigation directly. It keeps navigation logic separate.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why Combine MVVM with Coordinator for Authentication?</h2>
+            <p>Authentication usually involves multiple screens: Login, Sign Up, Forgot Password, etc.
+                MVVM keeps each screen clean and testable.</p>
+            <p>Coordinator handles moving between these screens and overall authentication flow.</p>
+        </section>
+
+        <section>
+            <h2>Step-by-step design for Authentication flow with MVVM + Coordinator:</h2>
+            <ol>
+                <li>
+                    1. Define your Authentication Flow
+                    <p>Example screens:</p>
+                    <ul>
+                        <li>Login Screen</li>
+                        <li>Sign Up Screen</li>
+                        <li>Forgot Password Screen</li>
+                        <li>Home Screen (after login)</li>
+                    </ul>
+                </li>
+                <li>
+                    Create your Models
+                    <p>Models represent your data, e.g., User model, Auth service, API client.</p>
+                    <pre><code>
+struct User {
+    let id: String
+    let name: String
+    let email: String
+}
+
+protocol AuthServiceProtocol {
+    func login(email: String, password: String, completion: (Result<User, Error>) -> Void)
+    func signUp(email: String, password: String, completion: (Result<User, Error>) -> Void)
+    // other auth related methods
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Create ViewModels for Each Screen
+                    <p>Each ViewModel handles screen-specific logic and talks to AuthService.</p>
+                    <p>Example for LoginViewModel:</p>
+                    <pre><code>
+class LoginViewModel {
+    private let authService: AuthServiceProtocol
+    var onLoginSuccess: ((User) -> Void)?
+    var onError: ((String) -> Void)?
+
+    init(authService: AuthServiceProtocol) {
+        self.authService = authService
+    }
+
+    func login(email: String, password: String) {
+        authService.login(email: email, password: password) { [weak self] result in
+            switch result {
+            case .success(let user):
+                self?.onLoginSuccess?(user)
+            case .failure(let error):
+                self?.onError?(error.localizedDescription)
+            }
+        }
+    }
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Create Views (ViewControllers or Views)
+                    <p>Views bind to ViewModels and react to UI events:</p>
+                    <ul>
+                        <li>Show login form.</li>
+                        <li>Call viewModel.login() when user taps login.</li>
+                        <li>Listen to onLoginSuccess to proceed.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Create the Coordinator
+                    <p>The Coordinator handles all navigation related to authentication.</p>
+                    <pre><code>
+protocol Coordinator {
+    func start()
+}
+
+class AuthCoordinator: Coordinator {
+    private let navigationController: UINavigationController
+    private let authService: AuthServiceProtocol
+
+    init(navigationController: UINavigationController, authService: AuthServiceProtocol) {
+        self.navigationController = navigationController
+        self.authService = authService
+    }
+
+    func start() {
+        showLogin()
+    }
+
+    private func showLogin() {
+        let loginVM = LoginViewModel(authService: authService)
+        let loginVC = LoginViewController(viewModel: loginVM)
+        loginVM.onLoginSuccess = { [weak self] user in
+            self?.didLogin(user: user)
+        }
+        navigationController.pushViewController(loginVC, animated: true)
+    }
+
+    private func didLogin(user: User) {
+        // After login success, navigate to home screen or dismiss auth flow
+        // e.g., delegate?.didFinishAuth(user: user)
+    }
+
+    func showSignUp() {
+        let signUpVM = SignUpViewModel(authService: authService)
+        let signUpVC = SignUpViewController(viewModel: signUpVM)
+        navigationController.pushViewController(signUpVC, animated: true)
+    }
+
+    // Similarly for forgot password and other flows
+}                        
+                    </code></pre>
+                </li>
+                <li>
+                    How to use the Coordinator
+                    <p>In your AppCoordinator or SceneDelegate:</p>
+                    <pre><code>
+let navController = UINavigationController()
+let authService = AuthService() // your real service
+let authCoordinator = AuthCoordinator(navigationController: navController, authService: authService)
+
+authCoordinator.start()
+
+window.rootViewController = navController
+window.makeKeyAndVisible()
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Summary:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Layer</td>
+                        <td>Responsibility</td>
+                        <td>Example</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Model</td>
+                        <td>Data structures & API calls</td>
+                        <td>User, AuthService</td>
+                    </tr>
+                    <tr>
+                        <td>ViewModel</td>
+                        <td>Business logic & data manipulation</td>
+                        <td>LoginViewModel</td>
+                    </tr>
+                    <tr>
+                        <td>View</td>
+                        <td>UI & user interaction</td>
+                        <td>LoginViewController</td>
+                    </tr>
+                    <tr>
+                        <td>Coordinator</td>
+                        <td>Navigation & flow management</td>
+                        <td>AuthCoordinator</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Benefits of this design:</h2>
+            <ul>
+                <li>Separation of Concerns: UI, logic, and navigation are all separate.</li>
+                <li>Testability: You can unit test ViewModels and Coordinator independently.</li>
+                <li>Reusability: Coordinators can be reused or extended.</li>
+                <li>Scalability: Easy to add new screens (e.g., OTP verification) without cluttering existing classes.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

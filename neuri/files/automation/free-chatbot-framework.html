@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Free chatbot framework/platform</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Free chatbot framework/platform</h1>
+                    <p class="subtitle">To implement a free chatbot framework/platform, you can use open-source tools that allow you to build and deploy chatbots without licensing costs. Below is a high-level guide and some recommendations depending on your technical level and use case.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Free Chatbot Frameworks & Platforms (Open-Source)</h2>
+            <ol>
+                <li>
+                    Rasa (Python-based, Open Source)
+                    <ul>
+                        <li>Best for: Developers needing full control and custom NLP.</li>
+                        <li>
+                            Features:
+                            <ul>
+                                <li>Open-source NLP engine.</li>
+                                <li>Intent classification and entity extraction.</li>
+                                <li>Works offline and on your own servers.</li>
+                                <li>Highly customizable workflows.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 GitHub: <a href="https://github.com/RasaHQ/rasa">https://github.com/RasaHQ/rasa</a></p>
+                    <p>👉 Docs: <a href="https://rasa.com/docs/">https://rasa.com/docs/</a></p>
+                </li>
+
+                <li>
+                    Botpress
+                    <ul>
+                        <li>Best for: Visual builder with code-level flexibility.</li>
+                        <li>
+                            Features:
+                            <ul>
+                                <li>Modular architecture.</li>
+                                <li>Visual flow editor.</li>
+                                <li>Built-in NLP (can integrate with other engines).</li>
+                                <li>Local deployment.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 GitHub: <a href="https://github.com/botpress/botpress">https://github.com/botpress/botpress</a></p>
+                    <p>👉 Docs: <a href="https://botpress.com/docs">https://botpress.com/docs</a></p>
+                </li>
+
+                <li>
+                    Microsoft Bot Framework (with Bot Framework Composer)
+                    <ul>
+                        <li>Best for: Enterprises or apps tied to Microsoft Azure.</li>
+                        <li>
+                            Features:
+                            <ul>
+                                <li>Open-source SDK.</li>
+                                <li>Integrates with Azure Bot Service (paid).</li>
+                                <li>Bot Framework Emulator for local testing.</li>
+                                <li>Language Understanding (LUIS) integration.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 GitHub: <a href="https://github.com/microsoft/botframework-sdk">https://github.com/microsoft/botframework-sdk</a></p>
+                    <p>👉 Composer: <a href="https://github.com/microsoft/BotFramework-Composer">https://github.com/microsoft/BotFramework-Composer</a></p>
+                </li>
+
+                <li>
+                    ChatterBot (Basic, Python-based)
+                    <ul>
+                        <li>Best for: Simple rule-based or learning bots.</li>
+                        <li>
+                            Features:
+                            <ul>
+                                <li>Easy to train on custom data.</li>
+                                <li>Limited conversational logic.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 GitHub: <a href="https://github.com/gunthercox/ChatterBot">https://github.com/gunthercox/ChatterBot</a></p>
+                </li>
+
+                <li>
+                    Tock (by SNCF)
+                    <ul>
+                        <li>Best for: Multi-channel bots (Messenger, Web, Slack).</li>
+                        <li>
+                            Features:
+                            <ul>
+                                <li>NLP, Dialog Management, Analytics.</li>
+                                <li>French-originated project but multilingual.</li>
+                                <li>Rich bot-building studio.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 GitHub: <a href="https://github.com/theopenconversationkit/tock">https://github.com/theopenconversationkit/tock</a></p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>💡 Example: Create a Simple Rasa Bot (CLI Setup)</h2>
+            <ol>
+                <li>
+                    Install Rasa:
+                    <pre><code>
+pip install rasa
+                    </code></pre>
+                </li>
+                <li>
+                    Create a new project:
+                    <pre><code>
+rasa init
+                    </code></pre>
+                </li>
+                <li>
+                    Train the model:
+                    <pre><code>
+rasa train
+                    </code></pre>
+                </li>
+                <li>
+                    Test the bot locally:
+                    <pre><code>
+rasa shell
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔌 Deployment Options (Free or Self-Hosted)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th>Type</th>
+                        <th>Free Tier?</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Heroku</td>
+                        <td>Cloud-hosted</td>
+                        <td>✅</td>
+                        <td>Easy to deploy small bots.</td>
+                    </tr>
+                    <tr>
+                        <td>Render</td>
+                        <td>Cloud-hosted</td>
+                        <td>✅</td>
+                        <td>Good for Rasa/Botpress.</td>
+                    </tr>
+                    <tr>
+                        <td>VPS (e.g., Linode, DigitalOcean)</td>
+                        <td>Self-hosted</td>
+                        <td>❌ (but cheap)</td>
+                        <td>You control everything.</td>
+                    </tr>
+                    <tr>
+                        <td>Docker</td>
+                        <td>Local/Cloud</td>
+                        <td>✅</td>
+                        <td>Many bots support Docker.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🤖 Want a No-Code/Low-Code Option?</h2>
+            <ul>
+                <li>
+                    Flowise AI – Visual builder using LangChain and local LLMs.
+                    <p>👉 <a href="https://github.com/FlowiseAI/Flowise">https://github.com/FlowiseAI/Flowise</a></p>
+                </li>
+                <li>
+                    Botpress Cloud (Free tier) – Now offers free hosting with some limits.
+                    <p>👉 <a href="https://botpress.com/">https://botpress.com/</a></p>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

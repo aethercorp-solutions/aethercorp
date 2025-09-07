@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Google APIs</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Google APIs</h1>
+                    <p class="subtitle">"Google APIs" (often referred to as googleapis) are a set of application programming interfaces (APIs) developed by Google. They allow developers to integrate Google services and data into their own applications or websites.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔍 Common Uses of Google APIs</h2>
+            <p>Some of the most widely used Google APIs include:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>API</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Google Maps API</td>
+                        <td>For embedding maps, geolocation, directions, places, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>YouTube Data API</td>
+                        <td>For accessing YouTube content like videos, channels, comments, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>Google Drive API</td>
+                        <td>For accessing and managing files in Google Drive.</td>
+                    </tr>
+                    <tr>
+                        <td>Gmail API</td>
+                        <td>For reading, sending, and organizing Gmail messages.</td>
+                    </tr>
+                    <tr>
+                        <td>Google Calendar API</td>
+                        <td>For accessing and managing calendars and events.</td>
+                    </tr>
+                    <tr>
+                        <td>Google Sheets API</td>
+                        <td>For reading/writing data from Google Sheets.</td>
+                    </tr>
+                    <tr>
+                        <td>Google Cloud APIs</td>
+                        <td>A wide range of APIs for cloud computing, like Vision AI, Translation, BigQuery, etc.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔐 Authentication</h2>
+            <p>Most Google APIs require OAuth 2.0 or an API key for authentication. This ensures secure and authorized access.</p>
+        </section>
+
+        <section>
+            <h2>🛠️ Example Usage</h2>
+            <p>Here's a Python example using the google-api-python-client to access Google Sheets:</p>
+            <pre><code>
+from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
+
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+SERVICE_ACCOUNT_FILE = 'credentials.json'
+
+creds = Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+
+service = build('sheets', 'v4', credentials=creds)
+
+# Call the Sheets API
+spreadsheet_id = 'your_spreadsheet_id'
+range_name = 'Sheet1!A1:D5'
+sheet = service.spreadsheets()
+result = sheet.values().get(spreadsheetId=spreadsheet_id, range=range_name).execute()
+values = result.get('values', [])
+
+print(values)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔗 Helpful Links</h2>
+            <p>Google APIs Explorer: <a href="https://developers.google.com/apis-explorer">https://developers.google.com/apis-explorer</a></p>
+            <p>Google API Console: <a href="https://console.developers.google.com/">https://console.developers.google.com/</a></p>
+            <p>Google API Client Libraries: <a href="https://developers.google.com/api-client-library">https://developers.google.com/api-client-library</a></p>
+        </section>
+
+        <section>
+            <p>The Google People API lets you access and manage authenticated users' contacts and profile information. It's the modern replacement for the deprecated Google Contacts API and provides access to both personal and directory-based contact data.</p>
+            <h2>🔍 What You Can Do with Google People API</h2>
+            <p>Here are common use cases:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Get user profile info</td>
+                        <td>Retrieve name, email, photo, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>Access contact list</td>
+                        <td>Get a list of a user's Google Contacts.</td>
+                    </tr>
+                    <tr>
+                        <td>Search contacts</td>
+                        <td>Query contacts by name, email, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>Create/update/delete contacts</td>
+                        <td>Full CRUD operations on a user’s contacts.</td>
+                    </tr>
+                    <tr>
+                        <td>Directory support</td>
+                        <td>Access organizational directory contacts (G Suite only).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠️ How to Use the People API</h2>
+            <p>Step 1: Enable the API</p>
+            <ol>
+                <li>Go to the <a href="https://console.developers.google.com/?utm_source=chatgpt.com">Google Cloud Console</a></li>
+                <li>Create or select a project.</li>
+                <li>Navigate to APIs & Services > Library.</li>
+                <li>Search for People API and click Enable.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 2: Set Up OAuth 2.0 Credentials</h2>
+            <ol>
+                <li>Go to APIs & Services > Credentials.</li>
+                <li>Click Create Credentials > OAuth client ID.</li>
+                <li>Choose "Web application" or "Desktop app" depending on your case.</li>
+                <li>Add redirect URIs as needed.</li>
+                <li>Save the Client ID and Client Secret.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 3: Install the Client Library (Python example)</h2>
+            <pre><code>
+pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4: Sample Code (Python – Get User's Profile Info)</h2>
+            <pre><code>
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+
+# Define the scope
+SCOPES = ['https://www.googleapis.com/auth/userinfo.profile']
+
+# OAuth2 flow
+flow = InstalledAppFlow.from_client_secrets_file('client_secret.json', SCOPES)
+creds = flow.run_local_server(port=0)
+
+# Build service
+service = build('people', 'v1', credentials=creds)
+
+# Request profile information
+profile = service.people().get(
+    resourceName='people/me',
+    personFields='names,emailAddresses,photos'
+).execute()
+
+print(profile)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 Common Scopes</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scope</th>
+                        <th>Access Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>profile or userinfo.profile</td>
+                        <td>Basic profile info</td>
+                    </tr>
+                    <tr>
+                        <td><a href="https://www.googleapis.com/auth/contacts.readonly">https://www.googleapis.com/auth/contacts.readonly</a></td>
+                        <td>Read user contacts</td>
+                    </tr>
+                    <tr>
+                        <td><a href="https://www.googleapis.com/auth/contacts">https://www.googleapis.com/auth/contacts</a></td>
+                        <td>Full access to user contacts</td>
+                    </tr>
+                    <tr>
+                        <td><a href="https://www.googleapis.com/auth/directory.readonly">https://www.googleapis.com/auth/directory.readonly</a></td>
+                        <td>Read-only access to directory (G Suite)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📚 Official Docs & Tools</h2>
+            <ol>
+                <li>API Reference: <a href="https://developers.google.com/people?utm_source=chatgpt.com">People API Docs</a></li>
+                <li>OAuth 2.0 Scopes: <a href="https://developers.google.com/people/api/rest/oauth?utm_source=chatgpt.com">OAuth Scopes</a></li>
+                <li>Try it live: <a href="https://developers.google.com/people/api/rest/v1/people/get?utm_source=chatgpt.com">API Explorer</a></li>
+            </ol>
+        </section>
+
+        <section>
+            <p>Here’s a complete implementation of the Google People API using Node.js, showing how to authenticate a user and fetch their profile and contacts.</p>
+            <h2>✅ Overview</h2>
+            <p>We'll:</p>
+            <ol>
+                <li>Set up a Node.js project.</li>
+                <li>Use OAuth2 to authenticate the user.</li>
+                <li>
+                    Call the People API to get:
+                    <ul>
+                        <li>Their basic profile info</li>
+                        <li>Their Google contacts</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📦 Step 1: Install Required Packages</h2>
+            <p>In your Node.js project folder:</p>
+            <pre><code>
+npm init -y
+npm install googleapis open
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 Step 2: Get OAuth Credentials</h2>
+            <ol>
+                <li>Go to: <a href="https://console.developers.google.com">https://console.developers.google.com</a></li>
+                <li>Create a new project or use an existing one.</li>
+                <li>Enable the People API.</li>
+                <li>Go to Credentials > Create Credentials > OAuth client ID.</li>
+                <li>Choose Desktop app or Web app depending on your use case.</li>
+                <li>Download the client_secret.json file.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📄 Step 3: Code — Authenticate and Get Profile & Contacts</h2>
+            <p>Create a file called people-api.js:</p>
+            <pre><code>
+const fs = require('fs');
+const { google } = require('googleapis');
+const open = require('open');
+const path = require('path');
+
+// Load OAuth2 credentials
+const CREDENTIALS_PATH = path.join(__dirname, 'client_secret.json');
+const TOKEN_PATH = path.join(__dirname, 'token.json');
+
+// Define required scopes
+const SCOPES = [
+  'https://www.googleapis.com/auth/contacts.readonly',
+  'https://www.googleapis.com/auth/userinfo.profile'
+];
+
+// Load client secrets and authorize
+async function authorize() {
+  const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, 'utf8'));
+  const { client_secret, client_id, redirect_uris } = credentials.installed;
+
+  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+
+  // Check if token already exists
+  if (fs.existsSync(TOKEN_PATH)) {
+    const token = JSON.parse(fs.readFileSync(TOKEN_PATH, 'utf8'));
+    oAuth2Client.setCredentials(token);
+    return oAuth2Client;
+  }
+
+  // No token yet: request user to authorize
+  const authUrl = oAuth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: SCOPES
+  });
+
+  console.log('Authorize this app by visiting this URL:', authUrl);
+  await open(authUrl);
+
+  // Get auth code from user input
+  const readline = require('readline').createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  const code = await new Promise((resolve) => {
+    readline.question('Enter the code from that page here: ', (input) => {
+      readline.close();
+      resolve(input);
+    });
+  });
+
+  const { tokens } = await oAuth2Client.getToken(code);
+  oAuth2Client.setCredentials(tokens);
+  fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
+  console.log('Token stored to', TOKEN_PATH);
+
+  return oAuth2Client;
+}
+
+// Get basic profile info
+async function getProfile(auth) {
+  const people = google.people({ version: 'v1', auth });
+  const res = await people.people.get({
+    resourceName: 'people/me',
+    personFields: 'names,emailAddresses,photos'
+  });
+
+  console.log('\n👤 Profile Info:');
+  console.log(JSON.stringify(res.data, null, 2));
+}
+
+// Get user's contacts
+async function listContacts(auth) {
+  const people = google.people({ version: 'v1', auth });
+  const res = await people.people.connections.list({
+    resourceName: 'people/me',
+    personFields: 'names,emailAddresses',
+    pageSize: 10 // You can adjust this
+  });
+
+  console.log('\n📇 Contacts:');
+  const connections = res.data.connections || [];
+  connections.forEach((person, i) => {
+    const name = person.names?.[0]?.displayName || 'No Name';
+    const email = person.emailAddresses?.[0]?.value || 'No Email';
+    console.log(`${i + 1}. ${name} — ${email}`);
+  });
+}
+
+// Run everything
+authorize()
+  .then(auth => {
+    return Promise.all([
+      getProfile(auth),
+      listContacts(auth)
+    ]);
+  })
+  .catch(console.error);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>▶️ Run It</h2>
+            <pre><code>
+node people-api.js
+            </code></pre>
+            <p>When you run this the first time:</p>
+            <ul>
+                <li>It will open a browser window asking you to sign in and authorize access.</li>
+                <li>You'll paste in the code.</li>
+                <li>It will save your token in token.json so you won't need to re-authenticate next time.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 OAuth Scopes Reference</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scope</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>https://www.googleapis.com/auth/userinfo.profile</td>
+                        <td>Basic user profile</td>
+                    </tr>
+                    <tr>
+                        <td>https://www.googleapis.com/auth/contacts.readonly</td>
+                        <td>Read access to contacts</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🚀 Next Steps</h2>
+            <ul>
+                <li>Add error handling</li>
+                <li>Support writing/updating/deleting contacts</li>
+                <li>Deploy with Express (for web apps)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

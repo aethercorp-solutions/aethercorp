@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>UISceneDelegate</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">🔹 What is UISceneDelegate?</h1>
+                    <p class="subtitle">
+                        <p>UISceneDelegate is a protocol introduced in iOS 13 to support multi-window (multi-scene) functionality, especially useful in iPadOS and modern iOS applications. It works alongside AppDelegate to manage UI lifecycle per scene (window).</p>
+                        <ul>
+                            <li>Each scene (i.e., instance of your app's UI) has a SceneDelegate.</li>
+                            <li>
+                                Handles scene lifecycle events like:
+                                <ul>
+                                    <li>Scene creation</li>
+                                    <li>Activation/deactivation</li>
+                                    <li>Entering background/foreground</li>
+                                </ul>
+                            </li>
+                            <li>Separates UI responsibilities from application-level tasks (AppDelegate).</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 How to Use UISceneDelegate</h2>
+            <p>Used only if your app supports scenes — which is the default for UIKit apps starting with iOS 13.</p>
+        </section>
+
+        <section>
+            <h2>🧱 Typical SceneDelegate.swift Structure</h2>
+
+            <pre><code>
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+
+    var window: UIWindow?
+
+    // Called when the scene connects to the app session
+    func scene(_ scene: UIScene,
+                willConnectTo session: UISceneSession,
+                options connectionOptions: UIScene.ConnectionOptions) {
+        
+        guard let windowScene = scene as? UIWindowScene else { return }
+
+        // Create the UIWindow with the windowScene
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = MyInitialViewController()  // or a UINavigationController, etc.
+        self.window = window
+        window.makeKeyAndVisible()
+    }
+
+    // Called when the scene becomes active
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        // Resume tasks, animations
+    }
+
+    // Called when the scene resigns active state (e.g., phone call)
+    func sceneWillResignActive(_ scene: UIScene) {
+        // Pause tasks, disable timers
+    }
+
+    // Scene is entering the background
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        // Save data, release shared resources
+    }
+
+    // Scene is coming back to foreground
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        // Undo changes made when entering background
+    }
+
+    // Scene was disconnected (can be used for cleanup)
+    func sceneDidDisconnect(_ scene: UIScene) {
+        // Called when scene is released by the system
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ Required Setup in Info.plist</h2>
+            <p>To use SceneDelegate, your Info.plist must include a scene configuration:</p>
+            <pre><code>
+&lt;key&gt;UIApplicationSceneManifest&lt;/key&gt;
+&lt;dict&gt;
+    &lt;key&gt;UIApplicationSupportsMultipleScenes&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;UISceneConfigurations&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;UIWindowSceneSessionRoleApplication&lt;/key&gt;
+        &lt;array&gt;
+            &lt;dict&gt;
+                &lt;key&gt;UISceneConfigurationName&lt;/key&gt;
+                &lt;string&gt;Default Configuration&lt;/string&gt;
+                &lt;key&gt;UISceneDelegateClassName&lt;/key&gt;
+                &lt;string&gt;$(PRODUCT_MODULE_NAME).SceneDelegate&lt;/string&gt;
+            &lt;/dict&gt;
+        &lt;/array&gt;
+    &lt;/dict&gt;
+&lt;/dict&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔁 Interaction with AppDelegate</h2>
+            <p>Your AppDelegate still exists and handles global application events (e.g., push notifications, app launch).</p>
+            <p>But UI-specific setup (like creating windows) moves to SceneDelegate.</p>
+            <p>Example in AppDelegate.swift:</p>
+            <pre><code>
+func application(
+    _ application: UIApplication,
+    configurationForConnecting connectingSceneSession: UISceneSession,
+    options: UIScene.ConnectionOptions
+) -> UISceneConfiguration {
+    return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🎯 When Should You Use UISceneDelegate?</h2>
+            <p>Use UISceneDelegate if:</p>
+            <ul>
+                <li>You're supporting iOS 13 or later.</li>
+                <li>Your app may support multiple windows (iPad multitasking).</li>
+                <li>You want better separation of concerns between UI and app logic.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔚 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>UISceneDelegate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Introduced</td>
+                        <td>iOS 13</td>
+                    </tr>
+                    <tr>
+                        <td>Main Role</td>
+                        <td>Handles per-window UI lifecycle</td>
+                    </tr>
+                    <tr>
+                        <td>Typical Tasks</td>
+                        <td>Create root view, manage window, save scene state</td>
+                    </tr>
+                    <tr>
+                        <td>Works With</td>
+                        <td>AppDelegate, UIScene, UIWindowScene</td>
+                    </tr>
+                    <tr>
+                        <td>Optional?</td>
+                        <td>Yes (can disable scenes in older apps)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

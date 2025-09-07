@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>authViewModel</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">authViewModel</h1>
+                    <p class="subtitle">Your AuthViewModel.swift file looks quite solid and well-structured. It handles Google Sign-In using Firebase and updates the UI reactively through @Published var isSignedIn. However, here are some improvements, fixes, and best practices that can make this code more robust and maintainable:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Suggestions & Improvements:</h2>
+            <ol>
+                <li>
+                    Handle Sign-In Result Properly
+                    <p>You're currently not updating isSignedIn directly after sign-in. You rely on authManager.isAuthenticatedPublisher, which is good—just ensure that authManager properly updates the authentication state after sign-in.</p>
+                    <p>✅ Make sure AuthManager.shared listens to Firebase Auth.auth().addStateDidChangeListener or similar.</p>
+                </li>
+
+                <li>
+                    Error Logging: Provide More Context
+                    <p>You currently just print errors without context. Improve debuggability like this:</p>
+                    <pre><code>
+if let error = error {
+    print("Google Sign-In failed with error: \(error.localizedDescription)")
+    return
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Optional Binding Clarity
+                    <p>Instead of:</p>
+                    <pre><code>
+guard
+    let result = signInResult,
+    let idToken = result.user.idToken?.tokenString
+else {
+    return
+}
+                    </code></pre>
+
+                    <p>You could make the optional chaining cleaner and log what’s failing:</p>
+
+                <pre><code>
+guard let result = signInResult else {
+    print("Sign-in result is nil.")
+    return
+}
+
+guard let idToken = result.user.idToken?.tokenString else {
+    print("Failed to get ID token.")
+    return
+}                    
+                </code></pre>
+                </li>
+
+                <li>
+                    Access Token Safety
+                    <p>The following assumes result.user.accessToken.tokenString is always available. It should be guarded:</p>
+                    <pre><code>
+guard let accessToken = result.user.accessToken?.tokenString else {
+    print("Failed to get access token.")
+    return
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Completion Handler – Actually Use Auth Result
+                    <p>You're ignoring authResult:</p>
+                    <pre><code>
+Auth.auth().signIn(with: credential) { authResult, error in
+    Task { @MainActor in
+        if let error = error {
+            print(error)
+            return
+        }
+        
+        // Success – you can check authResult if needed
+        print("Firebase Sign-In success. User ID: \(authResult?.user.uid ?? "N/A")")
+    }
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Consider Adding Loading/Error State
+                    <p>To improve user experience, add:</p>
+                    <pre><code>
+@Published var isLoading = false
+@Published var authError: String? = nil
+                    </code></pre>
+                    <p>Update isLoading and authError during the sign-in process.</p>
+                </li>
+
+                <li>
+                    Sign-Out Completion Handling
+                    <p>Currently, signOut() just delegates. If the sign-out can fail, expose an error or success flag.</p>
+                </li>
+
+                <li>
+                    ✅ Optional: Add Analytics or Logging
+                    <p>For production apps, it's common to add logs to Firebase Analytics or Crashlytics:</p>
+                    <pre><code>
+Analytics.logEvent("google_sign_in", parameters: nil)
+Crashlytics.crashlytics().record(error: error)
+                    </code></pre>
+                </li>
+
+                <li>
+                    🔄 Summary of Code (Post Suggestions)
+                    <p>Here’s the improved sign-in method:</p>
+                    <pre><code>
+func signInWithGoogle(presentingVC: UIViewController) {
+    guard let clientID = FirebaseApp.app()?.options.clientID else {
+        print("Missing Firebase client ID")
+        return
+    }
+
+    let config = GIDConfiguration(clientID: clientID)
+    GIDSignIn.sharedInstance.configuration = config
+
+    GIDSignIn.sharedInstance.signIn(withPresenting: presentingVC) { signInResult, error in
+        if let error = error {
+            print("Google Sign-In error: \(error.localizedDescription)")
+            return
+        }
+
+        guard let result = signInResult else {
+            print("Sign-in result is nil.")
+            return
+        }
+
+        guard let idToken = result.user.idToken?.tokenString else {
+            print("Failed to retrieve ID token.")
+            return
+        }
+
+        guard let accessToken = result.user.accessToken?.tokenString else {
+            print("Failed to retrieve access token.")
+            return
+        }
+
+        let credential = GoogleAuthProvider.credential(
+            withIDToken: idToken,
+            accessToken: accessToken
+        )
+
+        Auth.auth().signIn(with: credential) { authResult, error in
+            Task { @MainActor in
+                if let error = error {
+                    print("Firebase sign-in failed: \(error.localizedDescription)")
+                    return
+                }
+
+                print("Firebase Sign-In successful. User ID: \(authResult?.user.uid ?? "unknown")")
+            }
+        }
+    }
+}                        
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

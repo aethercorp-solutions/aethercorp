@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Authentication in Swift</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Authentication in Swift</h1>
+                    <p class="subtitle">
+                        <p>When building authentication in Swift, especially for iOS apps, you'll typically deal with:</p>
+                        <ul>
+                            <li>User login/logout (email/password, social, biometrics)</li>
+                            <li>Secure storage (e.g., Keychain)</li>
+                            <li>Networking (sending credentials to server)</li>
+                            <li>Token handling (e.g., JWT, OAuth tokens)</li>
+                            <li>Protocols for abstraction and testing</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Example: Email/Password Authentication with Protocols</h2>
+            <ol>
+                <li>
+                    Define a Protocol
+                    <pre><code>
+protocol AuthService {
+    func login(email: String, password: String, completion: @escaping (Result<User, AuthError>) -> Void)
+    func logout()
+    var currentUser: User? { get }
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Define Supporting Types
+                    <pre><code>
+struct User {
+    let id: String
+    let email: String
+}
+
+enum AuthError: Error {
+    case invalidCredentials
+    case networkError
+    case unknown
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Implement the Protocol
+                    <pre><code>
+class FirebaseAuthService: AuthService {
+    private var user: User?
+
+    func login(email: String, password: String, completion: @escaping (Result<User, AuthError>) -> Void) {
+        // Simulated network request
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+            if email == "test@example.com" && password == "password123" {
+                let user = User(id: "abc123", email: email)
+                self.user = user
+                completion(.success(user))
+            } else {
+                completion(.failure(.invalidCredentials))
+            }
+        }
+    }
+
+    func logout() {
+        user = nil
+    }
+
+    var currentUser: User? {
+        return user
+    }
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Use the AuthService via Dependency Injection
+                    <pre><code>
+class LoginViewModel {
+    private let authService: AuthService
+
+    init(authService: AuthService) {
+        self.authService = authService
+    }
+
+    func login(email: String, password: String) {
+        authService.login(email: email, password: password) { result in
+            switch result {
+            case .success(let user):
+                print("Logged in as \(user.email)")
+            case .failure(let error):
+                print("Login failed: \(error)")
+            }
+        }
+    }
+}                        
+                    </code></pre>
+
+                    <p>Usage:</p>
+                    <pre><code>
+let authService = FirebaseAuthService()
+let viewModel = LoginViewModel(authService: authService)
+viewModel.login(email: "test@example.com", password: "password123")
+                    </code></pre>
+                </li>
+
+                <li>
+                    🔐 Optional: Store Auth Tokens in Keychain
+                    <p>Use Keychain to securely store tokens like access/refresh tokens.</p>
+                    <p>You can use a wrapper like KeychainAccess or Apple’s Keychain API.</p>
+
+                    <pre><code>
+import KeychainAccess
+
+let keychain = Keychain(service: "com.myapp.auth")
+keychain["accessToken"] = "abc123"  // Save
+let token = keychain["accessToken"] // Read
+                    </code></pre>
+                </li>
+
+                <li>
+                    🧪 Why Use Protocols for Authentication?
+                    <ul>
+                        <li>Easier to mock during testing</li>
+                        <li>Enables multiple implementations (e.g., FirebaseAuthService, MockAuthService)</li>
+                        <li>Encourages clean architecture (decouples view models from specific services)</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AuthService</td>
+                        <td>Protocol defining auth methods</td>
+                    </tr>
+                    <tr>
+                        <td>User</td>
+                        <td>Model for authenticated user</td>
+                    </tr>
+                    <tr>
+                        <td>AuthError</td>
+                        <td>Custom error enum</td>
+                    </tr>
+                    <tr>
+                        <td>FirebaseAuthService</td>
+                        <td>Real implementation</td>
+                    </tr>
+                    <tr>
+                        <td>LoginViewModel</td>
+                        <td>Consumes the service</td>
+                    </tr>
+                    <tr>
+                        <td>Keychain</td>
+                        <td>Secure token storage (optional)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
