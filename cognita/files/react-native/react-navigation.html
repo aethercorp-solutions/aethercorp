@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Navigation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Navigation</h1>
+                    <p class="subtitle">React Navigation is a popular library used for routing and navigation in React Native applications. It helps you move between different screens and manage navigation state across your app.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Installation</h2>
+            <p>You can install React Navigation using npm or yarn:</p>
+            <pre><code>
+npm install @react-navigation/native
+            </code></pre>
+
+            <p>Then install the required dependencies:</p>
+            <pre><code>
+npx expo install react-native-screens react-native-safe-area-context
+npm install react-native-gesture-handler react-native-reanimated
+            </code></pre>
+            <p>If you're using Expo, some of these might already be included.</p>
+
+            <p>Finally, install a specific navigator (e.g., Stack Navigator):</p>
+            <pre><code>
+npm install @react-navigation/native-stack
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📱 Basic Usage (Stack Navigator)</h2>
+            <p>Here's a basic example using createNativeStackNavigator:</p>
+
+            <pre><code>
+// App.js
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+import DetailsScreen from './screens/DetailsScreen';
+
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+        &lt;Stack.Navigator initialRouteName="Home"&gt;
+            &lt;Stack.Screen name="Home" component={HomeScreen} /&gt;
+            &lt;Stack.Screen name="Details" component={DetailsScreen} /&gt;
+        &lt;/Stack.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}
+            </code></pre>
+
+            <p>And a sample screen:</p>
+            <pre><code>
+// screens/HomeScreen.js
+import React from 'react';
+import { Button, View, Text } from 'react-native';
+
+const HomeScreen = ({ navigation }) => (
+  &lt;View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    &lt;Text>Home Screen&lt;/Text&gt;
+        &lt;Button
+      title="Go to Details"
+      onPress={() => navigation.navigate('Details')}
+    />
+&lt;/View&gt;
+);
+
+export default HomeScreen;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧭 Navigators Available</h2>
+            <p>React Navigation offers several types of navigators:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Navigator</th>
+                        <th>Package</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Stack Navigator</td>
+                        <td>@react-navigation/native-stack</td>
+                        <td>Standard screen-to-screen navigation</td>
+                    </tr>
+                    <tr>
+                        <td>Tab Navigator</td>
+                        <td>@react-navigation/bottom-tabs</td>
+                        <td>Bottom tab navigation</td>
+                    </tr>
+                    <tr>
+                        <td>Drawer Navigator</td>
+                        <td>@react-navigation/drawer</td>
+                        <td>Sidebar menu navigation</td>
+                    </tr>
+                    <tr>
+                        <td>Material Top Tabs</td>
+                        <td>@react-navigation/material-top-tabs</td>
+                        <td>Swipeable tabs</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📦 Advanced Features</h2>
+            <ul>
+                <li>Deep linking</li>
+                <li>Authentication flows</li>
+                <li>Dynamic routing with parameters</li>
+                <li>Custom transitions and animations</li>
+                <li>Navigation lifecycle events</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

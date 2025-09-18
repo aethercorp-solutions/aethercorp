@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Jest is a zero-config testing framework</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Jest is a zero-config testing framework</h1>
+                    <p class="subtitle">Jest is a delightful, zero-config testing framework maintained by Meta (Facebook), widely used for testing JavaScript applications — especially React apps, though it works well with Node.js and other libraries too.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Key Features of Jest</h2>
+            <ul>
+                <li>Zero Config – Works out of the box for most JS projects.</li>
+                <li>Snapshot Testing – For UI consistency.</li>
+                <li>Mocking – Built-in support for function and module mocks.</li>
+                <li>Isolated Tests – Runs tests in parallel to improve performance.</li>
+                <li>Code Coverage – Built-in coverage reports.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Installing Jest</h2>
+            <pre><code>
+npm install --save-dev jest
+            </code></pre>
+
+            <p>Or with Yarn:</p>
+            <pre><code>
+yarn add --dev jest
+            </code></pre>
+
+            <p>Then, add a test script in your package.json:</p>
+            <pre><code>
+"scripts": {
+    "test": "jest"
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 Writing a Simple Test</h2>
+            <p>sum.js</p>
+            <pre><code>
+function sum(a, b) {
+    return a + b;
+}
+module.exports = sum;                  
+            </code></pre>
+
+            <p>sum.test.js</p>
+            <pre><code>
+const sum = require('./sum');
+
+test('adds 1 + 2 to equal 3', () => {
+  expect(sum(1, 2)).toBe(3);
+});
+            </code></pre>
+
+            <p>Then run:</p>
+            <pre><code>
+npm test
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧰 Useful Jest Functions</h2>
+            <ul>
+                <li>test() / it() – Define a test case.</li>
+                <li>expect() – Assertion library (e.g., expect(value).toBe(expected)).</li>
+                <li>beforeEach(), afterEach() – Setup/teardown per test.</li>
+                <li>beforeAll(), afterAll() – Setup/teardown per test file.</li>
+                <li>.mock() / jest.fn() – Mocking functions/modules.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Example: Testing an Async Function</h2>
+            <pre><code>
+const fetchData = () => Promise.resolve('peanut butter');
+
+test('the data is peanut butter', async () => {
+  const data = await fetchData();
+  expect(data).toBe('peanut butter');
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <p>Would you like:</p>
+            <ul>
+                <li>Help setting up Jest in your project?</li>
+                <li>Help mocking something?</li>
+                <li>Help with React component testing?</li>
+                <li>Or something else Jest-related?</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Perfect — let’s get Jest set up in your JavaScript or TypeScript project from scratch. I’ll walk you through both scenarios.</p>
+            <h2>✅ Step-by-Step: Setting Up Jest</h2>
+
+            <p>1. 🏗️ Initialize Your Project</p>
+            <p>If you haven't already:</p>
+
+            <pre><code>
+npm init -y
+            </code></pre>
+
+            <p>2. 📦 Install Jest</p>
+            <pre><code>
+npm install --save-dev jest
+            </code></pre>
+
+            <p>If you're using TypeScript, also install:</p>
+
+            <pre><code>
+npm install --save-dev ts-jest @types/jest typescript
+            </code></pre>
+
+            <p>3. ⚙️ Configure Jest</p>
+            <p>A. JavaScript Projects</p>
+            <p>In package.json, add:</p>
+
+            <pre><code>
+"scripts": {
+    "test": "jest"
+}                  
+            </code></pre>
+
+            <p>You can run tests using:</p>
+
+            <pre><code>
+npm test
+            </code></pre>
+
+            <p>B. TypeScript Projects</p>
+            <p>Initialize ts-jest:</p>
+            <pre><code>
+npx ts-jest config:init
+            </code></pre>
+            <p>This creates a jest.config.js file with TS support.</p>
+            <p>Update your package.json scripts:</p>
+
+            <pre><code>
+"scripts": {
+    "test": "jest"
+}                  
+            </code></pre>
+            <p>Make sure your tsconfig.json is configured for Jest (e.g., esnext modules, "module": "commonjs").</p>
+
+            <p>4. 📁 Create Test Files</p>
+            <p>By convention, Jest looks for files like:</p>
+            <ul>
+                <li>*.test.js / *.test.ts</li>
+                <li>*.spec.js / *.spec.ts</li>
+                <li>Or any test files in a __tests__ folder</li>
+            </ul>
+
+            <p>Example:</p>
+            <p>math.js</p>
+
+            <pre><code>
+function add(a, b) {
+    return a + b;
+}
+module.exports = add;                  
+            </code></pre>
+
+            <p>math.test.js</p>
+            <pre><code>
+const add = require('./math');
+
+test('adds 2 + 3 to equal 5', () => {
+  expect(add(2, 3)).toBe(5);
+});
+            </code></pre>
+
+            <p>5. 🚀 Run Tests</p>
+            <pre><code>
+npm test
+            </code></pre>
+
+            <p>Jest will automatically find and run your tests.</p>
+        </section>
+
+        <section>
+            <h2>🧪 Optional: Configure Jest Further</h2>
+            <p>Create a manual jest.config.js:</p>
+
+            <pre><code>
+// jest.config.js
+module.exports = {
+  testEnvironment: 'node', // or 'jsdom' for browser-like env (React)
+  verbose: true,
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+};
+            </code></pre>
+
+            <p>🧰 Bonus: Useful Flags</p>
+            <pre><code>
+# Run specific test file
+npx jest math.test.js
+
+# Watch mode (great for TDD)
+npx jest --watch
+
+# Show coverage report
+npx jest --coverage
+            </code></pre>
+        </section>
+
+        <section>
+            <p>Great — let’s walk through setting up Jest in a React project, step by step.</p>
+            <p>You can do this in two ways:</p>
+            <ol>
+                <li>Using Create React App (CRA) – which comes with Jest pre-configured ✅</li>
+                <li>Setting up Jest manually in a custom React + Webpack/Vite setup 🔧</li>
+            </ol>
+            <p>I'll cover both below — you can skip to the one that applies to your project.</p>
+        </section>
+
+        <section>
+            <h2>✅ Option 1: Create React App (CRA) – Easiest Way</h2>
+            <p>If you’re using Create React App, Jest is already built-in, and you don’t need to configure anything.</p>
+            <p>1. Create the app:</p>
+            <pre><code>
+npx create-react-app my-app
+cd my-app
+            </code></pre>
+
+            <p>2. Run tests:</p>
+            <pre><code>
+npm test
+            </code></pre>
+            <p>This will run any test files ending in .test.js, .test.tsx, or inside __tests__.</p>
+
+            <p>3. Example Test</p>
+            <p>Create a file:</p>
+            <p>src/App.test.js</p>
+
+            <pre><code>
+import { render, screen } from '@testing-library/react';
+import App from './App';
+
+test('renders learn react link', () => {
+  render(&lt;App /&gt;);
+  const linkElement = screen.getByText(/learn react/i);
+  expect(linkElement).toBeInTheDocument();
+});
+            </code></pre>
+
+            <p>This is a basic unit test for a React component (App) using React Testing Library and Jest. Here's a breakdown of what it's doing:</p>
+            <p>🔍 What this test does:</p>
+
+            <ol>
+                <li>
+                    Render the App component:
+                    <pre><code>
+render(&lt;App /&gt;);
+                    </code></pre>
+                    <ul>
+                        <li>This simulates rendering your component in a virtual DOM.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Find an element with the text "learn react" (case-insensitive):
+                    <pre><code>
+const linkElement = screen.getByText(/learn react/i);
+                    </code></pre>
+                    <ul>
+                        <li>This uses a regular expression (/learn react/i) to search for text on the screen.</li>
+                        <li>i means it's case-insensitive.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Check that the element exists in the document:
+                    <pre><code>
+expect(linkElement).toBeInTheDocument();
+                    </code></pre>
+                    <ul>
+                        <li>This is an assertion that ensures the text is present.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ What this test is validating:</h2>
+            <p>It confirms that when App is rendered, it contains a visible element (like a link or heading) with the text "learn react". This is typically from a default create-react-app scaffold, where the App.js file includes a link like:</p>
+            <pre><code>
+&lt;a href="https://reactjs.org"&gt;Learn React&lt;/a&gt;
+            </code></pre>
+
+            <p>🧪 To run the test:</p>
+            <p>You can run this test with:</p>
+
+            <pre><code>
+npm test
+            </code></pre>
+
+            <p>or</p>
+            <pre><code>
+yarn test
+            </code></pre>
+            <p>It should pass if the text “learn react” exists somewhere in the App component.</p>
+        </section>
+
+        <section>
+            <h2>🛠️ Tip:</h2>
+            <p>If you later change or remove the "learn react" text from your App, this test will fail — so you should update the test or the component accordingly.</p>
+        </section>
+
+        <section>
+            <p>app.js</p>
+            <p>You've posted a full React Native App component, and it's more complex than the original create-react-app example (with a "Learn React" link). This app uses:</p>
+            <ul>
+                <li>react-native core components</li>
+                <li>Custom services like FirebaseService</li>
+                <li>Push notifications via notifee and react-native-push-notification-popup</li>
+                <li>A custom navigation system (RootNavigation)</li>
+                <li>An IAP provider (IAPProvider)</li>
+                <li>A KeyboardAwareScrollView</li>
+                <li>A splash screen (react-native-splash-screen)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ How this impacts testing:</h2>
+            <p>Since this is a React Native app (not a regular web-based React app), you should not use @testing-library/react. Instead, use:</p>
+            <p>🧪 @testing-library/react-native</p>
+        </section>
+
+        <section>
+            <h2>🧪 Example test setup for your React Native App component:</h2>
+            <p>If you're just getting started and want a basic smoke test (e.g., "Does the app render without crashing?"), here's how you can write a test:</p>
+            <p>
+                1. ✅ Install the correct testing library:
+                <pre><code>
+npm install --save-dev @testing-library/react-native
+                </code></pre>
+            </p>
+
+            <p>or</p>
+            <pre><code>
+yarn add --dev @testing-library/react-native
+            </code></pre>
+
+            <p>2. ✅ Write a test: App.test.js</p>
+                <pre><code>
+import React from 'react';
+import { render } from '@testing-library/react-native';
+import App from '../App'; // Adjust path as needed
+
+describe('App', () => {
+  it('renders without crashing', () => {
+    const { getByTestId } = render(<App />);
+    // You can check for a specific screen or element here if known
+    expect(getByTestId('root-navigation')).toBeTruthy();
+  });
+});
+                </code></pre>
+            
+            <p>3. ✅ Add a testID to something like RootNavigation:</p>
+            <p>Update your App.js (or RootNavigation component) like this:</p>
+
+            <pre><code>
+&lt;RootNavigation testID="root-navigation" /&gt;
+            </code></pre>
+            <p>This helps the test know what to look for.</p>
+        </section>
+
+        <section>
+            <p>⚠️ Issues in your current code that will affect tests:</p>
+            <ol>
+                <li>
+                    ❌ These are not functions:
+                    <pre><code>
+this.createNotificationListeners;
+this.removeNotificationListeners;
+                    </code></pre>
+                    <p>➤ You need to call them:</p>
+                    <pre><code>
+this.createNotificationListeners();
+this.removeNotificationListeners();
+                    </code></pre>
+                </li>
+
+                <li>
+                    ⚠️ console.disableYellowBox is deprecated. Use LogBox instead:
+                    <pre><code>
+import { LogBox } from 'react-native';
+LogBox.ignoreAllLogs();
+                    </code></pre>
+                </li>
+
+                <li>⚠️ Avoid side effects like StatusBar.setBackgroundColor(...) in test environments. Consider mocking them.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ How to mock native modules (e.g., Notifee, Firebase, etc.)</h2>
+            <p>In your test setup file or inside the test:</p>
+            <pre><code>
+jest.mock('@notifee/react-native', () => ({
+    requestPermission: jest.fn(() => Promise.resolve({ authorizationStatus: 1 })),
+}));
+    
+jest.mock('react-native-push-notification-popup', () => 'NotificationPopup');
+
+jest.mock('@react-native-firebase/app', () => ({}));
+jest.mock('./src/services/firebase.service', () => ({
+FirebaseService: {
+    createNotificationListeners: jest.fn(() => jest.fn()),
+    firstTimeAskPermission: jest.fn(),
+},
+}));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <ul>
+                <li>Replace @testing-library/react with @testing-library/react-native.</li>
+                <li>Mock out native modules like Firebase, Notifee, and Push Notifications.</li>
+                <li>Use testID props to target elements for tests.</li>
+                <li>Fix function calls and deprecated APIs in your app.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

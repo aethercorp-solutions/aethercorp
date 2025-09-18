@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Hooks</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Hooks</h1>
+                    <p class="subtitle">React Native uses React Hooks the same way as React for the web. Hooks allow you to use state and lifecycle features in functional components, replacing the need for most class components. Here's an overview of the most commonly used hooks in React Native development:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 1. useState — For State Management</h2>
+            <p>Manages local component state.</p>
+
+            <pre><code>
+import React, { useState } from 'react';
+import { View, Text, Button } from 'react-native';
+
+const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;Count: {count}</Text>
+      &lt;Button title="Increment" onPress={() => setCount(count + 1)} /&gt;
+    &lt;/View&gt;
+  );
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔁 2. useEffect — For Side Effects</h2>
+            <p>Used to perform side effects like fetching data, setting up subscriptions, etc.</p>
+
+            <pre><code>
+import React, { useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
+
+const Timer = () => {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => setSeconds(s => s + 1), 1000);
+    return () => clearInterval(interval); // Cleanup
+  }, []);
+
+  return (
+    &lt;View&gt;
+        &lt;Text>Seconds: {seconds}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🌍 3. useContext — For Global State</h2>
+            <p>Allows consuming context provided by a parent component.</p>
+
+            <p>Step 1: Create a context</p>
+            <pre><code>
+// ThemeContext.js
+import { createContext } from 'react';
+
+export const ThemeContext = createContext();
+            </code></pre>
+
+            <p>Step 2: Provide the context</p>
+            <pre><code>
+// App.js
+import React, { useState } from 'react';
+import { ThemeContext } from './ThemeContext';
+import MyComponent from './MyComponent';
+
+const App = () => {
+  const [theme, setTheme] = useState('dark');
+
+  return (
+    &lt;ThemeContext.Provider value={{ theme, setTheme }}&gt;
+        &lt;MyComponent /&gt;
+    &lt;/ThemeContext.Provider&gt;
+  );
+};
+            </code></pre>
+
+            <p>Step 3: Use the context</p>
+            <pre><code>
+// MyComponent.js
+import React, { useContext } from 'react';
+import { View, Text } from 'react-native';
+import { ThemeContext } from './ThemeContext';
+
+const MyComponent = () => {
+  const { theme } = useContext(ThemeContext);
+
+  return (
+    &lt;View&gt;
+        &lt;Text&gt;Current theme: {theme}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};
+            </code></pre>
+
+            <p>🔁 4. useRef — Mutable Value Holder</p>
+            <p>Holds mutable values (like DOM references or timers) without re-rendering the component.</p>
+
+            <pre><code>
+import React, { useRef, useEffect } from 'react';
+import { Text, View } from 'react-native';
+
+const FocusTracker = () => {
+  const renderCount = useRef(0);
+
+  useEffect(() => {
+    renderCount.current += 1;
+  });
+
+  return (
+    &lt;View&gt;
+        &lt;Text&gt;Render count: {renderCount.current}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};
+            </code></pre>
+
+            <p>useRef is a hook in React that lets you persist values across renders without causing a re-render when the value changes. It’s often used for:</p>
+            <ul>
+                <li>Accessing DOM elements directly</li>
+                <li>Keeping a mutable value that doesn’t trigger re-renders</li>
+            </ul>
+
+            <p>Basic Syntax</p>
+            <pre><code>
+import { useRef } from 'react';
+
+const MyComponent = () => {
+  const myRef = useRef(initialValue);
+};
+            </code></pre>
+
+            <p>1. Accessing DOM elements</p>
+            <pre><code>
+import { useRef, useEffect } from 'react';
+
+function FocusInput() {
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus(); // Auto-focus the input on mount
+  }, []);
+
+  return &lt;input ref={inputRef} type="text" /&gt;;
+}
+            </code></pre>
+
+            <p>2. Keeping mutable values without triggering re-render</p>
+            <pre><code>
+import { useRef, useState } from 'react';
+
+function Timer() {
+  const [count, setCount] = useState(0);
+  const intervalRef = useRef(null);
+
+  const startTimer = () => {
+    if (intervalRef.current !== null) return;
+
+    intervalRef.current = setInterval(() => {
+      setCount(prev => prev + 1);
+    }, 1000);
+  };
+
+  const stopTimer = () => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+  };
+
+  return (
+    &lt;div&gt;
+        &lt;p>{count}&lt;/p&gt;
+        &lt;button onClick={startTimer}>Start&lt;/button&gt;
+        &lt;button onClick={stopTimer}>Stop&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+            </code></pre>
+
+            <p>Key Notes</p>
+            <ul>
+                <li>useRef() returns a mutable object: { current: value }</li>
+                <li>Updating ref.current does not cause a re-render.</li>
+                <li>It’s not for reading or writing reactive state that should update the UI — use useState or useReducer for that.</li>
+            </ul>
+
+            <p>inputRef.current.focus(); is a common line of JavaScript (or more precisely, React with hooks) used to programmatically focus an input element.</p>
+            <p>Full Explanation</p>
+            <p>This is typically used in React with the useRef hook to manipulate DOM elements directly.</p>
+            <p>Example:</p>
+            <pre><code>
+import React, { useRef, useEffect } from 'react';
+
+function FocusInput() {
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    // Focus the input when the component mounts
+    inputRef.current.focus();
+  }, []);
+
+  return (
+    &lt;input ref={inputRef} type="text" placeholder="Focus me on load" /&gt;
+  );
+}
+            </code></pre>
+
+            <p>What it does:</p>
+            <ul>
+                <li>useRef(null) creates a mutable reference object.</li>
+                <li>ref={inputRef} attaches the ref to the &lt;input&gt;, so inputRef.current becomes the DOM node of the input.</li>
+                <li>inputRef.current.focus() calls the .focus() method on that DOM node, making the input receive focus (e.g., blinking cursor appears, ready for typing).</li>
+            </ul>
+            <p>Common Uses:</p>
+            <ul>
+                <li>Autofocus on form fields.</li>
+                <li>Managing focus during keyboard navigation.</li>
+                <li>Improving accessibility and UX.</li>
+            </ul>
+
+            <p>🔄 5. useMemo & useCallback — Optimization Hooks</p>
+            <ul>
+                <li>useMemo: Caches expensive calculations.</li>
+                <li>
+                    useCallback: Caches function definitions to avoid unnecessary re-renders.
+                    <pre><code>
+const expensiveValue = useMemo(() => computeHeavyTask(input), [input]);
+
+const memoizedCallback = useCallback(() => {
+  doSomething();
+}, [dependency]);
+                    </code></pre>
+                </li>
+            </ul>
+
+            <p>useMemo is a React Hook that memoizes a computed value, preventing expensive calculations from running on every render unless their dependencies change.</p>
+            <p>🔧 Syntax</p>
+            <pre><code>
+const memoizedValue = useMemo(() => computeValue(a, b), [a, b]);
+            </code></pre>
+            <ul>
+                <li>computeValue(a, b): A function that returns a value.</li>
+                <li>[a, b]: Dependency array. The memoized value is recalculated only when one of these changes.</li>
+                <li>memoizedValue: The cached result.</li>
+            </ul>
+
+            <p>✅ Use Case</p>
+            <p>Use useMemo when:</p>
+            <ul>
+                <li>You have a computationally expensive function.</li>
+                <li>Or you want to prevent unnecessary recalculations or re-renders.</li>
+            </ul>
+
+            <h2>📦 Example: Expensive Calculation</h2>
+            <pre><code>
+import React, { useMemo, useState } from 'react';
+
+function ExpensiveComponent({ num }) {
+  const [counter, setCounter] = useState(0);
+
+  const expensiveCalculation = (n) => {
+    console.log('Calculating...');
+    let result = 0;
+    for (let i = 0; i < 1e7; i++) {
+      result += n;
+    }
+    return result;
+  };
+
+  const memoizedValue = useMemo(() => expensiveCalculation(num), [num]);
+
+  return (
+    &lt;div&gt;
+        &lt;p&gt;Expensive Value: {memoizedValue}&lt;/p&gt;
+        &lt;button onClick={() => setCounter(counter + 1)}>Increment Counter&lt;/button&gt;
+        &lt;p&gt;Counter: {counter}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+            </code></pre>
+
+            <p>✅ In this example:</p>
+            <p>Clicking the button only updates the counter, and doesn’t trigger the calculation again.</p>
+
+            <p>⚠️ Don't misuse useMemo</p>
+            <p>Avoid using it:</p>
+            <ul>
+                <li>For trivial calculations — it can actually worsen performance.</li>
+                <li>If you don’t notice performance issues — it's a premature optimization.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Common Use Cases in React Native</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hook</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>useState</td>
+                        <td>Button clicks, form input, toggles</td>
+                    </tr>
+                    <tr>
+                        <td>useEffect</td>
+                        <td>API calls, listeners (e.g. NetInfo, GPS)</td>
+                    </tr>
+                    <tr>
+                        <td>useContext</td>
+                        <td>Theme, authentication state</td>
+                    </tr>
+                    <tr>
+                        <td>useRef</td>
+                        <td>ScrollView ref, timers, TextInput focus</td>
+                    </tr>
+                    <tr>
+                        <td>useMemo</td>
+                        <td>Avoid recalculating filtered/processed data</td>
+                    </tr>
+                    <tr>
+                        <td>useCallback</td>
+                        <td>Stable function passed to children</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>What is useCallback?</h2>
+            <p>useCallback is a React Hook that returns a memoized version of a callback function. It’s useful to prevent unnecessary re-creation of functions between renders, which can improve performance, especially when you pass callbacks to child components that rely on reference equality (React.memo, shouldComponentUpdate, etc.).</p>
+        
+            <p>Basic Syntax</p>
+            <pre><code>
+const memoizedCallback = useCallback(
+  () => {
+    // function logic here
+  },
+  [dependencies], // only recreate the function if these dependencies change
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example in React Native</h2>
+            <p>Imagine you have a button that increments a counter, and you want to avoid re-creating the increment function on every render:</p>
+
+            <pre><code>
+import React, { useState, useCallback } from 'react';
+import { View, Button, Text } from 'react-native';
+
+const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  // useCallback will memoize this function until 'count' changes
+  const increment = useCallback(() => {
+    setCount(prevCount => prevCount + 1);
+  }, []);
+
+  return (
+    &lt;View style={{ padding: 20 }}&gt;
+        &lt;Text style={{ fontSize: 24 }}>Count: {count}&lt;/Text&gt;
+        &lt;Button title="Increment" onPress={increment} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default Counter;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why use useCallback?</h2>
+            <ul>
+                <li>When you pass callbacks to optimized child components (React.memo).</li>
+                <li>To prevent unnecessary re-renders caused by function prop changes.</li>
+                <li>To keep function references stable.</li>
+            </ul>
+
+            <p>Absolutely! Here’s a practical use case where useCallback shines, especially in React Native apps:</p>
+            <p>Use Case: Preventing Unnecessary Re-renders in Child Components</p>
+
+            <p>Imagine you have a parent component that passes a callback function as a prop to a memoized child component (using React.memo), which only re-renders when its props change.</p>
+            <p>If you don’t use useCallback, the parent recreates the callback on every render, causing the child to think the prop changed and re-render unnecessarily.</p>
+
+            <p>Example without useCallback (Inefficient):</p>
+            <pre><code>
+import React, { useState } from 'react';
+import { View, Button, Text } from 'react-native';
+
+const Child = React.memo(({ onPress }) => {
+  console.log('Child rendered');
+  return &lt;Button title="Press me" onPress={onPress} /&gt;
+});
+
+const Parent = () => {
+  const [count, setCount] = useState(0);
+
+  // This function is recreated on every render
+  const handlePress = () => {
+    console.log('Button pressed');
+  };
+
+  return (
+    &lt;View&gt;
+        &lt;Text>Count: {count}&lt;/Text&gt;
+        &lt;Button title="Increment count" onPress={() => setCount(c => c + 1)} /&gt;
+        &lt;Child onPress={handlePress} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default Parent;
+            </code></pre>
+
+            <p>What happens?</p>
+            <p>Every time you increment the count, Parent re-renders and creates a new handlePress function, so Child re-renders too — even though it doesn’t need to.</p>
+        
+            <p>Example with useCallback (Efficient):</p>
+            <pre><code>
+import React, { useState, useCallback } from 'react';
+import { View, Button, Text } from 'react-native';
+
+const Child = React.memo(({ onPress }) => {
+  console.log('Child rendered');
+  return &lt;Button title="Press me" onPress={onPress} /&gt;
+});
+
+const Parent = () => {
+  const [count, setCount] = useState(0);
+
+  // Memoize the function, so it keeps the same reference unless dependencies change
+  const handlePress = useCallback(() => {
+    console.log('Button pressed');
+  }, []);
+
+  return (
+    &lt;View&gt;
+        &lt;Text&gt;Count: {count}&lt;/Text&gt;
+        &lt;Button title="Increment count" onPress={() => setCount(c => c + 1)} /&gt;
+        &lt;Child onPress={handlePress} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default Parent;
+
+            </code></pre>
+            <p>What happens now?</p>
+            <p>handlePress function reference stays the same on each render, so Child doesn’t re-render unnecessarily when count changes.</p>
+            <ul>
+                <li>When to use useCallback: When you want to pass stable function references to child components, especially if those children are optimized with React.memo or PureComponent.</li>
+                <li>Why: Prevent unnecessary re-renders and improve performance.</li>
+            </ul>
+
+            <p>Got it! Here’s a quick overview of React.memo in React Native and how it’s used:</p>
+            <p>What is React.memo?</p>
+
+            <p>
+                React.memo is a higher-order component that memoizes a functional component — meaning it prevents unnecessary re-renders by doing a shallow comparison of props. If the props haven’t changed, the component does not re-render.
+            </p>
+
+            <p>Why use React.memo in React Native?</p>
+            <ul>
+                <li>Helps optimize performance by avoiding expensive re-renders.</li>
+                <li>Useful when you have components that receive props but don’t need to update unless those props change.</li>
+                <li>Works well combined with useCallback and useMemo to keep props stable.</li>
+            </ul>
+
+            <p>Basic Syntax</p>
+            <pre><code>
+const MemoizedComponent = React.memo(Component);
+            </code></pre>
+
+            <p>Or inline:</p>
+            <pre><code>
+const MyComponent = React.memo((props) => {
+    // component code
+});                  
+            </code></pre>
+
+            <p>Example in React Native</p>
+            <pre><code>
+import React, { useState, useCallback } from 'react';
+import { View, Button, Text } from 'react-native';
+
+// Child component wrapped in React.memo
+const Child = React.memo(({ onPress, title }) => {
+  console.log('Child rendered');
+  return &lt;Button title={title} onPress={onPress} />;
+});
+
+const Parent = () => {
+  const [count, setCount] = useState(0);
+
+  // Stable callback using useCallback
+  const handlePress = useCallback(() => {
+    console.log('Button pressed');
+  }, []);
+
+  return (
+    &lt;View style={{ padding: 20 }}&gt;
+        &lt;Text style={{ fontSize: 24 }}&gt;Count: {count}&lt;/Text&gt;
+        &lt;Button title="Increment count" onPress={() => setCount(c => c + 1)} /&gt;
+        &lt;Child onPress={handlePress} title="Press me" /&gt;
+    &lt;/View&gt;
+  );
+
+  <p>What you’ll see in console:</p>
+  <ul>
+    <li>When you press Increment count, the Parent re-renders.</li>
+    <li>Thanks to React.memo, Child does NOT re-render because props (onPress and title) are the same.</li>
+    <li>The handlePress function is stable thanks to useCallback.</li>
+  </ul>
+
+  <p>When to use React.memo?</p>
+  <ul>
+    <li>When the component renders the same UI for the same props.</li>
+    <li>When the component is pure and doesn’t rely on internal state or context that changes often.</li>
+    <li>To optimize components that receive functions or objects as props (combined with useCallback and useMemo).</li>
+  </ul>
+};
+
+export default Parent;
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

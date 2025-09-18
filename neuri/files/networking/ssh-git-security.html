@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SSH git security</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">SSH git security</h1>
+                    <p class="subtitle">This message appears when you're connecting to a new host via SSH — in this case, bitbucket.org — and your system has never seen this host before. It's part of SSH's security mechanism to prevent man-in-the-middle (MITM) attacks.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Let's break it down:</h2>
+            <ul>
+                <li>Host: bitbucket.org (IP: 104.192.143.22)</li>
+                <li>Key type: ED25519</li>
+                <li>Key fingerprint: SHA256:ybgmFkzwOSotHTHLJgHO0QN8L0xErw6vd0VhFA9m3SM</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What’s happening?</h2>
+            <p>SSH is saying:</p>
+            <p>“I don’t recognize this server. Here's its fingerprint. Do you trust it?”</p>
+            <p>When you type yes, the host key will be saved in your ~/.ssh/known_hosts file, and you won’t be asked again (unless the key changes — which would then be suspicious).</p>
+        </section>
+
+        <section>
+            <h2>✅ Should you trust this fingerprint?</h2>
+            <p>To verify authenticity, compare this fingerprint with Bitbucket’s official SSH key fingerprint.</p>
+            <p>As of recent records, Bitbucket’s ED25519 key fingerprint is:</p>
+            <pre><code>
+SHA256:ybgmFkzwOSotHTHLJgHO0QN8L0xErw6vd0VhFA9m3SM
+            </code></pre>
+            <p>✅ Match! This means the server is legitimate.</p>
+
+            <p>✅ Safe to continue?</p>
+            <p>Yes — go ahead and type:</p>
+            <pre><code>
+yes
+            </code></pre>
+            <p>Then press Enter.</p>
+            <p>Your system will remember this key, and you won't get this prompt again unless something changes.</p>
+        </section>
+
+        <section>
+            <p>If you're scripting or automating, you can avoid this prompt by pre-adding the key to known_hosts, or using StrictHostKeyChecking=no (only with caution). Let me know if you want help with that.</p>
+            <p>Great — by typing yes, you’ve told SSH to trust Bitbucket's host key.</p>
+            <p>🔐 What happens next:</p>
+            <ul>
+                <li>
+                    SSH adds this line to your ~/.ssh/known_hosts file:
+                    <pre><code>
+bitbucket.org,104.192.143.22 ssh-ed25519 AAAAC3...&lt;key contents&gt;
+                    </code></pre>
+                </li>
+                <li>
+                    You won’t be prompted again for this fingerprint unless:
+                    <ul>
+                        <li>Bitbucket changes their SSH key</li>
+                        <li>You clear or modify your known_hosts file</li>
+                        <li>You connect from a different user or machine</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>✅ You're now securely connected to Bitbucket via SSH.</p>
+
+            <p>If you were trying to:</p>
+            <ul>
+                <li>Clone a repo — it should proceed now.</li>
+                <li>Push/pull — your SSH connection should work.</li>
+                <li>Set up CI/CD or scripting — you’re good to continue.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔑 What is a fingerprint in SSH?</h2>
+            <p>An SSH fingerprint is a short, unique identifier for a server’s public SSH key.</p>
+            <p>It helps you verify that you're connecting to the correct server, not an imposter (which would be a security risk).</p>
+            <p>🧠 Think of it like this:</p>
+            <ul>
+                <li>The server has a public SSH key (a long string).</li>
+                <li>The fingerprint is a short version of that key — like a digital summary or hash (e.g., SHA256:ybgmFkzwOSotHTHLJgHO0QN8L0xErw6vd0VhFA9m3SM).</li>
+                <li>Instead of comparing long keys manually, we compare the fingerprint.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💡 Why it matters:</h2>
+            <p>When you first connect to a server like bitbucket.org, SSH asks:</p>
+            <p>"Here’s the server's fingerprint — do you recognize it?"</p>
+            <p>If it matches what you expect (from Bitbucket’s official docs), then:</p>
+            <p>✅ You’re safe — it's the real server.</p>
+            <p>If it doesn't match:</p>
+            <p>⚠️ It could be a man-in-the-middle attack, or the server key has changed (which might still be safe but should be verified).</p>
+        </section>
+
+        <section>
+            <h2>🧪 Example:</h2>
+            <p>Let’s say a server has this public key:</p>
+            <pre><code>
+AAAAC3NzaC1lZDI1NTE5AAAAIGj3r... (very long)
+            </code></pre>
+            <p>SSH runs a hash (e.g., SHA256) on it and gets:</p>
+            <pre><code>
+SHA256:ybgmFkzwOSotHTHLJgHO0QN8L0xErw6vd0VhFA9m3SM
+            </code></pre>
+            <p>That's the fingerprint you saw earlier.</p>
+        </section>
+
+        <section>
+            <h2>📁 Where are fingerprints stored?</h2>
+            <p>When you type yes to trust a fingerprint, SSH saves it in:</p>
+            <pre><code>
+~/.ssh/known_hosts
+            </code></pre>
+            <p>This helps your computer recognize trusted servers in the future.</p>
+        </section>
+
+        <section>
+            <p>Great question — understanding how SSH (Secure Shell) works is key to grasping secure communication between computers, especially for things like Git, remote server access, and automation.</p>
+            <p>Let’s break it down in simple terms:</p>
+            <h2>🔐 What is SSH?</h2>
+            <p>SSH stands for Secure Shell.</p>
+            <p>It’s a protocol that lets you securely connect to another computer over the internet or a network.</p>
+            <p>You can use SSH to:</p>
+            <ul>
+                <li>Log into remote servers</li>
+                <li>Run commands</li>
+                <li>Transfer files</li>
+                <li>Push/pull code (e.g. with Git + GitHub/Bitbucket)</li>
+                <li>Set up secure tunnels</li>
+            </ul>
+        </section>
+        <section>
+            <h2>⚙️ How SSH Works — Step-by-Step</h2>
+            <p>1. 🔑 Key Concepts:</p>
+            <p>SSH uses cryptography (fancy math) to make the connection secure.</p>
+            <p>It uses:</p>
+            <ul>
+                <li>Public and private keys</li>
+                <li>Or username/password</li>
+                <li>Or a combination</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. 👋 You Connect to a Server</h2>
+            <p>You run a command like:</p>
+            <pre><code>
+ssh user@server.com
+            </code></pre>
+            <p>You’re saying:</p>
+            <p>“Hey server.com, I want to connect as ‘user’.”</p>
+        </section>
+
+        <section>
+            <h2>3. 🛡️ Server Sends Its Public Key (and You Check It)</h2>
+            <p>The server sends you its public key fingerprint.</p>
+            <p>If your computer has never seen this server before, you’ll see:</p>
+            <p>“The authenticity of host can’t be established. Fingerprint is XYZ. Continue?”</p>
+            <p>If you say yes, your computer saves the server’s key to ~/.ssh/known_hosts.</p>
+        </section>
+
+        <section>
+            <h2>4. 🔐 Authentication Happens</h2>
+            <p>Now SSH needs to verify you are who you say you are. It can do this in two main ways:</p>
+            <p>a. Password-based:</p>
+            <p>The server asks you for a password.</p>
+            <p>Not very secure, and often disabled.</p>
+
+            <p>b. Key-based (the better way):</p>
+            <p>You generate a key pair on your computer:</p>
+            <ul>
+                <li>id_rsa (private key) — keep this secret</li>
+                <li>id_rsa.pub (public key) — put this on the server</li>
+            </ul>
+            <p>When you try to connect:</p>
+            <ul>
+                <li>The server challenges your private key.</li>
+                <li>You prove you have it (without revealing it).</li>
+                <li>If the test passes: 🔓 you're in.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. 🔒 Encrypted Tunnel is Created</h2>
+            <p>Once authenticated, SSH opens a secure, encrypted channel between your computer and the server.</p>
+            <p>This means:</p>
+            <ul>
+                <li>No one (even your ISP) can read what you send.</li>
+                <li>You can safely type passwords, run commands, or transfer files.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Analogy: Lock & Key</h2>
+            <ul>
+                <li>You have a key (your private key).</li>
+                <li>The server has a lock (your public key).</li>
+                <li>Only the right key opens the lock.</li>
+                <li>No one else can fake your key unless they steal it.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧰 Common SSH Use Cases</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Remote login</td>
+                        <td>ssh user@host.com</td>
+                    </tr>
+                    <tr>
+                        <td>Run commands remotely</td>
+                        <td>ssh user@host.com 'uptime'</td>
+                    </tr>
+                    <tr>
+                        <td>Copy files</td>
+                        <td>scp file.txt user@host.com:/path/</td>
+                    </tr>
+                    <tr>
+                        <td>Use with Git</td>
+                        <td>git clone git@github.com:user/repo.git</td>
+                    </tr>
+                    <tr>
+                        <td>Port forwarding</td>
+                        <td>ssh -L 8080:localhost:80 user@host.com</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔐 Summary: Why SSH is Awesome</h2>
+            <ul>
+                <li>✅ Secure</li>
+                <li>✅ Widely supported</li>
+                <li>✅ Powerful</li>
+                <li>✅ Free and open-source</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

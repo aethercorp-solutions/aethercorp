@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FEATURE: iOS Push Notifications for Contact Management App</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">FEATURE: iOS Push Notifications for Contact Management App</h1>
+                    <p class="subtitle">
+                        <p>✅ Goals</p>
+                        <p>Enable push notifications for iOS using Firebase Cloud Messaging (FCM), supporting:</p>
+                        <ul>
+                            <li>New contact shared with user</li>
+                            <li>Contact updated in shared context</li>
+                            <li>System-wide announcements/reminders</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. 🔥 React Native (Frontend) — FCM Setup for iOS</h2>
+            <p>📦 Install Required Packages</p>
+            <pre><code>
+# FCM and Notification Libraries
+npm install @react-native-firebase/app @react-native-firebase/messaging
+npm install @notifee/react-native
+cd ios && pod install && cd ..
+            </code></pre>
+
+            <p>🛠 iOS Configuration (Xcode)</p>
+            <ol>
+                <li>Enable Push Notifications and Background Modes in Xcode > Signing & Capabilities</li>
+                <li>
+                    Add:
+                    <ul>
+                        <li>Push Notifications</li>
+                        <li>Background Modes > Remote notifications</li>
+                    </ul>
+                </li>
+                <li>
+                    Upload your APNs Key to Firebase Console:
+                    <ul>
+                        <li>Go to Project Settings > Cloud Messaging</li>
+                        <li>Upload .p8 key with Key ID and Team ID</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Building your own chatbot</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Building your own chatbot</h1>
+                    <p class="subtitle">Building your own chatbot can be a fun and educational project, and the complexity depends on what kind of chatbot you want—basic rule-based, AI-powered, or something in between. Here's a high-level roadmap broken down by goals, tools, and steps.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 1. Define Your Chatbot's Purpose</h2>
+            <p>Before writing any code, ask yourself:</p>
+            <ul>
+                <li>What is the chatbot supposed to do? (e.g., answer FAQs, book appointments, entertain, etc.)</li>
+                <li>Will it be rule-based (fixed responses) or AI-powered (understands natural language)?</li>
+                <li>Will it live on a website, messaging app, or mobile app?</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ 2. Choose the Type of Chatbot</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Tools</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Rule-based</td>
+                        <td>Uses decision trees, if/else logic</td>
+                        <td>Dialogflow, Rasa, Python with Flask</td>
+                    </tr>
+                    <tr>
+                        <td>AI/NLP-based</td>
+                        <td>Uses natural language understanding</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>💬 3. Start with a Simple Rule-Based Chatbot (optional)</h2>
+            <p>Example: Rule-Based Chatbot in Python</p>
+            <pre><code>
+while True:
+    user_input = input("You: ").lower()
+
+    if "hello" in user_input:
+        print("Bot: Hi there!")
+    elif "how are you" in user_input:
+        print("Bot: I'm just code, but I'm functioning as expected.")
+    elif "bye" in user_input:
+        print("Bot: Goodbye!")
+        break
+    else:
+        print("Bot: I don't understand that.")
+            </code></pre>
+            <p>Great for: Practicing logic, understanding conversation flow.</p>
+        </section>
+
+        <section>
+            <h2>🧠 4. Build an AI Chatbot Using NLP/LLMs</h2>
+        <p>Option 1: Use OpenAI API (like ChatGPT)</p>
+
+        <p>Requirements:</p>
+        <ul>
+            <li>Python</li>
+            <li>openai library</li>
+            <li>OpenAI API key</li>
+        </ul>
+        <p>Example:</p>
+        <pre><code>
+import openai
+
+openai.api_key = "your-api-key"
+
+def ask_gpt(prompt):
+    response = openai.ChatCompletion.create(
+        model="gpt-4",  # Or gpt-3.5-turbo
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response['choices'][0]['message']['content']
+
+while True:
+    user_input = input("You: ")
+    if user_input.lower() in ["quit", "exit"]:
+        break
+    response = ask_gpt(user_input)
+    print("Bot:", response)
+        </code></pre>
+
+        <p>This gives you a powerful conversational bot in just a few lines.</p>
+        </section>
+
+        <section>
+            <h2>🌐 5. Add a Web or App Interface</h2>
+            <p>Web (HTML/JS + Flask or Node.js)</p>
+            <ul>
+                <li>Build a simple front end where users can type</li>
+                <li>Connect it to a backend that handles the chatbot logic</li>
+            </ul>
+            <p>Messaging Apps (e.g., Telegram, Discord, WhatsApp)</p>
+            <ul>
+                <li>Use their API or bot SDKs</li>
+                <li>Add webhook logic (host on services like Render, Heroku, or AWS)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ 6. (Optional) Train Your Own Model</h2>
+            <p>If you're ambitious:</p>
+            <ul>
+                <li>Use Hugging Face Transformers</li>
+                <li>Fine-tune a model with your own data</li>
+                <li>Host it using Flask/FastAPI + Hugging Face or ONNX</li>
+            </ul>
+        </section>
+    
+        <section>
+            <h2>📚 Tools & Libraries</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Purpose</th>
+                        <th>Tools</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Chatbot Frameworks</td>
+                        <td>Rasa, BotPress, Microsoft Bot Framework</td>
+                    </tr>
+                    <tr>
+                        <td>NLP</td>
+                        <td>SpaCy, NLTK, Hugging Face Transformers</td>
+                    </tr>
+                    <tr>
+                        <td>AI APIs</td>
+                        <td>OpenAI, Cohere, Anthropic</td>
+                    </tr>
+                    <tr>
+                        <td>Hosting</td>
+                        <td>Heroku, Vercel, Render, AWS, Firebase</td>
+                    </tr>
+                    <tr>
+                        <td>UI</td>
+                        <td>Flask, React, Telegram Bot API, Discord.py</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🚀 Example Project Idea</h2>
+            <p>A chatbot that helps users find recipes:</p>
+            <ul>
+                <li>Ask for ingredients</li>
+                <li>Suggest recipes using an API (like Spoonacular)</li>
+                <li>Add NLP so it can understand different phrasings ("What can I cook with chicken and rice?")</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple Rule-Based Chatbot in Python</h2>
+            <pre><code>
+def chatbot():
+    print("Hello! I'm your friendly chatbot. Type 'quit' to exit.")
+
+    while True:
+        user_input = input("You: ").lower()
+
+        if "hello" in user_input or "hi" in user_input:
+            print("Bot: Hello there! How can I help you today?")
+        elif "how are you" in user_input:
+            print("Bot: I'm just a program, but I'm doing great! Thanks for asking.")
+        elif "name" in user_input:
+            print("Bot: I don't have a name yet. What should I be called?")
+        elif "help" in user_input:
+            print("Bot: I can chat with you! Try saying 'hello', ask how I am, or just say 'bye' to exit.")
+        elif "bye" in user_input or "quit" in user_input or "exit" in user_input:
+            print("Bot: Goodbye! Have a great day!")
+            break
+        else:
+            print("Bot: Sorry, I don't understand that. Can you try something else?")
+
+if __name__ == "__main__":
+    chatbot()
+            </code></pre>
+
+            <p>To run the chatbot code you posted, follow these simple steps:</p>
+            <p>Steps to run your Python chatbot:</p>
+            <ul>
+                <li>
+                    Save your code to a file:
+                    <p>Copy your code into a text editor and save it as chatbot.py (or any filename you like, but use .py extension).</p>
+                </li>
+                <li>
+                    Open a terminal or command prompt:
+                    <p>On Windows: Press Win + R, type cmd, and press Enter.</p>
+                    <p>On Mac/Linux: Open Terminal from your applications.</p>
+                </li>
+                <li>
+                    Navigate to the folder where your file is saved:
+                    <p>Use the cd command to go to the folder. For example:</p>
+                    <pre><code>
+cd path/to/your/folder
+                    </code></pre>
+                </li>
+                <li>
+                    Run the script:
+                    <p>Type this command and press Enter:</p>
+                    <pre><code>
+python chatbot.py
+                    </code></pre>
+                    <p>(If your system uses Python 3 and python points to Python 2, you might need to use python3 chatbot.py.)</p>
+                </li>
+                <li>
+                    Interact with your chatbot:
+                    <p>It will print the welcome message, and then you can type messages and see responses. Type "quit", "bye", or "exit" to end the chat.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What your code does:</h2>
+            <p>This is a simple text-based chatbot that interacts with a user in a loop until the user types a command to quit.</p>
+            <p>Detailed breakdown:</p>
+            <ul>
+                <li>
+                    def chatbot():
+                    <ul>
+                        <li>Defines a function named chatbot. All the chatbot logic is inside this function.</li>
+                    </ul>
+                </li>
+                <li>
+                    print("Hello! I'm your friendly chatbot. Type 'quit' to exit.")
+                    <ul>
+                        <li>When the chatbot starts, it prints a welcome message telling the user how to exit the chat.</li>
+                    </ul>
+                </li>
+                <li>
+                    while True:
+                    <ul>
+                        <li>Starts an infinite loop — the chatbot will keep running until you explicitly stop it.</li>
+                        <li>This allows continuous conversation.</li>
+                    </ul>
+                </li>
+                <li>
+                    user_input = input("You: ").lower()
+                    <ul>
+                        <li>The program waits for user input with the prompt "You: ".</li>
+                        <li>It converts whatever the user types to lowercase using .lower() to make the matching case-insensitive.</li>
+                    </ul>
+                </li>
+                <li>
+                    Series of if-elif-else conditions to respond based on user input:
+                    <ul>
+                        <li>
+                            if "hello" in user_input or "hi" in user_input:
+                            <ul>
+                                <li>
+                                    If the user says something containing "hello" or "hi", the bot responds with a greeting.
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            elif "how are you" in user_input:
+                            <ul>
+                                <li>
+                                    If the user mentions "name", the bot says it doesn't have one yet and asks what it should be called.
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            elif "help" in user_input:
+                            <ul>
+                                <li>
+                                    If the user types "help", the bot tells the user what it can do and how to exit.
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            elif "bye" in user_input or "quit" in user_input or "exit" in user_input:
+                            <ul>
+                                <li>
+                                    If the user says any of these exit words, the bot says goodbye and the break statement stops the loop, ending the chat.
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            else:
+                            <ul>
+                                <li>
+                                    If none of the above keywords are found in the user input, the bot says it doesn't understand and asks the user to try something else.
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    if __name__ == "__main__":
+                    <ul>
+                        <li>This line checks if the script is being run directly (not imported as a module in another script).</li>
+                        <li>If it is run directly, it calls the chatbot() function to start the chatbot.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Summary:</h2>
+            <ul>
+                <li>The bot runs in a loop, reading what the user types.</li>
+                <li>It looks for certain keywords and responds with pre-defined messages.</li>
+                <li>It continues chatting until the user types "bye", "quit", or "exit".</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Great question! The line</h2>
+            <pre><code>
+if __name__ == "__main__":
+            </code></pre>
+            <p>is a very common Python idiom. Here’s what it means and why it’s used:</p>
+
+            <p>What is __name__?</p>
+            <ul>
+                <li>In Python, every file (module) has a built-in variable called __name__.</li>
+                <li>When you run a Python script directly (e.g., python chatbot.py), Python sets __name__ to the string "__main__".</li>
+                <li>But if you import that script as a module into another Python file, __name__ is set to the module’s filename (without .py).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What does if __name__ == "__main__": do?</h2>
+            <p>This line checks:</p>
+            <ul>
+                <li>"Is this script being run directly?"</li>
+            </ul>
+            <p>If yes, then the code inside this if block will execute.</p>
+            <p>If no (meaning the file was imported), the code inside will not run.</p>
+        </section>
+
+        <section>
+            <h2>Why is it useful?</h2>
+            <ul>
+                <li>Run some code when executed directly (like starting your chatbot).</li>
+                <li>But avoid running that code if the script is imported somewhere else (to avoid unwanted side effects).</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+def chatbot():
+    # chatbot code here
+
+if __name__ == "__main__":
+    chatbot()  # This only runs if the script is run directly
+            </code></pre>
+
+            <p>If you import this script in another file like this:</p>
+            <pre><code>
+import chatbot_script  # assuming your file is chatbot_script.py
+            </code></pre>
+
+            <p>The chatbot() function won't run automatically, but you can still call chatbot_script.chatbot() manually.</p>
+            <ul>
+                <li>if __name__ == "__main__": means "only run this code if this script is the main program."</li>
+                <li>It prevents code from running when the script is imported as a module.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Got it! You want to create a rule-based chatbot API — basically, an API that responds to user messages based on predefined rules or keywords.</p>
+            <p>I'll provide you with a simple example in Python using Flask (a lightweight web framework) that implements a basic rule-based chatbot API.</p>
+
+            <h2>Rule-Based Chatbot API (Python + Flask)</h2>
+            <pre><code>
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+# Define chatbot rules: keywords or phrases mapped to responses
+rules = {
+    "hello": "Hi there! How can I help you today?",
+    "how are you": "I'm a bot, but I'm doing great! Thanks for asking.",
+    "bye": "Goodbye! Have a nice day!",
+    "help": "Sure! I can assist you with your queries. Ask me anything.",
+}
+
+def get_response(message):
+    message = message.lower()
+    for keyword, response in rules.items():
+        if keyword in message:
+            return response
+    return "Sorry, I didn't understand that. Can you please rephrase?"
+
+@app.route('/chatbot', methods=['POST'])
+def chatbot():
+    data = request.json
+    user_message = data.get('message', '')
+    
+    if not user_message:
+        return jsonify({"error": "No message provided"}), 400
+    
+    response_text = get_response(user_message)
+    
+    return jsonify({"response": response_text})
+
+if __name__ == "__main__":
+    app.run(debug=True)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How to use:</h2>
+            <ol>
+                <li>Save the above code as app.py</li>
+                <li>
+                    Install Flask if you don't have it:
+                    <pre><code>
+pip install flask
+                    </code></pre>
+                </li>
+                <li>
+                    Run the app:
+                    <pre><code>
+python app.py
+                    </code></pre>
+                </li>
+                
+                <li>
+                    Make a POST request to http://127.0.0.1:5000/chatbot with a JSON body like:
+                    <pre><code>
+{
+    "message": "Hello"
+}                          
+                    </code></pre>
+                </li>
+
+                <li>
+                    The API will respond with:
+                    <pre><code>
+{
+    "response": "Hi there! How can I help you today?"
+}                          
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <p>Flask is a lightweight web framework written in Python that lets you build web applications quickly and easily. It’s often used to create REST APIs, like the chatbot example I gave you.</p>
+            <h2>🔹 What Makes Flask Special?</h2>
+            <ul>
+                <li>Minimal – Comes with only the essentials; you add what you need.</li>
+                <li>Flexible – You have full control over your app’s structure and behavior.</li>
+                <li>Easy to learn – Great for beginners and small to medium-sized projects.</li>
+                <li>Popular – Widely used in the Python community and has lots of extensions.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 What Can You Do With Flask?</h2>
+            <ul>
+                <li>Build APIs (like a chatbot or backend service)</li>
+                <li>Create websites (admin dashboards, blogs, etc.)</li>
+                <li>Connect to databases</li>
+                <li>Handle user input forms</li>
+                <li>Serve machine learning models (popular with ML/AI projects)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Simple Example</h2>
+            <pre><code>
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello, Flask!"
+
+if __name__ == "__main__":
+    app.run()
+            </code></pre>
+
+            <p>When you run this code and open your browser at http://127.0.0.1:5000, you'll see:</p>
+            <pre><code>
+Hello, Flask!
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 How to Install Flask</h2>
+            <p>Use pip:</p>
+            <pre><code>
+pip install flask
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

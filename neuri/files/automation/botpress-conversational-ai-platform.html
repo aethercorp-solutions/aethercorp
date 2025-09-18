@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Botpress</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Botpress</h1>
+                    <p class="subtitle">Botpress is a conversational AI platform that lets you build and deploy chatbots using a flow-based visual editor, Natural Language Understanding (NLU), and integrations with various channels (e.g., webchat, WhatsApp, Messenger, etc.).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 How Botpress Works (Overview)</h2>
+            <p>1. Architecture Overview</p>
+            <p>Botpress has a modular architecture with these core components:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Studio</td>
+                        <td>Visual editor to create conversations (flows, nodes, QnA, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>NLU Engine</td>
+                        <td>Understands user input (intents, entities, slots)</td>
+                    </tr>
+                    <tr>
+                        <td>Bot Engine</td>
+                        <td>Executes logic based on flows and actions</td>
+                    </tr>
+                    <tr>
+                        <td>Channels</td>
+                        <td>Interfaces to connect your bot to Messenger, WhatsApp, Web, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>Hooks & Actions</td>
+                        <td>Custom server-side code to process logic or API calls</td>
+                    </tr>
+                    <tr>
+                        <td>Database</td>
+                        <td>Stores conversations, user state, NLU models, etc.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>2. Conversation Flow</h2>
+            <ol>
+                <li>User sends a message (e.g., "I want to book a flight").</li>
+                <li>
+                    Botpress:
+                    <ul>
+                        <li>Passes input to the NLU engine</li>
+                        <li>Detects intent (book_flight) and entities (destination: Paris)</li>
+                        <li>Triggers the corresponding flow</li>
+                    </ul>
+                </li>
+                <li>
+                    The flow may:
+                    <ul>
+                        <li>Ask for missing information</li>
+                        <li>Call an API (via custom action)</li>
+                        <li>Store user data</li>
+                        <li>Send a reply</li>
+                    </ul>
+                </li>
+                <li>The conversation continues or ends based on the flow logic.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🚀 Usage of Botpress</h2>
+            <p>🎯 Common Use Cases</p>
+            <ul>
+                <li>Customer Support</li>
+                <li>E-commerce Assistants</li>
+                <li>Appointment Booking</li>
+                <li>FAQ Bots</li>
+                <li>Internal HR/IT Helpdesk</li>
+                <li>Lead Generation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💡 Key Features</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Visual Flow Editor</td>
+                        <td>Build logic visually, no coding needed</td>
+                    </tr>
+                    <tr>
+                        <td>NLU Built-in</td>
+                        <td>Recognizes user intent and extracts data</td>
+                    </tr>
+                    <tr>
+                        <td>Multilingual Support</td>
+                        <td>Built-in translation capabilities</td>
+                    </tr>
+                    <tr>
+                        <td>Channel Integrations</td>
+                        <td>Webchat, WhatsApp, Messenger, Telegram, Twilio</td>
+                    </tr>
+                    <tr>
+                        <td>Custom Actions</td>
+                        <td>JavaScript functions to handle backend logic</td>
+                    </tr>
+                    <tr>
+                        <td>Analytics</td>
+                        <td>View usage, fallback rates, conversation logs</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠️ Implementation Steps</h2>
+            <p>✅ 1. Install Botpress</p>
+            <ul>
+                <li>Local: Download or clone from GitHub</li>
+                <li>Docker: Use docker run</li>
+                <li>Cloud: <a href="https://botpress.com">https://botpress.com</a></li>
+            </ul>
+            
+            <p>✅ 2. Create Your Bot</p>
+            <ul>
+                <li>Open Botpress Studio (http://localhost:3000)</li>
+                <li>Click “New Bot”</li>
+                <li>Choose a template or start from blank</li>
+            </ul>
+
+            <p>✅ 3. Design Conversation Flow</p>
+            <ul>
+                <li>Add nodes and connect them visually</li>
+                <li>Use triggers to match user inputs</li>
+                <li>Add actions to call APIs or custom logic</li>
+                <li>Store/retrieve user data using variables</li>
+            </ul>
+
+            <p>✅ 4. Train NLU</p>
+            <ul>
+                <li>Define intents (e.g., book_flight)</li>
+                <li>Add example utterances</li>
+                <li>Define entities (e.g., date, location)</li>
+                <li>Train the model</li>
+            </ul>
+
+            <p>✅ 5. Integrate Channels</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Webchat: Add script to your website</li>
+                <li>Messenger: Connect via Facebook developer portal</li>
+                <li>WhatsApp: Use Twilio or WhatsApp Business API</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 6. Test & Deploy</h2>
+            <ul>
+                <li>Use built-in emulator to test conversations</li>
+                <li>Export bot or connect to live channels</li>
+                <li>Monitor performance with logs & analytics</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Code Example: Custom Action</h2>
+            <pre><code>
+// actions/sendWeather.js
+const axios = require('axios')
+
+const getWeather = async (city) => {
+  const apiKey = 'your-api-key'
+  const response = await axios.get(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`)
+  return response.data
+}
+
+return getWeather(event.payload.text).then(data => {
+  bp.events.replyToEvent(event, [
+    {
+      type: 'text',
+      text: `It's ${data.current.temp_c}°C in ${data.location.name}`
+    }
+  ])
+})
+            </code></pre>
+            <p>Then use it in a node via Run Action > sendWeather.</p>
+        </section>
+
+        <section>
+            <h2>📦 Hosting & Deployment</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Self-hosted</td>
+                        <td>Run on your own server or VM</td>
+                    </tr>
+                    <tr>
+                        <td>Docker</td>
+                        <td>Easily containerized and scalable</td>
+                    </tr>
+                    <tr>
+                        <td>Botpress Cloud</td>
+                        <td>Hosted by Botpress – no server needed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔐 Security</h2>
+            <ul>
+                <li>Use HTTPS</li>
+                <li>Control access via environment variables</li>
+                <li>Store secrets securely</li>
+                <li>Use bot authentication for private bots</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ease of Use</td>
+                        <td>Visual editor, low-code</td>
+                    </tr>
+                    <tr>
+                        <td>Extensibility</td>
+                        <td>Write custom JavaScript actions and hooks</td>
+                    </tr>
+                    <tr>
+                        <td>Powerful NLU</td>
+                        <td>Built-in, multilingual, intent/entity detection</td>
+                    </tr>
+                    <tr>
+                        <td>Open Source</td>
+                        <td>Free core version available</td>
+                    </tr>
+                    <tr>
+                        <td>Use Cases</td>
+                        <td>Support bots, booking assistants, automation</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

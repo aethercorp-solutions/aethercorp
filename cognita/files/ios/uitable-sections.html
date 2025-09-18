@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>UITableView Section</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">UITableView Section</h1>
+                    <p class="subtitle">In iOS development using UIKit, a UITableView is a common UI component used to display a list of data in rows. These rows can be grouped into sections, and a section in UITableView is essentially a way to organize rows into logical groups.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>📌 What is a UITableView Section?</h2>
+            <p>A section is a grouping of rows within a table view. Each section can have:</p>
+            <ul>
+                <li>A header (optional)</li>
+                <li>A footer (optional)</li>
+                <li>One or more rows (cells)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Why Use Sections?</h2>
+            <p>Sections help:</p>
+            <ul>
+                <li>Organize related data (e.g., contacts grouped by first letter)</li>
+                <li>Improve readability</li>
+                <li>Add structure to complex lists</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ How It Works in Code</h2>
+            <p>When implementing a UITableView, you provide data using the UITableViewDataSource methods.</p>
+            <p>Sections are handled with:</p>
+
+            <pre><code>
+func numberOfSections(in tableView: UITableView) -> Int {
+    return 3 // Number of sections
+}
+
+func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return data[section].count // Rows in each section
+}
+
+func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+    let item = data[indexPath.section][indexPath.row]
+    cell.textLabel?.text = item
+    return cell
+}                
+            </code></pre>
+
+            <p>🧠 Note on IndexPath</p>
+            <p>Each row in a table view is identified by an IndexPath, which has:</p>
+            <ul>
+                <li>section (Int)</li>
+                <li>row (Int)</li>
+            </ul>
+            <p>So IndexPath(row: 0, section: 2) means the first row in the third section.</p>
+        </section>
+
+        <section>
+            <h2>Example Use Case</h2>
+            <pre><code>
+let data = [
+    ["Apple", "Apricot"],       // Section 0
+    ["Banana", "Blueberry"],    // Section 1
+    ["Cherry", "Coconut"]       // Section 2
+]
+            </code></pre>
+            <p>Here, you'd have 3 sections, each with 2 rows.</p>
+        </section>
+
+        <section>
+            <h2>Optional Section Headers/Footers</h2>
+            <p>You can add headers and footers with these delegate methods:</p>
+            <pre><code>
+func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    return "Fruits Group \(section + 1)"
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <p>Customizing a UITableView header in UIKit with Swift typically involves either:</p>
+            <ol>
+                <li>Customizing the section header (via tableView(_:viewForHeaderInSection:)), or</li>
+                <li>Customizing the table header (tableView.tableHeaderView)</li>
+            </ol>
+            <p>Let’s walk through both, since developers often confuse them.</p>
+        </section>
+
+        <section>
+            <h2>✅ 1. Customizing the Main Table Header</h2>
+            <p>This is the header at the very top of the table — not per section.</p>
+            <p>Example:</p>
+            <pre><code>
+let headerView = UIView()
+headerView.backgroundColor = .systemBlue
+
+let titleLabel = UILabel()
+titleLabel.text = "Main Table Header"
+titleLabel.textColor = .white
+titleLabel.font = .boldSystemFont(ofSize: 24)
+titleLabel.translatesAutoresizingMaskIntoConstraints = false
+
+headerView.addSubview(titleLabel)
+
+// Set constraints
+NSLayoutConstraint.activate([
+    titleLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
+    titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
+])
+
+// Set size for headerView (important!)
+headerView.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 100)
+
+// Assign to table header
+tableView.tableHeaderView = headerView
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 2. Customizing Section Headers</h2>
+            <p>This applies when you have multiple sections and want a custom header for each one.</p>
+            <p>Example:</p>
+            <pre><code>
+override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    let headerView = UIView()
+    headerView.backgroundColor = .lightGray
+
+    let label = UILabel()
+    label.text = "Section \(section)"
+    label.font = UIFont.boldSystemFont(ofSize: 18)
+    label.translatesAutoresizingMaskIntoConstraints = false
+
+    headerView.addSubview(label)
+
+    NSLayoutConstraint.activate([
+        label.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+        label.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
+    ])
+
+    return headerView
+}
+
+override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return 44
+}                
+            </code></pre>
+            <p>🧠 You don’t need to set a frame here — the system sizes the view using your heightForHeaderInSection.</p>
+        </section>
+
+        <section>
+            <h2>🧩 Pro Tips:</h2>
+            <p>To use Auto Layout properly with tableHeaderView, use this extension to resize it after layout:</p>
+            <pre><code>
+extension UITableView {
+    func sizeTableHeaderToFit() {
+        guard let headerView = tableHeaderView else { return }
+        headerView.setNeedsLayout()
+        headerView.layoutIfNeeded()
+        let height = headerView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+        headerView.frame.size.height = height
+        tableHeaderView = headerView
+    }
+}                
+            </code></pre>
+
+            <p>Call it after setting up the header:</p>
+
+            <pre><code>
+tableView.tableHeaderView = headerView
+tableView.sizeTableHeaderToFit()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧵 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Method</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Table Header</td>
+                        <td>tableView.tableHeaderView</td>
+                        <td>Top header for entire table</td>
+                    </tr>
+                    <tr>
+                        <td>Section Header</td>
+                        <td>tableView(_:viewForHeaderInSection:)</td>
+                        <td>Per-section headers (e.g. categories)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

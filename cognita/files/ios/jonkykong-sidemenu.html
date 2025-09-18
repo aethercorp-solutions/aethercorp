@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>jonkykong/SideMenu Tutorial</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">jonkykong/SideMenu Tutorial</h1>
+                    <p class="subtitle">SideMenu is a simple and highly customizable side menu library for iOS written in Swift.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Installation</h2>
+            <p>Using CocoaPods</p>
+            <p>Add the following to your Podfile:</p>
+            <pre><code>
+pod 'SideMenu'
+            </code></pre>
+
+            <p>Then run:</p>
+            <pre><code>
+pod install
+            </code></pre>
+
+            <p>Using Swift Package Manager</p>
+            <ul>
+                <li>In Xcode, go to File > Add Packages...</li>
+                <li>Enter the repository URL: https://github.com/jonkykong/SideMenu</li>
+                <li>Choose the version and add it to your project.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Basic Setup</h2>
+            <ol>
+                <li>
+                    Import SideMenu
+                    <p>In your view controller where you want to present the menu:</p>
+                    <pre><code>
+import SideMenu
+                    </code></pre>
+                </li>
+
+                <li>
+                    Create a Menu ViewController
+                    <p>Create a new UIViewController subclass (e.g., MenuListController) that will be the content of the side menu.</p>
+                    <p>Example:</p>
+
+                    <pre><code>
+class MenuListController: UITableViewController {
+    let items = ["Home", "Profile", "Settings"]
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return items.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell()
+        cell.textLabel?.text = items[indexPath.row]
+        return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // Handle menu item tap
+        print("Selected: \(items[indexPath.row])")
+        dismiss(animated: true, completion: nil)
+    }
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Initialize and Present the SideMenu
+                    <p>In your main view controller (the one with a button or gesture to open the menu):</p>
+                    <pre><code>
+class MainViewController: UIViewController {
+
+    var menu: SideMenuNavigationController?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let menuVC = MenuListController()
+        menu = SideMenuNavigationController(rootViewController: menuVC)
+        
+        // Set the presentation style
+        menu?.leftSide = true // or false for right side
+
+        // Optional: Customize the menu
+        SideMenuManager.default.leftMenuNavigationController = menu
+        SideMenuManager.default.addPanGestureToPresent(toView: self.view)
+        
+        // Add a button to open the menu
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Menu", style: .plain, target: self, action: #selector(didTapMenu))
+    }
+    
+    @objc func didTapMenu() {
+        if let menu = menu {
+            present(menu, animated: true)
+        }
+    }
+}                        
+                    </code></pre>
+                </li>
+
+                <li>
+                    Customization
+                    <p>You can customize the menu by changing properties on SideMenuNavigationController:</p>
+                    <pre><code>
+menu?.menuWidth = max(round(min((UIScreen.main.bounds.width), (UIScreen.main.bounds.height)) * 0.75), 240)
+menu?.presentationStyle = .menuSlideIn
+menu?.statusBarEndAlpha = 0
+                    </code></pre>
+
+                    <ul>
+                        <li>menuWidth controls the width of the menu.</li>
+                        <li>presentationStyle can be .menuSlideIn, .viewSlideOut, .menuDissolveIn, etc.</li>
+                        <li>statusBarEndAlpha controls the dimming of the status bar.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Adding Gestures
+                    <p>SideMenu allows you to add gestures to open the menu:</p>
+                    <pre><code>
+SideMenuManager.default.addPanGestureToPresent(toView: self.view)
+SideMenuManager.default.addScreenEdgePanGesturesToPresent(toView: self.view)
+                    </code></pre>
+                </li>
+
+                <li>
+                    Handling Menu Selection
+                    <p>In the menu's didSelectRowAt method, you can communicate back to the main view controller, e.g., via delegate, notifications, or closures.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <ul>
+                <li>Install SideMenu via CocoaPods or Swift Package Manager.</li>
+                <li>Create a menu view controller subclass.</li>
+                <li>Initialize SideMenuNavigationController with the menu controller.</li>
+                <li>Present it on button tap or gestures.</li>
+                <li>Customize appearance and presentation style.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

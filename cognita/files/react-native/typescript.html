@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Typescript</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Typescript</h1>
+                    <p class="subtitle">Sure! Here's a beginner-friendly TypeScript tutorial that walks you through the basics and helps you get started.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🟦 What is TypeScript?</h2>
+            <p>TypeScript is a superset of JavaScript that adds static typing. This means you can catch many errors at compile time instead of runtime.</p>
+        
+            <p>✅ Prerequisites</p>
+            <ul>
+                <li>Basic understanding of JavaScript</li>
+                <li>Node.js installed Node.js</li>
+                <li>A code editor (VS Code is recommended)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h1>📦 Step 1: Install TypeScript</h1>
+            <p>Open your terminal and run:</p>
+            <pre><code>
+npm install -g typescript
+            </code></pre>
+
+            <p>Check the version to verify installation:</p>
+            <pre><code>
+tsc --version
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📝 Step 2: Your First TypeScript File</h2>
+            <p>Create a file called hello.ts:</p>
+            <pre><code>
+// hello.ts
+function greet(name: string): string {
+  return `Hello, ${name}!`;
+}
+
+console.log(greet("TypeScript"));
+            </code></pre>
+
+            <p>Compile it:</p>
+            <pre><code>
+tsc hello.ts
+            </code></pre>
+
+            <p>This generates hello.js. Run it with:</p>
+            <pre><code>
+node hello.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Type Annotations</h2>
+            <pre><code>
+let age: number = 30;
+let name: string = "Alice";
+let isStudent: boolean = true;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📚 Interfaces</h2>
+            <p>Interfaces define object shapes.</p>
+            <pre><code>
+interface Person {
+    name: string;
+    age: number;
+}
+    
+function printPerson(person: Person) {
+console.log(`${person.name} is ${person.age} years old.`);
+}
+
+printPerson({ name: "Bob", age: 25 });  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧱 Classes</h2>
+            <pre><code>
+class Animal {
+    constructor(private name: string) {}
+    
+    speak(): void {
+        console.log(`${this.name} makes a sound.`);
+    }
+}
+    
+const dog = new Animal("Dog");
+dog.speak();                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧰 Generics</h2>
+            <pre><code>
+function identity&lt;T&gt;(arg: T): T {
+    return arg;
+}
+    
+console.log(identity&lt;string&gt;("Hello"));
+console.log(identity&lt;number&gt;(123));                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🛠️ tsconfig.json (Project Setup)</h2>
+            <p>Create a TypeScript project:</p>
+            <pre><code>
+tsc --init
+            </code></pre>
+
+            <p>This creates a tsconfig.json file with compiler options.</p>
+        </section>
+
+        <section>
+            <h2>📁 Suggested Project Structure</h2>
+            <pre><code>
+my-app/
+├── src/
+│   └── index.ts
+├── dist/
+├── tsconfig.json
+            </code></pre>
+
+            <p>Compile with:</p>
+            <pre><code>
+tsc
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 Bonus: TypeScript + Node.js Example</h2>
+            <ol>
+                <li>
+                    Install Node.js types:
+                    <pre><code>
+npm init -y
+npm install typescript @types/node --save-dev
+                    </code></pre>
+                </li>
+
+                <li>
+                    Add a script to package.json:
+                    <pre><code>
+"scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+}                          
+                    </code></pre>
+                </li>
+
+                <li>
+                    Run:
+                    <pre><code>
+npm run build
+npm start
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <p>The node command is used to run JavaScript code outside of a web browser using Node.js — a JavaScript runtime built on Chrome's V8 engine.</p>
+            <p>Basic Usage:</p>
+            <pre><code>
+node &lt;filename&gt;
+            </code></pre>
+
+            <p>For example:</p>
+            <pre><code>
+node app.js
+            </code></pre>
+
+            <p>This command runs the app.js file with Node.js.</p>
+        </section>
+
+        <section>
+            <h2>What Node.js Enables:</h2>
+            <p>Before Node.js, JavaScript was mostly used only in browsers. Node.js lets you:</p>
+            <ul>
+                <li>Run JavaScript on the server (backend)</li>
+                <li>Build command-line tools</li>
+                <li>Create APIs and full web applications</li>
+                <li>Work with files, databases, and networks</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Examples:</h2>
+            <ol>
+                <li>
+                    Run a simple script
+                    <pre><code>
+echo "console.log('Hello, world!')" > hello.js
+node hello.js
+                    </code></pre>
+                </li>
+
+                <li>
+                    Output:
+                    <pre><code>
+Hello, world!
+                    </code></pre>
+                </li>
+
+                <li>
+                    Run code directly in a REPL (interactive mode)
+                    <pre><code>
+node
+> 2 + 2
+4
+                    </code></pre>
+                </li>
+
+                <li>
+                    Check Node version
+                    <pre><code>
+node -v
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Summary:</h2>
+            <ul>
+                <li>node is the command-line tool that executes JavaScript with Node.js.</li>
+                <li>It opens the door to writing full backend or utility code in JavaScript, not just browser-based scripts.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

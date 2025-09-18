@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Xcode Module</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Xcode Module</h1>
+                    <p class="subtitle">In Xcode, a module is essentially a self-contained unit of code that can be imported and used in other parts of your project or other projects. Understanding how modules work in an Xcode project helps you better organize, reuse, and encapsulate code.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 What Is a Module in Xcode?</h2>
+            <p>In Swift and Objective-C, a module represents a namespace and a binary unit of code distribution. You can think of it as:</p>
+            <p>✅ A self-contained unit of functionality that can be compiled and imported using import ModuleName.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Types of Modules in Xcode Projects</h2>
+            <p>There are several kinds of modules:</p>
+            <ol>
+                <li>
+                    App Target (main module)
+                    <p>The main app target is also a module. You can import it in other targets like test targets:</p>
+                    <pre><code>
+@testable import MyAppModule
+                    </code></pre>
+                </li>
+
+                <li>
+                    Framework Target
+                    <p>A common way to create reusable modules. You can import the framework into other apps or targets:</p>
+                    <pre><code>
+import MyFramework
+                    </code></pre>
+                </li>
+
+                <li>
+                    Swift Package
+                    <p>Swift Packages are modular by design. Each package defines its own module(s), and you can import them easily:</p>
+                    <pre><code>
+import MyPackageModule
+                    </code></pre>
+                </li>
+
+                <li>
+                    Objective-C Modules / Bridging
+                    <p>Objective-C modules (like UIKit) are also imported with import UIKit in Swift, thanks to the Clang module system.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 How Modules Work in an Xcode Project</h2>
+            <ol>
+                <li>
+                    Targets as Modules
+                    <p>Each target in Xcode can be treated as a module:</p>
+                    <ul>
+                        <li>Targets define what to build.</li>
+                        <li>Each target has its own product name, which becomes the module name.</li>
+                        <li>
+                            Example: If your target is named MyLibrary, then:
+                            <pre><code>
+import MyLibrary
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    Module Interface
+                    <p>A module defines its public interface:</p>
+                    <ul>
+                        <li>Only public or open declarations are accessible from outside the module.</li>
+                        <li>You must set the correct access control modifiers (e.g., internal, public, open) to control visibility across modules.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Modularization Benefits
+                    <ul>
+                        <li>Encapsulation – Hide internal implementation details.</li>
+                        <li>Reusability – Use the module across different projects.</li>
+                        <li>Compile-time Safety – Prevent unwanted dependencies and reduce build times.</li>
+                        <li>Testing – Targets like MyAppTests can import the main module using @testable import.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 How to Create a Module in Xcode</h2>
+            <p>🔧 Creating a Framework (as a module):</p>
+            <ol>
+                <li>Open your project.</li>
+                <li>Add a new target: File > New > Target.</li>
+                <li>Choose Framework or Static Library (depending on use case).</li>
+                <li>Give it a name (e.g., MyFramework).</li>
+                <li>Move shared code into that target.</li>
+                <li>Make sure the code is marked public.</li>
+                <li>
+                    Import the module in your main app target:
+                    <pre><code>
+import MyFramework
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 Special Notes</h2>
+            <ul>
+                <li>Bridging Between Swift and Objective-C uses a bridging header or module map.</li>
+                <li>Module Maps are used in Clang-based languages (C/C++) for creating modules manually.</li>
+                <li>Swift Module Interface Files (.swiftinterface) are used in Swift for ABI stability and module distribution.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Swift Package as a Module (SPM)</h2>
+            <p>Swift Packages define their own modules:</p>
+            <pre><code>
+// Package.swift
+.library(
+    name: "MyLibrary",
+    targets: ["MyLibrary"]
+)
+            </code></pre>
+
+            <p>You can import MyLibrary wherever it’s added as a dependency.</p>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Module in Xcode</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>What is it?</td>
+                        <td>A compiled unit of code with its own namespace</td>
+                    </tr>
+                    <tr>
+                        <td>Common examples</td>
+                        <td>App target, Framework target, Swift package</td>
+                    </tr>
+                    <tr>
+                        <td>How to import</td>
+                        <td>import ModuleName</td>
+                    </tr>
+                    <tr>
+                        <td>Visibility control</td>
+                        <td>Access control (public, internal, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>Purpose</td>
+                        <td>Encapsulation, reusability, modularity</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>If you’re planning to modularize a large app or create reusable frameworks, let me know and I can guide you step-by-step through setting up a modular architecture in Xcode.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

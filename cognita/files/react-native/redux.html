@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Redux with React Native</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Redux with React Native</h1>
+                    <p class="subtitle">If you're a beginner in Redux with React Native, here's a straightforward guide to help you get started.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔁 What is Redux?</h2>
+            <p>Redux is a state management library that helps you manage and share state across your entire app — useful when props drilling gets out of hand.</p>
+        
+            <p>🧱 Redux Basics (Concepts You Need to Know)</p>
+            <ul>
+                <li>Store: Holds the global state.</li>
+                <li>Actions: Plain JS objects describing what happened.</li>
+                <li>Reducers: Functions that update the state based on actions.</li>
+                <li>Dispatch: Sends an action to the store.</li>
+                <li>Provider: Makes the store accessible to the app.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Installing Redux in a React Native App</h2>
+            <p>Step 1: Create or use a React Native app</p>
+            <p>If you don’t have one:</p>
+
+            <pre><code>
+npx react-native init ReduxExample
+cd ReduxExample
+            </code></pre>
+
+            <p>Step 2: Install dependencies</p>
+            <pre><code>
+npm install @reduxjs/toolkit react-redux
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🛠️ Setting Up Redux (with Redux Toolkit)</h2>
+            <p>Redux Toolkit simplifies Redux by reducing boilerplate.</p>
+            <p>1. Create a slice (your feature/state logic)</p>
+            <p>Create a file: features/counterSlice.js</p>
+
+            <pre><code>
+import { createSlice } from '@reduxjs/toolkit';
+
+export const counterSlice = createSlice({
+  name: 'counter',
+  initialState: {
+    value: 0,
+  },
+  reducers: {
+    increment: state => { state.value += 1; },
+    decrement: state => { state.value -= 1; },
+  },
+});
+
+export const { increment, decrement } = counterSlice.actions;
+export default counterSlice.reducer;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Create the store</h2>
+            <p>Create a file: store.js</p>
+
+            <pre><code>
+import { configureStore } from '@reduxjs/toolkit';
+import counterReducer from './features/counterSlice';
+
+export const store = configureStore({
+  reducer: {
+    counter: counterReducer,
+  },
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Provide the store to your app</h2>
+            <p>In App.js:</p>
+            <pre><code>
+import React from 'react';
+import { Provider } from 'react-redux';
+import { store } from './store';
+import CounterScreen from './CounterScreen'; // your component
+
+export default function App() {
+  return (
+    &lt;Provider store={store}&gt;
+        &lt;CounterScreen /&gt;
+    &lt;/Provider&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Use Redux state and dispatch in a component</h2>
+            <p>Create CounterScreen.js:</p>
+            <pre><code>
+import React from 'react';
+import { View, Text, Button } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { increment, decrement } from './features/counterSlice';
+
+export default function CounterScreen() {
+  const count = useSelector(state => state.counter.value);
+  const dispatch = useDispatch();
+
+  return (
+    &lt;View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}&gt;
+        &lt;Text style={{ fontSize: 30 }}>{count}&lt;/Text&gt;
+        &lt;Button title="Increment" onPress={() => dispatch(increment())} /&gt;
+        &lt;Button title="Decrement" onPress={() => dispatch(decrement())} /&gt;
+    &lt;/View&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ You’re Done!</h2>
+            <p>Now you’ve got a working Redux setup in a React Native app.</p>
+            <p>🚀 What to Learn Next</p>
+            <ul>
+                <li>Middleware (e.g. Redux Thunk for async calls)</li>
+                <li>Async logic with createAsyncThunk</li>
+                <li>Persisting Redux state (redux-persist)</li>
+                <li>Splitting slices for multiple features</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Redux is a state management library commonly used with JavaScript and React applications. It provides a centralized store to manage and share application state in a predictable and scalable way.</p>
+            <p>🔧 When to Use Redux</p>
+            <p>Use Redux when:</p>
+            <ul>
+                <li>Your app has complex state logic.</li>
+                <li>You need to share state across many components.</li>
+                <li>Debugging or testing state changes is important.</li>
+                <li>You want predictable state changes with undo/redo, logging, etc.</li>
+            </ul>
+
+            <p>🧠 Core Concepts</p>
+            <ol>
+                <li>Store – The single source of truth (an object tree).</li>
+                <li>Actions – Plain JS objects that describe what happened.</li>
+                <li>Reducers – Functions that describe how the state changes.</li>
+                <li>Dispatch – Method to send actions to the reducer.</li>
+                <li>Selectors – Functions to retrieve specific parts of state.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚙️ Redux Workflow Diagram</h2>
+            <pre><code>
+Action (what happened) 
+    ↓
+Dispatch(action)
+    ↓
+Reducer(currentState, action) → newState
+    ↓
+Store updates
+    ↓
+UI re-renders
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 Basic Implementation (Vanilla JS + Redux)</h2>
+            <p>1. Install Redux (if using outside React):</p>
+
+            <pre><code>
+npm install redux
+            </code></pre>
+
+            <p>2. Create a Reducer</p>
+            <pre><code>
+// counterReducer.js
+const initialState = { count: 0 };
+
+function counterReducer(state = initialState, action) {
+  switch (action.type) {
+    case "INCREMENT":
+      return { count: state.count + 1 };
+    case "DECREMENT":
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+}
+
+export default counterReducer;
+            </code></pre>
+
+            <p>3. Create Store</p>
+            <pre><code>
+// store.js
+import { createStore } from 'redux';
+import counterReducer from './counterReducer';
+
+const store = createStore(counterReducer);
+
+export default store;
+            </code></pre>
+
+            <p>4. Dispatch Actions</p>
+            <pre><code>
+import store from './store';
+
+store.subscribe(() => console.log(store.getState()));
+
+store.dispatch({ type: "INCREMENT" }); // count: 1
+store.dispatch({ type: "DECREMENT" }); // count: 0
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🛠 Redux with React (Using react-redux)</h2>
+            <p>1. Install React Redux</p>
+            <pre><code>
+npm install react-redux
+            </code></pre>
+
+            <p>2. Setup Provider in Root</p>
+            <pre><code>
+// index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import App from './App';
+import store from './store';
+
+ReactDOM.render(
+  &lt;Provider store={store}&gt;
+    &lt;App /&gt;
+  &lt;/Provider&gt;,
+  document.getElementById('root')
+);
+            </code></pre>
+
+            <p>3. Connect Component</p>
+            <pre><code>
+// Counter.js
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
+function Counter() {
+  const count = useSelector((state) => state.count);
+  const dispatch = useDispatch();
+
+  return (
+    &lt;div>
+        &lt;h2>Count: {count}&lt;/h2&gt;
+        &lt;button onClick={() => dispatch({ type: 'INCREMENT' })}>+&lt;/button&gt;
+        &lt;button onClick={() => dispatch({ type: 'DECREMENT' })}>-&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default Counter;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ Redux Toolkit (Modern Redux)</h2>
+            <p>Redux Toolkit simplifies Redux by:</p>
+            <ul>
+                <li>Reducing boilerplate</li>
+                <li>Adding built-in dev tools support</li>
+                <li>Simplifying async actions</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Great! Let's walk through how to implement Redux using the modern, recommended approach: Redux Toolkit (RTK), including handling asynchronous actions like API calls (using createAsyncThunk).</p>
+            <h2>🚀 What Is Redux Toolkit?</h2>
+            <p>Redux Toolkit (RTK) is the official, opinionated way to write Redux logic. It simplifies store setup, reduces boilerplate, and includes powerful tools like:</p>
+            <ul>
+                <li>createSlice – Generates actions + reducers together</li>
+                <li>configureStore – Sets up the store with good defaults</li>
+                <li>createAsyncThunk – Handles async logic (like API calls)</li>
+            </ul>
+
+            <p>🧱 1. Install Redux Toolkit and React Redux</p>
+            <pre><code>
+npm install @reduxjs/toolkit react-redux
+            </code></pre>
+
+            <p>📦 2. Set Up the Store</p>
+            <pre><code>
+// store.js
+import { configureStore } from '@reduxjs/toolkit';
+import counterReducer from './features/counterSlice';
+
+const store = configureStore({
+  reducer: {
+    counter: counterReducer,
+  },
+});
+
+export default store;
+            </code></pre>
+
+            <p>✂️ 3. Create a Slice (State + Reducers + Actions in one)</p>
+            <pre><code>
+// features/counterSlice.js
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
+// Optional: Async example
+export const fetchCount = createAsyncThunk(
+  'counter/fetchCount',
+  async () => {
+    const res = await fetch('https://api.countapi.xyz/hit/example.com/visits');
+    const data = await res.json();
+    return data.value; // assuming it returns { value: number }
+  }
+);
+
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: {
+    value: 0,
+    loading: false,
+  },
+  reducers: {
+    increment: (state) => { state.value += 1; },
+    decrement: (state) => { state.value -= 1; },
+    reset: (state) => { state.value = 0; },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCount.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchCount.fulfilled, (state, action) => {
+        state.value = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchCount.rejected, (state) => {
+        state.loading = false;
+      });
+  },
+});
+
+export const { increment, decrement, reset } = counterSlice.actions;
+export default counterSlice.reducer;
+            </code></pre>
+
+            <h2>🌐 4. Provide Store to React</h2>
+            <pre><code>
+// index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
+import App from './App';
+import store from './store';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  &lt;Provider store={store}&gt;
+    &lt;App /&gt;
+  &lt;/Provider&gt;
+);
+            </code></pre>
+
+            <p>🧩 5. Use Redux in Components</p>
+            <pre><code>
+// Counter.js
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { increment, decrement, reset, fetchCount } from './features/counterSlice';
+
+function Counter() {
+  const count = useSelector((state) => state.counter.value);
+  const loading = useSelector((state) => state.counter.loading);
+  const dispatch = useDispatch();
+
+  return (
+    &lt;div&gt;
+        &lt;h2&gt;Count: {loading ? 'Loading...' : count}&lt;/h2&gt;
+        &lt;button onClick={() =&gt; dispatch(increment())}&gt;+&lt;/button&gt;
+        &lt;button onClick={() =&gt; dispatch(decrement())}&gt;-&lt;/button&gt;
+        &lt;button onClick={() =&gt; dispatch(reset())}&gt;Reset&lt;/button&gt;
+        &lt;br /&gt;&lt;br /&gt;
+        &lt;button onClick={() =&gt; dispatch(fetchCount())}&gt;
+            Fetch from API
+        &lt;/button&gt;
+        &lt;/div&gt;
+  );
+}
+
+export default Counter;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Redux Toolkit Advantage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Boilerplate</td>
+                        <td>Minimal</td>
+                    </tr>
+                    <tr>
+                        <td>Async logic</td>
+                        <td>Built-in with createAsyncThunk</td>
+                    </tr>
+                    <tr>
+                        <td>Store setup</td>
+                        <td>Easy with configureStore()</td>
+                    </tr>
+                    <tr>
+                        <td>DevTools</td>
+                        <td>Enabled by default</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Would you like a full working example (CodeSandbox or GitHub link)? Or want to expand into advanced Redux topics like:</p>
+            <ul>
+                <li>Middleware</li>
+                <li>Entity adapters</li>
+                <li>Memoized selectors with Reselect</li>
+                <li>Integration with RTK Query (for data fetching)?</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>react-native-iap</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">react-native-iap</h1>
+                    <p class="subtitle">Neither React Navigation’s focus event nor React Native’s AppState API will automatically wait for or detect when an in-app purchase is finished on Apple’s servers.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Here’s why:</h2>
+            <ul>
+                <li>React Navigation events (focus, etc.) are about screen navigation.</li>
+                <li>React Native AppState tracks whether the app is in foreground or background.</li>
+                <li>In-app purchase (IAP) transactions involve communication with Apple’s servers asynchronously, and the app must listen for updates about the transaction state.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>How to properly handle Apple IAP transactions?</h2>
+            <p>You should use a dedicated in-app purchase library that manages transactions and listens for updates on transaction state, such as:</p>
+            <ul>
+                <li><a href="https://github.com/hyochan/react-native-iap">react-native-iap</a> (the most popular one)</li>
+            </ul>
+            <p>This library handles:</p>
+            <ul>
+                <li>Starting purchase flow</li>
+                <li>Listening to transaction updates and errors</li>
+                <li>Verifying the receipt (optionally on your server)</li>
+                <li>Completing the transaction once finished</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>How does this usually work?</h2>
+            <ol>
+                <li>You call a method to initiate purchase.</li>
+                <li>The library sends the request to Apple.</li>
+                <li>Apple processes the purchase on its servers.</li>
+                <li>When finished, the library emits an event or callback to notify you of the purchase success/failure.</li>
+                <li>You finalize (acknowledge) the purchase in your app.</li>
+            </ol>
+            <p>Example snippet with react-native-iap:</p>
+            <pre><code>
+import React from 'react';
+import { View, Text, Button, Alert } from 'react-native';
+import RNIap, {
+  purchaseUpdatedListener,
+  purchaseErrorListener,
+  finishTransaction,
+} from 'react-native-iap';
+
+class IAPScreen extends React.Component {
+  purchaseUpdateSubscription = null;
+  purchaseErrorSubscription = null;
+
+  componentDidMount() {
+    this.purchaseUpdateSubscription = purchaseUpdatedListener(async (purchase) => {
+      try {
+        // Process purchase here (e.g., validate receipt)
+        console.log('Purchase success:', purchase);
+
+        // Finish transaction so Apple knows it's complete
+        await finishTransaction(purchase);
+
+        Alert.alert('Purchase successful!');
+      } catch (err) {
+        console.warn('Purchase processing error:', err);
+      }
+    });
+
+    this.purchaseErrorSubscription = purchaseErrorListener((error) => {
+      console.warn('Purchase error:', error);
+      Alert.alert('Purchase failed', error.message);
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.purchaseUpdateSubscription) {
+      this.purchaseUpdateSubscription.remove();
+      this.purchaseUpdateSubscription = null;
+    }
+    if (this.purchaseErrorSubscription) {
+      this.purchaseErrorSubscription.remove();
+      this.purchaseErrorSubscription = null;
+    }
+  }
+
+  buyProduct = async () => {
+    try {
+      await RNIap.requestPurchase('your_product_id');
+    } catch (err) {
+      console.warn('Failed to request purchase:', err);
+    }
+  };
+
+  render() {
+    return (
+      &lt;View&gt;
+        &lt;Button title="Buy Product" onPress={this.buyProduct} /&gt;
+      &lt;/View&gt;
+    );
+  }
+}
+
+export default IAPScreen;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>import React from 'react';
+import { View, Text, Button, Alert } from 'react-native';
+import RNIap, {
+  purchaseUpdatedListener,
+  purchaseErrorListener,
+  finishTransaction,
+} from 'react-native-iap';
+
+class IAPScreen extends React.Component {
+  purchaseUpdateSubscription = null;
+  purchaseErrorSubscription = null;
+
+  componentDidMount() {
+    this.purchaseUpdateSubscription = purchaseUpdatedListener(async (purchase) => {
+      try {
+        // Process purchase here (e.g., validate receipt)
+        console.log('Purchase success:', purchase);
+
+        // Finish transaction so Apple knows it's complete
+        await finishTransaction(purchase);
+
+        Alert.alert('Purchase successful!');
+      } catch (err) {
+        console.warn('Purchase processing error:', err);
+      }
+    });
+
+    this.purchaseErrorSubscription = purchaseErrorListener((error) => {
+      console.warn('Purchase error:', error);
+      Alert.alert('Purchase failed', error.message);
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.purchaseUpdateSubscription) {
+      this.purchaseUpdateSubscription.remove();
+      this.purchaseUpdateSubscription = null;
+    }
+    if (this.purchaseErrorSubscription) {
+      this.purchaseErrorSubscription.remove();
+      this.purchaseErrorSubscription = null;
+    }
+  }
+
+  buyProduct = async () => {
+    try {
+      await RNIap.requestPurchase('your_product_id');
+    } catch (err) {
+      console.warn('Failed to request purchase:', err);
+    }
+  };
+
+  render() {
+    return (
+      &lt;lView&gt;
+        &lt;Button title="Buy Product" onPress={this.buyProduct} /&gt;
+      &lt;/View&gt;
+    );
+  }
+}
+
+export default IAPScreen;
+</h2>
+        </section>
+
+        <section>
+            <h2>Example snippet with react-native-iap:</h2>
+            <pre><code>
+import React from 'react';
+import { View, Text, Button, Alert } from 'react-native';
+import RNIap, {
+  purchaseUpdatedListener,
+  purchaseErrorListener,
+  finishTransaction,
+} from 'react-native-iap';
+
+class IAPScreen extends React.Component {
+  purchaseUpdateSubscription = null;
+  purchaseErrorSubscription = null;
+
+  componentDidMount() {
+    this.purchaseUpdateSubscription = purchaseUpdatedListener(async (purchase) => {
+      try {
+        // Process purchase here (e.g., validate receipt)
+        console.log('Purchase success:', purchase);
+
+        // Finish transaction so Apple knows it's complete
+        await finishTransaction(purchase);
+
+        Alert.alert('Purchase successful!');
+      } catch (err) {
+        console.warn('Purchase processing error:', err);
+      }
+    });
+
+    this.purchaseErrorSubscription = purchaseErrorListener((error) => {
+      console.warn('Purchase error:', error);
+      Alert.alert('Purchase failed', error.message);
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.purchaseUpdateSubscription) {
+      this.purchaseUpdateSubscription.remove();
+      this.purchaseUpdateSubscription = null;
+    }
+    if (this.purchaseErrorSubscription) {
+      this.purchaseErrorSubscription.remove();
+      this.purchaseErrorSubscription = null;
+    }
+  }
+
+  buyProduct = async () => {
+    try {
+      await RNIap.requestPurchase('your_product_id');
+    } catch (err) {
+      console.warn('Failed to request purchase:', err);
+    }
+  };
+
+  render() {
+    return (
+      &lt;View&gt;
+        &lt;Button title="Buy Product" onPress={this.buyProduct} /&gt;
+      &lt;/View&gt;
+    );
+  }
+}
+
+export default IAPScreen;
+
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Summary:</h2>
+            <ul>
+                <li>Use react-native-iap or similar library to manage purchases.</li>
+                <li>Listen for purchase update events to know when the transaction completes.</li>
+                <li>Don’t rely on navigation or app state events for purchase completion.</li>
+                <li>You can combine these with navigation or app state to trigger UI updates, but purchase completion is signaled explicitly via the IAP library.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

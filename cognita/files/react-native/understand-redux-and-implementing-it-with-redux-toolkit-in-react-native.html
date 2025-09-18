@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Understanding Redux and Implementing it with Redux Toolkit in React Native</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Understanding Redux and Implementing it with Redux Toolkit in React Native</h1>
+                    <p class="subtitle">When you’re making a mobile app, keeping track of information is a big deal. That’s where Redux steps in! Redux is like a special helper that makes it easier to organize and handle the important details in your React Native app. In this guide, we’ll break down the key ideas behind Redux and show you how to use it in a React Native app with the user-friendly Redux Toolkit.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is Redux?</h2>
+            <p>Imagine your JavaScript app is like a big container of information. Now, think of Redux as a friendly organizer for that container, especially when you’re using popular tools like React or React Native. The main job of Redux is to keep all the important stuff in one place, making it super easy to handle and change things in a way that you can always expect.</p>
+
+            <p>Core Concepts in Redux:</p>
+            <ol>
+                <li><b>Store:</b> The store is a single, immutable object that represents the state of your entire application. It holds the application state and provides methods to update it.</li>
+                <li><b>Actions:</b> Actions are plain JavaScript objects that describe changes in the application state. They are the only source of information for the store.</li>
+                <li><b>Reducers:</b> Reducers specify how the application’s state changes in response to actions. They are pure functions that take the previous state and an action, and return the new state.</li>
+                <li><b>Dispatch:</b> Dispatch is a method used to send actions to the store. It is the only way to trigger a state change.</li>
+                <li><b>Selectors:</b> Selectors are functions that extract specific pieces of information from the store.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Setting Up a React Native App with Redux Toolkit:</h2>
+            <p>Step 1: Create a React Native App</p>
+            <pre><code>
+npx react-native init ReduxExample
+cd ReduxExample
+            </code></pre>
+            <p>This will generate the basic structure of a React Native app.</p>
+        </section>
+
+        <section>
+            <h2>Step 2: Install Redux Toolkit and Dependencies</h2>
+            <p>Install Redux Toolkit and react-redux using npm or yarn:</p>
+            <pre><code>
+yarn add @reduxjs/toolkit react-redux
+   or
+npm install @reduxjs/toolkit react-redux
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3: Create a Slice</h2>
+            <p>In Redux, a “slice” is a piece of the store’s state and the corresponding actions/reducers for that piece. Create a file named counterSlice.js in the src folder:</p>
+        
+            <pre><code>
+// counterSlice.js
+import { createSlice } from '@reduxjs/toolkit';
+
+export const counterSlice = createSlice({
+  name: 'counter',
+  initialState: {
+    value: 0,
+  },
+  reducers: {
+    increment: (state) => {
+      state.value += 1;
+    },
+    decrement: (state) => {
+      state.value -= 1;
+    },
+  },
+});
+
+export const { increment, decrement } = counterSlice.actions;
+
+export const selectCount = (state) => state.counter.value;
+
+export default counterSlice.reducer;
+            </code></pre>
+
+            <p>This file defines a Redux slice for a counter, including the initial state, actions (increment and decrement), and a selector (selectCount) for accessing the counter value.</p>
+        </section>
+
+        <section>
+            <h2>Step 4: Create the Redux Store</h2>
+            <p>In the src folder, create a file named store.js:</p>
+            <pre><code>
+// store.js
+import { configureStore } from '@reduxjs/toolkit';
+import counterReducer from './counterSlice';
+
+export const store = configureStore({
+  reducer: {
+    counter: counterReducer,
+  },
+});
+            </code></pre>
+
+            <p>This file creates the Redux store using configureStore from Redux Toolkit and includes the counterReducer from the counterSlice file.</p>
+            <p>Open the index.js file, and wrap your App component with the Provider from react-redux and pass the store:</p>
+
+            <pre><code>
+// index.js
+import { AppRegistry } from 'react-native';
+import App from './App';
+import { name as appName } from './app.json';
+import { store } from './store';
+import { Provider } from 'react-redux';
+
+const ReduxExample = () => (
+  &lt;Provider store={store}&gt;
+    &lt;App /&gt;
+  &lt;/Provider&gt;
+);
+
+AppRegistry.registerComponent(appName, () => ReduxExample);
+            </code></pre>
+
+            <p>This sets up the Redux store to be available to all components in your React Native app.</p>
+        </section>
+
+        <section>
+            <h2>Step 6: Use Redux in your React Native Components</h2>
+            <p>Now, modify the App.js file to use Redux:</p>
+            <pre><code>
+// App.js
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { increment, decrement, selectCount } from './counterSlice';
+import { View, Text, Button } from 'react-native';
+
+const App = () => {
+  const count = useSelector(selectCount);
+  const dispatch = useDispatch();
+
+  return (
+    &lt;View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}&gt;
+        &lt;Text>Redux Example&lt;/Text&gt;
+        &lt;Text>Count: {count}&lt;/Text&gt;
+        &lt;Button title="Increment" onPress={() => dispatch(increment())} /&gt;
+        &lt;Button title="Decrement" onPress={() => dispatch(decrement())} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default App;
+            </code></pre>
+
+            <p>This component uses the useSelector hook to access the counter value and the useDispatch hook to dispatch the increment and decrement actions.</p>
+        </section>
+
+        <section>
+            <h2>Step 7: Run Your App</h2>
+            <pre><code>
+npx react-native run-android
+# or
+npx react-native run-ios
+            </code></pre>
+
+            <p>This command will start your React Native app with the configured Redux store. You can now use Redux to manage the state of your React Native application efficiently. As your app grows, continue to organize your state logic using slices and actions to maintain a clean and scalable codebase.</p>
+        </section>
+
+        <section>
+            <h2>Conclusion:</h2>
+            <p>We’ve covered the basics of Redux and how to implement Redux Toolkit in React Native. By understanding the core concepts and following the steps, you can enhance state management in your mobile apps.</p>
+            <p>As you explore React Native development, remember that Redux Toolkit simplifies the process, making it more accessible. Thanks for reading, and happy coding! If you found this helpful, give it a thumbs up!</p>
+        </section>
+
+        <section>
+            <h2>Redux without toolkit</h2>
+            <pre><code>
+NODEBOX
+    - public
+        - index.html
+    - src
+        - App.js
+        - index.js
+        - store.js
+        - style.css
+    package.json
+            </code></pre>
+
+            <h2>index.html</h2>
+            <pre><code>
+                <pre>
+    &lt;!DOCTYPE html&gt;
+    &lt;html lang="en"&gt;
+
+    &lt;head&gt;
+        &lt;meta charset="utf-8"&gt;
+        &lt;meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"&gt;
+        &lt;meta name="theme-color" content="#000000"&gt;
+        &lt;!--
+        manifest.json provides metadata used when your web app is added to the
+        homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+        --&gt;
+        &lt;link rel="manifest" href="%PUBLIC_URL%/manifest.json"&gt;
+        &lt;link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico"&gt;
+        &lt;!--
+        Notice the use of %PUBLIC_URL% in the tags above.
+        It will be replaced with the URL of the `public` folder during the build.
+        Only files inside the `public` folder can be referenced from the HTML.
+
+        Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+        work correctly both with client-side routing and a non-root public URL.
+        Learn how to configure a non-root public URL by running `npm run build`.
+        --&gt;
+        &lt;title&gt;React App&lt;/title&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+        &lt;noscript&gt;
+        You need to enable JavaScript to run this app.
+        &lt;/noscript&gt;
+        &lt;div id="root"&gt;&lt;/div&gt;
+        &lt;!--
+        This HTML file is a template.
+        If you open it directly in the browser, you will see an empty page.
+
+        You can add webfonts, meta tags, or analytics to this file.
+        The build step will place the bundled scripts into the &lt;body&gt; tag.
+
+        To begin the development, run `npm start` or `yarn start`.
+        To create a production bundle, use `npm run build` or `yarn build`.
+        --&gt;
+    &lt;/body&gt;
+
+    &lt;/html&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>App.js</h2>
+            <pre><code>
+import { useSelector, useDispatch } from "react-redux";
+export default function App() {
+    let counter = useSelector((state) => state.counter);
+    let dispatch = useDispatch();
+    let handleClick = (type) => {
+        let action = {
+            type
+        };
+        dispatch(action);
+    };
+
+    return (
+        &lt;div className="App"&gt;
+            &lt;div&gt; Counter: {counter} &lt;/div&gt;
+            &lt;button onClick={(e) => handleClick("add")}&gt; add &lt;/button&gt;
+            &lt;button onClick={(e) => handleClick("minus")}&gt; minus &lt;/button&gt;
+        &lt;/div>
+    );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>index.js</h2>
+            <pre><code>
+import { StrictMode } from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import store from "./store";
+import App from "./App";
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(
+    &lt;StrictMode&gt;
+        &lt;Provider store={store}&gt;
+            &lt;App /&gt;
+        &lt;/Provider&gt;
+    &lt;/StrictMode&gt;,
+    rootElement
+);
+            </code></pre>
+
+            <h2>store.js</h2>
+            <pre><code>
+import { createStore } from "redux";
+
+let defaultState = {
+    counter: 0
+};
+
+const counterReducer = (state = defaultState, action) => {
+    switch (action.type) {
+        case "add":
+            return {
+                ...state,
+                counter: state.counter + 1
+            };
+        case "minus":
+            return {
+                ...state,
+                counter: state.counter - 1
+            };
+        default:
+            return state;
+    }
+};
+
+export default createStore(counterReducer);
+
+            </code></pre>
+
+            <h2>styles.css</h2>
+            <pre><code>
+.App {
+    font-family: sans-serif;
+    text-align: center;
+}  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>&lt;link rel="manifest" href="%PUBLIC_URL%/manifest.json"&gt;</h2>
+            <p>The line you've posted is from a typical HTML document (usually in the <head> section), and it's used in web applications—especially React apps—to link to a Web App Manifest file:</p>
+            <p>Here's what it does:</p>
+            <ul>
+                <li>rel="manifest": Specifies that this link is to a Web App Manifest file.</li>
+                <li>href="%PUBLIC_URL%/manifest.json": Points to the manifest.json file, which contains metadata about the web application (name, icons, theme color, etc.).</li>
+            </ul>
+            
+            <p>Important Details:</p>
+            <ol>
+                <li>
+                    %PUBLIC_URL% is a placeholder used by build tools like Create React App (CRA).
+                    <ul>
+                        <li>During the build process, %PUBLIC_URL% gets replaced with the actual URL path to the public folder.</li>
+                        <li>
+                            So at runtime, this becomes something like:
+                            <pre><code>
+&lt;link rel="manifest" href="/manifest.json"&gt;
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+                <li>manifest.json typically lives in the public/ directory of a React app.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Why It's Used:</h2>
+            <ul>
+                <li>Allows your web app to be installed on devices (like a native app).</li>
+                <li>
+                    Provides metadata such as:
+                    <ul>
+                        <li>App name</li>
+                        <li>App icon</li>
+                        <li>Start URL</li>
+                        <li>Background and theme colors</li>
+                        <li>Display mode (fullscreen, standalone, etc.)</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <pre><code>
+{
+    "short_name": "MyApp",
+    "name": "My Progressive Web App",
+    "icons": [
+        {
+        "src": "icon-192x192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+        },
+        {
+        "src": "icon-512x512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
+}                  
+            </code></pre>
+            <p>Summary:</p>
+            <p>If you're using Create React App, this line is normal and required for supporting Progressive Web App (PWA) features. The placeholder %PUBLIC_URL% will be replaced with the correct path when the app is built.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

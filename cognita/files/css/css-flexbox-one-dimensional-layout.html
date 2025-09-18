@@ -202,19 +202,6 @@
 
         <section>
             <h2>🔸 Sidebar + Content</h2>
-            <pre><code>
-.layout {
-    display: flex;
-}
-    
-.sidebar {
-    flex: 0 0 200px; /* fixed width */
-}
-    
-.content {
-    flex: 1; /* take remaining space */
-}                  
-            </code></pre>
 
             <div class="layout">
                 <div class="sidebar">
@@ -228,6 +215,34 @@
                   </p>
                 </div>
             </div>
+
+            <pre><code>
+.layout {
+    display: flex;
+}
+    
+.sidebar {
+    flex: 0 0 200px; /* fixed width */
+}
+    
+.content {
+    flex: 1; /* take remaining space */
+}
+            
+&lt;div class="layout"&gt;
+    &lt;div class="sidebar"&gt;
+        &lt;h1>Sidebar&lt;/h1&gt;
+    &lt;p&gt;Navigation links or other fixed content goes here.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="content">
+        &lt;h1>Main Content&lt;/h1&gt;
+        &lt;p>
+        This content area expands to fill the remaining space. You can put your main app content, articles, dashboards, or anything else here.
+        &lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+            </code></pre>
 
             <pre><code>
 .layout {
@@ -303,6 +318,149 @@
                 <li>Right: .content dynamically resizing to fill the rest.</li>
             </ul>
             <p>It’s a solid pattern for web apps, dashboards, and admin panels.</p>
+        </section>
+
+        <section>
+            <h2>✅ When to Use Flexbox</h2>
+            <p>Use Flexbox when:</p>
+            <ul>
+                <li>You want to align items in a single row or column.</li>
+                <li>You need to control spacing and alignment of items.</li>
+                <li>You want elements to grow, shrink, or reorder responsively.</li>
+            </ul>
+
+            <p>Here’s a practical example of how Flexbox can make elements grow, shrink, or reorder responsively depending on the screen size.</p>
+            <p>🎯 Goal:</p>
+            <ul>
+                <li>
+                    Flex items that:
+                    <ul>
+                        <li>Grow to fill space.</li>
+                        <li>Shrink when space is tight.</li>
+                        <li>Change order on smaller screens (e.g., mobile-first responsive design).</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>🧱 HTML</p>
+            <pre><code>
+&lt;div class="flex-container"&gt;
+    &lt;div class="item item1">Item 1&lt;/div&gt;
+    &lt;div class="item item2">Item 2&lt;/div&gt;
+    &lt;div class="item item3">Item 3&lt;/div&gt;
+&lt;/div&gt;                  
+            </code></pre>
+
+            <p>🎨 CSS</p>
+            <pre><code>
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+    
+.item {
+    flex: 1 1 200px; /* grow, shrink, basis */
+    padding: 20px;
+    background-color: lightblue;
+    text-align: center;
+    font-weight: bold;
+    border: 2px solid #007BFF;
+}
+    
+/* Make Item 3 appear first on smaller screens */
+@media (max-width: 600px) {
+    .item1 { order: 2; }
+    .item2 { order: 3; }
+    .item3 { order: 1; }
+}                  
+            </code></pre>
+
+            <p>📖 Explanation</p>
+            <ul>
+                <li>➕ flex: 1 1 200px;</li>
+                <li>flex-grow: 1 → Items grow equally to fill extra space.</li>
+                <li>flex-shrink: 1 → Items shrink equally if space is limited.</li>
+                <li>flex-basis: 200px → Initial ideal width.</li>
+            </ul>
+
+            <p>🔄 order</p>
+            <ul>
+                <li>By default, order is 0.</li>
+                <li>Setting a higher order pushes the item later in the layout.</li>
+                <li>Mobile-first reordering helps control what appears on top in a vertical layout.</li>
+            </ul>
+
+            <p>📱 On a large screen:</p>
+            <pre><code>
+Item 1 | Item 2 | Item 3
+            </code></pre>
+
+            <p>📱 On a small screen (e.g., phone):</p>
+            <pre><code>
+Item 3
+Item 1
+Item 2
+            </code></pre>
+        </section>
+
+        <section>
+            <p>The CSS Flexible Box Layout module, commonly known as Flexbox, is a one-dimensional layout system designed for arranging items within a container, either in a row or a column. It provides an efficient way to distribute space and align content, particularly useful for creating responsive designs without relying on traditional methods like floats or positioning.</p>
+            <p><b>Key Concepts of Flexbox:</b></p>
+            <p><b>Flex Container:</b></p>
+            <p>The parent element that contains the flex items. To enable Flexbox, you apply display: flex; or display: inline-flex; to this container.</p>
+
+            <p><b>Flex Items:</b></p>
+            <p>The direct children of the flex container. These are the elements whose layout is controlled by Flexbox.</p>
+
+            <p><b>Main Axis:</b></p>
+            <p>The primary axis along which flex items are laid out. This is horizontal for flex-direction: row; and vertical for flex-direction: column;.</p>
+
+            <p><b>Cross Axis:</b></p>
+            <p>The axis perpendicular to the main axis. This is vertical for flex-direction: row; and horizontal for flex-direction: column;.</p>
+
+            <p><b>Core Properties and Functionalities:</b></p>
+            <p><b>flex-direction:</b></p>
+            <p>Defines the main axis (row or column) and the direction (normal or reverse).</p>
+
+            <p><b>justify-content:</b></p>
+            <p>Aligns flex items along the main axis, controlling how space is distributed between and around them.</p>
+
+            <p><b>align-items:</b></p>
+            <p>Aligns flex items along the cross axis within each line.</p>
+
+            <p><b>flex-wrap:</b></p>
+            <p>Controls whether flex items are forced onto a single line or allowed to wrap onto multiple lines.</p>
+
+            <p><b>align-content:</b></p>
+            <p>When flex-wrap is set to wrap, this property aligns the entire lines of flex items along the cross axis.</p>
+
+            <p><b>flex-grow, flex-shrink, flex-basis:</b></p>
+            <p>These properties, applied to individual flex items, control how they grow or shrink to fill or fit into available space.</p>
+
+            <b>Benefits of Flexbox:</b>
+            <ul>
+                <li>Responsiveness: Easily adapts layouts to different screen sizes and orientations.</li>
+                <li>Alignment Control: Offers precise control over the alignment and distribution of items.</li>
+                <li>Simplified Layouts: Reduces the need for complex CSS hacks or extensive use of floats and positioning.</li>
+                <li>Dynamic Sizing: Handles items with dynamic or unknown sizes effectively.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>The two axes of flexbox</h2>
+            <p>When working with flexbox you need to think in terms of two axes — the main axis and the cross axis. The main axis is defined by the flex-direction property, and the cross axis runs perpendicular to it. Everything we do with flexbox refers back to these axes, so it is worth understanding how they work from the outset.</p>
+            <p>The main axis</p>
+
+            <p>The main axis is defined by flex-direction, which has four possible values:</p>
+            <ul>
+                <li>row</li>
+                <li>row-reverse</li>
+                <li>column</li>
+                <li>column-reverse</li>
+            </ul>
+
+            <p>Should you choose row or row-reverse, your main axis will run along the row in the inline direction.</p>
         </section>
     </main>
 

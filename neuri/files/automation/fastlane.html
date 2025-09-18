@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Fastlane</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Fastlane</h1>
+                    <p class="subtitle">Fastlane is an open-source platform that automates the process of building, testing, and releasing iOS and Android apps. It's especially useful for mobile developers who want to streamline tedious tasks like code signing, provisioning profiles, screenshots, builds, and deployment to TestFlight, Google Play, etc.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 How Fastlane Works</h2>
+            <p>Fastlane works by using lanes, which are sets of tasks (called actions) defined in a Fastfile. Each lane can perform a series of automated steps, such as:</p>
+            <ul>
+                <li>Building the app</li>
+                <li>Running unit/UI tests</li>
+                <li>Taking screenshots</li>
+                <li>Code signing</li>
+                <li>Uploading to TestFlight or Play Store</li>
+                <li>Bumping version numbers</li>
+                <li>Notifying Slack/Teams/etc.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Basic Structure</h2>
+            <p>Files Created by Fastlane</p>
+            <p>When you run fastlane init, it creates:</p>
+            <pre><code>
+fastlane/
+├── Appfile     # App-specific configuration (e.g., Apple/Google credentials)
+├── Fastfile    # Main file where lanes and tasks are defined
+└── ...         # Other helper files (e.g., Match certificates)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 Typical Fastlane Usage</h2>
+            <p>1. Installation</p>
+            <p>Install Fastlane via:</p>
+            <pre><code>
+[sudo] gem install fastlane -NV
+# OR with brew
+brew install fastlane
+            </code></pre>
+
+            <p>Navigate to your project root:</p>
+            <pre><code>
+cd path/to/your/app
+fastlane init
+            </code></pre>
+
+            <p>You'll be guided through a setup process for iOS or Android.</p>
+        </section>
+
+        <section>
+            <h2>2. Creating a Lane</h2>
+            <p>In the Fastfile, define your automation steps:</p>
+            <pre><code>
+default_platform(:ios)
+
+platform :ios do
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    increment_build_number
+    build_app(scheme: "MyApp")
+    upload_to_testflight
+  end
+end
+            </code></pre>
+
+            <p>You can run this lane with:</p>
+            <pre><code>
+fastlane beta
+            </code></pre>
+
+            <p>This will:</p>
+            <ul>
+                <li>Increase the build number</li>
+                <li>Build the iOS app using Xcode</li>
+                <li>Upload it to TestFlight</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Common Actions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>build_app</td>
+                        <td>Builds the app (iOS: Xcode, Android: gradle)</td>
+                    </tr>
+                    <tr>
+                        <td>upload_to_testflight</td>
+                        <td>Uploads to Apple TestFlight</td>
+                    </tr>
+                    <tr>
+                        <td>upload_to_play_store</td>
+                        <td>Uploads to Google Play</td>
+                    </tr>
+                    <tr>
+                        <td>sigh, match</td>
+                        <td>Code signing (certificates and provisioning profiles)</td>
+                    </tr>
+                    <tr>
+                        <td>increment_build_number</td>
+                        <td>Increments iOS build number</td>
+                    </tr>
+                    <tr>
+                        <td>increment_version_code</td>
+                        <td>Increments Android version code</td>
+                    </tr>
+                    <tr>
+                        <td>capture_screenshots</td>
+                        <td>Takes screenshots for the App Store</td>
+                    </tr>
+                    <tr>
+                        <td>slack</td>
+                        <td>Sends a message to Slack</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. Fastlane for Android</h2>
+            <p>Example lane for Android:</p>
+            <pre><code>
+default_platform(:android)
+
+platform :android do
+  desc "Deploy to Google Play"
+  lane :deploy do
+    gradle(
+      task: "assemble",
+      build_type: "Release"
+    )
+    upload_to_play_store(
+      track: 'internal'
+    )
+  end
+end
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔄 CI/CD Integration</h2>
+            <p>Fastlane is widely used in CI/CD pipelines (e.g., GitHub Actions, GitLab CI, Bitrise, CircleCI). You can include it in your pipeline steps:</p>
+            <pre><code>
+# GitHub Actions example
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: bundle install
+      - run: fastlane beta
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Best Practices</h2>
+            <ul>
+                <li>Use match for managing iOS certificates and provisioning profiles.</li>
+                <li>Use .env files or environment variables to store secrets securely.</li>
+                <li>Use before_all, after_all, and error blocks in Fastfile for logging or error handling.</li>
+                <li>Modularize multiple lanes (build, test, release) for reuse.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 Testing Fastlane Lanes</h2>
+            <p>You can test lanes locally:</p>
+            <pre><code>
+fastlane &lt;lane_name&gt; --verbose
+            </code></pre>
+            <p>Dry-run mode (to test without executing):</p>
+            <pre><code>
+fastlane &lt;lane_name&gt; --dry-run
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔗 Resources</h2>
+            <ul>
+                <li>Official: <a href="https://fastlane.tools">https://fastlane.tools</a></li>
+                <li>GitHub: <a href="https://github.com/fastlane/fastlane">https://github.com/fastlane/fastlane</a></li>
+                <li>Docs: <a href="https://github.com/fastlane/fastlane">https://docs.fastlane.tools</a></li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 1: Setup Basic Fastlane</h2>
+            <p>If you haven’t set up Fastlane yet, start with:</p>
+            <pre><code>
+fastlane init
+            </code></pre>
+            <p>Choose the platform (iOS or Android) and set up basic lanes for build, test, and deployment.</p>
+        </section>
+
+        <section>
+            <h2>Step 2: Advanced Fastlane Configuration</h2>
+            <p>You configure lanes inside your Fastfile, located in the fastlane directory.</p>
+            <p>Here's an example Fastfile for iOS with advanced features:</p>
+            <pre><code>
+default_platform(:ios)
+
+platform :ios do
+  desc "Runs all the tests"
+  lane :run_tests do
+    scan(
+      scheme: "MyApp",
+      devices: ["iPhone 14 Pro"],
+      clean: true,
+      code_coverage: true
+    )
+  end
+
+  desc "Builds the app for AdHoc distribution"
+  lane :build_adhoc do
+    match(type: "adhoc")       # Code signing via match
+    gym(scheme: "MyApp",       # Build app
+        export_method: "ad-hoc",
+        clean: true,
+        output_directory: "./build")
+  end
+
+  desc "Submit a beta build to TestFlight"
+  lane :beta do
+    build_adhoc
+    pilot(
+      username: "your_apple_id@example.com",
+      skip_waiting_for_build_processing: false,
+      distribute_external: true
+    )
+  end
+
+  desc "Deploy app to App Store"
+  lane :release do
+    capture_screenshots          # Automated screenshot generation
+    build_adhoc
+    deliver(force: true)          # Upload to App Store
+    slack(                       # Notify team via Slack
+      message: "New app version released!",
+      success: true
+    )
+  end
+end
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3: Advanced Features</h2>
+            <ol>
+                <li>
+                    Code Signing Management:
+                    <ul>
+                        <li>Use match to sync your provisioning profiles and certificates.</li>
+                        <li>This helps avoid manual code signing issues across CI and local machines.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Automated Screenshots:
+                    <ul>
+                        <li>Use capture_screenshots with snapshot to generate localized screenshots automatically.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Slack Notifications:
+                    <ul>
+                        <li>ntegrate slack action to notify your team about builds/releases.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Environment Variables:
+                    <ul>
+                        <li>Use .env files or export environment variables for sensitive info (API keys, credentials).</li>
+                    </ul>
+                </li>
+
+                <li>
+                    CI Integration:
+                    <ul>
+                        <li>Fastlane integrates well with CI/CD tools like GitHub Actions, Bitrise, Jenkins.</li>
+                        <li>Use lanes to separate build, test, and deployment logic for your CI pipelines.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Example .env for Fastlane</h2>
+            <pre><code>
+APP_IDENTIFIER=com.example.myapp
+APPLE_ID=your_apple_id@example.com
+SLACK_URL=https://hooks.slack.com/services/xxx/yyy/zzz
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4: Tips for Android</h2>
+            <p>For Android, a similar setup would be:</p>
+            <pre><code>
+platform :android do
+  desc "Runs all the tests"
+  lane :run_tests do
+    gradle(task: "test")
+  end
+
+  desc "Build a debug APK"
+  lane :debug do
+    gradle(task: "assembleDebug")
+  end
+
+  desc "Build a release APK"
+  lane :release do
+    gradle(task: "assembleRelease")
+    supply(track: "production")  # Upload to Google Play
+  end
+end
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example .env (put in fastlane/.env)</h2>
+            <pre><code>
+APPLE_ID=your_apple_id@example.com
+MATCH_GIT_URL=git@github.com:your_org/certificates.git
+SLACK_URL=https://hooks.slack.com/services/XXX/YYY/ZZZ
+            </code></pre>
+
+            <p>Then in your Fastfile you can access them with ENV["APPLE_ID"], ENV["MATCH_GIT_URL"], etc.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

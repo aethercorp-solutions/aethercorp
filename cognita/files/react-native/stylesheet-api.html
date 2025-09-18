@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>StyleSheet API</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">StyleSheet API</h1>
+                    <p class="subtitle">Styling in React Native uses a concept similar to CSS, but it’s implemented via JavaScript objects using the StyleSheet API. Additionally, responsive design in React Native often requires different techniques compared to traditional web development due to the wide variety of device sizes and resolutions.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 1. Basic Styling with StyleSheet</h2>
+            <pre><code>
+import { StyleSheet, Text, View } from 'react-native';
+
+export default function App() {
+  return (
+    &lt;View style={styles.container}&gt;
+        &lt;Text style={styles.text}>Hello World&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: 'blue',
+    fontSize: 20,
+  },
+});
+            </code></pre>
+            <p>Note: Styles are not inherited by default (unlike web CSS).</p>
+        </section>
+
+        <section>
+            <h2>🔹 2. Inline Styling</h2>
+            <p>You can apply styles directly:</p>
+            <pre><code>
+&lt;Text style={{ fontSize: 18, color: 'red' }}&gt;Inline style&lt;/Text&gt;
+            <p>Use inline styles for quick overrides or dynamic styling.</p>
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 3. Combining Styles</h2>
+            <p>You can pass an array of styles:</p>
+            <pre><code>
+&lt;Text style={[styles.text, { color: 'green' }]}&gt;Combined style&lt;/Text&gt;
+            </code></pre>
+            <p>Later styles override earlier ones.</p>
+        </section>
+
+        <section>
+            <h2>🔹 4. Responsive Design Techniques</h2>
+            <p>React Native doesn’t support media queries directly, so here are alternatives:</p>
+        </section>
+
+        <section>
+            <h2>✅ A. Dimensions API</h2>
+            <pre><code>
+import { Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+
+if (width < 400) {
+  // Small screen logic
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ B. Percentage-Based Layouts</h2>
+            <p>You can use % in certain properties:</p>
+            <pre><code>
+&lt;View style={{ width: '80%', height: '50%' }} /&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ C. Flexbox Layout</h2>
+            <p>React Native uses Flexbox by default for layout:</p>
+            <pre><code>
+container: {
+    flex: 1,
+    flexDirection: 'column', // or 'row'
+    justifyContent: 'center',
+    alignItems: 'center',
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ D. Platform-Specific Styling</h2>
+            <pre><code>
+import { Platform } from 'react-native';
+
+const styles = StyleSheet.create({
+  text: {
+    ...Platform.select({
+      ios: { fontSize: 20 },
+      android: { fontSize: 18 },
+    }),
+  },
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ E. Hooks for Responsiveness: useWindowDimensions()</h2>
+            <pre><code>
+import { useWindowDimensions } from 'react-native';
+
+const MyComponent = () => {
+  const { width } = useWindowDimensions();
+
+  return (
+    &lt;View style={{ padding: width > 400 ? 20 : 10 }}&gt;
+        &lt;Text&gt;Responsive Text&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ F. 3rd Party Libraries for Responsive Design</h2>
+            <ol>
+                <li>
+                    react-native-responsive-screen
+                    <pre><code>
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
+style: {
+  width: wp('80%'),
+  height: hp('50%'),
+}
+                    </code></pre>
+                </li>
+
+                <li>
+                    react-native-size-matters
+                    <ul>
+                        <li>Scales font sizes and layout across devices.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 5. Best Practices</h2>
+            <ul>
+                <li>Use StyleSheet.create() for performance and readability.</li>
+                <li>Use flex layouts and percentage-based sizing.</li>
+                <li>Avoid fixed dimensions unless absolutely necessary.</li>
+                <li>Test on multiple screen sizes and orientations.</li>
+                <li>Consider dark mode using useColorScheme().</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Sure — let’s break down what each part means, especially if you're new to styling in React Native.</p>
+            <p>In React Native, StyleSheet is a way to define styles similar to CSS, but in JavaScript.</p>
+            <p>Instead of writing:</p>
+            <pre><code>
+.myClass {
+    color: red;
+}                  
+            </code></pre>
+            <p>You write:</p>
+            <pre><code>
+const styles = StyleSheet.create({
+    myClass: {
+        color: 'red',
+    },
+});                  
+            </code></pre>
+
+            <p>Then apply it to your component:</p>
+            <pre><code>
+&lt;Text style={styles.myClass}&gt;Hello&lt;/Text&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ What is Responsive Design?</h2>
+            <p>Responsive design means your app adjusts automatically to different screen sizes (small phones, large tablets, etc.).</p>
+            <p>So instead of your app looking good only on an iPhone 13, it also looks good on:</p>
+            <ul>
+                <li>Android phones</li>
+                <li>iPads</li>
+                <li>Foldable phones</li>
+                <li>Any other screen size</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>📐 Example</p>
+            <p>Let’s say you want a button that looks good on all screens.</p>
+            <pre><code>
+import { Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  button: {
+    width: width * 0.8, // 80% of screen width
+    padding: 10,
+    backgroundColor: 'blue',
+  },
+});
+            </code></pre>
+            <p>This way, the button takes up 80% of the screen width — no matter how big or small the device is.</p>
+        </section>
+
+        <section>
+            <h2>✅ What is Flexbox?</h2>
+            <p>Flexbox is a layout system (built-in to React Native) that lets you easily arrange elements.</p>
+            <pre><code>
+container: {
+    flex: 1,
+    flexDirection: 'row',       // arrange horizontally
+    justifyContent: 'center',   // center items horizontally
+    alignItems: 'center',       // center items vertically
+}                  
+            </code></pre>
+            <p>It replaces the need for using margin, padding, or exact positioning in many cases.</p>
+        </section>
+
+        <section>
+            <h2>✅ Summary of Key Ideas:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>StyleSheet.create()</td>
+                        <td>A way to define styles in React Native</td>
+                    </tr>
+                    <tr>
+                        <td>Responsive Design</td>
+                        <td>Making your app look good on all screen sizes</td>
+                    </tr>
+                    <tr>
+                        <td>Dimensions</td>
+                        <td>Gives you screen width and height</td>
+                    </tr>
+                    <tr>
+                        <td>% values</td>
+                        <td>Helps size elements relative to the screen</td>
+                    </tr>
+                    <tr>
+                        <td>Flexbox</td>
+                        <td>A layout system to align and distribute space among items</td>
+                    </tr>
+                    <tr>
+                        <td>useWindowDimensions()</td>
+                        <td>A hook that updates size info if the screen rotates/resizes</td>
+                    </tr>
+                    <tr>
+                        <td>Platform-specific code</td>
+                        <td>Styling differently for Android vs iOS</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

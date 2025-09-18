@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Redux and React Context in a React Native application</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Redux and React Context in a React Native application</h1>
+                    <p class="subtitle">When deciding between Redux and React Context in a React Native application, the right choice depends on the scale, complexity, and performance needs of your app.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔍 Quick Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature / Use Case</th>
+                        <th>Redux</th>
+                        <th>React Context API</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🔧 Setup Complexity</td>
+                        <td>Medium to High (more boilerplate)</td>
+                        <td>Low (built-in, simple setup)</td>
+                    </tr>
+                    <tr>
+                        <td>📦 State Management Scope</td>
+                        <td>Global, centralized</td>
+                        <td>Good for small to medium-scale state</td>
+                    </tr>
+                    <tr>
+                        <td>⚡ Performance (Re-renders)</td>
+                        <td>Efficient with memoization (via selectors)</td>
+                        <td>Can cause unnecessary re-renders</td>
+                    </tr>
+                    <tr>
+                        <td>🧩 Middleware / Side Effects</td>
+                        <td>Strong (via redux-thunk, redux-saga)</td>
+                        <td>Requires custom implementation</td>
+                    </tr>
+                    <tr>
+                        <td>🧪 Debugging Tools</td>
+                        <td>Excellent (Redux DevTools, logging)</td>
+                        <td>Basic (no built-in debugging)</td>
+                    </tr>
+                    <tr>
+                        <td>🧠 Learning Curve</td>
+                        <td>Steeper</td>
+                        <td>Easier</td>
+                    </tr>
+                    <tr>
+                        <td>🔄 Ideal for</td>
+                        <td>Complex state, many updates</td>
+                        <td>Simple/global state like theme, auth</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 When to Use Context API</h2>
+            <p>Use React Context when:</p>
+            <ul>
+                <li>
+                    You're managing simple global state like:
+                    <ul>
+                        <li>Auth/user info</li>
+                        <li>Theme or language</li>
+                        <li>App-level preferences</li>
+                    </ul>
+                </li>
+                <li>You have limited components needing the shared state</li>
+                <li>You want a lightweight, no-dependency solution</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example Use Case:</h2>
+            <pre><code>
+// ThemeContext.js
+const ThemeContext = React.createContext();
+
+export const ThemeProvider = ({ children }) => {
+  const [darkMode, setDarkMode] = useState(false);
+
+  return (
+    &lt;ThemeContext.Provider value={{ darkMode, setDarkMode }}&gt;
+      {children}
+    &lt;/ThemeContext.Provider&gt;
+  );
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 When to Use Redux</h2>
+            <p>Use Redux when:</p>
+            <ul>
+                <li>
+                    Your app state is large or complex
+                    <ul>
+                        <li>Many components accessing/changing shared state</li>
+                        <li>Nested data structures, normalized data</li>
+                    </ul>
+                </li>
+                <li>You need middleware (e.g., API calls, logging, etc.)</li>
+                <li>You want time-travel debugging or logging</li>
+                <li>You need better performance optimization (fine-grained state selection)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Common Redux Use Cases:</h2>
+            <ul>
+                <li>E-commerce carts</li>
+                <li>Chat/messaging apps</li>
+                <li>Real-time dashboards</li>
+                <li>Complex forms with dependencies</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Performance Considerations</h2>
+            <p>React Context:</p>
+            <ul>
+                <li>Every time a context value changes, all consuming components re-render, even if they don't need the whole state.</li>
+                <li>Not recommended for high-frequency updates (e.g., input changes, animations, counters).</li>
+            </ul>
+
+            <p>Redux:</p>
+            <ul>
+                <li>Can optimize with React.memo + useSelector to minimize re-renders.</li>
+                <li>Selectors (e.g., reselect) allow pulling only parts of the state needed by a component.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Final Recommendation</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>App Type</th>
+                        <th>Recommendation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Simple app (auth, theme)</td>
+                        <td>✅ Context API</td>
+                    </tr>
+                    <tr>
+                        <td>Medium/large app (e.g., e-commerce, social media)</td>
+                        <td>✅ Redux</td>
+                    </tr>
+                    <tr>
+                        <td>High-frequency updates needed</td>
+                        <td>✅ Redux</td>
+                    </tr>
+                    <tr>
+                        <td>Want minimal setup</td>
+                        <td>✅ Context API</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
