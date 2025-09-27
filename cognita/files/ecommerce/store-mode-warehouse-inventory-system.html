@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>warehouse inventory system, Store Mode</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">warehouse inventory system, Store Mode</h1>
+                    <p class="subtitle">In a warehouse inventory system, Store Mode typically refers to a specific operational context or workflow designed to handle inventory activities without requiring a linked sales order (SO). It can vary by system, but generally, Store Mode is used for more flexible or real-time operations, such as:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔄 Definition of Store Mode</h2>
+            <p>Store Mode is a workflow where warehouse users interact with inventory without being bound to a predefined sales order or document. It allows for on-the-fly packing, picking, receiving, or transfers.</p>
+        
+            <p>🧭 Use Cases for Store Mode</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Walk-in Orders / Ad-Hoc Sales</td>
+                        <td>For in-store or counter sales where customers purchase without prior ordering.</td>
+                    </tr>
+                    <tr>
+                        <td>Internal Transfers</td>
+                        <td>Moving inventory between locations, bins, or departments.</td>
+                    </tr>
+                    <tr>
+                        <td>Cycle Counting</td>
+                        <td>Performing stock counts without initiating a formal audit.</td>
+                    </tr>
+                    <tr>
+                        <td>Returns Without SO</td>
+                        <td>Receiving returned items not linked to a specific order.</td>
+                    </tr>
+                    <tr>
+                        <td>Packing Samples or Replacements</td>
+                        <td>Packing items for dispatch without billing (e.g., sample kits, warranty replacements).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📦 Example Scenario</h2>
+            <p>Let's say a warehouse worker needs to pack a box of items for a showroom that needs immediate restocking, but there's no sales order created yet.</p>
+            <p>In Store Mode, the system would:</p>
+
+            <ul>
+                <li>Allow selecting a client or destination.</li>
+                <li>Let the worker choose inventory directly from stock.</li>
+                <li>Possibly allow printing a generic packing slip or label.</li>
+                <li>Track the transaction internally for later reconciliation.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 Why It's Treated Differently</h2>
+            <p>Store Mode is usually more permissive but comes with controlled limitations to:</p>
+            <ul>
+                <li>Prevent untraceable stock loss.</li>
+                <li>Ensure proper inventory reconciliation.</li>
+                <li>Maintain audit trails even without an SO.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ In Your Code Context</h2>
+            <p>In your Objective-C code, this block:</p>
+            <pre><code>
+if (self.context == PL_STORE_MODE && SOs.count <= 0) {
+    [self beginStoreModeInstance];
+    return;
+}                
+            </code></pre>
+            <p>…implies:</p>
+            <ul>
+                <li>If you're in Store Mode and there are no open sales orders for the client, just start the Store Mode process directly.</li>
+                <li>No need to show the Sales Order selection screen.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <p>Store Mode in a warehouse inventory system:</p>
+            <ul>
+                <li>Enables flexible, non-order-based inventory actions.</li>
+                <li>Supports operations like internal use, samples, or ad-hoc dispatch.</li>
+                <li>Is designed for speed and flexibility while maintaining some traceability.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Great — let’s dive deeper into how Store Mode can be securely and efficiently implemented in a warehouse inventory system, including key considerations, workflow design, and security mechanisms.</p>
+            <h2>✅ Store Mode Implementation: Design & Best Practices</h2>
+
+            <p>🧭 1. Define the Purpose of Store Mode</p>
+            <p>Before implementation, clarify the exact goals:</p>
+            <ul>
+                <li>Is it for packing without SOs?</li>
+                <li>Is it for internal consumption?</li>
+                <li>Is it for emergency dispatch?</li>
+                <li>Is it customer-facing (storefront) or warehouse-only?</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 2. Core Components of Store Mode Workflow</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>User Role/Permissions</td>
+                        <td>Only authorized roles (e.g., warehouse managers, dispatch) should access Store Mode.</td>
+                    </tr>
+                    <tr>
+                        <td>Client/Department Selection</td>
+                        <td>Optionally associate the transaction with a client, department, or destination.</td>
+                    </tr>
+                    <tr>
+                        <td>Item Selection</td>
+                        <td>Allow barcode scan, search, or manual entry of SKUs.</td>
+                    </tr>
+                    <tr>
+                        <td>Quantity Entry</td>
+                        <td>Enforce max quantity limits, stock availability checks.</td>
+                    </tr>
+                    <tr>
+                        <td>Inventory Validation</td>
+                        <td>Prevent picking restricted/damaged/expired goods.</td>
+                    </tr>
+                    <tr>
+                        <td>Packing/Labeling</td>
+                        <td>Allow on-the-fly packing slip generation or tagging.</td>
+                    </tr>
+                    <tr>
+                        <td>Audit Trail / Journal Logging</td>
+                        <td>Log all actions with user ID, timestamp, and affected inventory.</td>
+                    </tr>
+                    <tr>
+                        <td>Reason Codes</td>
+                        <td>Require justification (e.g., "sample", "warranty", "internal test").</td>
+                    </tr>
+                    <tr>
+                        <td>Finalization & Posting</td>
+                        <td>Commit the transaction to inventory (deduct quantities, update bin locations, etc.).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔐 3. Security & Control Mechanisms</h2>
+            <p>a. Role-based Access Control (RBAC)</p>
+            <p>Only certain users should be allowed to:</p>
+            <ul>
+                <li>Enter Store Mode</li>
+                <li>Pack without SO</li>
+                <li>Adjust inventory quantities manually</li>
+            </ul>
+            <p>Example roles:</p>
+            <ul>
+                <li>✅ Warehouse Supervisor</li>
+                <li>✅ Inventory Auditor</li>
+                <li>❌ Warehouse Packer (restricted)</li>
+            </ul>
+
+            <p>b. Justification (Reason Codes)</p>
+            <p>Force users to select a reason when entering Store Mode, e.g.:</p>
+            <ul>
+                <li>Sample Dispatch</li>
+                <li>Internal Use</li>
+                <li>Emergency Shipment</li>
+                <li>Rework Transfer</li>
+            </ul>
+            <p>This gives you traceability and auditing ability later.</p>
+
+            <p>c. Audit Logging</p>
+            <p>Log every transaction, including:</p>
+            <ul>
+                <li>User ID</li>
+                <li>Timestamp</li>
+                <li>Items and quantities</li>
+                <li>Source/Destination</li>
+                <li>Reason code</li>
+            </ul>
+            <p>Store these logs in an immutable store or append-only table.</p>
+
+            <p>d. Inventory Validation</p>
+            <p>Ensure users cannot bypass inventory integrity, such as:</p>
+            <ul>
+                <li>Taking more than available</li>
+                <li>Picking expired/banned items</li>
+                <li>Selecting from restricted bins</li>
+            </ul>
+
+            <p>e. Optional Review/Approval Step</p>
+            <p>For some environments, a supervisor review or approval might be needed before the transaction is committed to inventory.</p>
+        </section>
+
+        <section>
+            <h2>🔁 4. Workflow Example (Packing Without Sales Order)</h2>
+            <p>📲 User Flow:</p>
+            <ol>
+                <li>User selects Store Mode (from app or terminal).</li>
+                <li>System asks for Reason Code (e.g., Sample Dispatch).</li>
+                <li>User scans/selects destination (e.g., Client ABC).</li>
+                <li>User scans SKUs and enters quantities.</li>
+                <li>System validates inventory, shows errors if needed.</li>
+                <li>Packing slip or label is generated (optional).</li>
+                <li>User confirms; transaction is logged and inventory is adjusted.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📊 5. Reporting & Analysis</h2>
+            <p>Store Mode should be fully reportable:</p>
+            <ul>
+                <li>Items dispatched without SO</li>
+                <li>Top users of Store Mode</li>
+                <li>Frequent reason codes</li>
+                <li>Quantity lost/given via Store Mode</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Risks of Poor Store Mode Implementation</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Risk</th>
+                        <th>Mitigation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Inventory Shrinkage</td>
+                        <td>Require approval & audit logs</td>
+                    </tr>
+                    <tr>
+                        <td>No Customer Traceability</td>
+                        <td>Allow optional client tagging</td>
+                    </tr>
+                    <tr>
+                        <td>Inventory Discrepancies</td>
+                        <td>Enforce validation checks</td>
+                    </tr>
+                    <tr>
+                        <td>Unauthorized Usage</td>
+                        <td>Lock behind permissions & reason codes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠️ 6. Sample Data Model (Simplified)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>id</td>
+                        <td>UUID</td>
+                        <td>Transaction ID</td>
+                    </tr>
+                    <tr>
+                        <td>user_id</td>
+                        <td>string</td>
+                        <td>Who initiated</td>
+                    </tr>
+                    <tr>
+                        <td>timestamp</td>
+                        <td>datetime</td>
+                        <td>When</td>
+                    </tr>
+                    <tr>
+                        <td>items</td>
+                        <td>JSON</td>
+                        <td>Item SKU, qty, bin</td>
+                    </tr>
+                    <tr>
+                        <td>reason_code</td>
+                        <td>string</td>
+                        <td>Sample, Rework, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>client_id</td>
+                        <td>string (nullable)</td>
+                        <td>Optional</td>
+                    </tr>
+                    <tr>
+                        <td>status</td>
+                        <td>enum</td>
+                        <td>Pending, Approved, Posted</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Summary</h2>
+            <p>A well-designed Store Mode is:</p>
+            <ul>
+                <li>Flexible: lets users act without rigid sales workflows</li>
+                <li>Controlled: uses roles, validations, and logging</li>
+                <li>Auditable: every action is traceable</li>
+                <li>Valuable: supports internal needs, sampling, urgent ops</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Would you like:</h2>
+            <ul>
+                <li>A flowchart for Store Mode?</li>
+                <li>A Swift/Objective-C class design?</li>
+                <li>A database schema?</li>
+                <li>UI wireframes for mobile?</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

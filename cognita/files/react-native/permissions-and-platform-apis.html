@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Permissions and Platform APIs</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Permissions and Platform APIs</h1>
+                    <p class="subtitle">When building applications—especially mobile or web apps—Permissions and Platform APIs (like access to Camera, GPS, Microphone, etc.) are critical for enabling certain features while maintaining user privacy and system security.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Here’s a clear breakdown:</p>
+            <h2>🔐 Permissions Overview</h2>
+
+            <p>Permissions are user or system-level approvals required before an app can access sensitive data or hardware features (like GPS, Camera, Contacts).</p>
+            <p>Common Types of Permissions:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Permission Needed</th>
+                        <th>Platforms</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Camera</td>
+                        <td>Camera access</td>
+                        <td>iOS, Android, Web</td>
+                    </tr>
+                    <tr>
+                        <td>GPS (Location)</td>
+                        <td>Location access (fine/coarse)</td>
+                        <td>iOS, Android, Web</td>
+                    </tr>
+                    <tr>
+                        <td>Microphone</td>
+                        <td>Microphone access</td>
+                        <td>iOS, Android, Web</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td>File read/write</td>
+                        <td>Android (scoped storage), iOS</td>
+                    </tr>
+                    <tr>
+                        <td>Contacts</td>
+                        <td>Contacts access</td>
+                        <td>Android, iOS</td>
+                    </tr>
+                    <tr>
+                        <td>Bluetooth</td>
+                        <td>Bluetooth access</td>
+                        <td>Android, iOS</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📱 Platform-Specific APIs & Permissions</h2>
+            <p>🔷 Android</p>
+            <ul>
+                <li>Permissions declared in AndroidManifest.xml.</li>
+                <li>From Android 6.0 (API 23) onward: Runtime permissions are required.</li>
+                <li>Use ContextCompat.checkSelfPermission() and requestPermissions().</li>
+            </ul>
+            <p>🔧 Example (Kotlin):</p>
+
+            <pre><code>
+if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+    != PackageManager.PERMISSION_GRANTED) {
+    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST_CODE)
+}
+            </code></pre>
+
+            <p>🍎 iOS</p>
+            <ul>
+                <li>Permissions declared in Info.plist.</li>
+                <li>Prompt automatically shown when API is used for the first time.</li>
+                <li>Use CLLocationManager (for GPS), AVCaptureDevice (for Camera/Mic).</li>
+            </ul>
+
+            <p>🔧 Example (Swift):</p>
+            <pre><code>
+let cameraStatus = AVCaptureDevice.authorizationStatus(for: .video)
+if cameraStatus == .notDetermined {
+    AVCaptureDevice.requestAccess(for: .video) { granted in
+        // Handle permission
+    }
+}
+            </code></pre>
+
+            <p>🌐 Web (Browser)</p>
+            <ul>
+                <li>Uses the Permissions API or prompts automatically when APIs are used.</li>
+            </ul>
+            <p>🔧 Example (JavaScript):</p>
+            <pre><code>
+navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+
+navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+  console.log(result.state); // 'granted', 'prompt', or 'denied'
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ Platform APIs Overview</h2>
+            <p>1. Camera API</p>
+            <ul>
+                <li>Use Cases: Barcode scanning, face detection, taking pictures.</li>
+                <li>Web: MediaDevices.getUserMedia()</li>
+                <li>Android: CameraX, Camera2 API</li>
+                <li>iOS: AVCaptureSession</li>
+            </ul>
+
+            <p>2. GPS / Location API</p>
+            <ul>
+                <li>Use Cases: Maps, navigation, geofencing.</li>
+                <li>Web: navigator.geolocation</li>
+                <li>Android: FusedLocationProviderClient</li>
+                <li>iOS: CoreLocation</li>
+            </ul>
+
+            <p>3. Microphone API</p>
+            <ul>
+                <li>Use Cases: Voice input, audio recording.</li>
+                <li>Web: getUserMedia({ audio: true })</li>
+                <li>Android: MediaRecorder, AudioRecord</li>
+                <li>iOS: AVAudioRecorder</li>
+            </ul>
+
+            <p>4. Bluetooth API</p>
+            <ul>
+                <li>Use Cases: Wearables, IoT devices.</li>
+                <li>Web: Web Bluetooth API (limited support)</li>
+                <li>Android: BluetoothAdapter, BluetoothGatt</li>
+                <li>iOS: CoreBluetooth</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 Best Practices</h2>
+            <ol>
+                <li>Request only what you need – Avoid asking for unnecessary permissions.</li>
+                <li>Provide context – Explain why you need the permission before prompting.</li>
+                <li>Handle denial gracefully – Let users continue with limited functionality if possible.</li>
+                <li>Respect platform guidelines – Especially for Apple App Store and Google Play.</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

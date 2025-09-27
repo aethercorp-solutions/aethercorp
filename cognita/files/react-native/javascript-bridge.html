@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JavaScript Bridge</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JavaScript Bridge in Hybrid Mobile Apps</h1>
+                    <p class="subtitle">The JavaScript Bridge in hybrid mobile apps serves as a crucial two-way communication channel between the web-based part of the application (running in a WebView) and the native platform code (Android or iOS). This bridge allows developers to leverage web technologies (HTML, CSS, JavaScript) for the core application logic while still accessing and utilizing native device functionalities.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Key aspects of the JavaScript Bridge:</h2>
+            <ul>
+                <li>Enabling Native Feature Access: The primary role of the JavaScript Bridge is to allow JavaScript code within the WebView to invoke native functionalities that are not directly accessible to standard web applications. This includes accessing hardware features like the camera, GPS, accelerometer, contacts, and other system-level APIs.</li>
+                <li>
+                    Two-Way Communication: The bridge facilitates communication in both directions:
+                    <ul>
+                        <li>JavaScript to Native: JavaScript code can call native methods or functions, passing data as needed. This is often achieved by exposing native objects or methods to the JavaScript context, allowing them to be called as if they were regular JavaScript functions.</li>
+                        <li>Native to JavaScript: Native code can also trigger JavaScript functions within the WebView, allowing for updates to the UI, data processing, or other actions within the web-based part of the app.</li>
+                    </ul>
+                </li>
+                <li>Implementation: In Android, this is typically achieved using the addJavascriptInterface method, which exposes a Java object to the JavaScript context within the WebView. In iOS, similar mechanisms exist, often involving WKWebView and message handlers.</li>
+                <li>Hybrid App Frameworks: Frameworks like Apache Cordova, Ionic, and React Native heavily rely on the JavaScript Bridge concept. These frameworks provide abstractions and plugins that simplify the process of bridging between JavaScript and native code, making it easier for developers to build cross-platform hybrid applications.</li>
+                <li>Security Considerations: When implementing a JavaScript Bridge, security is paramount. Insecure implementations can expose the native application to vulnerabilities, allowing malicious JavaScript code to potentially access sensitive data or perform unauthorized actions. Careful consideration of access control and data validation is essential.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Yes, React Native is considered a hybrid mobile app framework, but with some clarification.</p>
+            <h2>🧩 What does "hybrid" mean?</h2>
+
+            <p>In mobile development, hybrid apps generally refer to apps that:</p>
+            <ul>
+                <li>Use web technologies (like HTML, CSS, JavaScript)</li>
+                <li>Run inside a WebView (like a browser embedded in an app)</li>
+                <li>Examples: Cordova, Ionic</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ React Native: Hybrid but Different</h2>
+            <p>React Native does use JavaScript, like hybrid frameworks, but it does not use WebViews.</p>
+            <p>Instead:</p>
+            <ul>
+                <li>It compiles to native components.</li>
+                <li>UI elements are rendered using actual native views (e.g., UIView on iOS, View on Android).</li>
+                <li>JavaScript runs in a separate thread and communicates with native code via a bridge.</li>
+            </ul>
+
+            <p>So it’s more accurate to call React Native a:</p>
+            <p>Cross-platform framework that provides near-native performance</p>
+            <p>Hybrid in terms of development (JavaScript shared across platforms)</p>
+            <p>Not hybrid in terms of rendering (no WebView-based UI)</p>
+        </section>
+
+        <section>
+            <h2>Summary:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>React Native</th>
+                        <th>Traditional Hybrid (Ionic, Cordova)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>UI rendering</td>
+                        <td>Native components</td>
+                        <td>WebView</td>
+                    </tr>
+                    <tr>
+                        <td>Code language</td>
+                        <td>JavaScript</td>
+                        <td>HTML, CSS, JavaScript</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>High (near-native)</td>
+                        <td>Lower (WebView-based)</td>
+                    </tr>
+                    <tr>
+                        <td>Platform support</td>
+                        <td>Android, iOS</td>
+                        <td>Android, iOS (via WebView)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Verdict:</h2>
+            <p>React Native is technically hybrid in terms of shared code across platforms, but not hybrid in the traditional WebView sense. It's often categorized as cross-platform native or "native-like" instead.</p>
+        </section>
+
+        <section>
+            <p>Great question! To understand how React Native executes JavaScript and communicates with native modules, we need to explore the architecture and the tools/systems it uses under the hood.</p>
+            <p>Let’s break this down technically and in detail, focusing on the original React Native architecture (pre-2022) and then the new React Native architecture introduced more recently (called Fabric + TurboModules).</p>
+
+            <h2>⚙️ Classic React Native Architecture (pre-Fabric)</h2>
+            <p>🧵 1. JavaScript Thread</p>
+            <ul>
+                <li>
+                    Tool Used: JavaScriptCore (JSC)
+                    <ul>
+                        <li>JSC is the JavaScript engine developed by Apple (used in Safari).</li>
+                        <li>On iOS, React Native uses the system-provided JSC.</li>
+                        <li>On Android, it bundles a version of JSC with the app.</li>
+                    </ul>
+                </li>
+                <li>
+                    The JS thread:
+                    <ul>
+                        <li>Executes your React JavaScript code.</li>
+                        <li>Handles logic, state, and component tree diffing (via React).</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>🔁 2. The Bridge</p>
+            <ul>
+                <li>
+                    The Bridge is a serialized, asynchronous, and batched communication layer between:
+                    <ul>
+                        <li>The JS thread (running in JSC)</li>
+                        <li>The native modules (Java/Kotlin on Android, Obj-C/Swift on iOS)</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>🔧 How it works:</p>
+            <ul>
+                <li>Communication is done via JSON messages over the bridge.</li>
+                <li>The bridge is asynchronous: JS sends messages to the native side and continues; native responds later.</li>
+                <li>Messages are batched and sent across the bridge as serialized objects.</li>
+            </ul>
+
+            <p>📌 Tools & Concepts:</p>
+            <ul>
+                <li>C++ core: Coordinates message queue between JS and native.</li>
+                <li>Native modules are registered via ReactPackage (Android) or RCTBridgeModule (iOS).</li>
+                <li>JS calls native methods via NativeModules.MyModule.myMethod() and vice versa.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 New React Native Architecture (Fabric + TurboModules)</h2>
+            <p>Why the change?</p>
+            <p>The classic bridge is:</p>
+            <ul>
+                <li>Asynchronous only</li>
+                <li>High-latency (due to JSON serialization and batching)</li>
+                <li>Poor for complex animations or synchronous access (e.g., scroll position)</li>
+            </ul>
+            <p>So Facebook (Meta) introduced a new architecture with Fabric and TurboModules, enabled via the JSI (JavaScript Interface).</p>
+        </section>
+
+        <section>
+            <h2>🧠 Modern Architecture Tools (React Native 0.70+)</h2>
+            <p>1. 🧠 JavaScript Interface (JSI)</p>
+            <ul>
+                <li>Tool: C++ API for embedding a JavaScript engine and exposing C++/native functions to JS.</li>
+                <li>Replaces the old bridge for more direct and performant communication.</li>
+                <li>Allows synchronous and asynchronous calls.</li>
+                <li>No need for JSON serialization — functions are exposed directly.</li>
+            </ul>
+
+            <p>2. 🧠 Hermes (optional JS engine)</p>
+            <ul>
+                <li>Meta’s custom JavaScript engine designed for React Native.</li>
+                <li>Written in C++.</li>
+                <li>Smaller binary size, faster startup than JSC.</li>
+                <li>Used by default on Android since RN 0.64+ and optionally on iOS.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. 🧱 TurboModules</h2>
+            <ul>
+                <li>Replacement for the classic NativeModules.</li>
+                <li>Use JSI to expose native modules directly to JavaScript without the bridge.</li>
+                <li>Enables lazy loading of native modules, improving startup time.</li>
+                <li>Written in C++ and tightly integrated with JSI.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. 🖼️ Fabric (New Rendering System)</h2>
+            <ul>
+                <li>Replaces the legacy UI Manager.</li>
+                <li>
+                    Uses Yoga layout engine (same as before) but:
+                    <ul>
+                        <li>Moves rendering to a C++ core</li>
+                        <li>Enables synchronous layout, concurrent rendering, and better integration with React’s concurrent features (like React 18’s features).</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔧 Summary Table: Classic vs Modern Architecture</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Classic Architecture</th>
+                        <th>New Architecture (Fabric + JSI)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>JS Engine</td>
+                        <td>JavaScriptCore (JSC)</td>
+                        <td>Hermes or JSC</td>
+                    </tr>
+                    <tr>
+                        <td>Communication</td>
+                        <td>Asynchronous Bridge (JSON)</td>
+                        <td>JSI (direct C++ calls)</td>
+                    </tr>
+                    <tr>
+                        <td>UI Manager</td>
+                        <td>Legacy UIManager</td>
+                        <td>Fabric Renderer</td>
+                    </tr>
+                    <tr>
+                        <td>Native Modules</td>
+                        <td>NativeModules</td>
+                        <td>TurboModules</td>
+                    </tr>
+                    <tr>
+                        <td>Serialization</td>
+                        <td>JSON</td>
+                        <td>No serialization (function bindings)</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>Slower, more overhead</td>
+                        <td>Faster, direct access</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📁 Files and Code Locations</h2>
+            <p>If you're looking into the source code:</p>
+            <ul>
+                <li>React Native repo: <a href="https://github.com/facebook/react-native">https://github.com/facebook/react-native</a></li>
+                <li>
+                    Look into:
+                    <ul>
+                        <li>ReactCommon/ — contains JSI, TurboModules, Fabric</li>
+                        <li>Libraries/ — JS side modules</li>
+                        <li>ReactAndroid/ and React/ (iOS) — native bindings</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Actual Tools Used</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Purpose</th>
+                        <th>Tool / System Used</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>JavaScript Execution</td>
+                        <td>JavaScriptCore (JSC) or Hermes</td>
+                    </tr>
+                    <tr>
+                        <td>Old Bridge Communication</td>
+                        <td>JSON-serialized asynchronous bridge</td>
+                    </tr>
+                    <tr>
+                        <td>New Communication Layer</td>
+                        <td>JSI (C++ JavaScript Interface)</td>
+                    </tr>
+                    <tr>
+                        <td>Native Module Access</td>
+                        <td>TurboModules via JSI</td>
+                    </tr>
+                    <tr>
+                        <td>UI Rendering (Legacy)</td>
+                        <td>UIManager, Yoga</td>
+                    </tr>
+                    <tr>
+                        <td>UI Rendering (New)</td>
+                        <td>Fabric Renderer</td>
+                    </tr>
+                    <tr>
+                        <td>Layout Engine</td>
+                        <td>Yoga (C++)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <p>If you're building or debugging a React Native app today, the tools being used will depend on whether you're using the new architecture. As of React Native 0.71+, more of this new system is production-ready and recommended.</p>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

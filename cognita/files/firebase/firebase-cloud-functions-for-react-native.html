@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Firebase Cloud Messaging (FCM) for push notifications</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Firebase Cloud Messaging (FCM) for push notifications</h1>
+                    <p class="subtitle">To implement Firebase Cloud Messaging (FCM) for push notifications in both React Native (frontend) and Node.js (backend/server), here's a step-by-step guide for both sides:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧱 1. Overview</h2>
+            <ul>
+                <li>Frontend (React Native): Receive and display push notifications.</li>
+                <li>Backend (Node.js): Send push notifications using FCM API.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📲 React Native (Frontend)</h2>
+            <p>You’ll use @react-native-firebase/messaging to handle FCM.</p>
+            <p>✅ Step 1: Install Required Packages</p>
+            <pre><code>
+# React Native Firebase core & messaging
+npm install @react-native-firebase/app @react-native-firebase/messaging
+            </code></pre>
+            <p>For iOS, install pods:</p>
+            <pre><code>
+cd ios && pod install && cd ..
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Step 2: Configure Firebase</h2>
+            <ol>
+                <li>Go to <a href="https://console.firebase.google.com/">Firebase Console</a></li>
+                <li>Create a project</li>
+                <li>Add Android/iOS app</li>
+                <li>
+                    Download:
+                    <ul>
+                        <li>google-services.json (Android → place in android/app)</li>
+                        <li>GoogleService-Info.plist (iOS → use Xcode to add)</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ Step 3: Request Permission and Get Token</h2>
+            <pre><code>
+import messaging from '@react-native-firebase/messaging';
+import { Alert } from 'react-native';
+
+export async function requestUserPermission() {
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
+    getFCMToken(); // Get token after permission
+  }
+}
+
+export async function getFCMToken() {
+  const fcmToken = await messaging().getToken();
+  if (fcmToken) {
+    console.log('FCM Token:', fcmToken);
+    // Send this token to your backend server to store
+  } else {
+    console.log('Failed to get FCM token');
+  }
+}
+            </code></pre>
+            <p>Call requestUserPermission() on app start.</p>
+        </section>
+
+        <section>
+            <h2>✅ Step 4: Handle Notifications</h2>
+            <pre><code>
+// Foreground
+messaging().onMessage(async remoteMessage => {
+  Alert.alert('New FCM Message!', JSON.stringify(remoteMessage));
+});
+
+// Background / Quit
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('Message handled in the background!', remoteMessage);
+});
+
+// When app is opened from a notification
+messaging().onNotificationOpenedApp(remoteMessage => {
+  console.log('Notification caused app to open from background state:', remoteMessage.notification);
+});
+
+messaging().getInitialNotification().then(remoteMessage => {
+  if (remoteMessage) {
+    console.log('Notification caused app to open from quit state:', remoteMessage.notification);
+  }
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Node.js Backend (FCM Sender)</h2>
+            <p>You will use Firebase Admin SDK to send push notifications.</p>
+
+            <p>✅ Step 1: Install Firebase Admin</p>
+            <pre><code>
+npm install firebase-admin
+            </code></pre>
+
+            <p>✅ Step 2: Setup Admin SDK</p>
+            <p>Download your Firebase project's service account key from Firebase Console → Project Settings → Service Accounts → Generate new private key.</p>
+            <pre><code>
+// fcmSender.js
+const admin = require('firebase-admin');
+const serviceAccount = require('./path-to-service-account.json');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+});
+
+function sendPushNotification(fcmToken, title, body, data = {}) {
+    const message = {
+    token: fcmToken,
+    notification: {
+        title,
+        body,
+    },
+    data, // Optional custom data
+    };
+
+    return admin
+    .messaging()
+    .send(message)
+    .then((response) => {
+        console.log('Successfully sent message:', response);
+        return response;
+    })
+    .catch((error) => {
+        console.error('Error sending message:', error);
+    });
+}
+
+module.exports = { sendPushNotification };                
+            </code></pre>
+
+            <p>✅ Step 3: Use in Your App</p>
+            <pre><code>
+const { sendPushNotification } = require('./fcmSender');
+
+const userFCMToken = '&lt;token-from-react-native-app&gt;';
+
+sendPushNotification(userFCMToken, 'Hello!', 'This is a test notification');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Testing</h2>
+            <ol>
+                <li>Make sure the app has foreground/background/quit notification handling.</li>
+                <li>Send a push via your backend to the device token.</li>
+                <li>Confirm the device receives the message.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📌 Notes</h2>
+            <ol>
+                <li>Ensure that device tokens are stored on your backend when received.</li>
+                <li>Firebase Admin SDK is only for server-side.</li>
+                <li>FCM tokens can expire, so update regularly.</li>
+                <li>Use topics or device groups if sending to many users.</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

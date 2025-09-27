@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Hooks</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Hooks</h1>
+                    <p class="subtitle">React Hooks are functions that let you use state and other React features without writing a class. Here’s a quick overview of the most commonly used ones:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. useState</h2>
+            <p>Purpose: Add state to functional components.</p>
+
+            <pre><code>
+import { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;button onClick={() => setCount(count + 1)}&gt;
+      Clicked {count} times
+    &lt;/button&gt;
+  );
+}
+            </code></pre>
+            <p>useState(initialValue) returns an array: [state, setState].</p>
+        </section>
+
+        <section>
+            <h2>2. useEffect</h2>
+            <p>Purpose: Side effects like data fetching, DOM manipulation, subscriptions, etc.</p>
+
+            <pre><code>
+import { useEffect, useState } from 'react';
+
+function Timer() {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => setSeconds(s => s + 1), 1000);
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []); // Empty dependency = run once on mount
+}
+            </code></pre>
+
+            <ul>
+                <li>Runs after render.</li>
+                <li>Dependencies array controls when it runs again.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. useRef</h2>
+            <p>Purpose: Access DOM elements or persist values across renders without triggering re-renders.</p>
+
+            <pre><code>
+import { useRef, useEffect } from 'react';
+
+function FocusInput() {
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus(); // Direct DOM manipulation
+  }, []);
+
+  return &lt;input ref={inputRef} /&gt;;
+}
+            </code></pre>
+
+            <ul>
+                <li>Holds mutable value: ref.current.</li>
+                <li>Doesn’t cause re-renders when updated.</li>
+            </ul>
+        </section>
+        
+        <section>
+            <h2>4. useMemo</h2>
+            <p>Purpose: Memoize expensive computations.</p>
+
+            <pre><code>
+import { useMemo } from 'react';
+
+function ExpensiveComponent({ number }) {
+  const double = useMemo(() => {
+    console.log("Computing...");
+    return number * 2;
+  }, [number]);
+
+  return &lt;div&gt;{double}&lt;/div&gt;;
+}
+            </code></pre>
+
+            <ul>
+                <li>Recalculates only when dependencies change.</li>
+                <li>Useful for optimizing performance.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. useCallback</h2>
+            <p>Purpose: Memoize functions so they aren’t re-created on every render.</p>
+
+            <pre><code>
+import { useCallback, useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  const increment = useCallback(() => {
+    setCount(c => c + 1);
+  }, []);
+
+  return &lt;button onClick={increment}&gt;Count: {count}&lt;/button&gt;;
+}
+            </code></pre>
+            <p>useCallback(fn, deps) is the same as useMemo(() => fn, deps).</p>
+        </section>
+
+        <section>
+            <h2>Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hook</th>
+                        <th>Purpose</th>
+                        <th>Triggers Re-render?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>useState</td>
+                        <td>Add state</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>useEffect</td>
+                        <td>Perform side effects</td>
+                        <td>No (by itself)</td>
+                    </tr>
+                    <tr>
+                        <td>useRef</td>
+                        <td>Mutable reference (DOM/value)</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>useMemo</td>
+                        <td>Memoize computed values</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>useCallback</td>
+                        <td>Memoize functions</td>
+                        <td>No</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

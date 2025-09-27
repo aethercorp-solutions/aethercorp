@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Component Lifecycle</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Component Lifecycle</h1>
+                    <p class="subtitle">
+                        <p>In React Native, the component lifecycle is the same as in React, because React Native is built on top of React. The lifecycle refers to the series of methods that are invoked in different stages of a component's existence:</p>
+                        <ul>
+                            <li>When it is mounted (created and inserted into the DOM)</li>
+                            <li>When it is updated (due to changes in props or state)</li>
+                            <li>When it is unmounted (removed from the DOM)</li>
+                        </ul>
+                        <p>There are two main types of components in React/React Native:</p>
+                        <ol>
+                            <li>Class components – have full access to lifecycle methods</li>
+                            <li>Function components with Hooks – use the useEffect hook for lifecycle-like behavior</li>
+                        </ol>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🏗️ Lifecycle in Class Components</h2>
+            <p>1. Mounting (when the component is created and inserted into the tree)</p>
+            <table>
+                <thead>
+                    <th>Method</th>
+                    <th>Description</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>constructor()</td>
+                        <td>Initialize state and bind methods</td>
+                    </tr>
+                    <tr>
+                        <td>static getDerivedStateFromProps()</td>
+                        <td>Sync state from props (rarely used)</td>
+                    </tr>
+                    <tr>
+                        <td>render()</td>
+                        <td>Returns JSX</td>
+                    </tr>
+                    <tr>
+                        <td>componentDidMount()</td>
+                        <td>Called after the component is added to the UI (good for API calls, subscriptions)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>2. Updating (when props or state change)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>static getDerivedStateFromProps()</td>
+                        <td>Called before every render</td>
+                    </tr>
+                    <tr>
+                        <td>shouldComponentUpdate()</td>
+                        <td>Decide whether to re-render</td>
+                    </tr>
+                    <tr>
+                        <td>render()</td>
+                        <td>Re-renders the UI</td>
+                    </tr>
+                    <tr>
+                        <td>getSnapshotBeforeUpdate()</td>
+                        <td>Capture info (like scroll position) before DOM changes</td>
+                    </tr>
+                    <tr>
+                        <td>componentDidUpdate()</td>
+                        <td>Called after update is done</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>3. Unmounting (when the component is removed)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>componentWillUnmount()</td>
+                        <td>Cleanup (e.g. timers, subscriptions)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔁 Lifecycle in Function Components (with Hooks)</h2>
+            <p>Function components use hooks to replicate lifecycle behavior:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lifecycle Phase</th>
+                        <th>Equivalent in Hooks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mount</td>
+                        <td>useEffect(() => { ... }, [])</td>
+                    </tr>
+                    <tr>
+                        <td>Update</td>
+                        <td>useEffect(() => { ... }, [dependency])</td>
+                    </tr>
+                    <tr>
+                        <td>Unmount</td>
+                        <td>useEffect(() => { return () => { ... } }, [])</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Example:</h2>
+            <pre><code>
+import React, { useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
+
+const MyComponent = () => {
+  const [count, setCount] = useState(0);
+
+  // componentDidMount + componentDidUpdate
+  useEffect(() => {
+    console.log('Component mounted or updated');
+
+    // componentWillUnmount
+    return () => {
+      console.log('Component will unmount');
+    };
+  }, [count]); // Runs when 'count' changes
+
+  return (
+    &lt;View&gt;
+        &lt;Text onPress={() => setCount(count + 1)}>Click me ({count})&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ When to Use What?</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Class Component</th>
+                        <th>Function Component</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Legacy code or full lifecycle control</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Modern React Native apps</td>
+                        <td>👎</td>
+                        <td>✅ (preferred)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

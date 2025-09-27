@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Send a Message using FCM HTTP v1 API</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Send a Message using FCM HTTP v1 API</h1>
+                    <p class="subtitle">
+                        <p>On this page</p>
+                        <p>Authorize HTTP v1 send requests</p>
+                        <ul>
+                            <li>Provide credentials using ADC</li>
+                            <li>Provide credentials manually</li>
+                            <li>Use credentials manually</li>
+                        </ul>
+                        <p>Authorize with a Service Account from a Different Project</p>
+                        <p>Send messages to specific devices</p>
+                        <p>Send a test notification message using the FCM v1 API</p>
+                        <ul>
+                            <li>HTTP request URL</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Using the FCM HTTP v1 API, you can build message requests and send them to these types of targets:</p>
+            <ul>
+                <li>Topic name</li>
+                <li>Condition</li>
+                <li>Device registration token</li>
+                <li>Device group name (protocol only)</li>
+            </ul>
+            <p>You can send messages with a notification payload made up of predefined fields, a data payload of your own user-defined fields, or a message containing both types of payload. See Message types for more information.</p>
+            <p>Tip: Use this <a href="https://firebase.google.com/codelabs/use-the-fcm-http-v1-api-with-oauth-2-access-tokens#0">codelab</a> to learn how to use the FCM HTTP v1 API with OAuth 2.0 access tokens</p>
+            
+            <h2>Authorize HTTP v1 send requests</h2>
+            <p>Depending on the details of your server environment, use a combination of these strategies to authorize server requests to Firebase services:</p>
+
+            <ul>
+                <li>Google Application Default Credentials (ADC)</li>
+                <li>A service account JSON file</li>
+                <li>A short-lived OAuth 2.0 access token derived from a service account</li>
+            </ul>
+
+            <p>If your application is running on Compute Engine, Google Kubernetes Engine, App Engine, or Cloud Functions (including Cloud Functions for Firebase), use Application Default Credentials (ADC). ADC uses your existing default service account to obtain credentials to authorize requests, and ADC enables flexible local testing via the environment variable GOOGLE_APPLICATION_CREDENTIALS. For the fullest automation of the authorization flow, use ADC together with Admin SDK server libraries.</p>
+            <p>If your application is running on a non-Google server environment, you'll need to download a service account JSON file from your Firebase project. As long as you have access to a file system containing the private key file, you can use the environment variable GOOGLE_APPLICATION_CREDENTIALS to authorize requests with these manually obtained credentials. If you lack such file access, you must reference the service account file in your code— which should be done with extreme care due to the risk of exposing your credentials.</p>
+        </section>
+
+        <section>
+            <h2>Provide credentials using ADC</h2>
+            <p>Google Application Default Credentials (ADC) checks for your credentials in the following order:</p>
+            <ol>
+                <li>ADC checks whether the environment variable GOOGLE_APPLICATION_CREDENTIALS is set. If the variable is set, ADC uses the service account file that the variable points to.</li>
+                <li>If the environment variable isn't set, ADC uses the default service account that Compute Engine, Google Kubernetes Engine, App Engine, and Cloud Functions provide for applications that run on those services.</li>
+                <li>If ADC can't use either of the above credentials, the system throws an error.</li>
+            </ol>
+
+            <p>The following Admin SDK code example illustrates this strategy. The example doesn't explicitly specify the application credentials. However, ADC is able to implicitly find the credentials as long as the environment variable is set, or as long as the application is running on Compute Engine, Google Kubernetes Engine, App Engine, or Cloud Functions.</p>
+            <pre><code>
+admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Provide credentials manually</h2>
+            <p>Firebase projects support Google <a href="https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk?_gl=1*k0janv*_ga*MTU1NzI5MDAzNi4xNzU2MTAyNjI5*_ga_CW55HF8NVT*czE3NTg2MTYwNjckbzQyJGcxJHQxNzU4NjE3NDI0JGozNSRsMCRoMA..">service accounts</a>, which you can use to call Firebase server APIs from your app server or trusted environment. If you're developing code locally or deploying your application on-premises, you can use credentials obtained via this service account to authorize server requests.</p>
+
+            <p>To authenticate a service account and authorize it to access Firebase services, you must generate a private key file in JSON format.</p>
+            <p>To generate a private key file for your service account:</p>
+
+            <ol>
+                <li>In the Firebase console, open Settings > <a href="https://console.firebase.google.com/u/0/project/_/settings/serviceaccounts/adminsdk?_gl=1*t9nqnm*_ga*MTU1NzI5MDAzNi4xNzU2MTAyNjI5*_ga_CW55HF8NVT*czE3NTg2MTYwNjckbzQyJGcxJHQxNzU4NjE3MDU1JGo2MCRsMCRoMA..">Service Accounts</a>.</li>
+                <li>Click Generate New Private Key, then confirm by clicking Generate Key.</li>
+                <li>Securely store the JSON file containing the key.</li>
+            </ol>
+
+            <p>When authorizing via a service account, you have two choices for providing the credentials to your application. You can either set the GOOGLE_APPLICATION_CREDENTIALS environment variable, or you can explicitly pass the path to the service account key in code. The first option is more secure and is strongly recommended.</p>
+            <p>To set the environment variable:</p>
+            <p>Set the environment variable GOOGLE_APPLICATION_CREDENTIALS to the file path of the JSON file that contains your service account key. This variable only applies to your current shell session, so if you open a new session, set the variable again.</p>
+            <pre><code>
+Linux or macOS
+export GOOGLE_APPLICATION_CREDENTIALS="/home/user/Downloads/service-account-file.json"
+            </code></pre>
+
+            <pre><code>
+Windows With PowerShell:
+$env:GOOGLE_APPLICATION_CREDENTIALS="C:\Users\username\Downloads\service-account-file.json"
+            </code></pre>
+
+            <p>After you've completed the above steps, Application Default Credentials (ADC) is able to implicitly determine your credentials, allowing you to use service account credentials when testing or running in non-Google environments.</p>
+        </section>
+
+        <section>
+            <h2>Use credentials to mint access tokens</h2>
+            <p>Unless you are using the Firebase Admin SDK, which handles authorization automatically, you'll need to mint the access token and add it to send requests.</p>
+            <p>Use your Firebase credentials together with the Google Auth Library for your preferred language to retrieve a short-lived OAuth 2.0 access token:</p>
+
+            <pre><code>
+index.js                
+function getAccessToken() {
+    return new Promise(function(resolve, reject) {
+        const key = require('../placeholders/service-account.json');
+        const jwtClient = new google.auth.JWT(
+        key.client_email,
+        null,
+        key.private_key,
+        SCOPES,
+        null
+        );
+        jwtClient.authorize(function(err, tokens) {
+        if (err) {
+            reject(err);
+            return;
+        }
+        resolve(tokens.access_token);
+        });
+    });
+    }
+            </code></pre>
+
+            <code><pre>
+messaging.py
+def _get_access_token():
+  """Retrieve a valid access token that can be used to authorize requests.
+
+  :return: Access token.
+  """
+  credentials = service_account.Credentials.from_service_account_file(
+    'service-account.json', scopes=SCOPES)
+  request = google.auth.transport.requests.Request()
+  credentials.refresh(request)
+  return credentials.token
+            </pre></code>
+
+            <pre><code>
+Messaging.java
+private static String getAccessToken() throws IOException {
+    GoogleCredentials googleCredentials = GoogleCredentials
+            .fromStream(new FileInputStream("service-account.json"))
+            .createScoped(Arrays.asList(SCOPES));
+    googleCredentials.refresh();
+    return googleCredentials.getAccessToken().getTokenValue();
+}
+            </code></pre>
+
+            <p>In this example, the Google API client library authenticates the request with a JSON web token, or JWT. For more information, see JSON web tokens.</p>
+            <p>After your access token expires, the token refresh method is called automatically to retrieve an updated access token.</p>
+            <p>To authorize access to FCM, request the scope https://www.googleapis.com/auth/firebase.messaging.</p>
+            <p>To add the access token to an HTTP request header:</p>
+            <p>Add the token as the value of the Authorization header in the format Authorization: Bearer &lt;access_token&gt;:</p>
+        
+            <pre><code>
+index.js
+headers: {
+    'Authorization': 'Bearer ' + accessToken
+}
+            </code></pre>
+
+            <pre><code>
+messaging.py                
+headers = {
+    'Authorization': 'Bearer ' + _get_access_token(),
+    'Content-Type': 'application/json; UTF-8',
+}
+            </code></pre>
+
+            <pre><code>
+FirebaseMessagingSnippets.java
+URL url = new URL(BASE_URL + FCM_SEND_ENDPOINT);
+HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+httpURLConnection.setRequestProperty("Authorization", "Bearer " + getServiceAccountAccessToken());
+httpURLConnection.setRequestProperty("Content-Type", "application/json; UTF-8");
+return httpURLConnection;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Authorize with a Service Account from a Different Project</h2>
+            <p>You can send messages for one project (the "target project") while using an OAuth 2.0 token generated from a service account in a different project (the "sender project"). This lets you centralize service account management in one project while sending messages on behalf of others. To learn how to do this, use the following steps:</p>
+            <ul>
+                <li>Enable API: Ensure the Firebase Cloud Messaging API is enabled in the sender project.</li>
+                <li>Create Service Account: Create a service account in the sender project.</li>
+                <li>Grant Permissions: In the target project, grant the service account's email address the Firebase Cloud Messaging API Admin role on the IAM page. This allows the service account from the other project to send messages to the target project.</li>
+                <li>
+                    Obtain Token: Generate an OAuth 2.0 access token for the service account in the sender project. You can do this by either:
+                    <ul>
+                        <li>Downloading and using the service account key JSON file.</li>
+                        <li>Alternatively, using Workload Identity if your service is running on Google Cloud.</li>
+                    </ul>
+                </li>
+                <li>
+                    Send Request: Use the obtained access token in the Authorization header of your send request. The request must be made to the HTTP v1 endpoint for the target project:
+                    <pre><code>
+POST https://fcm.googleapis.com/v1/TARGET_PROJECT_ID/messages:send
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Send messages to specific devices</h2>
+            <p>To send to a single, specific device, pass the device's registration token as shown.</p>
+            <pre><code>
+POST https://fcm.googleapis.com/v1/projects/myproject-b5ae1/messages:send HTTP/1.1
+
+Content-Type: application/json
+Authorization: Bearer ya29.ElqKBGN2Ri_Uz...HnS_uNreA
+
+{
+   "message":{
+      "token":"bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...",
+      "notification":{
+        "body":"This is an FCM notification message!",
+        "title":"FCM Message"
+      }
+   }
+}
+            </code></pre>
+
+            <p>cURL command:</p>
+            <pre><code>
+curl -X POST -H "Authorization: Bearer ya29.ElqKBGN2Ri_Uz...HnS_uNreA" -H "Content-Type: application/json" -d '{
+    "message":{
+        "notification":{
+            "title":"FCM Message",
+            "body":"This is an FCM Message"
+        },
+        "token":"bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1..."
+}}' https://fcm.googleapis.com/v1/projects/myproject-b5ae1/messages:send
+            </code></pre>
+
+            <p>On success, the HTTP v1 API response is a JSON object containing the message ID:</p>
+            <pre><code>
+{
+    "name":"projects/myproject-b5ae1/messages/0:1500415314455276%31bd1c9631bd1c96"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Send a test notification message using the FCM HTTP v1 API</h2>
+            <p>This section describes how to send a test notification message using the FCM HTTP v1 API.</p>
+        </section>
+
+        <section>
+            <h2>HTTP request URL</h2>
+            <p>The request consists of an HTTP POST to the specified target (a registration token, topic or condition) at the following URL:</p>
+            <p>POST https://fcm.googleapis.com/v1/projectId/messages:send</p>
+        </section>
+
+        <section>
+            <h2>Complete HTTP request JSON sample</h2>
+            <p>Here is a complete example showing how to post a notification within an HTTP POST request:</p>
+            <pre><code>
+{
+    "message": {
+        "token": REGISTRATION_TOKEN,
+        "notification": {
+        "title": "FCM API test",
+        "body": "This is the body of the notification.",
+        "image": "https://cat.10515.net/1.jpg"
+        }
+    }
+}
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

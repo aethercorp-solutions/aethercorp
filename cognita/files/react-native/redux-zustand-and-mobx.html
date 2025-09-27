@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Redux, Zustand, and MobX</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Redux, Zustand, and MobX</h1>
+                    <p class="subtitle">Ah, you’re looking into Redux, Zustand, and MobX — three popular state management libraries for React! Here’s a quick comparison and overview to help you get a feel for them:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Redux</h2>
+            <ul>
+                <li>Philosophy: Predictable state container; strict unidirectional data flow.</li>
+                <li>Core concepts: Actions, reducers, immutable state.</li>
+                <li>Usage: Centralized global store; you dispatch actions to update state.</li>
+                <li>Boilerplate: Traditionally quite verbose, but newer Redux Toolkit reduces boilerplate.</li>
+                <li>Ecosystem: Large, mature, with great dev tools and middleware support.</li>
+                <li>Use case: Great for large, complex apps where strict control over state and debugging is important.</li>
+                <li>Learning curve: Moderate to steep due to concepts like immutability and middleware.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Zustand</h2>
+            <ul>
+                <li>Philosophy: Minimal and flexible state management using hooks.</li>
+                <li>Core concepts: Small API, no boilerplate, uses hooks for state.</li>
+                <li>Usage: Store created via hooks, directly use and mutate state with simple syntax.</li>
+                <li>Boilerplate: Very low; easy to get started.</li>
+                <li>Ecosystem: Growing, but smaller than Redux.</li>
+                <li>Use case: Simple to medium complexity apps; when you want something lightweight but powerful.</li>
+                <li>Learning curve: Very easy; just React hooks and JS.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. MobX</h2>
+            <ul>
+                <li>Philosophy: Transparent reactive programming; automatic tracking of dependencies.</li>
+                <li>Core concepts: Observables, reactions, actions.</li>
+                <li>Usage: State stored as observable objects; components auto-update when observables change.</li>
+                <li>Boilerplate: Less than Redux, more than Zustand.</li>
+                <li>Ecosystem: Mature, good community.</li>
+                <li>Use case: Apps benefiting from reactive programming and less manual state wiring.</li>
+                <li>Learning curve: Moderate; concepts of observables and reactions can be unfamiliar.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Quick summary:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Redux</th>
+                        <th>Zustand</th>
+                        <th>MobX</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Boilerplate</td>
+                        <td>High (reduced by Toolkit)</td>
+                        <td>Very low</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Learning curve</td>
+                        <td>Moderate to steep</td>
+                        <td>Low</td>
+                        <td>Moderate</td>
+                    </tr>
+                    <tr>
+                        <td>Paradigm</td>
+                        <td>Immutable, actions/reducers</td>
+                        <td>Mutable, hooks</td>
+                        <td>Reactive, observable</td>
+                    </tr>
+                    <tr>
+                        <td>Dev tools</td>
+                        <td>Excellent</td>
+                        <td>Limited</td>
+                        <td>Good</td>
+                    </tr>
+                    <tr>
+                        <td>Use case</td>
+                        <td>Large, complex apps</td>
+                        <td>Lightweight or medium apps</td>
+                        <td>Reactive state needs</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

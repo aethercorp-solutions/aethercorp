@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AnyCancellable</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AnyCancellable</h1>
+                    <p class="subtitle">Difference between private var cancellables = Set&lt;AnyCancellable&gt;() private var authCancellable: AnyCancellable?</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>The difference between:</p>
+            <pre><code>
+private var cancellables = Set&lt;AnyCancellable&gt;()
+            </code></pre>
+
+            <p>and</p>
+            <pre><code>
+private var authCancellable: AnyCancellable?
+            </code></pre>
+
+            <p>has to do with how Combine subscriptions are managed and stored.</p>
+        </section>
+
+        <section>
+            <h2>✅ private var cancellables = Set&lt;AnyCancellable&gt;()</h2>
+            <p>This is a set of cancellables, usually used to store multiple Combine subscriptions. It allows you to keep track of multiple ongoing tasks or publishers and cancel them all at once if needed (e.g., in deinit or when resetting state).</p>
+
+            <p>Use case: Managing multiple subscriptions.</p>
+            <p>Example:</p>
+
+            <pre><code>
+publisher1
+    .sink { ... }
+    .store(in: &cancellables)
+
+publisher2
+    .sink { ... }
+    .store(in: &cancellables)
+            </code></pre>
+
+            <p>So both subscriptions are stored in the same set.</p>
+        </section>
+
+        <section>
+            <h2>✅ private var authCancellable: AnyCancellable?</h2>
+            <p>This is a single optional cancellable, useful when you’re only managing one Combine subscription, or when you need to replace an existing subscription (e.g., canceling a previous request and starting a new one).</p>
+
+            <p>Use case: Managing one cancellable, like an authentication request or a network call that gets replaced.</p>
+            <p>Example:</p>
+
+            <pre><code>
+authCancellable = authPublisher
+.sink(receiveCompletion: { ... }, receiveValue: { ... })
+            </code></pre>
+
+            <p>If authCancellable already holds a subscription, assigning a new one will automatically cancel the previous one.</p>
+        </section>
+
+        <section>
+            <h2>🔍 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Type</th>
+                        <th>Use Case</th>
+                        <th>Stores Multiple Subscriptions?</th>
+                        <th>Automatically Cancels Old Subscription?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>cancellables</td>
+                        <td>Set<AnyCancellable></td>
+                        <td>When managing multiple subscriptions</td>
+                        <td>✅ Yes</td>
+                        <td>❌ No</td>
+                    </tr>
+                    <tr>
+                        <td>authCancellable</td>
+                        <td>AnyCancellable?</td>
+                        <td>When managing or replacing one subscription</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes (on reassignment)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

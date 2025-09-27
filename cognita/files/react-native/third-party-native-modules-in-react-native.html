@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Third-Party native modules in React Native</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Third-Party native modules in React Native</h1>
+                    <p class="subtitle">When you're using third-party native modules in React Native, you're incorporating code—usually written in Java (Android) or Objective-C/Swift (iOS)—into your React Native app. These modules allow you to access native device features or performance-optimized code that isn't possible (or is too slow) in JavaScript alone.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 What Are Native Modules in React Native?</h2>
+            <p>Native modules are Objective-C, Swift (iOS), or Java/Kotlin (Android) code that you can call from JavaScript. They're typically used when:</p>
+            <ul>
+                <li>You need access to platform-specific APIs (e.g., Bluetooth, sensors, background services).</li>
+                <li>You require performance that JavaScript alone can’t offer.</li>
+                <li>There's an existing SDK or library written in native code that you want to use.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Ways to Use Third-Party Native Modules</h2>
+            <p>1. Using Existing Community Modules</p>
+            <p>React Native has a huge community that provides native modules via npm. For example:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Library</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Camera</td>
+                        <td>react-native-camera, react-native-vision-camera</td>
+                    </tr>
+                    <tr>
+                        <td>File System</td>
+                        <td>react-native-fs</td>
+                    </tr>
+                    <tr>
+                        <td>Maps</td>
+                        <td>react-native-maps</td>
+                    </tr>
+                    <tr>
+                        <td>Device Info</td>
+                        <td>react-native-device-info</td>
+                    </tr>
+                    <tr>
+                        <td>Bluetooth</td>
+                        <td>react-native-ble-plx</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Example: Installing react-native-device-info</p>
+            <pre><code>
+npm install react-native-device-info
+# or
+yarn add react-native-device-info
+            </code></pre>
+
+            <p>Then link the native code:</p>
+            <pre><code>
+npx pod-install
+            </code></pre>
+            <p>With React Native 0.60+, auto-linking is supported, so manual linking is usually not required.</p>
+
+            <p>Usage:</p>
+            <pre><code>
+import DeviceInfo from 'react-native-device-info';
+
+const deviceId = await DeviceInfo.getDeviceId();
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Writing Your Own Native Module</h2>
+            <p>If no library exists or you need specific functionality, you can create your own:</p>
+            <p>iOS (Objective-C / Swift):</p>
+            <ul>
+                <li>Create a new .m (Objective-C) or .swift file.</li>
+                <li>Expose methods using RCT_EXPORT_METHOD.</li>
+            </ul>
+
+            <p>Android (Java / Kotlin):</p>
+            <ul>
+                <li>Create a class extending ReactContextBaseJavaModule.</li>
+                <li>Annotate methods with @ReactMethod.</li>
+            </ul>
+            
+            <p>React Native bridges the native code and exposes it to JavaScript.</p>
+            <p>Example: Basic Android Native Module</p>
+            <p>MyModule.java:</p>
+            <pre><code>
+package com.yourapp;
+
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+
+public class MyModule extends ReactContextBaseJavaModule {
+  public MyModule(ReactApplicationContext reactContext) {
+    super(reactContext);
+  }
+
+  @Override
+  public String getName() {
+    return "MyModule";
+  }
+
+  @ReactMethod
+  public void showToast(String message) {
+    Toast.makeText(getReactApplicationContext(), message, Toast.LENGTH_SHORT).show();
+  }
+}
+            </code></pre>
+            <p>Then access in JS:</p>
+
+            <pre><code>
+import { NativeModules } from 'react-native';
+
+NativeModules.MyModule.showToast('Hello from native!');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 Key Considerations</h2>
+            <ul>
+                <li>✅ Prefer existing libraries when possible.</li>
+                <li>🛠 Make sure third-party modules are well-maintained.</li>
+                <li>🧪 Test thoroughly on both platforms.</li>
+                <li>🔄 Watch for breaking changes when upgrading React Native versions.</li>
+                <li>📱 Native modules may require editing native project files (e.g., AndroidManifest.xml, Info.plist).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📚 Useful Resources</h2>
+            <a href="https://reactnative.dev/docs/native-modules-intro">React Native Native Modules Guide</a>
+            <a href="https://reactnative.directory/">React Native Directory</a> – for finding third-party native modules
+            <a href="https://github.com/react-native-community">Community libraries: react-native-community</a>
+        </section>
+
+        <section>
+            <h2>🔗 What Does “Link the Native Code” Mean in React Native?</h2>
+            <p>When you install a third-party native module, you're typically pulling in a package that includes native platform code (Objective-C/Swift for iOS, Java/Kotlin for Android) in addition to JavaScript.</p>
+
+            <p>“Linking” is the process of:</p>
+            <p>Connecting the native code of that module to your main React Native app, so your app knows how to use it on iOS and Android.</p>
+        </section>
+
+        <section>
+            <h2>🧱 Why Linking Is Necessary</h2>
+            <p>React Native apps are made of:</p>
+            <ul>
+                <li>JavaScript code (runs with React Native)</li>
+                <li>Native code (platform-specific, needs to be compiled with the app)</li>
+            </ul>
+            <p>When you install a native module, the JavaScript part is available right away—but the native code needs to be added to your iOS and Android projects. This is what linking does.</p>
+        </section>
+
+        <section>
+            <h2>🔗 How Linking Works</h2>
+            <p>There are two main ways to link:</p>
+
+            <p>✅ 1. Auto-Linking (React Native 0.60+)</p>
+            <p>As of React Native 0.60 and above, linking is done automatically.</p>
+            <p>What you need to do:</p>
+            <pre><code>
+npm install &lt;native-module-name&gt;
+npx pod-install # for iOS                    
+            </code></pre>
+
+            <p>✅ That's it. React Native handles the rest.</p>
+            <p>Example:</p>
+
+            <pre><code>
+npm install react-native-device-info
+npx pod-install
+            </code></pre>
+
+            <p>🛠 2. Manual Linking (Pre-0.60 or Edge Cases)</p>
+            <p>Before RN 0.60 or in special cases, you had to manually edit native files:</p>
+            <p>🧩 Android:</p>
+            <ul>
+                <li>Add the module to android/settings.gradle</li>
+                <li>Add to android/app/build.gradle</li>
+                <li>Register the module in MainApplication.java</li>
+            </ul>
+
+            <p>🍏 iOS:</p>
+            <ul>
+                <li>Drag the .xcodeproj or .xcframework file into your Xcode project.</li>
+                <li>Add the library to "Linked Frameworks and Libraries."</li>
+                <li>Sometimes adjust Info.plist.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Linking</td>
+                        <td>Connecting the native parts of a module to your React Native project (so native code runs on the device).</td>
+                    </tr>
+                    <tr>
+                        <td>Auto-Linking</td>
+                        <td>Happening automatically in RN 0.60+, you just install and run pod install.</td>
+                    </tr>
+                    <tr>
+                        <td>Manual Linking</td>
+                        <td>You edit native files yourself (only needed in rare cases today).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>❗ Tip</h2>
+            <p>If a module has native code, and you forget to link (or run pod install), your app will crash or throw an error like:</p>
+            <p>Native module cannot be null</p>
+            <p>or</p>
+            <p>undefined is not an object (evaluating 'NativeModules.MyModule')</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>PromiseKit</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">PromiseKit</h1>
+                    <p class="subtitle">PromiseKit is a popular Swift framework used for managing asynchronous tasks by implementing promises. It helps make asynchronous code cleaner, more readable, and easier to manage compared to traditional callback-based approaches.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is PromiseKit?</h2>
+            <ul>
+                <li>Promise: An object representing the eventual result of an asynchronous operation.</li>
+                <li>It lets you write asynchronous code that looks more like synchronous code.</li>
+                <li>Handles chaining, error handling, and cancellation in a straightforward way.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key Features</h2>
+            <ul>
+                <li>Chaining: You can chain multiple asynchronous tasks in a clear, sequential manner.</li>
+                <li>Error Handling: Centralized error catching and propagation.</li>
+                <li>Compatibility: Works with URLSession, DispatchQueues, and many other async APIs.</li>
+                <li>Extensions: Supports combining with other async patterns like callbacks and notifications.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Basic Example</h2>
+            <pre><code>
+import PromiseKit
+
+func fetchUser() -> Promise&lt;User&gt; {
+    return Promise { seal in
+        // Imagine an async call here
+        API.getUser { user, error in
+            if let user = user {
+                seal.fulfill(user)
+            } else if let error = error {
+                seal.reject(error)
+            }
+        }
+    }
+}
+
+fetchUser().done { user in
+    print("User fetched: \(user.name)")
+}.catch { error in
+    print("Error fetching user: \(error)")
+}
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

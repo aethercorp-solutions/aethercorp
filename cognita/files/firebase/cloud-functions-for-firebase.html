@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cloud Functions for Firebase</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Cloud Functions for Firebase</h1>
+                    <p class="subtitle">Cloud Functions for Firebase is a serverless framework that lets you automatically run backend code in response to events triggered by Firebase features and HTTPS requests. You write code in JavaScript, TypeScript, or Python, and deploy it using the Firebase CLI. Once deployed, your functions are hosted in Google Cloud and automatically scaled.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 What Can You Use Cloud Functions for?</h2>
+            <p>Here are some common use cases:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Trigger</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Send a welcome email after user signs up</td>
+                        <td>auth.user().onCreate</td>
+                    </tr>
+                    <tr>
+                        <td>Resize images after upload to Cloud Storage</td>
+                        <td>storage.object().onFinalize</td>
+                    </tr>
+                    <tr>
+                        <td>Notify users of changes to Firestore data</td>
+                        <td>firestore.document(...).onUpdate</td>
+                    </tr>
+                    <tr>
+                        <td>Handle HTTP requests (APIs, webhooks)</td>
+                        <td>onRequest or onCall</td>
+                    </tr>
+                    <tr>
+                        <td>Schedule functions (cron jobs)</td>
+                        <td>pubsub.schedule(...)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠️ Basic Example: HTTP Function</h2>
+            <pre><code>
+const functions = require('firebase-functions');
+
+exports.helloWorld = functions.https.onRequest((request, response) => {
+  response.send("Hello from Firebase!");
+});
+            </code></pre>
+
+            <p>Deploy with:</p>
+            <pre><code>
+firebase deploy --only functions
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔒 Callable Function Example (from client)</h2>
+            <pre><code>
+exports.addMessage = functions.https.onCall((data, context) => {
+    const text = data.text;
+    return { message: `You sent: ${text}` };
+});                  
+            </code></pre>
+
+            <p>On the client (e.g., in your app):</p>
+            <pre><code>
+const addMessage = httpsCallable(functions, 'addMessage');
+addMessage({ text: 'Hello!' }).then(result => {
+  console.log(result.data.message);
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ Setup Instructions</h2>
+            <ol>
+                <li>
+                    Install Firebase CLI:
+                    <pre><code>
+npm install -g firebase-tools
+                    </code></pre>
+                </li>
+                <li>
+                    Initialize Functions in your project:
+                    <pre><code>
+firebase init functions
+                    </code></pre>
+                </li>
+                <li>Choose a language: JavaScript, TypeScript, or Python (in beta).</li>
+                <li>Write your function code in functions/index.js (or .ts).</li>
+                <li>
+                    Deploy functions:
+                    <pre><code>
+firebase deploy --only functions
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>💡 Tips</h2>
+            <ul>
+                <li>Cloud Functions are billed based on invocations, compute time, and outbound data.</li>
+                <li>Logs can be viewed in the Firebase console or via firebase functions:log.</li>
+                <li>You can test functions locally using the Firebase Emulator Suite.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Cloud Functions for Firebase</h2>
+            <p>Cloud Functions for Firebase is a serverless framework that lets you automatically run backend code in response to events triggered by background events, HTTPS requests, the Admin SDK, or Cloud Scheduler jobs. Your JavaScript, TypeScript or Python code is stored on Google Cloud infrastructure and runs in a managed environment. There's no need to manage and scale your own servers.</p>
+        </section>
+
+        <section>
+            <h2>Key capabilities</h2>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Integrates Firebase features and connects Firebase with Google Cloud</td>
+                        <td>
+                            <p>The functions you write can respond to events generated by various Firebase and Google Cloud features, from Firebase Authentication triggers to Cloud Storage Triggers.</p>
+                            <p>Integrate across Firebase features using the Admin SDK together with Cloud Functions, and integrate with third-party services by writing your own webhooks. Cloud Functions minimizes boilerplate code, making it easier to use Firebase and Google Cloud inside your function.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Zero maintenance</td>
+                        <td>Deploy your JavaScript, TypeScript, or Python code to our servers with one command from the command line. After that, Firebase automatically scales up computing resources to match the usage patterns of your users. You never worry about credentials, server configuration, provisioning new servers, or decommissioning old ones.</td>
+                    </tr>
+                    <tr>
+                        <td>Keeps your logic private and secure</td>
+                        <td>In many cases, developers prefer to control application logic on the server to avoid tampering on the client side. Also, sometimes it's not desirable to allow that code to be reverse engineered. Cloud Functions is fully insulated from the client, so you can be sure it is private and always does exactly what you want.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>How does it work?</h2>
+            <p>After you write and deploy a function, Google's servers begin to manage the function immediately. You can fire the function directly with an HTTP request, the Admin SDK, or a scheduled job, or, in the case of background functions, Google's servers listen for events and run the function when it is triggered.</p>
+            <p>As the load increases or decreases, Google responds by rapidly scaling the number of virtual server instances needed to run your function. Each function runs in isolation, in its own environment with its own configuration.</p>
+        </section>
+
+        <section>
+            <h2>Lifecycle of a background function</h2>
+            <ol>
+                <li>You write code for a new function, selecting an event provider (such as Cloud Firestore), and defining the conditions under which the function should execute</li>
+                <li>
+                    When you deploy your function:
+                    <ul>
+                        <li>The Firebase CLI creates a .zip archive of the function code, which is then uploaded to a Cloud Storage bucket (prefixed with gcf-sources) before Cloud Functions creates an Artifact Registry repository (named gcf-artifacts) in your project.</li>
+                        <li>Cloud Build retrieves the function code and builds the function source. You can view Cloud Build logs in the Google Cloud console.</li>
+                        <li>The container image for the built functions code is uploaded to a private Artifact Registry repository in your project (named gcf-artifacts), and your new function is rolled out.</li>
+                    </ul>
+                </li>
+                <li>When the event provider generates an event that matches the function's conditions, the code is invoked. The function has a service account attached to it that can be used to access other Firebase services with the help of the Firebase Admin SDK.</li>
+                <li>If the function is busy handling many events, Google creates more instances to handle work faster. If the function is idle, instances are cleaned up.</li>
+                <li>When you update the function by deploying updated code, instances for older versions are cleaned up along with build artifacts in Artifact Registry, and replaced by new instances.</li>
+                <li>When you delete the function, all instances and zip archives are cleaned up, along with related build artifacts in Artifact Registry. The connection between the function and the event provider is removed.</li>
+            </ol>
+
+            <p>In addition to listening for events with a background function, you can call functions directly with an HTTP request or a call from the client. You can also trigger functions on a fixed schedule or enqueue task functions via the Admin SDK.</p>
+        </section>
+
+        <section>
+            <h2>Cloud Storage bucket</h2>
+            <p>A Cloud Storage bucket is a fundamental storage container in cloud platforms like Google Cloud, Amazon Web Services (AWS), or Microsoft Azure. It holds objects (files, data) and provides a scalable, durable, and secure place to store and retrieve that data over the internet.</p>
+            <p>Here's a breakdown of what a Cloud Storage bucket is and how it works, using Google Cloud Storage (GCS) as a representative example:</p>
+        </section>
+
+        <section>
+            <h2>🔹 What is a Cloud Storage Bucket?</h2>
+            <ul>
+                <li>A bucket is a logical container for storing objects, which are the individual pieces of data (like images, videos, backups, documents).</li>
+                <li>Buckets are the top-level namespace — every object must reside in a bucket.</li>
+                <li>Buckets are uniquely named across the entire cloud platform.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Key Features</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Global Namespace</td>
+                        <td>Bucket names must be globally unique.</td>
+                    </tr>
+                    <tr>
+                        <td>Access Control</td>
+                        <td>You can define who has access using IAM policies or ACLs.</td>
+                    </tr>
+                    <tr>
+                        <td>Storage Classes</td>
+                        <td>Choose between classes like Standard, Nearline, Coldline, Archive (based on access frequency).</td>
+                    </tr>
+                    <tr>
+                        <td>Versioning</td>
+                        <td>Option to keep multiple versions of objects.</td>
+                    </tr>
+                    <tr>
+                        <td>Object Lifecycle</td>
+                        <td>Automate deletion or transition of objects based on rules.</td>
+                    </tr>
+                    <tr>
+                        <td>Encryption</td>
+                        <td>Data is encrypted at rest and in transit (server-side or customer-managed keys).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔹 Example Use Cases</h2>
+            <ul>
+                <li>Hosting static websites</li>
+                <li>Backing up files and databases</li>
+                <li>Serving large files (e.g., videos)</li>
+                <li>Data lakes and big data analytics</li>
+                <li>Archiving data for compliance</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Examples by Provider</h2>
+            <p>
+                ✅ Google Cloud Storage
+                <ul>
+                    <li>gs://your-bucket-name</li>
+                    <li>Managed via gsutil, GCP Console, or client libraries</li>
+                </ul>
+            </p>
+
+            <p>
+                ✅ AWS S3
+                <ul>
+                    <li>Buckets live in regions and accessed as s3://your-bucket-name</li>
+                    <li>Managed with AWS CLI, SDKs, or S3 Console</li>
+                </ul>
+            </p>
+
+            <p>
+                ✅ Azure Blob Storage
+                <ul>
+                    <li>Uses containers inside a storage account</li>
+                    <li>Blob URL format: https://youraccount.blob.core.windows.net/your-container</li>
+                </ul>
+            </p>
+        </section>
+
+        <section>
+            <h2>🔹 Creating a Bucket (Google Cloud CLI Example)</h2>
+            <pre><code>
+gsutil mb -l us-central1 gs://my-unique-bucket-name/
+            </code></pre>
+
+            <p>Or via the GCP Console.</p>
+        </section>
+
+        <section>
+            <h2>Implementation path</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Set up Cloud Functions</th>
+                        <th>Install the Firebase CLI and initialize Cloud Functions in your Firebase project.</th>
+                    </tr>
+                    <tr>
+                        <td>Write functions</td>
+                        <td>Write JavaScript code, TypeScript code, or Python code to handle events from Firebase services, Google Cloud services, or other event providers.</td>
+                    </tr>
+                    <tr>
+                        <td>Test functions</td>
+                        <td>Use the <a href="https://firebase.google.com/docs/functions/local-emulator">local emulator</a> to test your functions.</td>
+                    </tr>
+                    <tr>
+                        <td>Deploy and monitor</td>
+                        <td>Upgrade your project to the pay-as-you-go Blaze pricing plan and deploy your functions using the Firebase CLI. You can then use the Google Cloud console to view and search through your logs.</td>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+
+        <section>
+            <h2>FCM Architectural Overview</h2>
+            <p>FCM relies on the following set of components that build, transport, and receive messages:</p>
+
+            <ol>
+                <li>
+                    Tooling to compose or build message requests. The Notifications composer provides a GUI-based option for creating notification requests. For full automation and support for all <a href="https://firebase.google.com/docs/cloud-messaging/customize-messages/set-message-type">message types</a>, you must build message requests in a trusted server environment that supports the Firebase Admin SDK or the FCM server protocol. This environment could be Cloud Functions for Firebase, App Engine, or your own app server.
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Firebase Cloud Messaging message types</h2>
+            <p>With FCM, you can send two types of messages to your client apps:</p>
+
+            <ul>
+                <li>Notification messages, similar to "display messages", are handled by the FCM SDK automatically.</li>
+                <li>Data messages, which are handled by the client app.</li>
+            </ul>
+
+            <p>Notification messages contain a predefined set of user-visible keys and can contain an optional data payload. Data messages, by contrast, contain only your user-defined custom key-value pairs. Maximum payload for both message types is 4096 bytes, except when sending messages from the Firebase console, which enforces a 1000 character limit.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Use scenario</th>
+                        <th>How to send</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Notification message</td>
+                        <td>FCM SDK displays the message to end-user devices on behalf of the client app when it's running in the background. Otherwise, if the app is running in the foreground when the notification is received, the app's code determines the behavior.</td>
+                        <td>
+                            <ol>
+                                <li>
+                                    In a trusted environment such as Cloud Functions or your app server, use the Firebase Admin SDK or the HTTP v1 API. Set the notification key. May have optional data payload. Always collapsible.
+                                    See some examples of display notifications and send request payloads.
+                                </li>
+                                <li>Use the Notifications composer: Enter the Message Text, Title, etc., and send. Add optional data payload by providing Custom data.</li>
+                            </ol>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Data message</td>
+                        <td>Client app is responsible for processing data messages. Data messages have only custom key-value pairs with no reserved key names (see below).</td>
+                        <td>In a trusted environment such as Cloud Functions or your app server, use the Firebase Admin SDK or the HTTP v1 API. In the send request, Set the data key.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>You can use notification messages when you want the FCM SDK to handle displaying a notification automatically when your app is running in the background. FCM can send a notification message with an optional data payload. In such cases, FCM displays the notification payload, and the client app handles the data payload.</p>
+            <p>You can use data messages when you want to process the messages with your own client app code.</p>
+        </section>
+
+        <section>
+            <h2>Notification messages</h2>
+            <p>You can send notification messages using the <a href="https://firebase.google.com/docs/cloud-messaging/send/firebase-console">Firebase console</a>, the <a href="https://firebase.google.com/docs/cloud-messaging/send/admin-sdk">Firebase Admin SDK</a>, or the <a href="https://firebase.google.com/docs/cloud-messaging/send/v1-api">FCM HTTP v1 API</a>. The Firebase console provides analytics-based <a href="https://firebase.google.com/docs/ab-testing/abtest-with-console">A/B testing</a> to help you refine and improve your notification messages.</p>
+            <p>To send notification messages using the Firebase Admin SDK or the FCM HTTP v1 API, set the notification key with the predefined set of key-value options of the notification message. You can use the following example to format a notification message in an IM app</p>
+            <pre><code>
+{
+    "message":{
+        "token":"bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...",
+        "notification":{
+        "title":"Portugal vs. Denmark",
+        "body":"great match!"
+        }
+    }
+}
+            </code></pre>
+
+            <p>Notification messages are delivered to the notification tray when the app is in the background. For apps in the foreground, messages are handled by a callback function.</p>
+            <p>You can use the <a href="https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#Notification">FCM HTTP v1 API notification object</a> reference documentation for the full list of predefined keys available for building notification messages.</p>
+        </section>
+
+        <section>
+            <pre><code>
+{
+    "message":{
+        "token":"bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...",
+        "notification":{
+        "title":"Portugal vs. Denmark",
+        "body":"great match!"
+        }
+    }
+}
+            </code></pre>
+            <p>The structure you posted looks like a JSON payload used to send a push notification via a service like Firebase Cloud Messaging (FCM).</p>
+            <p>Here’s a breakdown of what each part means:</p>
+
+            <h2>🔹 What is "token": "bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1..."?</h2>
+            <p>This token is a device registration token, issued by Firebase Cloud Messaging (FCM) to identify a specific client device (like a phone or browser session).</p>
+            <p>When you send a push notification using FCM, you target a device via its unique token.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Example of the whole payload</h2>
+            <pre><code>
+{
+    "message": {
+        "token": "bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...",
+        "notification": {
+        "title": "Portugal vs. Denmark",
+        "body": "great match!"
+        }
+    }
+}                  
+            </code></pre>
+            <p>This JSON tells Firebase:</p>
+            <ul>
+                <li>Who to send the notification to ("token").</li>
+                <li>What the notification says ("title" and "body").</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ How to Get the Token</h2>
+            <p>You can only get this token from the client side, using Firebase SDK on a device (like Android, iOS, or web). Here's how it works for different platforms:</p>
+
+            <p>🔹 For Web (JavaScript)</p>
+            <pre><code>
+import { getMessaging, getToken } from "firebase/messaging";
+
+const messaging = getMessaging();
+
+getToken(messaging, { vapidKey: 'YOUR_VAPID_KEY_HERE' })
+  .then((currentToken) => {
+    if (currentToken) {
+      console.log("Token:", currentToken);
+      // Send this token to your server
+    } else {
+      console.log("No registration token available. Request permission to generate one.");
+    }
+  })
+  .catch((err) => {
+    console.error("An error occurred while retrieving token. ", err);
+  });
+
+            </code></pre>
+
+            <p>🔹 For Android (Kotlin)</p>
+            <pre><code>
+FirebaseMessaging.getInstance().token
+    .addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            val token = task.result
+            Log.d("FCM", "Token: $token")
+        }
+    }
+            </code></pre>
+
+            <p>🔹 For iOS (Swift)</p>
+            <pre><code>
+Messaging.messaging().token { token, error in
+    if let error = error {
+        print("Error fetching FCM registration token: \(error)")
+    } else if let token = token {
+        print("FCM registration token: \(token)")
+    }
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🛠️ Requirements</h2>
+            <ol>
+                <li>Your app must be properly integrated with Firebase.</li>
+                <li>The user must grant permission for notifications (especially on web and iOS).</li>
+                <li>You need to handle background and foreground notification handling correctly.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔒 Security Tip</h2>
+            <ul>
+                <li>Never expose sensitive server keys or allow clients to send notifications directly to FCM.</li>
+                <li>Tokens should be stored securely and refreshed when they expire.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Data messages</h2>
+            <p>Important: While the connection to FCM is encrypted, it is not end-to-end encrypted. For sensitive data, you should implement your own end-to-end encryption. To learn more, see <a href="https://firebase.google.com/docs/cloud-messaging/encryption">Secure Your Message Data with End-to-End Encryption</a>.</p>
+            <p>It is up to you how you want to use the FCM payload data to implement your encryption scheme of choice. Make sure that you don't use any reserved words in your custom key-value pairs. Reserved words include from, message_type, or any word starting with google., gcm. or gcm.notification..</p>
+            <p>The following example shows usage of the top-level, or common data field, which is interpreted by clients on all platforms that receive the message. On each platform, the client app receives the data payload in a callback function</p>
+        
+            <pre><code>
+{
+    "message":{
+        "token":"bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...",
+        "data":{
+        "Nick" : "Mario",
+        "body" : "great match!",
+        "Room" : "PortugalVSDenmark"
+        }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Non-collapsible and collapsible messages</h2>
+            <p>A non-collapsible message means that each individual message is delivered to the device. A non-collapsible message delivers some useful content. While a collapsible message like a content-free "ping" to a mobile app to contact the server to fetch data.</p>
+            <p>FCM doesn't guarantee the order of delivery.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

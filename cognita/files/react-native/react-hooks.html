@@ -527,24 +527,24 @@ const Parent = () => {
         &lt;Child onPress={handlePress} title="Press me" /&gt;
     &lt;/View&gt;
   );
-
-  <p>What you’ll see in console:</p>
-  <ul>
-    <li>When you press Increment count, the Parent re-renders.</li>
-    <li>Thanks to React.memo, Child does NOT re-render because props (onPress and title) are the same.</li>
-    <li>The handlePress function is stable thanks to useCallback.</li>
-  </ul>
-
-  <p>When to use React.memo?</p>
-  <ul>
-    <li>When the component renders the same UI for the same props.</li>
-    <li>When the component is pure and doesn’t rely on internal state or context that changes often.</li>
-    <li>To optimize components that receive functions or objects as props (combined with useCallback and useMemo).</li>
-  </ul>
 };
 
 export default Parent;
             </code></pre>
+
+            <p>What you’ll see in console:</p>
+            <ul>
+              <li>When you press Increment count, the Parent re-renders.</li>
+              <li>Thanks to React.memo, Child does NOT re-render because props (onPress and title) are the same.</li>
+              <li>The handlePress function is stable thanks to useCallback.</li>
+            </ul>
+
+            <p>When to use React.memo?</p>
+            <ul>
+              <li>When the component renders the same UI for the same props.</li>
+              <li>When the component is pure and doesn’t rely on internal state or context that changes often.</li>
+              <li>To optimize components that receive functions or objects as props (combined with useCallback and useMemo).</li>
+            </ul>
         </section>
     </main>
 

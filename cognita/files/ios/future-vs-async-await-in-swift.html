@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Futures and async/await</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Futures and async/await</h1>
+                    <p class="subtitle">Great topic! Here’s a clear comparison of Futures and async/await — especially in the context of asynchronous programming in languages like Dart, JavaScript, Python, Rust, etc.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is a Future?</h2>
+            <ul>
+                <li>A Future represents a value that may not be available yet but will be available at some point in the future.</li>
+                <li>It’s like a promise: an object that holds a potential result of an asynchronous operation.</li>
+                <li>You can attach callbacks (e.g., .then(), .catch()) to execute code once the Future completes.</li>
+                <li>Futures are often used directly in APIs to return results from async operations without blocking the main thread.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example in Dart:</h2>
+            <pre><code>
+Future<String> fetchData() {
+    return Future.delayed(Duration(seconds: 2), () => 'Data loaded');
+}
+    
+fetchData().then((data) {
+    print(data);
+});                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What is async/await?</h2>
+            <ul>
+                <li>async/await is syntactic sugar built on top of Futures (or Promises in JS) that makes asynchronous code look and behave more like synchronous code.</li>
+                <li>An async function returns a Future implicitly.</li>
+                <li>You await a Future to pause the execution inside the async function until the Future completes.</li>
+                <li>This makes your asynchronous code more readable and easier to write, avoiding deeply nested callbacks.</li>
+            </ul>
+
+            <p>Example in Dart:</p>
+            <pre><code>
+Future<String> fetchData() async {
+    await Future.delayed(Duration(seconds: 2));
+    return 'Data loaded';
+}
+    
+void main() async {
+    var data = await fetchData();
+    print(data);
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Key Differences</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Future</th>
+                        <th>async/await</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Nature</td>
+                        <td>Object representing a future value</td>
+                        <td>Syntax sugar for handling Futures</td>
+                    </tr>
+                    <tr>
+                        <td>Code style</td>
+                        <td>Uses callbacks (.then(), .catch())</td>
+                        <td>Looks like synchronous code with await</td>
+                    </tr>
+                    <tr>
+                        <td>Readability</td>
+                        <td>Can get nested and callback-heavy ("callback hell")</td>
+                        <td>Cleaner and more readable</td>
+                    </tr>
+                    <tr>
+                        <td>Error handling</td>
+                        <td>Use .catchError() or error callbacks</td>
+                        <td>Use try/catch blocks naturally</td>
+                    </tr>
+                    <tr>
+                        <td>Usage</td>
+                        <td>Returned by async operations directly</td>
+                        <td>Mark functions as async and use await inside</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <ul>
+                <li>Futures are the underlying mechanism for asynchronous operations.</li>
+                <li>async/await is a convenient way to write asynchronous code more naturally, making it easier to read and maintain.</li>
+                <li>You can always use Futures without async/await, but async/await generally leads to cleaner code.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Great! Let’s break down Future vs async/await specifically in Swift.</p>
+
+            <h2>Background in Swift Async</h2>
+            <ul>
+                <li>Swift introduced async/await natively in Swift 5.5 (with concurrency support).</li>
+                <li>Before that, people often used Futures and Promises patterns via libraries like Combine or PromiseKit to handle async tasks.</li>
+                <li>Swift’s native async/await is now the recommended way to do asynchronous programming because it’s built into the language and compiler.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Futures in Swift</h2>
+            <ul>
+                <li>A Future represents a value that will be available later.</li>
+                <li>In Swift, you get Futures mainly via Combine’s Future publisher or via third-party libraries like PromiseKit.</li>
+                <li>The Future in Combine is a publisher that eventually produces a single value or failure.</li>
+                <li>You subscribe to the Future and handle results asynchronously with .sink, .receive, or chaining operators.</li>
+            </ul>
+
+            <p>Example using Combine’s Future:</p>
+            <pre><code>
+import Combine
+
+func fetchData() -> Future&lt;String, Error&gt; {
+    return Future { promise in
+        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+            promise(.success("Data loaded"))
+        }
+    }
+}
+
+let future = fetchData()
+let cancellable = future.sink(
+    receiveCompletion: { completion in
+        switch completion {
+        case .finished:
+            print("Finished")
+        case .failure(let error):
+            print("Error: \(error)")
+        }
+    },
+    receiveValue: { value in
+        print("Received value: \(value)")
+    }
+)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>async/await in Swift</h2>
+            <ul>
+                <li>async/await is built-in and native in Swift 5.5+.</li>
+                <li>Functions are marked with async to indicate they’re asynchronous.</li>
+                <li>You call such functions with await to wait for their result without blocking the thread.</li>
+                <li>It’s much cleaner and easier to read compared to Future-based callback chains.</li>
+            </ul>
+
+            <p>Example using async/await:</p>
+            <pre><code>
+func fetchData() async throws -> String {
+    try await Task.sleep(nanoseconds: 2_000_000_000) // sleep 2 seconds
+    return "Data loaded"
+}
+
+Task {
+    do {
+        let data = try await fetchData()
+        print(data)
+    } catch {
+        print("Error: \(error)")
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Key Differences in Swift Context</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Future (Combine)</th>
+                        <th>async/await</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Type</td>
+                        <td>Future publisher (from Combine framework)</td>
+                        <td>Native async function returning value</td>
+                    </tr>
+                    <tr>
+                        <td>Syntax</td>
+                        <td>Closures, chaining, .sink, .map, etc.</td>
+                        <td>Synchronous-looking code with await</td>
+                    </tr>
+                    <tr>
+                        <td>Readability</td>
+                        <td>Can get complex with nested chains or multiple subscriptions</td>
+                        <td>More linear, clear, and easy to read</td>
+                    </tr>
+                    <tr>
+                        <td>Error handling</td>
+                        <td>Handled via .sink completion or .catch operators</td>
+                        <td>try/catch naturally within async context</td>
+                    </tr>
+                    <tr>
+                        <td>Integration</td>
+                        <td>Works well with Combine framework and reactive streams</td>
+                        <td>Integrated deeply into Swift concurrency</td>
+                    </tr>
+                    <tr>
+                        <td>Threading</td>
+                        <td>You manage queues, schedulers</td>
+                        <td>await automatically handles suspension</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>When to Use What?</h2>
+            <ul>
+                <li>Use async/await for most modern Swift async code — cleaner, safer, and recommended.</li>
+                <li>Use Future/Combine if you are already working with reactive streams or need to integrate with legacy Combine-based code.</li>
+                <li>Combine’s Futures give more control for stream-like or publisher/subscriber patterns, async/await is better for straightforward async logic.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

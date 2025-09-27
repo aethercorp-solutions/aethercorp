@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SALESORDER_MODE</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">SALESORDER_MODE</h1>
+                    <p class="subtitle">
+                        <p>
+                            declares a new enumeration type named SALESORDER_MODE, which defines two possible values:
+                        </p>
+                        <ul>
+                            <li>SAMPLE</li>
+                            <li>PRODUCTION</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <pre><code>
+typedef enum {
+    SAMPLE,
+    PRODUCTION
+} SALESORDER_MODE;                
+            </code></pre>
+            <h2>💡 What does this mean in an Inventory Management System context?</h2>
+            <p>In an inventory or order management system, this enum likely defines the mode or purpose of a Sales Order (SO).</p>
+        </section>
+
+        <section>
+            <h2>🔍 Explanation of Values:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Enum Value</th>
+                        <th>Meaning in Context</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SAMPLE</td>
+                        <td>The sales order is for samples — non-billable or lower-quantity items sent to customers for evaluation or demonstration. These usually do not affect regular inventory or revenue tracking the same way as production orders.</td>
+                    </tr>
+                    <tr>
+                        <td>PRODUCTION</td>
+                        <td>The sales order is for actual production or fulfillment — meaning it's a real customer order that results in inventory being deducted and revenue being generated. This is the standard, billable type of order.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Usage in Code:</h2>
+            <pre><code>
+SALESORDER_MODE sMode = SAMPLE;
+
+if (sMode == SAMPLE) {
+    // Apply sample-specific logic (e.g., no invoice, limited quantity)
+} else if (sMode == PRODUCTION) {
+    // Apply full sales order logic (e.g., deduct inventory, generate invoice)
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 Why it's useful:</h2>
+            <p>Using an enum like SALESORDER_MODE allows the app to:</p>
+            <ul>
+                <li>Handle different business logic for sample vs. production orders.</li>
+                <li>Reduce errors by having clearly defined modes.</li>
+                <li>Improve readability and maintainability of the code.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>If you're building or modifying an inventory system, you might also consider adding other modes, such as:</h2>
+            <pre><code>
+typedef enum {
+    SAMPLE,
+    PRODUCTION,
+    RETURN,
+    BACKORDER,
+    INTERNAL_USE
+} SALESORDER_MODE;                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Unit Transfer Receipt</h2>
+            <p>TUtrInspectionStatus is a user-defined enumerated type (enum) in C/C++ (or similar languages), likely used to represent the status of a UTR (Unit Transfer Receipt) inspection in an inventory management system.</p>
+            <p>Let’s break it down in simple terms:</p>
+        </section>
+
+        <section>
+            <h2>✅ What is TUtrInspectionStatus?</h2>
+            <p>It’s a type that defines the possible states or phases that a UTR inspection can go through in the system.</p>
+            <p>Here’s the enum again:</p>
+            <pre><code>
+typedef enum {
+    UtrInspectionNotRequired,     // No inspection needed
+    UtrInspectionRequired,        // Inspection is required but not started
+    UtrInspectionInProgress,      // Inspection has started
+    UtrInspectionCompleted,       // Inspection completed
+    UtrInspectionEmailed          // Inspection report has been emailed
+} TUtrInspectionStatus;                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔍 What is a UTR Inspection?</h2>
+            <p>In an inventory or logistics context, "UTR" could stand for:</p>
+            <ul>
+                <li>Unit Transfer Receipt – a document verifying that goods/items have been transferred.</li>
+            </ul>
+            <p>So, a UTR inspection would be the process of:</p>
+            <ul>
+                <li>Checking or validating items associated with a transfer.</li>
+                <li>Ensuring the goods meet certain quality or regulatory standards before they're accepted into stock, shipped, or reported.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 In an Inventory Management System</h2>
+            <p>Here's how this enum might be used in real workflows:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Meaning in the Workflow</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>UtrInspectionNotRequired</td>
+                        <td>No need to inspect (e.g., trusted vendor, auto-approved items).</td>
+                    </tr>
+                    <tr>
+                        <td>UtrInspectionRequired</td>
+                        <td>Inspection is mandatory, but hasn't started.</td>
+                    </tr>
+                    <tr>
+                        <td>UtrInspectionInProgress</td>
+                        <td>Someone is currently inspecting the unit.</td>
+                    </tr>
+                    <tr>
+                        <td>UtrInspectionCompleted</td>
+                        <td>The inspection is finished and passed.</td>
+                    </tr>
+                    <tr>
+                        <td>UtrInspectionEmailed</td>
+                        <td>Report or results have been emailed to stakeholders.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠️ Possible Use in Code</h2>
+            <pre><code>
+TUtrInspectionStatus status = UtrInspectionRequired;
+
+if (status == UtrInspectionCompleted) {
+    // Allow item to be added to inventory
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <p>TUtrInspectionStatus tracks the inspection status of a unit/item in an inventory management system. It helps the system decide:</p>
+            <ul>
+                <li>Whether an item can move forward in the workflow,</li>
+                <li>Whether alerts or actions (like email notifications) are needed,</li>
+                <li>And ensures compliance with inspection protocols.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

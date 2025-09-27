@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Add a Profile Picture and Profile Name</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Add a Profile Picture and Profile Name</h1>
+                    <p class="subtitle">To add a profile picture and profile name at the top of your MenuListController, you can use a custom UITableViewHeaderFooterView or simply use the tableView.tableHeaderView property to create a header view.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Steps to implement:</h2>
+            <ol>
+                <li>Fetch the user's display name and profile photo URL from Firebase.</li>
+                <li>Create a custom header view and set it as the tableHeaderView of your table.</li>
+                <li>Style the header with an image view and a label.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔧 Here's how to update your MenuListController:</h2>
+            <pre><code>
+import UIKit
+import FirebaseAuth
+
+class MenuListController: UITableViewController {
+
+    let items = ["Home", "Profile", "Settings", "Logout"]
+    
+    // Closure to notify parent controller
+    var didSelectMenuItem: ((String) -> Void)?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupHeaderView()
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return items.count
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell()
+        cell.textLabel?.text = items[indexPath.row]
+        return cell
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedItem = items[indexPath.row]
+        print("Selected: \(selectedItem)")
+        tableView.deselectRow(at: indexPath, animated: true)
+        dismiss(animated: true) {
+            self.didSelectMenuItem?(selectedItem)
+        }
+    }
+
+    // MARK: - Setup Header View
+    private func setupHeaderView() {
+        let headerHeight: CGFloat = 150
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerHeight))
+        headerView.backgroundColor = UIColor.systemGroupedBackground
+
+        let imageViewSize: CGFloat = 70
+        let imageView = UIImageView(frame: CGRect(x: 20, y: headerHeight / 2 - imageViewSize / 2, width: imageViewSize, height: imageViewSize))
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = imageViewSize / 2
+        imageView.image = UIImage(systemName: "person.crop.circle") // placeholder
+
+        let nameLabel = UILabel(frame: CGRect(x: imageView.frame.maxX + 16, y: imageView.frame.midY - 12, width: tableView.frame.width - imageView.frame.maxX - 32, height: 24))
+        nameLabel.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        nameLabel.textColor = .label
+        nameLabel.text = "Guest User" // default
+
+        // Load Firebase User
+        if let user = Auth.auth().currentUser {
+            if let displayName = user.displayName {
+                nameLabel.text = displayName
+            }
+
+            if let photoURL = user.photoURL {
+                // Load the image asynchronously
+                URLSession.shared.dataTask(with: photoURL) { data, _, error in
+                    guard let data = data, error == nil else { return }
+                    DispatchQueue.main.async {
+                        imageView.image = UIImage(data: data)
+                    }
+                }.resume()
+            }
+        }
+
+        headerView.addSubview(imageView)
+        headerView.addSubview(nameLabel)
+
+        tableView.tableHeaderView = headerView
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Output</h2>
+            <ul>
+                <li>
+                    When a user is signed in with Google or any Firebase method that supports profile info:
+                    <ul>
+                        <li>Their profile picture and display name will be shown at the top of the menu.</li>
+                    </ul>
+                </li>
+                <li>
+                    If not signed in or profile info isn't available:
+                    <ul>
+                        <li>A default icon and "Guest User" will be displayed.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧼 Optional Enhancements</h2>
+            <ul>
+                <li>Cache images using a library like SDWebImage.</li>
+                <li>Support dynamic layout with Auto Layout.</li>
+                <li>Add a "Tap to view profile" gesture.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>To make your headerHeight and imageViewSize responsive (i.e., adaptable to different screen sizes), you should avoid using fixed values like 150 or 70 and instead calculate them dynamically based on screen size, using properties like UIScreen.main.bounds or traitCollection.</p>
+            <p>Here’s how you can refactor your setupHeaderView() method:</p>
+
+            <p>✅ Responsive Version</p>
+            <pre><code>
+private func setupHeaderView() {
+    // Dynamically calculate header height and image size
+    let screenHeight = UIScreen.main.bounds.height
+    let headerHeight = screenHeight * 0.2 // 20% of screen height
+    let imageViewSize = headerHeight * 0.6 // 60% of header height
+
+    let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerHeight))
+    headerView.backgroundColor = UIColor.systemGroupedBackground
+
+    let imageView = UIImageView()
+    imageView.translatesAutoresizingMaskIntoConstraints = false
+    imageView.contentMode = .scaleAspectFill
+    imageView.clipsToBounds = true
+    imageView.layer.cornerRadius = imageViewSize / 2
+    imageView.image = UIImage(systemName: "person.crop.circle")
+
+    let nameLabel = UILabel()
+    nameLabel.translatesAutoresizingMaskIntoConstraints = false
+    nameLabel.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+    nameLabel.textColor = .label
+    nameLabel.text = "Guest User"
+
+    // Load Firebase User
+    if let user = Auth.auth().currentUser {
+        if let displayName = user.displayName {
+            nameLabel.text = displayName
+        }
+
+        if let photoURL = user.photoURL {
+            URLSession.shared.dataTask(with: photoURL) { data, _, error in
+                guard let data = data, error == nil else { return }
+                DispatchQueue.main.async {
+                    imageView.image = UIImage(data: data)
+                }
+            }.resume()
+        }
+    }
+
+    headerView.addSubview(imageView)
+    headerView.addSubview(nameLabel)
+
+    NSLayoutConstraint.activate([
+        imageView.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 10),
+        imageView.widthAnchor.constraint(equalToConstant: imageViewSize),
+        imageView.heightAnchor.constraint(equalToConstant: imageViewSize),
+        imageView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+
+        nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
+        nameLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+        nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: headerView.trailingAnchor, constant: -16)
+    ])
+
+    tableView.tableHeaderView = headerView
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔍 Explanation</h2>
+            <ul>
+                <li>
+                    let headerHeight = screenHeight * 0.2
+                    <p>Makes the header occupy 20% of the screen height, which scales on all devices.</p>
+                </li>
+                <li>
+                    let imageViewSize = headerHeight * 0.6
+                    <p>The image takes up 60% of the header, leaving space for the label and padding.</p>
+                </li>
+                <li>Spacing and font sizes remain fixed but can also be adjusted proportionally if needed.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📝 Optional Improvements</h2>
+            <p>If you want more fine-tuned responsiveness (e.g. iPad vs iPhone), you can switch based on</p>
+            <p>traitCollection.userInterfaceIdiom:</p>
+            <pre><code>
+let isPad = UIDevice.current.userInterfaceIdiom == .pad
+let headerHeight = isPad ? screenHeight * 0.15 : screenHeight * 0.2
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

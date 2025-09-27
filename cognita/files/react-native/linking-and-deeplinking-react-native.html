@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Linking and Deep Linking</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Linking and Deep Linking</h1>
+                    <p class="subtitle">In React Native, "Linking" and "Deep Linking" refer to handling URLs and navigating to specific content inside your app from external sources like browsers, email, or other apps.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔗 1. Linking in React Native</h2>
+            <p>Linking is a core module in React Native used to interact with URLs, both internal and external.</p>
+
+            <p>✅ Common Uses:</p>
+            <ul>
+                <li>Open a web URL in a browser</li>
+                <li>Open app settings</li>
+                <li>Handle incoming deep links (e.g., myapp://profile/123)</li>
+            </ul>
+
+            <p>📦 Importing:</p>
+            <pre><code>
+import { Linking } from 'react-native';
+            </code></pre>
+
+            <p>📖 Basic Usage:</p>
+            <p>Open an external link:</p>
+            <pre><code>
+Linking.openURL('https://example.com');
+            </code></pre>
+
+            <p>Check if a URL can be handled:</p>
+            <pre><code>
+Linking.canOpenURL('https://example.com')
+  .then(supported => {
+    if (supported) {
+      Linking.openURL('https://example.com');
+    } else {
+      console.log("Don't know how to open URI: " + url);
+    }
+  });
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔍 2. Deep Linking</h2>
+            <p>Deep Linking enables your app to respond to custom URLs and open specific screens based on the URL content.</p>
+            <p>🧩 Types:</p>
+            <ul>
+                <li>URL Schemes (Custom URL): e.g., myapp://home</li>
+                <li>Universal Links / App Links: e.g., https://myapp.com/home</li>
+            </ul>
+            <p>🛠️ Setup Steps (React Native + React Navigation):</p>
+        </section>
+
+        <section>
+            <h2>🔧 Setup Deep Linking with React Navigation</h2>
+            <p>Assuming you’re using React Navigation, here’s how you do deep linking:</p>
+            <p>📁 1. Define the linking config:</p>
+
+            <pre><code>
+const linking = {
+    prefixes: ['myapp://', 'https://myapp.com'],
+    config: {
+        screens: {
+        Home: 'home',
+        Profile: 'profile/:id',
+        // Add more screens
+        },
+    },
+};                  
+            </code></pre>
+
+            <p>📦 2. Pass to NavigationContainer:</p>
+            <pre><code>
+import { NavigationContainer } from '@react-navigation/native';
+
+&lt;NavigationContainer linking={linking}&gt;
+  {/* Your Navigator */}
+&lt;/NavigationContainer&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ Platform-Specific Configuration</h2>
+            <p>📱 iOS:</p>
+            <ol>
+                <li>
+                    Add your URL scheme in Info.plist:
+                    <pre><code>
+&lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+&lt;array&gt;
+    &lt;dict&gt;
+        &lt;key&gt;CFBundleURLSchemes&lt;/key&gt;
+        &lt;array&gt;
+            &lt;string>myapp&lt;/string&gt;
+        &lt;/array&gt;
+    &lt;/dict&gt;
+&lt;/array&gt;
+                    </code></pre>
+                </li>
+
+                <li>(Optional) For Universal Links, you need to support apple-app-site-association.</li>
+            </ol>
+
+            <p>🤖 Android:</p>
+            <ol>
+                <li>
+                    Add intent filters in AndroidManifest.xml:
+                    <pre><code>
+&lt;intent-filter&gt;
+    &lt;action android:name="android.intent.action.VIEW" /&gt;
+    &lt;category android:name="android.intent.category.DEFAULT" /&gt;
+    &lt;category android:name="android.intent.category.BROWSABLE" /&gt;
+    
+    <!-- For custom schemes -->
+    &lt;data android:scheme="myapp" android:host="profile" /&gt;
+&lt;/intent-filter&gt;                          
+                    </code></pre>
+                </li>
+                <li>(Optional) For App Links, set up assetlinks.json for your domain.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧪 Test Deep Linking</h2>
+            <p>Simulate in terminal:</p>
+            <pre><code>
+# iOS
+xcrun simctl openurl booted "myapp://profile/123"
+
+# Android
+adb shell am start -W -a android.intent.action.VIEW -d "myapp://profile/123" com.yourapp
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Example</h2>
+            <p>URL: myapp://profile/42</p>
+            <p>Result: Navigates to the Profile screen with id = 42.</p>
+            <pre><code>
+function ProfileScreen({ route }) {
+    const { id } = route.params;
+    return &lt;Text&gt;User ID: {id}&lt;/Text&gt;;
+}                  
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

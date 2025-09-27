@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Your server environment and FCM</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Your server environment and FCM</h1>
+                    <p class="subtitle">
+                        <p>On this page</p>
+                        <p>Requirements for the trusted server environment</p>
+                        <p>Required credentials for Firebase project</p>
+                        <p>Choose a server option</p>
+                        <ul>
+                            <li>Firebase Admin SDK</li>
+                            <li>FCM HTTP v1 API</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>The server side of Firebase Cloud Messaging consists of two components:</p>
+            <ul>
+                <li>The FCM backend provided by Google.</li>
+                <li>Your app server or other trusted server environment where your server logic runs, such as <a href="https://firebase.google.com/docs/functions">Cloud Functions for Firebase</a> or other cloud environments managed by Google.</li>
+            </ul>
+            <p>Tip: If you need to configure your enterprise network or VPN to allow traffic to and from FCM servers, see Configure your Network for FCM.</p>
+            <p>Your app server or trusted server environment sends message requests to the FCM backend, which then routes messages to client apps running on users' devices.</p>
+            
+            <h2>Requirements for the trusted server environment</h2>
+            <p>Your app server environment must meet the following criteria:</p>
+            <ul>
+                <li>Able to send properly formatted message requests to the FCM backend.</li>
+                <li>Able to handle requests and resend them using <a href="https://developers.google.com/api-client-library/java/google-http-java-client/backoff">exponential back-off</a>.</li>
+                <li>Able to securely store server authorization credentials and client registration tokens.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Exponential backoff is an algorithm used to manage retries in distributed systems, APIs, and networking protocols when failures or contention occur (e.g., failed requests, rate limiting, or collisions). The idea is to wait for progressively longer intervals before retrying a failed operation, reducing the load on the system and improving stability.</p>
+            <ol>
+                <li>A client attempts an operation (e.g., sending a request).</li>
+                <li>If it fails (e.g., due to timeout or server overload), it waits before retrying.</li>
+                <li>The wait time increases exponentially with each failed attempt.</li>
+            </ol>
+
+            <p>📈 Basic Formula:</p>
+            <p>For retry attempt n, the wait time might be:</p>
+            <pre><code>
+wait_time = base * (2 ^ n)
+            </code></pre>
+
+            <ul>
+                <li>base: a base delay in milliseconds (e.g., 100ms)</li>
+                <li>n: the attempt number (starting at 0)</li>
+            </ul>
+
+            <p>Example:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Attempt</th>
+                        <th>Wait Time (ms)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>100</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>400</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>800</td>
+                    </tr>
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>⏱️ With Jitter (Randomization)</h2>
+            <p>Without randomization, multiple clients retrying at the same intervals can cause synchronized bursts ("thundering herd" problem).</p>
+            <p>Jitter introduces randomness to spread retries more evenly.</p>
+            <p>Common patterns:</p>
+            
+            <ol>
+                <li>
+                    Full jitter:
+                    <pre><code>
+wait_time = random_between(0, base * 2^n)
+                    </code></pre>
+                </li>
+
+                <li>
+                    Equal jitter (recommended by AWS):
+                    <pre><code>
+wait_time = (base * 2^n) / 2 + random_between(0, (base * 2^n) / 2)
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📦 Real-World Usage</h2>
+            <ul>
+                <li>AWS SDKs: Use exponential backoff with jitter for retrying failed API calls.</li>
+                <li>TCP/IP: Collision avoidance in Ethernet (CSMA/CD).</li>
+                <li>Databases: Retry logic when hitting rate limits or transient errors.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Benefits</h2>
+            <ul>
+                <li>Reduces repeated load on strained systems.</li>
+                <li>Improves chances of success as time progresses.</li>
+                <li>Prevents retry storms and cascading failures.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Considerations</h2>
+            <ul>
+                <li>Set a maximum number of retries to avoid infinite retry loops.</li>
+                <li>Use a cap on maximum wait time (e.g., 60 seconds).</li>
+                <li>Monitor and log retry behavior for debugging and tuning.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here’s a simple Python implementation of exponential backoff with jitter, including retry attempts and logging of each step:</p>
+            <h2>✅ Exponential Backoff in Python (with Full Jitter)</h2>
+
+            <pre><code>
+import time
+import random
+
+def exponential_backoff(base=0.1, cap=10, max_retries=5):
+    for attempt in range(max_retries):
+        try:
+            # Simulate an operation (e.g., API call)
+            print(f"Attempt {attempt + 1}")
+            result = simulated_unreliable_operation()
+            print("Success:", result)
+            return result  # Exit if successful
+        except Exception as e:
+            wait = min(cap, random.uniform(0, base * (2 ** attempt)))
+            print(f"Error: {e}. Retrying in {wait:.2f} seconds...")
+            time.sleep(wait)
+    
+    raise Exception("Operation failed after maximum retries.")
+
+# Example operation that randomly fails
+def simulated_unreliable_operation():
+    if random.random() < 0.7:  # 70% chance to fail
+        raise Exception("Transient error")
+    return "✅ Operation succeeded!"
+
+# Run the backoff logic
+if __name__ == "__main__":
+    try:
+        exponential_backoff()
+    except Exception as e:
+        print("Final failure:", e)
+            </code></pre>
+
+            <p>🔍 Output Example (varies due to randomness):</p>
+            <pre><code>
+Attempt 1
+Error: Transient error. Retrying in 0.09 seconds...
+Attempt 2
+Error: Transient error. Retrying in 0.17 seconds...
+Attempt 3
+Error: Transient error. Retrying in 0.53 seconds...
+Attempt 4
+Success: ✅ Operation succeeded!
+            </code></pre>
+
+            <p>🔧 Parameters Explained:</p>
+            <ul>
+                <li>base: Starting delay in seconds (default is 0.1 = 100ms)</li>
+                <li>cap: Maximum delay between retries (e.g., 10 seconds)</li>
+                <li>max_retries: How many times to retry before giving up</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Required credentials for Firebase project</h2>
+            <p>Depending on which FCM features you implement, you may need the following credentials from your Firebase project:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Credential</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Project ID</td>
+                        <td>A unique identifier for your Firebase project, used in requests to the FCM v1 HTTP endpoint. This value is available in the Firebase console Settings pane.</td>
+                    </tr>
+                    <tr>
+                        <td>Registration token</td>
+                        <td>A unique token string that identifies each client app instance. The registration token is required for single device and device group messaging. Note that registration tokens must be kept secret.</td>
+                    </tr>
+                    <tr>
+                        <td>Sender ID</td>
+                        <td>A unique numerical value created when you create your Firebase project, available in the Cloud Messaging tab of the Firebase console Settings pane. The sender ID is the same as the project number. The sender ID is used to identify each sender that can send messages to the client app.</td>
+                    </tr>
+                    <tr>
+                        <td>Access token</td>
+                        <td>A short-lived OAuth 2.0 token that authorizes requests to the HTTP v1 API. This token is associated with a service account that belongs to your Firebase project. To create and rotate access tokens, follow the steps described in Authorize Send Requests.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Choose a server option</h2>
+            <p>You'll need to decide on a way to interact with FCM servers: either using the Firebase Admin SDK or the FCM HTTP v1 API. Because of its support across popular programming languages and its convenience methods for handling authentication and authorization, the Firebase Admin SDK is the recommended method.</p>
+            <p>Options for interacting with FCM servers include the following:</p>
+
+            <ul>
+                <li>The Firebase Admin SDK, which has support for Node, Java, Python, C#, and Go.</li>
+                <li>The FCM HTTP v1 API, a REST API with secure authorization and flexible cross-platform messaging capabilities (the Firebase Admin SDK is based on this protocol and provides all of its inherent advantages).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Firebase Admin SDK</h2>
+            <p>The Firebase Admin SDK handles authenticating with the backend and facilitates sending messages and managing topic subscriptions. With the Firebase Admin SDK, you can:</p>
+            <ul>
+                <li>Send messages to individual devices</li>
+                <li>Send messages to topics and condition statements that match one or more topics</li>
+                <li>Send messages to device groups</li>
+                <li>Subscribe and unsubscribe devices to and from topics</li>
+                <li>Construct message payloads tailored to different target platforms</li>
+            </ul>
+            <p>
+                To set up the <a href="https://firebase.google.com/docs/admin/setup">Firebase Admin SDK</a>, see Add the Firebase Admin SDK to Your Server. If you already have a Firebase project, start with Add the SDK. Also, make sure to enable the Firebase Cloud Messaging API (V1) in the Cloud Messaging settings page for your project. Then, once the Firebase Admin SDK is installed, you can start writing logic to build send requests.
+            </p>
+        </section>
+
+        <section>
+            <h2>FCM HTTP v1 API</h2>
+            <p>FCM provides the FCM HTTP v1 API for developers who prefer a raw server protocol.</p>
+            To send a message, the app server issues a POST request with an HTTP header and an HTTP body comprised of JSON key value pairs. For details on the header and body options, see <a href="https://firebase.google.com/docs/cloud-messaging/send/v1-api">Send a Message using FCM HTTP v1 API</a>.
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

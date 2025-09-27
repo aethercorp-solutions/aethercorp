@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Firebase Cloud Messaging (FCM)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Firebase Cloud Messaging (FCM)</h1>
+                    <p class="subtitle">Your code snippet is setting up a background message handler for Firebase Cloud Messaging (FCM) in a React Native app using the @react-native-firebase/messaging library.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Here's a breakdown and a checklist to make sure it's used correctly:</p>
+            <h2>✅ What the Code Does</h2>
+
+            <pre><code>
+import messaging from '@react-native-firebase/messaging';
+
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('Message handled in the background!', remoteMessage);
+});
+            </code></pre>
+
+            <p>This sets a background message handler — it will be called when the app is in the background or terminated, and an FCM data-only message is received.</p>
+        </section>
+
+        <section>
+            <h2>✅ Where to Put This Code</h2>
+            <p>It must be defined in the root of your JavaScript bundle (not inside any component, not inside App.js or similar).</p>
+
+            <p>In a standard React Native project, create or modify the index.js file like this:</p>
+            <p>index.js (Example)</p>
+
+            <pre><code>
+import 'react-native-gesture-handler';
+import {AppRegistry} from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import App from './App';
+import {name as appName} from './app.json';
+
+// Background message handler
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('Message handled in the background!', remoteMessage);
+  // You can do further processing here, like local notifications or analytics
+});
+
+AppRegistry.registerComponent(appName, () => App);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Requirements</h2>
+            <ol>
+                <li>
+                    Message type: The message must be a data-only message, like:
+                    <pre><code>
+{
+    "to": "<device_token>",
+    "data": {
+        "customData": "value",
+        "anotherKey": "anotherValue"
+    }
+}                          
+                    </code></pre>
+                    <p>If you send a notification + data, Firebase will show the notification by default and skip the background handler (unless handled manually).</p>
+                </li>
+                <li>
+                    App state: This handler is only triggered when:
+                    <ul>
+                        <li>The app is in background or terminated.</li>
+                        <li>The FCM message has only data payload, not notification.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧪 Testing</h2>
+            <p>To test background handling:</p>
+            <ul>
+                <li>Send a data-only message from Firebase console, Postman, or your backend.</li>
+                <li>Kill or background the app.</li>
+                <li>Monitor logs using:</li>
+            </ul>
+
+            <pre><code>
+npx react-native log-android
+# or
+npx react-native log-ios
+            </code></pre>
+
+            <p>You should see:</p>
+            <pre><code>
+Message handled in the background! { ... }
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>❗Common Pitfalls</h2>
+            <ul>
+                <li>
+                    Handler not called?
+                    <ul>
+                        <li>Make sure the message is data-only.</li>
+                        <li>Ensure it's declared outside any React component, ideally in index.js.</li>
+                        <li>Don’t use background message handler in the emulator — use a real device.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

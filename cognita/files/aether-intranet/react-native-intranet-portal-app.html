@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Native intranet portal app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Native intranet portal app</h1>
+                    <p class="subtitle">Creating a React Native intranet portal app involves building a mobile application that connects to internal company resources (like HR tools, employee directories, document repositories, etc.), typically hosted on a private network rather than the public internet.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Here's a guide to help you get started, including architecture, features, tools, and security considerations.</p>
+            <h2>🧩 1. Core Features of an Intranet Portal App</h2>
+
+            <p>Here are common features an intranet portal might include:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🔐 Authentication</td>
+                        <td>LDAP, SSO (SAML, OAuth2), or internal auth system</td>
+                    </tr>
+                    <tr>
+                        <td>🗂️ Document Access</td>
+                        <td>View/download internal documents (PDFs, policies, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>📢 Announcements</td>
+                        <td>Company news and updates</td>
+                    </tr>
+                    <tr>
+                        <td>📅 Events / Calendar</td>
+                        <td>Upcoming meetings, holidays, events</td>
+                    </tr>
+                    <tr>
+                        <td>👥 Employee Directory</td>
+                        <td>Searchable list of staff with contact info</td>
+                    </tr>
+                    <tr>
+                        <td>📁 Knowledge Base</td>
+                        <td>FAQs, how-tos, onboarding guides</td>
+                    </tr>
+                    <tr>
+                        <td>💬 Internal Chat / Messaging</td>
+                        <td>Optional — could be integrated with MS Teams or Slack</td>
+                    </tr>
+                    <tr>
+                        <td>🛠️ Support Tickets</td>
+                        <td>Raise internal IT/HR issues</td>
+                    </tr>
+                    <tr>
+                        <td>🧾 Timesheets / Leave Requests</td>
+                        <td>Connect to HR system APIs</td>
+                    </tr>
+                    <tr>
+                        <td>📍 Office Locations / Maps</td>
+                        <td>Details of branches, office layouts, etc.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🏗️ 2. Architecture Overview</h2>
+            <pre><code>
+[React Native App] 
+       ⬇️
+[API Gateway / Reverse Proxy] 
+       ⬇️
+[Internal Network APIs / Resources]
+            </code></pre>
+
+            <ul>
+                <li>React Native App: Built using JS/TS. Uses Axios or Fetch to call backend APIs.</li>
+                <li>API Gateway: Reverse proxy (e.g., Nginx) to control access and route requests.</li>
+                <li>Backend APIs: Internal services (HR, Doc DB, Auth, etc.) accessible within your private network or via VPN.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ 3. Tech Stack Recommendations</h2>
+            <p>Frontend (React Native)</p>
+            <ol>
+                <li>react-navigation – routing</li>
+                <li>axios – for network requests</li>
+                <li>@react-native-async-storage/async-storage – for caching tokens</li>
+                <li>react-native-paper or native-base – UI toolkit</li>
+                <li>expo-secure-store – for storing credentials securely (if using Expo)</li>
+                <li>react-native-config – for handling env variables</li>
+            </ol>
+
+            <p>Authentication</p>
+            <ul>
+                <li>LDAP via backend</li>
+                <li>
+                    SSO (SAML/OAuth2) using services like:
+                    <ul>
+                        <li>Azure AD</li>
+                        <li>Okta</li>
+                        <li>Auth0 (self-hosted)</li>
+                    </ul>
+                </li>
+                <li>Use JWT for session management</li>
+            </ul>
+
+            <p>Backend (optional if you're only consuming existing APIs)</p>
+            <ul>
+                <li>Node.js/Express or Python/Django REST Framework</li>
+                <li>Connect to internal services</li>
+                <li>Reverse proxy (Nginx/Traefik)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 4. Security Considerations</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>Best Practice</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🔐 Auth</td>
+                        <td>Use SSO / LDAP / OAuth2 — no storing passwords locally</td>
+                    </tr>
+                    <tr>
+                        <td>🔒 Networking</td>
+                        <td>Use HTTPS even on internal networks</td>
+                    </tr>
+                    <tr>
+                        <td>🔑 Token Storage</td>
+                        <td>Use SecureStore / Keychain / Keystore</td>
+                    </tr>
+                    <tr>
+                        <td>🧱 VPN</td>
+                        <td>Require device VPN to access internal APIs</td>
+                    </tr>
+                    <tr>
+                        <td>📵 Offline Access</td>
+                        <td>Cache non-sensitive data for offline use</td>
+                    </tr>
+                    <tr>
+                        <td>👁️ Logging</td>
+                        <td>Avoid logging PII or sensitive data</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🌐 5. Connecting to Intranet Resources</h2>
+            <p>If your backend resources are only available on your internal network:</p>
+            <ul>
+                <li>Option 1: Require users to be on company VPN</li>
+                <li>Option 2: Deploy a secure reverse proxy that the mobile app can access (authenticated via token)</li>
+                <li>Option 3: Create a mobile gateway API (e.g., using Node.js) that tunnels requests securely into the intranet</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔄 6. Sample Flow: Employee Directory</h2>
+            <p>React Native</p>
+            <pre><code>
+const fetchEmployees = async () => {
+    const token = await SecureStore.getItemAsync("authToken");
+    const res = await axios.get("https://intranet.company.com/api/employees", {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    setEmployees(res.data);
+};                  
+            </code></pre>
+
+            <p>API Response</p>
+            <pre><code>
+[
+  { "id": 1, "name": "Jane Doe", "email": "jane@company.com", "phone": "123-456" },
+  ...
+]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 7. Testing the App</h2>
+            <ul>
+                <li>Use emulators for basic testing</li>
+                <li>Use real devices connected to the VPN for full testing</li>
+                <li>Test access control with dummy users</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 8. Deployment & Distribution</h2>
+            <ul>
+                <li>Use Microsoft Intune, Apple Business Manager, or Android Enterprise for secure internal app distribution</li>
+                <li>Or distribute via TestFlight / Google Play Internal Testing</li>
+                <li>Avoid public app store unless needed</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧰 9. Tools & Services That Might Help</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Expo (EAS)</td>
+                        <td>Simplify builds if you don't need deep native modules</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase App Distribution</td>
+                        <td>Internal testing builds</td>
+                    </tr>
+                    <tr>
+                        <td>MS Azure / AWS Cognito</td>
+                        <td>Authentication providers</td>
+                    </tr>
+                    <tr>
+                        <td>Bitrise / GitHub Actions</td>
+                        <td>CI/CD pipelines for builds</td>
+                    </tr>
+                    <tr>
+                        <td>MS Intune / JAMF</td>
+                        <td>Enterprise app deployment & device management</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Next Steps</h2>
+            <ol>
+                <li>Define exact features for your intranet app</li>
+                <li>Ensure backend APIs are accessible to mobile clients</li>
+                <li>Set up VPN or proxy access if APIs are internal-only</li>
+                <li>Scaffold your React Native app (use Expo or CLI)</li>
+                <li>Implement authentication and secure storage</li>
+                <li>Build out UI screens and connect to APIs</li>
+                <li>Test on devices with network restrictions in place</li>
+                <li>Deploy via enterprise distribution channels</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Send a Message using Firebase Admin SDK</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Send a Message using Firebase Admin SDK</h1>
+                    <p class="subtitle">
+                        <p>On this page</p>
+                        <p>Enable the FCM HTTP v1 API</p>
+                        <p>Send messages to specific devices</p>
+                        <p>Send one message to multiple devices</p>
+                        <p>Send a list of messages</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Enable the FCM HTTP v1 API</h2>
+            <p>Enable the Cloud Messaging API in the <a href="https://console.firebase.google.com/u/0/project/_/settings/cloudmessaging?_gl=1*1f9oev1*_ga*MTU1NzI5MDAzNi4xNzU2MTAyNjI5*_ga_CW55HF8NVT*czE3NTg3MTE1MTEkbzQ1JGcxJHQxNzU4NzE0Nzg5JGozOSRsMCRoMA..">Cloud Messaging settings page</a> for your project.</p>
+        
+            <p>Send messages to specific devices</p>
+            <p>To send to a single, specific device, pass the device's registration token as shown.</p>
+
+            <pre><code>
+Node.js
+// This registration token comes from the client FCM SDKs.
+const registrationToken = 'YOUR_REGISTRATION_TOKEN';
+
+const message = {
+  data: {
+    score: '850',
+    time: '2:45'
+  },
+  token: registrationToken
+};
+
+// Send a message to the device corresponding to the provided
+// registration token.
+getMessaging().send(message)
+  .then((response) => {
+    // Response is a message ID string.
+    console.log('Successfully sent message:', response);
+  })
+  .catch((error) => {
+    console.log('Error sending message:', error);
+  });
+            </code></pre>
+
+            <pre><code>
+Python
+# This registration token comes from the client FCM SDKs.
+registration_token = 'YOUR_REGISTRATION_TOKEN'
+
+# See documentation on defining a message payload.
+message = messaging.Message(
+    data={
+        'score': '850',
+        'time': '2:45',
+    },
+    token=registration_token,
+)
+
+# Send a message to the device corresponding to the provided
+# registration token.
+response = messaging.send(message)
+# Response is a message ID string.
+print('Successfully sent message:', response)
+            </code></pre>
+
+            <p>On success, each send method returns a message ID. The Firebase Admin SDK returns the ID string in the format projects/{project_id}/messages/{message_id}.</p>
+        </section>
+
+        <section>
+            <h2>Send one message to multiple devices</h2>
+            <p>The Admin FCM SDKs allow you to multicast a message to a list of device registration tokens. You can use this feature when you need to send the same message to a large number of devices. You can specify up to 500 device registration tokens per invocation.</p>
+            <p>The return value includes a list of tokens that corresponds to the order of the input tokens. This is useful when you want to check which tokens resulted in errors and then <a href="https://firebase.google.com/docs/reference/fcm/rest/v1/ErrorCode">handle them appropriately</a>.</p>
+
+            <pre><code>
+Node.js
+// These registration tokens come from the client FCM SDKs.
+const registrationTokens = [
+  'YOUR_REGISTRATION_TOKEN_1',
+  // …
+  'YOUR_REGISTRATION_TOKEN_N',
+];
+
+const message = {
+  data: {score: '850', time: '2:45'},
+  tokens: registrationTokens,
+};
+
+getMessaging().sendEachForMulticast(message)
+  .then((response) => {
+    if (response.failureCount > 0) {
+      const failedTokens = [];
+      response.responses.forEach((resp, idx) => {
+        if (!resp.success) {
+          failedTokens.push(registrationTokens[idx]);
+        }
+      });
+      console.log('List of tokens that caused failures: ' + failedTokens);
+    }
+  });
+            </code></pre>
+
+            <pre><code>
+Python
+# These registration tokens come from the client FCM SDKs.
+registration_tokens = [
+    'YOUR_REGISTRATION_TOKEN_1',
+    # ...
+    'YOUR_REGISTRATION_TOKEN_N',
+]
+
+message = messaging.MulticastMessage(
+    data={'score': '850', 'time': '2:45'},
+    tokens=registration_tokens,
+)
+response = messaging.send_each_for_multicast(message)
+if response.failure_count > 0:
+    responses = response.responses
+    failed_tokens = []
+    for idx, resp in enumerate(responses):
+        if not resp.success:
+            # The order of responses corresponds to the order of the registration tokens.
+            failed_tokens.append(registration_tokens[idx])
+    print(f'List of tokens that caused failures: {failed_tokens}')
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Send a list of messages</h2>
+            <p>The Admin SDKs support sending a list of up to 500 messages. This feature can be used to build a customized set of messages and send them to different recipients, including topics or specific device registration tokens. For example, you can use this feature when you need to send different audiences slightly differentiated messages.</p>
+            <pre><code>
+Node.js
+// Create a list containing up to 500 messages.
+const messages = [];
+messages.push({
+  notification: { title: 'Price drop', body: '5% off all electronics' },
+  token: registrationToken,
+});
+messages.push({
+  notification: { title: 'Price drop', body: '2% off all books' },
+  topic: 'readers-club',
+});
+
+getMessaging().sendEach(messages)
+  .then((response) => {
+    console.log(response.successCount + ' messages were sent successfully');
+  });
+            </code></pre>
+
+            <pre><code>
+Python
+# Create a list containing up to 500 messages.
+messages = [
+    messaging.Message(
+        notification=messaging.Notification('Price drop', '5% off all electronics'),
+        token=registration_token,
+    ),
+    # ...
+    messaging.Message(
+        notification=messaging.Notification('Price drop', '2% off all books'),
+        topic='readers-club',
+    ),
+]
+
+response = messaging.send_each(messages)
+# See the BatchResponse reference documentation
+# for the contents of response.
+print(f'{response.success_count} messages were sent successfully')
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

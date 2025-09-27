@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>useState and useReducer</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">useState and useReducer</h1>
+                    <p class="subtitle">In React Native (just like in React for the web), useState and useReducer are two important React Hooks used for managing state in function components.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 useState</h2>
+            <p>✅ When to use:</p>
+            <ul>
+                <li>For simple state (primitives, small objects).</li>
+                <li>When your state updates are straightforward.</li>
+            </ul>
+
+            <p>📌 Syntax:</p>
+            <pre><code>
+const [state, setState] = useState(initialValue);
+            </code></pre>
+
+            <p>📦 Example:</p>
+            <pre><code>
+import React, { useState } from 'react';
+import { View, Text, Button } from 'react-native';
+
+const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;View&gt;
+        &lt;Text&gt;Count: {count}&lt;/Text&gt;
+        &lt;Button title="Increase" onPress={() => setCount(count + 1)} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default Counter;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔸 useReducer</h2>
+            <p>✅ When to use:</p>
+            <ul>
+                <li>For complex state logic (e.g., multiple related values).</li>
+                <li>When the next state depends on the previous state.</li>
+                <li>For better scalability and testability.</li>
+            </ul>
+
+            <p>📌 Syntax:</p>
+            <pre><code>
+const [state, dispatch] = useReducer(reducerFunction, initialState);
+            </code></pre>
+
+            <p>📦 Example:</p>
+            <pre><code>
+import React, { useReducer } from 'react';
+import { View, Text, Button } from 'react-native';
+
+const initialState = { count: 0 };
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'decrement':
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+}
+
+const Counter = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    &lt;View&gt;
+        &lt;Text&gt;Count: {state.count}&lt;/Text&gt;
+        &lt;Button title="Increase" onPress={() => dispatch({ type: 'increment' })} /&gt;
+        &lt;Button title="Decrease" onPress={() => dispatch({ type: 'decrement' })} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default Counter;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚖️ useState vs useReducer</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>useState</th>
+                        <th>useReducer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Complexity</td>
+                        <td>Simple state</td>
+                        <td>Complex state or multiple sub-values</td>
+                    </tr>
+                    <tr>
+                        <td>Update logic</td>
+                        <td>Inline in component</td>
+                        <td>Centralized in reducer function</td>
+                    </tr>
+                    <tr>
+                        <td>Suitable for</td>
+                        <td>1–2 state variables</td>
+                        <td>Multiple related states</td>
+                    </tr>
+                    <tr>
+                        <td>Debuggability</td>
+                        <td>Less (scattered logic)</td>
+                        <td>More (pure functions, easier to test)</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>Faster for simple cases</td>
+                        <td>Better when managing deeply nested state</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

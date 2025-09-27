@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Without Order Sales Order Bypass</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Without Order Sales Order Bypass</h1>
+                    <p class="subtitle">In warehouse inventory management, the phrase "without order sales order bypass" typically refers to a process or setting where sales orders are processed or fulfilled without strictly following the normal sales order workflow or approval steps. Here's what it usually means:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Breaking it down:</h2>
+            <ol>
+                <li>Sales Order: A formal order issued by a customer requesting the purchase of goods.</li>
+                <li>Order Bypass: Skipping certain steps or controls usually required in the standard order processing workflow.</li>
+                <li>Without Order Sales Order Bypass: Means processing inventory or shipments without relying on a formal sales order or without bypassing the sales order approval process.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Possible interpretations depending on context:</h2>
+            <ol>
+                <li>Fulfilling inventory requests without a sales order: Sometimes, warehouse staff might pick and ship items directly without referencing or waiting for a formal sales order in the system (bypassing the order creation step).</li>
+                <li>Bypassing sales order validation or approval: The system might allow the warehouse to release inventory even if the sales order hasn’t been fully approved or finalized, speeding up fulfillment but potentially risking errors.</li>
+                <li>Direct inventory transfers: Moving stock out of inventory without creating a sales order, often for internal use, samples, or urgent orders.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Why would a warehouse do this?</h2>
+            <ul>
+                <li>To speed up order fulfillment during high-demand periods.</li>
+                <li>For urgent or special shipments.</li>
+                <li>When sales orders aren’t entered promptly.</li>
+                <li>For internal transfers or corrections.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 pl_inProgress = Pick List in Progress</h2>
+            <p>What is a Pick List?</p>
+            <p>A Pick List is a document or digital list used by warehouse staff to collect items from inventory to fulfill orders. It includes item names, quantities, and locations.</p>
+            <p>What does "in progress" mean in this context?</p>
+            <p>"In progress" means that the picking operation has started but has not yet been completed.</p>
+        </section>
+
+        <section>
+            <h2>🔄 Typical Workflow Example:</h2>
+            <ol>
+                <li>Order Created → System generates a Pick List.</li>
+                <li>Pick List Issued → Warehouse worker starts collecting items (status: pl_inProgress).</li>
+                <li>Items Picked → Status updated to Completed or Ready for Packing.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📦 Why it matters:</h2>
+            <p>Tracking pick lists that are "in progress" helps:</p>
+            <ul>
+                <li>Prevent duplicate picking.</li>
+                <li>Provide real-time inventory visibility.</li>
+                <li>Identify delays or bottlenecks in the picking process.</li>
+                <li>Ensure accurate order fulfillment.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ Possible system usage:</h2>
+            <p>In a database or API, pl_inProgress might be:</p>
+            <ul>
+                <li>A boolean flag (true/false) on an order or pick list.</li>
+                <li>A status field with values like 'pending', 'inProgress', 'completed'.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>A Line Items Inventory Management System is a system that tracks inventory at the line item level, which typically means monitoring each individual item entry within orders, shipments, purchase orders, or invoices. This is essential for businesses that need detailed visibility into product movement, stock levels, and order fulfillment.</p>
+            <h2>🔧 What It Does</h2>
+            <ul>
+                <li>Tracks Inventory per Line Item: Each item in a sales order, purchase order, or shipment is tracked individually.</li>
+                <li>Manages Stock Levels: Updates inventory as line items are added, shipped, received, or returned.</li>
+                <li>Improves Traceability: Allows tracking of which specific items were included in which orders.</li>
+                <li>Facilitates Accurate Reporting: Gives granular insights into product performance and stock usage.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Example: Line Items in a Sales Order</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Line Item ID</th>
+                        <th>Product SKU</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1001</td>
+                        <td>1</td>
+                        <td>SKU-001</td>
+                        <td>10</td>
+                        <td>$5.00</td>
+                        <td>Shipped</td>
+                    </tr>
+                    <tr>
+                        <td>1001</td>
+                        <td>2</td>
+                        <td>SKU-002</td>
+                        <td>5</td>
+                        <td>$8.00</td>
+                        <td>Pending</td>
+                    </tr>
+                    <tr>
+                        <td>1002</td>
+                        <td>1</td>
+                        <td>SKU-003</td>
+                        <td>20</td>
+                        <td>$3.50</td>
+                        <td>Delivered</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Each "line item" here refers to an individual entry within an order, making tracking more granular.</p>
+        </section>
+
+        <section>
+            <h2>🧩 Core Features of a Line Items Inventory System</h2>
+            <ol>
+                <li>
+                    Product Catalog Management
+                    <ul>
+                        <li>SKU, barcode, description, pricing</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Order Management
+                    <ul>
+                        <li>Sales and purchase orders with line items</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Inventory Control
+                    <ul>
+                        <li>Real-time stock updates per item</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Warehouse Management
+                    <ul>
+                        <li>Bin locations, stock transfers</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Reporting & Analytics
+                    <ul>
+                        <li>Stock turnover, low stock alerts</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Integrations
+                    <ul>
+                        <li>Accounting software, eCommerce platforms, shipping systems</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🛠️ Technology Stack (for building a custom system)</h2>
+            <p>Backend:</p>
+            <ul>
+                <li>Node.js / Python (Django/Flask) / Ruby on Rails</li>
+                <li>PostgreSQL or MySQL for relational data</li>
+            </ul>
+            <p>Frontend:</p>
+            <ul>
+                <li>React / Angular / Vue</li>
+            </ul>
+            <p>Optional Tools:</p>
+            <ul>
+                <li>Redis (for caching)</li>
+                <li>Elasticsearch (for fast search)</li>
+                <li>REST or GraphQL API</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧮 Sample Database Schema (Simplified)</h2>
+            <pre><code>
+-- Products Table
+CREATE TABLE products (
+  id SERIAL PRIMARY KEY,
+  sku VARCHAR(50) UNIQUE,
+  name TEXT,
+  description TEXT,
+  price NUMERIC
+);
+
+-- Inventory Table
+CREATE TABLE inventory (
+  id SERIAL PRIMARY KEY,
+  product_id INT REFERENCES products(id),
+  quantity INT,
+  warehouse_location TEXT
+);
+
+-- Orders Table
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  order_date DATE,
+  customer_id INT,
+  status VARCHAR(20)
+);
+
+-- Line Items Table
+CREATE TABLE line_items (
+  id SERIAL PRIMARY KEY,
+  order_id INT REFERENCES orders(id),
+  product_id INT REFERENCES products(id),
+  quantity INT,
+  unit_price NUMERIC
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Benefits of Using Line Items in Inventory Systems</h2>
+            <ul>
+                <li>Better accuracy in inventory valuation</li>
+                <li>Detailed fulfillment and procurement tracking</li>
+                <li>Easier returns and replacements</li>
+                <li>Scalability for high-SKU businesses</li>
+            </ul>
+
+            <p>Would you like:</p>
+            <ul>
+                <li>A template for such a system (e.g., Excel or Google Sheets)?</li>
+                <li>A starter codebase?</li>
+                <li>A comparison of existing tools (like Zoho Inventory, NetSuite, or TradeGecko)?</li>
+                <li>Help building one custom?</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Line items in inventory refer to individual entries or records of specific products or materials listed in an inventory system. Each line item typically represents a unique product or SKU (Stock Keeping Unit), along with associated details such as:</p>
+            <ul>
+                <li>Item name or description</li>
+                <li>Quantity in stock</li>
+                <li>Unit price or cost</li>
+                <li>Location (e.g., warehouse, shelf)</li>
+                <li>Product code or SKU</li>
+                <li>Supplier details</li>
+                <li>Date received or updated</li>
+            </ul>
+
+            <p>Example:</p>
+            <p>If you are managing a warehouse inventory, a line item might look like:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A123</td>
+                        <td>Blue T-shirt (M)</td>
+                        <td>50</td>
+                        <td>$10.00</td>
+                        <td>Shelf A3</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>In this example, that entire row is a line item — it tracks a single type of product in inventory.</p>
+        </section>
+
+        <section>
+            <h2>In summary:</h2>
+            <p>A line item in inventory is a distinct record or entry for a single type of product, detailing its stock level and other relevant data.</p>
+        </section>
+
+        <section>
+            <p>In the context of inventory line items, LinePosition usually refers to the order or sequence number of the line item within a list or document, such as an invoice, purchase order, or inventory transaction.</p>
+            <p>More specifically:</p>
+            <ul>
+                <li>LinePosition is an integer or numeric value that indicates the position of the item in the overall list of line items.</li>
+                <li>It helps to identify and organize each line uniquely within a single transaction or document.</li>
+                <li>For example, if you have a purchase order with multiple products, the first product might have a LinePosition of 1, the second product a LinePosition of 2, and so forth.</li>
+            </ul>
+            <p>Why is it important?</p>
+            <p>It maintains the order in which items are entered or displayed.</p>
+            <p>Helps in referencing a specific line when making updates or corrections.</p>
+            <p>Useful for sorting and reporting.</p>
+
+            <p>If you’re dealing with a specific software or platform (like an ERP system), the exact usage of LinePosition might vary slightly, but it generally serves this purpose. Do you have a particular system or context in mind? I can tailor the explanation!</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
