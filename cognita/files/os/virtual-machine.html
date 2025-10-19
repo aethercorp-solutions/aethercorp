@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Virtual Machine (VM)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Virtual Machine (VM)</h1>
+                    <p class="subtitle">A Virtual Machine (VM) is a software-based simulation of a physical computer. It runs an operating system (OS) and applications just like a physical machine, but it's hosted on a physical computer called the host machine. The VM itself is called a guest.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 How It Works</h2>
+            <p>A hypervisor (also known as a virtual machine monitor) sits between the hardware and the virtual machines. It manages the resources and ensures each VM gets its share of CPU, memory, storage, etc.</p>
+            <p>There are two main types of hypervisors:</p>
+            <ul>
+                <li>Type 1 (Bare-metal): Runs directly on hardware (e.g., VMware ESXi, Microsoft Hyper-V).</li>
+                <li>Type 2 (Hosted): Runs on top of an operating system (e.g., VirtualBox, VMware Workstation).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 Components of a Virtual Machine</h2>
+            <ul>
+                <li>Virtual CPU (vCPU): A portion of the host's real CPU.</li>
+                <li>Virtual RAM: Allocated from the host's memory.</li>
+                <li>Virtual Disk: A file that acts like a hard drive.</li>
+                <li>Virtual Network Interface Card (NIC): Simulates a network connection.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Uses of Virtual Machines</h2>
+            <ul>
+                <li>Software development and testing (test in different OS environments).</li>
+                <li>Server consolidation (multiple VMs on one physical server).</li>
+                <li>Running multiple OSs on a single machine.</li>
+                <li>Isolated environments for malware analysis or sandboxing.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🆚 Virtual Machine vs. Physical Machine</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Virtual Machine</th>
+                        <th>Physical Machine</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Hardware dependency</td>
+                        <td>Independent</td>
+                        <td>Tied to specific hardware</td>
+                    </tr>
+                    <tr>
+                        <td>Portability</td>
+                        <td>High (can move VM files easily)</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Resource efficiency</td>
+                        <td>Shares host resources</td>
+                        <td>Dedicated resources</td>
+                    </tr>
+                    <tr>
+                        <td>Isolation</td>
+                        <td>Strong (sandboxed environment)</td>
+                        <td>Weak (everything runs together)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔧 Virtual Machine: Usage and Implementation</h2>
+            <p>A virtual machine (VM) is a software-based emulation of a computer system. It provides the functionality of a physical computer but runs as a process on a host system. VMs are a core part of modern computing, especially in areas like cloud computing, software development, testing, and IT infrastructure.</p>
+            <p>✅ USES OF VIRTUAL MACHINES</p>
+            <ol>
+                <li>
+                    Server Consolidation
+                    <ul>
+                        <li>Run multiple VMs on a single physical server.</li>
+                        <li>Reduces hardware costs and power consumption.</li>
+                        <li>Increases hardware utilization.</li>
+                    </ul>
+                </li>
+                <li>
+                    Development & Testing
+                    <ul>
+                        <li>Developers can simulate different OS environments (Linux, Windows, macOS).</li>
+                        <li>Test software on multiple platforms without needing separate physical machines.</li>
+                    </ul>
+                </li>
+                <li>
+                    Running Legacy Applications
+                    <ul>
+                        <li>Older applications that require outdated OS versions can be run safely inside a VM.</li>
+                    </ul>
+                </li>
+                <li>
+                    Sandboxing and Security
+                    <ul>
+                        <li>VMs are isolated from the host system.</li>
+                        <li>Ideal for testing untrusted software, malware analysis, or containing potential threats.</li>
+                    </ul>
+                </li>
+                <li>
+                    Disaster Recovery and Backup
+                    <ul>
+                        <li>VMs are easy to back up, replicate, and restore.</li>
+                        <li>VM snapshots allow quick rollback to a known state.</li>
+                    </ul>
+                </li>
+                <li>
+                    Cloud Computing
+                    <ul>
+                        <li>Cloud providers like AWS, Azure, and GCP run workloads in virtual machines.</li>
+                        <li>Enables Infrastructure as a Service (IaaS).</li>
+                    </ul>
+                </li>
+                <li>
+                    Training and Education
+                    <ul>
+                        <li>Students can practice OS installation, networking, and system administration in isolated environments.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚙️ IMPLEMENTATION OF VIRTUAL MACHINES</h2>
+            <p>🧱 1. Types of Virtual Machines</p>
+            <ul>
+                <li>
+                    System VMs: Emulate an entire physical machine.
+                    <ul>
+                        <li>Example: VMware ESXi, VirtualBox, Hyper-V</li>
+                    </ul>
+                </li>
+                <li>
+                    Process VMs: Run a single application or process.
+                    <ul>
+                        <li>Example: Java Virtual Machine (JVM), .NET CLR</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>🖥️ 2. Hypervisors (Virtual Machine Monitors)</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Examples</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Type 1</td>
+                        <td>Bare-metal hypervisors run directly on hardware</td>
+                        <td>VMware ESXi, Microsoft Hyper-V, Xen</td>
+                    </tr>
+                    <tr>
+                        <td>Type 2</td>
+                        <td>Hosted hypervisors run on top of an OS</td>
+                        <td>VirtualBox, VMware Workstation</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>📦 3. VM Components</p>
+            <ul>
+                <li>Virtual CPU (vCPU)</li>
+                <li>Virtual Memory (vRAM)</li>
+                <li>Virtual Disk (VDI, VMDK, etc.)</li>
+                <li>Virtual Network Interface</li>
+                <li>BIOS/EFI and bootloader (virtualized)</li>
+            </ul>
+
+            <p>🛠️ 4. VM Lifecycle Implementation</p>
+            <ul>
+                <li>Create VM – Define hardware specs, choose OS ISO.</li>
+                <li>Install OS – Boot from ISO and install the operating system.</li>
+                <li>Install VM Tools – Enhances performance and integration (copy/paste, drivers).</li>
+                <li>Snapshot/Backup – Save the state for future use or recovery.</li>
+                <li>Manage – Start, stop, pause, migrate, delete.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 How VMs Work (Under the Hood)</h2>
+            <ul>
+                <li>Hypervisors intercept hardware instructions and translate them to run safely in a sandboxed environment.</li>
+                <li>Virtual hardware is emulated or passed through (e.g., with VT-x or AMD-V for CPU).</li>
+                <li>Memory management includes isolation and mapping via shadow page tables or EPT (Extended Page Tables).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Popular VM Software</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Software</th>
+                        <th>Type</th>
+                        <th>Platform</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>VMware Workstation</td>
+                        <td>Type 2</td>
+                        <td>Windows/Linux</td>
+                    </tr>
+                    <tr>
+                        <td>VirtualBox</td>
+                        <td>Type 2</td>
+                        <td>Cross-platform</td>
+                    </tr>
+                    <tr>
+                        <td>VMware ESXi</td>
+                        <td>Type 1</td>
+                        <td>Bare-metal</td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft Hyper-V</td>
+                        <td>Type 1</td>
+                        <td>Windows</td>
+                    </tr>
+                    <tr>
+                        <td>KVM (Linux Kernel)</td>
+                        <td>Type 1</td>
+                        <td>Linux</td>
+                    </tr>
+                    <tr>
+                        <td>QEMU</td>
+                        <td>Type 2</td>
+                        <td>Cross-platform</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔐 Security Considerations</h2>
+            <ul>
+                <li>Isolation: VMs are isolated, but not immune—vulnerabilities like Spectre or VM escape attacks can occur.</li>
+                <li>Hardening: Disable unnecessary VM features, patch regularly, monitor usage.</li>
+                <li>Access Control: Restrict who can create, modify, or access VMs.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📡 Advanced Features</h2>
+            <ul>
+                <li>Live Migration – Move a running VM from one host to another.</li>
+                <li>Cloning – Duplicate VMs for scaling or testing.</li>
+                <li>Nested Virtualization – Run a VM inside another VM.</li>
+                <li>Paravirtualization – OS is aware it runs in a VM and optimizes its behavior.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Virtual machines (VMs) run software applications by simulating a complete computer system within a host system. Here’s a clear breakdown of how that works:</p>
+            <h2>🔧 1. What Is a Virtual Machine?</h2>
+            <p>A virtual machine is a software-based emulation of a physical computer. It runs an operating system (guest OS) and applications just like a real machine, but it's hosted on a physical machine (the host) through a hypervisor.</p>
+        </section>
+
+        <section>
+            <h2>🏗️ 2. Key Components</h2>
+            <ul>
+                <li>Host Machine: The physical computer that provides the underlying hardware.</li>
+                <li>
+                    Hypervisor: Software that creates and manages virtual machines (e.g., VMware, VirtualBox, Hyper-V).
+                    <ul>
+                        <li>Type 1 (Bare-metal): Runs directly on hardware (e.g., ESXi).</li>
+                        <li>Type 2 (Hosted): Runs on top of a host OS (e.g., VirtualBox on Windows).</li>
+                    </ul>
+                </li>
+                <li>Guest OS: The operating system installed inside the VM.</li>
+                <li>Virtual Hardware: The VM gets virtual CPU, RAM, storage, etc., managed by the hypervisor.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ 3. How Applications Run in a VM</h2>
+            <ol>
+                <li>
+                    Application Installation:
+                    <ul>
+                        <li>You install the application inside the VM, just as you would on a physical computer.</li>
+                    </ul>
+                </li>
+                <li>
+                    Guest OS Execution:
+                    <ul>
+                        <li>The guest OS runs normally within the VM using virtual hardware.</li>
+                    </ul>
+                </li>
+                <li>
+                    Hypervisor Translates Instructions:
+                    <ul>
+                        <li>When the application (inside the guest OS) performs operations, the guest OS sends instructions to the virtual hardware.</li>
+                        <li>The hypervisor translates these instructions into commands that the real hardware can understand.</li>
+                    </ul>
+                </li>
+                <li>
+                    Hardware Interaction:
+                    <ul>
+                        <li>The hypervisor intercepts and handles these instructions, making sure the VM can use the host’s physical resources (CPU, RAM, disk, etc.) safely and efficiently.</li>
+                    </ul>
+                </li>
+                <li>
+                    Isolation:
+                    <ul>
+                        <li>Each VM runs independently, so one VM’s applications don’t interfere with another’s.</li>
+                        <li>This makes VMs great for testing, security, and running multiple OSes on one physical machine.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🖥️ Example:</h2>
+            <p>Imagine you have a Mac (host), and you run a Windows VM using VirtualBox. You install Microsoft Word on the Windows VM.</p>
+            <ul>
+                <li>You open Word in the VM (guest OS).</li>
+                <li>Word uses the Windows file system and memory, which are all virtual.</li>
+                <li>The hypervisor manages all these operations, converting them into actions on your actual Mac hardware.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📌 Summary:</h2>
+            <p>A virtual machine runs software applications by:</p>
+            <ul>
+                <li>Hosting a complete OS inside a sandboxed environment.</li>
+                <li>Using virtual hardware managed by a hypervisor.</li>
+                <li>Translating and executing application instructions through the host system’s actual resources.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Native module</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Native module</h1>
+                    <p class="subtitle">A React Native module is a reusable, self-contained piece of functionality that bridges native code (written in Java, Objective-C/Swift, or C++) with JavaScript so it can be used in a React Native app. Modules allow you to extend the functionality of a React Native application by tapping into native APIs or using platform-specific features not available in JavaScript.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 Types of React Native Modules</h2>
+            <ol>
+                <li>
+                    JavaScript Modules
+                    <ul>
+                        <li>Written purely in JavaScript.</li>
+                        <li>Useful for logic that doesn’t depend on platform-specific features.</li>
+                        <li>Example: formatting functions, state management utilities.</li>
+                    </ul>
+                </li>
+                <li>
+                    Native Modules
+                    <ul>
+                        <li>Written in native languages (e.g., Java/Kotlin for Android, Objective-C/Swift for iOS).</li>
+                        <li>Used when you need access to device APIs like Bluetooth, camera, file system, sensors, etc.</li>
+                        <li>Connected to JavaScript through a bridge.</li>
+                    </ul>
+                </li>
+                <li>
+                    Third-Party Modules (Libraries)
+                    <ul>
+                        <li>Published modules/libraries (e.g., via npm) that can be installed and used in your app.</li>
+                        <li>
+                            Examples:
+                            <ul>
+                                <li>react-native-camera</li>
+                                <li>react-native-fs</li>
+                                <li>react-native-maps</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <p>React Native is powerful, but it doesn't cover every native feature out-of-the-box. When you need:</p>
+            <ul>
+                <li>Platform-specific hardware access (e.g., accelerometer, biometric auth)</li>
+                <li>Custom performance optimizations</li>
+                <li>Native SDK integrations (e.g., Google Pay, Apple HealthKit)</li>
+            </ul>
+            <p>You can either use an existing module or create your own native module.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Example: Creating a Simple Native Module (Android)</h2>
+            <ol>
+                <li>
+                    Native Side (Java):
+                    <pre><code>
+public class ToastModule extends ReactContextBaseJavaModule {
+    public ToastModule(ReactApplicationContext reactContext) {
+        super(reactContext);
+    }
+
+    @Override
+    public String getName() {
+        return "ToastExample";
+    }
+
+    @ReactMethod
+    public void show(String message, int duration) {
+        Toast.makeText(getReactApplicationContext(), message, duration).show();
+    }
+}                        
+                    </code></pre>
+                </li>
+                <li>
+                    JS Side:
+                    <pre><code>
+import { NativeModules } from 'react-native';
+const { ToastExample } = NativeModules;
+
+ToastExample.show('Hello from native!', ToastExample.SHORT);
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Module</td>
+                        <td>A unit of reusable code, often platform-specific.</td>
+                    </tr>
+                    <tr>
+                        <td>Native Module</td>
+                        <td>Written in platform-native code, callable from JS.</td>
+                    </tr>
+                    <tr>
+                        <td>Bridge</td>
+                        <td>The communication channel between JS and native code.</td>
+                    </tr>
+                    <tr>
+                        <td>React Native Module</td>
+                        <td>A way to extend your React Native app with new features, especially native ones.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <p>Sure! Below is a step-by-step example of creating a React Native Native Module using Swift for iOS. This module will expose a simple method to show a native iOS alert from JavaScript.</p>
+            <h2>✅ What We’ll Build</h2>
+            <p>We’ll build a NativeAlert module in Swift that can be called from your React Native JavaScript code like this:</p>
+        
+            <pre><code>
+import { NativeModules } from 'react-native';
+NativeModules.NativeAlert.show('Hello from Swift!');
+            </code></pre>
+
+            <p>📦 Prerequisites</p>
+            <ul>
+                <li>React Native environment set up (react-native init or npx expo prebuild).</li>
+                <li>iOS target must be configured to use Swift (you’ll add a Swift file to enable this).</li>
+                <li>Xcode installed.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Step-by-Step Guide</h2>
+            <ol>
+                <li>
+                    Create a Swift File in Xcode
+                    <p>Open the ios/YourProject.xcworkspace in Xcode.</p>
+                    <ol>
+                        <li>Right-click on the YourProject group > New File.</li>
+                        <li>Choose Swift File → Name it: NativeAlert.swift.</li>
+                        <li>Xcode will ask: "Would you like to create a bridging header?" → Click "Create Bridging Header".</li>
+                    </ol>
+                    <p>This creates:</p>
+                    <ul>
+                        <li>NativeAlert.swift</li>
+                        <li>YourProject-Bridging-Header.h</li>
+                    </ul>
+                </li>
+
+                <li>
+                    Write the Swift Code for the Module
+                    <p>In NativeAlert.swift:</p>
+                    <pre><code>
+import Foundation
+import UIKit
+
+@objc(NativeAlert)
+class NativeAlert: NSObject {
+  @objc func show(_ message: NSString) {
+    DispatchQueue.main.async {
+      let alert = UIAlertController(title: "Native Alert", message: message as String, preferredStyle: .alert)
+      alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+      
+      // Get the topmost view controller
+      if let rootVC = UIApplication.shared.keyWindow?.rootViewController {
+        rootVC.present(alert, animated: true, completion: nil)
+      }
+    }
+  }
+
+  // Optional: Expose constants
+  @objc static func requiresMainQueueSetup() -> Bool {
+    return true
+  }
+}
+                    </code></pre>
+                </li>
+
+                <li>
+                    Create the Objective-C Bridge File
+                    <p>Create a new Objective-C file named NativeAlertBridge.m:</p>
+                    <pre><code>
+#import &lt;React/RCTBridgeModule.h&gt;
+
+@interface RCT_EXTERN_MODULE(NativeAlert, NSObject)
+
+RCT_EXTERN_METHOD(show:(NSString *)message)
+
+@end
+                    </code></pre>
+                    <p>✅ This tells React Native how to connect your Swift class to JS.</p>
+                    <p>Note: You do not implement logic here — this just declares method signatures.</p>
+                </li>
+
+                <li>
+                    Enable Swift Support in Your Podfile
+                    <p>Ensure your Podfile has this at the bottom:</p>
+                    <pre><code>
+use_frameworks!
+                    </code></pre>
+                    <p>Then run:</p>
+                    <pre><code>
+cd ios
+pod install
+                    </code></pre>
+                </li>
+
+                <li>
+                    Use the Module in JavaScript
+                    <p>In your React Native JS code:</p>
+                    <pre><code>
+import { NativeModules, Button } from 'react-native';
+const { NativeAlert } = NativeModules;
+
+export default function App() {
+  return (
+    &lt;Button
+      title="Show Native Alert"
+      onPress={() => NativeAlert.show('Hello from Swift!')}
+    /&gt;
+  );
+}
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧪 Test It</h2>
+            <ol>
+                <li>
+                    Run your app on iOS:
+                    <pre><code>
+npx react-native run-ios
+                    </code></pre>
+                </li>
+                <li>Tap the button → you should see a native iOS alert appear!</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📝 Notes</h2>
+            <ul>
+                <li>The @objc annotations and RCT_EXTERN_MODULE are required to bridge Swift with React Native.</li>
+                <li>Always use DispatchQueue.main.async when presenting UI from native code.</li>
+                <li>
+                    For iOS 13+, replace keyWindow with:
+                    <pre><code>
+UIApplication.shared.connectedScenes
+  .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+  .first?.rootViewController
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>NativeAlert.swift</td>
+                        <td>Swift implementation of native functionality.</td>
+                    </tr>
+                    <tr>
+                        <td>NativeAlertBridge.m</td>
+                        <td>Objective-C bridge declaration for React Native.</td>
+                    </tr>
+                    <tr>
+                        <td>JS Code</td>
+                        <td>Calls the native module from React Native.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

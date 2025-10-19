@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Set up a Node.js app on an AWS EC2 instance</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Set up a Node.js app on an AWS EC2 instance</h1>
+                    <p class="subtitle">Got it! You want to set up a Node.js app on an AWS EC2 instance. I'll guide you step-by-step to launch and configure everything properly.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Step 1: Launch an EC2 Instance</h2>
+            <ol>
+                <li>Log in to your <a href="https://aws.amazon.com/console/">AWS Management Console.</a></li>
+                <li>Navigate to EC2 Dashboard > Instances > Launch instances.</li>
+                <li>
+                    Choose an Amazon Machine Image (AMI):
+                    <ul>
+                        <li>For Node.js, Amazon Linux 2 or Ubuntu Server 22.04 LTS are good choices.</li>
+                    </ul>
+                </li>
+                <li>
+                    Choose an instance type:
+                    <ul>
+                        <li>For testing, t2.micro (free tier eligible) is fine.</li>
+                    </ul>
+                </li>
+                <li>Configure instance details (default is OK).</li>
+                <li>Add storage (default is fine).</li>
+                <li>Add tags (optional).</li>
+                <li>
+                    Configure security group:
+                    <ul>
+                        <li>Add rule for SSH (port 22) from your IP.</li>
+                        <li>Add rule for HTTP (port 80) from anywhere (0.0.0.0/0).</li>
+                        <li>If your app listens on a custom port (like 3000), add that too.</li>
+                    </ul>
+                </li>
+                <li>Review and launch.</li>
+                <li>Create or select an existing key pair for SSH access, download it, and keep it safe.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 2: Connect to your EC2 Instance</h2>
+            <ul>
+                <li>Use terminal (Linux/Mac) or PuTTY (Windows).</li>
+                <li>
+                    Run:
+                    <pre><code>
+ssh -i /path/to/your-key.pem ec2-user@your-ec2-public-ip
+                    </code></pre>
+                </li>
+            </ul>
+            <p>For Ubuntu AMI, user is ubuntu instead of ec2-user</p>
+        </section>
+
+        <section>
+            <h2>Step 3: Install Node.js on EC2</h2>
+            <ul>
+                <li>
+                    Update packages:
+                    <pre><code>
+sudo yum update -y    # Amazon Linux
+# or
+sudo apt update && sudo apt upgrade -y  # Ubuntu
+                    </code></pre>
+                </li>
+                <li>Install Node.js:</li>
+            </ul>
+            
+            <p>For Amazon Linux 2:</p>
+            <pre><code>
+curl -sL https://rpm.nodesource.com/setup_18.x | sudo bash -
+sudo yum install -y nodejs
+            </code></pre>
+
+            <p>For Ubuntu:</p>
+            <pre><code>
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+            </code></pre>
+
+            <p>Check Node.js and npm versions:</p>
+            <pre><code>
+node -v
+npm -v
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4: Deploy Your Node.js App</h2>
+            <ol>
+                <li>
+                    Upload your app code:
+                    <ul>
+                        <li>You can use scp or git clone your repo inside the EC2.</li>
+                    </ul>
+                    <p>Example using scp:</p>
+                    <p>scp -i /path/to/your-key.pem -r /local/path/to/app ec2-user@your-ec2-ip:/home/ec2-user/</p>
+
+                    <p>Or clone repo:</p>
+                    <pre><code>
+git clone https://github.com/your-repo.git
+cd your-repo
+                    </code></pre>
+                </li>
+
+                <li>
+                    Install dependencies:
+                    <pre><code>
+npm install
+                    </code></pre>
+                </li>
+
+                <li>
+                    Run your app (example: if your app's main file is app.js):
+                    <pre><code>
+node app.js
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 5: Keep Your App Running (Optional)</h2>
+            <p>Use pm2 to keep your app alive and running in background:</p>
+            <pre><code>
+sudo npm install -g pm2
+pm2 start app.js
+pm2 startup  # To configure startup on reboot
+pm2 save
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 6: Access Your Node.js App</h2>
+            <ul>
+                <li>
+                    Open your browser and go to:
+                    <pre><code>
+http://your-ec2-public-ip:port
+                    </code></pre>
+                </li>
+            </ul>
+            <p>If your app listens on port 3000, make sure port 3000 is open in your EC2 security group.</p>
+
+            <p>Would you like me to help with setting up a reverse proxy (Nginx) or configuring HTTPS next?</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Infrastructure as Code (IaC)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Infrastructure as Code (IaC)</h1>
+                    <p class="subtitle">
+                        Infrastructure as Code (IaC) tools allow you to provision, manage, and configure infrastructure using code, rather than manual processes. These tools help automate infrastructure deployment, improve consistency, and enable version control.
+                        <p>Here's a breakdown of popular IaC tools, categorized by approach:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Declarative IaC Tools</h2>
+            <p>You declare the desired state and the tool figures out how to get there.</p>
+
+            <p>1. Terraform</p>
+            <ul>
+                <li>By: HashiCorp</li>
+                <li>Strengths: Cloud-agnostic (AWS, Azure, GCP, etc.), modular, state management</li>
+                <li>Use Cases: Managing cloud infrastructure across multiple providers</li>
+            </ul>
+
+            <p>2. CloudFormation</p>
+            <ul>
+                <li>By: AWS</li>
+                <li>Strengths: Deep integration with AWS, native support</li>
+                <li>Use Cases: AWS infrastructure provisioning</li>
+                <li>Format: YAML / JSON templates</li>
+            </ul>
+
+            <p>3. Azure Resource Manager (ARM) / Bicep</p>
+            <ul>
+                <li>By: Microsoft</li>
+                <li>Strengths: Native Azure support</li>
+                <li>Use Cases: Azure-specific deployments</li>
+                <li>Note: Bicep is a more readable DSL that compiles to ARM templates</li>
+            </ul>
+
+            <p>4. Google Cloud Deployment Manager</p>
+            <ul>
+                <li>By: Google</li>
+                <li>Use Cases: Provisioning Google Cloud resources</li>
+                <li>Format: YAML + Jinja2 or Python templates</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ Imperative IaC Tools</h2>
+            <p>You define how to reach the desired state step-by-step.</p>
+
+            <p>5. Pulumi</p>
+            <ul>
+                <li>Languages: TypeScript, Python, Go, .NET, Java</li>
+                <li>Strengths: Uses general-purpose programming languages</li>
+                <li>Use Cases: Developers wanting full programming power for IaC</li>
+                <li>Supports: AWS, Azure, GCP, Kubernetes, etc.</li>
+            </ul>
+
+            <p>6. Chef</p>
+            <ul>
+                <li>Language: Ruby-based DSL</li>
+                <li>Use Cases: Configuration management</li>
+                <li>Approach: Imperative + configuration</li>
+                <li>Note: More focused on server configuration than provisioning</li>
+            </ul>
+
+            <p>7. Ansible</p>
+            <ul>
+                <li>By: Red Hat</li>
+                <li>Language: YAML (playbooks)</li>
+                <li>Use Cases: Configuration management, orchestration, provisioning</li>
+                <li>Strengths: Agentless, SSH-based</li>
+                <li>IaC Style: More hybrid (declarative + imperative)</li>
+            </ul>
+
+            <p>8. SaltStack</p>
+            <ul>
+                <li>Language: YAML + Jinja2</li>
+                <li>Use Cases: Configuration, orchestration, automation</li>
+                <li>Strengths: Fast, scalable, real-time control</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🐳 Container-Specific IaC / Orchestration Tools</h2>
+            <p>9. Kubernetes (YAML manifests)</p>
+
+            <ul>
+                <li>Use Cases: Managing containerized workloads</li>
+                <li>IaC Role: Manages desired state of containers, networking, volumes, etc.</li>
+            </ul>
+
+            <p>10. Helm</p>
+            <ul>
+                <li>Use Cases: Packaging and deploying Kubernetes applications</li>
+                <li>Strengths: Templating Kubernetes YAML with variables</li>
+                <li>Think of it as: Kubernetes' version of a package manager + templating engine</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Special Mention: IaC Automation / Abstraction Tools</h2>
+            <p>11. Crossplane</p>
+            <ul>
+                <li>Use Case: Kubernetes-native infrastructure provisioning</li>
+                <li>Strengths: Manage cloud infrastructure like Kubernetes resources</li>
+            </ul>
+
+            <p>12. CDK (Cloud Development Kit)</p>
+            <ul>
+                <li>CDK for AWS, CDKTF for Terraform</li>
+                <li>Languages: TypeScript, Python, Java, etc.</li>
+                <li>Strengths: Programmatic abstraction on top of existing IaC</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Choosing the Right IaC Tool</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th>Best Tools</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Multi-cloud support</td>
+                        <td>Terraform, Pulumi</td>
+                    </tr>
+                    <tr>
+                        <td>Best for AWS</td>
+                        <td>CloudFormation, CDK</td>
+                    </tr>
+                    <tr>
+                        <td>Full programming support</td>
+                        <td>Pulumi, CDK</td>
+                    </tr>
+                    <tr>
+                        <td>Simplicity / agentless</td>
+                        <td>Ansible</td>
+                    </tr>
+                    <tr>
+                        <td>Kubernetes focused</td>
+                        <td>Helm, Crossplane, Kustomize</td>
+                    </tr>
+                    <tr>
+                        <td>Azure focused</td>
+                        <td>Bicep, ARM templates</td>
+                    </tr>
+                    <tr>
+                        <td>GCP focused</td>
+                        <td>Deployment Manager</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CORS, or Cross-Origin Resource Sharing</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">CORS, or Cross-Origin Resource Sharing</h1>
+                    <p class="subtitle">CORS, or Cross-Origin Resource Sharing, is a browser security mechanism that allows a web page on one domain to request resources from a different domain. It's a way to safely bypass the "Same-Origin Policy," which by default blocks such requests to prevent malicious sites from accessing sensitive data from other domains on your behalf. Web servers use HTTP headers to tell the browser which origins are allowed to access their resources.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>How it works</h2>
+            <ul>
+                <li>The Same-Origin Policy: By default, a browser will not allow a JavaScript request from one origin (domain, scheme, and port) to another, because this could be a security risk.</li>
+                <li>The role of CORS: CORS allows a server to explicitly grant permission for a resource to be shared with a different origin.</li>
+                <li>Access-Control-Allow-Origin header: The server sends a response with this header to indicate which origins are permitted. For example, Access-Control-Allow-Origin: https://example.com permits https://example.com to access the resource, while Access-Control-Allow-Origin: * allows any origin.</li>
+                <li>Preflight requests: For "complex" requests (like those using methods other than GET, POST, or HEAD, or with custom headers), the browser first sends a "preflight" request to the server to check if the actual request is allowed before sending it.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example scenario</h2>
+            <p>Imagine you are on www.siteA.com and it needs to pull data from an API at api.siteB.com.</p>
+            <ul>
+                <li>Without CORS, the browser would block this request from www.siteA.com to api.siteB.com.</li>
+                <li>With CORS configured, api.siteB.com would send a response with a header like Access-Control-Allow-Origin: https://www.siteA.com.</li>
+                <li>The browser sees this header and knows it's safe to allow the request from www.siteA.com to api.siteB.com.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>CORS vs. other acronyms</h2>
+            <ul>
+                <li>CORS: Cross-Origin Resource Sharing is a web browser security mechanism.</li>
+                <li>GNSS CORS: Continuously Operating Reference Station is a term used in satellite-based navigation (like GPS) for a fixed, ground-based station that provides real-time positioning data.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

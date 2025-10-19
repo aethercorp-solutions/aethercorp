@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Reference an Image File</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Reference an Image File</h1>
+                    <p class="subtitle">
+                        In a React web app, how you reference an image file depends on where the image is located in your project.
+                        <p>Here’s a quick guide for all common cases 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🗂 1. Image in public/ folder</h2>
+            <p>Use a relative URL path (not an import).</p>
+            <p>✅ Example:</p>
+            <pre><code>
+&lt;img src="/images/logo.png" alt="Logo" /&gt;
+            </code></pre>
+
+            <p>📁 Folder structure:</p>
+            <pre><code>
+public/
+ └── images/
+     └── logo.png
+src/
+ └── App.js
+            </code></pre>
+            <p>💡 The path /images/logo.png maps directly to public/images/logo.png.</p>
+        </section>
+
+        <section>
+            <h2>📦 2. Image in src/ folder</h2>
+            <p>You must import it first — React will bundle and optimize it.</p>
+            <p>✅ Example:</p>
+            <pre><code>
+import logo from './assets/logo.png';
+
+function App() {
+  return &lt;img src={logo} alt="Logo" /&gt;;
+}
+            </code></pre>
+
+            <p>📁 Folder structure:</p>
+            <pre><code>
+src/
+ ├── assets/
+ │    └── logo.png
+ └── App.js
+            </code></pre>
+            <p>💡 Webpack (or Vite, CRA, etc.) handles the import and generates a hashed URL automatically.</p>
+        </section>
+
+        <section>
+            <h2>🌐 3. External URL</h2>
+            <p>Just use the full link:</p>
+            <p>✅ Example:</p>
+            <pre><code>
+&lt;img src="https://example.com/logo.png" alt="Logo" /&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚠️ Common mistakes to avoid</h2>
+            <ul>
+                <li>❌ Don’t use relative paths like "../public/images/logo.png" — public files aren’t accessible that way.</li>
+                <li>✅ Always use /images/... for public or import for src.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

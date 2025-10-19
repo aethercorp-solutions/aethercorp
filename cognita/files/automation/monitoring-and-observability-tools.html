@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Monitoring and observability tools</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Monitoring and observability tools</h1>
+                    <p class="subtitle">Monitoring and observability tools help ensure your systems are reliable, performant, and operating as expected. Here's a breakdown of modern monitoring and observability tools, categorized by their core focus areas:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔍 Monitoring vs. Observability: Quick Overview</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Monitoring</th>
+                        <th>Observability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Focus</td>
+                        <td>Watches known issues (alerts, metrics)</td>
+                        <td>Explores unknown issues (tracing, logs, metrics)</td>
+                    </tr>
+                    <tr>
+                        <td>Data Sources</td>
+                        <td>Metrics, health checks</td>
+                        <td>Metrics + Logs + Traces (3 Pillars)</td>
+                    </tr>
+                    <tr>
+                        <td>Goal</td>
+                        <td>Tell you when something is wrong</td>
+                        <td>Help you understand why something is wrong</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🌐 Full-Stack Monitoring & Observability Platforms</h2>
+            <p>1. Datadog</p>
+            <ul>
+                <li>Features: Metrics, logs, traces, RUM, synthetics, dashboards</li>
+                <li>Use Case: Cloud-native, microservices, Kubernetes</li>
+                <li>Pros: All-in-one SaaS, fast setup, integrations</li>
+                <li>Cons: Can be expensive at scale</li>
+            </ul>
+
+            <p>2. New Relic</p>
+            <ul>
+                <li>Features: APM, infrastructure monitoring, logs, traces</li>
+                <li>Use Case: Application performance and infrastructure monitoring</li>
+                <li>Pros: Good UI, broad integrations</li>
+                <li>Cons: Pricing complexity</li>
+            </ul>
+
+            <p>3. Dynatrace</p>
+            <ul>
+                <li>Features: AI-powered root cause analysis, full-stack observability</li>
+                <li>Use Case: Enterprise environments, automated problem detection</li>
+                <li>Pros: Deep code-level visibility, automation</li>
+                <li>Cons: Learning curve</li>
+            </ul>
+
+            <p>4. Splunk Observability Cloud</p>
+            <ul>
+                <li>Features: APM, logs, metrics, real-time analytics</li>
+                <li>Use Case: High-scale, real-time monitoring</li>
+                <li>Pros: Powerful log analysis</li>
+                <li>Cons: Expensive, complex pricing</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📏 Metrics-Focused Tools</h2>
+            <p>5. Prometheus</p>
+            <ul>
+                <li>Use Case: Cloud-native/Kubernetes metrics collection</li>
+                <li>Strengths: Pull-based scraping, PromQL, wide adoption</li>
+                <li>Integrates With: Grafana, Alertmanager</li>
+            </ul>
+
+            <p>6. Grafana</p>
+            <ul>
+                <li>Use Case: Dashboarding for Prometheus, Loki, Elastic, etc.</li>
+                <li>Strengths: Highly customizable visualizations, supports many data sources</li>
+                <li>Often used with: Prometheus (metrics), Loki (logs), Tempo (traces)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📜 Log Management Tools</h2>
+            <p>7. ELK Stack (Elasticsearch, Logstash, Kibana)</p>
+            <ul>
+                <li>Use Case: Log aggregation and search</li>
+                <li>Strengths: Flexible, self-hosted or managed via Elastic Cloud</li>
+                <li>Alternative: OpenSearch (AWS fork of Elasticsearch)</li>
+            </ul>
+
+            <p>8. Loki (by Grafana Labs)</p>
+            <ul>
+                <li>Use Case: Log aggregation for Kubernetes</li>
+                <li>Strengths: Prometheus-like experience for logs</li>
+                <li>Pros: Lightweight, integrates with Grafana</li>
+            </ul>
+
+            <p>9. Fluentd / Fluent Bit</p>
+            <ul>
+                <li>Use Case: Log shippers</li>
+                <li>Strengths: Collect logs from containers, send to multiple backends (e.g., Elasticsearch, Loki)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧵 Distributed Tracing Tools</h2>
+            <p>10. Jaeger</p>
+            <ul>
+                <li>Use Case: Distributed tracing (OpenTracing)</li>
+                <li>Use With: Microservices architectures (e.g., gRPC, HTTP)</li>
+                <li>Backed by: CNCF</li>
+            </ul>
+
+            <p>11. OpenTelemetry (OTel)</p>
+            <ul>
+                <li>Use Case: Standard for collecting traces, metrics, and logs</li>
+                <li>Strengths: Unified instrumentation, vendor-neutral</li>
+                <li>Feeds Into: Datadog, Prometheus, Jaeger, New Relic, etc.</li>
+            </ul>
+
+            <p>12. Zipkin</p>
+            <ul>
+                <li>Use Case: Distributed tracing</li>
+                <li>Note: Older than Jaeger, still used in some environments</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>👀 Real User Monitoring (RUM) & Synthetic Monitoring</h2>
+            <p>13. Pingdom</p>
+            <ul>
+                <li>Use Case: Website uptime and availability checks</li>
+                <li>Strengths: Easy-to-use, external monitoring</li>
+            </ul>
+
+            <p>14. Datadog Synthetics / New Relic Synthetics</p>
+            <ul>
+                <li>Use Case: Simulate user interactions, monitor SLAs</li>
+                <li>Strengths: Browser checks, API checks, geo-based testing</li>
+            </ul>
+
+            <p>15. Google Cloud Operations Suite (formerly Stackdriver)</p>
+            <ul>
+                <li>Use Case: Monitoring, logging, tracing for GCP</li>
+                <li>Strengths: Integrated with GCP resources, auto-instrumentation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Type</th>
+                        <th>Self-Hosted?</th>
+                        <th>Cloud-Native?</th>
+                        <th>Strengths</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Prometheus</td>
+                        <td>Metrics</td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                        <td>Fast, lightweight, pull-based</td>
+                    </tr>
+                    <tr>
+                        <td>Grafana</td>
+                        <td>Visualization</td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                        <td>Highly customizable dashboards</td>
+                    </tr>
+                    <tr>
+                        <td>Datadog</td>
+                        <td>Full observability</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                        <td>All-in-one, many integrations</td>
+                    </tr>
+                    <tr>
+                        <td>New Relic</td>
+                        <td>Full observability</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                        <td>App & infra monitoring</td>
+                    </tr>
+                    <tr>
+                        <td>Dynatrace</td>
+                        <td>Full observability</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                        <td>AI-assisted insights</td>
+                    </tr>
+                    <tr>
+                        <td>Jaeger</td>
+                        <td>Tracing</td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                        <td>Open source distributed tracing</td>
+                    </tr>
+                    <tr>
+                        <td>Loki</td>
+                        <td>Logs</td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                        <td>Lightweight log aggregation</td>
+                    </tr>
+                    <tr>
+                        <td>ELK Stack</td>
+                        <td>Logs</td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                        <td>Powerful log indexing/search</td>
+                    </tr>
+                    <tr>
+                        <td>OpenTelemetry</td>
+                        <td>Unified observability</td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                        <td>Vendor-neutral instrumentation</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

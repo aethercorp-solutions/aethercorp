@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Event-Driven Architecture (EDA)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Event-Driven Architecture (EDA)</h1>
+                    <p class="subtitle">Event-Driven Architecture (EDA) is a software design pattern in which events (i.e., significant changes in state) drive the flow of program execution. Instead of following a strict control flow (like in request-response systems), components in an EDA communicate by producing and reacting to events asynchronously.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Key Components of EDA</h2>
+            <ol>
+                <li>Event: A record of a change or action that has occurred, e.g., "UserCreated", "OrderPlaced".</li>
+                <li>Event Producer: Generates and publishes events.</li>
+                <li>Event Consumer: Subscribes to and processes events.</li>
+                <li>
+                    Event Channel (Broker/Bus): Transports events from producers to consumers.
+                    <ul>
+                        <li>Examples: Apache Kafka, RabbitMQ, AWS SNS/SQS.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚙️ How It Works</h2>
+            <ol>
+                <li>A user action or system change triggers an event.</li>
+                <li>The producer publishes this event to a message broker.</li>
+                <li>One or more consumers subscribe to relevant events and react (e.g., update a database, send an email, start another process).</li>
+                <li>The system remains loosely coupled — producers don’t know who the consumers are.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 Example Scenario: E-commerce Checkout</h2>
+            <ul>
+                <li>Event: OrderPlaced</li>
+                <li>
+                    Producers:
+                    <ul>
+                        <li>Checkout service publishes the OrderPlaced event.</li>
+                    </ul>
+                </li>
+                <li>
+                    Consumers:
+                    <ul>
+                        <li>Inventory service reduces stock.</li>
+                        <li>Email service sends order confirmation.</li>
+                        <li>Analytics service logs the order.</li>
+                        <li>Shipping service prepares delivery.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Benefits</h2>
+            <ol>
+                <li>Loose coupling between services.</li>
+                <li>Scalability — components can scale independently.</li>
+                <li>Asynchronous communication improves performance.</li>
+                <li>Flexibility — easy to add new consumers.</li>
+                <li>Resilience — failed consumers can retry.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚠️ Challenges</h2>
+            <ol>
+                <li>Complex debugging due to distributed asynchronous behavior.</li>
+                <li>Event schema evolution must be carefully managed.</li>
+                <li>Ordering of events can be hard to guarantee.</li>
+                <li>At-least-once delivery may lead to duplicate processing.</li>
+                <li>Data consistency is eventually consistent, not immediate.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔄 Common Architectures Using EDA</h2>
+            <ul>
+                <li>Microservices — enabling loosely coupled interactions.</li>
+                <li>Serverless applications — using cloud-based event triggers (e.g., AWS Lambda).</li>
+                <li>Real-time analytics — processing streaming data.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

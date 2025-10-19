@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Encryption</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Encryption</h1>
+                    <p class="subtitle">
+                        Encryption is the process of converting readable data (called plaintext) into an unreadable format (called ciphertext) using a mathematical algorithm and a secret key.
+                        <p>The purpose of encryption is to protect data — ensuring that only authorized people or systems can access or understand it.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔐 Example</h2>
+            <p>Let’s say you want to send this message:</p>
+            <pre><code>
+“Hello, Paul!”
+            </code></pre>
+            <p>If you encrypt it using a key, the result might look like:</p>
+            <pre><code>
+“7fK#9xA%qLp@!”
+            </code></pre>
+            <p>Now, even if someone intercepts this message, they can’t read it unless they have the correct decryption key to turn it back into “Hello, Paul!”.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Key Concepts</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Plaintext</td>
+                        <td>Original, readable data (e.g., “Hello, Paul!”)</td>
+                    </tr>
+                    <tr>
+                        <td>Ciphertext</td>
+                        <td>Encrypted, unreadable version of the data</td>
+                    </tr>
+                    <tr>
+                        <td>Key</td>
+                        <td>Secret value used by the algorithm to encrypt/decrypt</td>
+                    </tr>
+                    <tr>
+                        <td>Algorithm</td>
+                        <td>The mathematical formula or process (e.g., AES, RSA)</td>
+                    </tr>
+                    <tr>
+                        <td>Decryption</td>
+                        <td>The reverse of encryption — turning ciphertext back into plaintext</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>⚙️ Two Main Types of Encryption</h2>
+            <ol>
+                <li>
+                    Symmetric Encryption
+                    <ul>
+                        <li>Uses the same key to encrypt and decrypt.</li>
+                        <li>Example: AES (Advanced Encryption Standard)</li>
+                        <li>Used for things like file encryption or database storage.</li>
+                    </ul>
+                    <pre><code>
+Key → Encrypts → Ciphertext
+Key → Decrypts → Plaintext
+                    </code></pre>
+                </li>
+                <li>
+                    Asymmetric Encryption
+                    <ul>
+                        <li>
+                            Uses two keys:
+                            <ul>
+                                <li>A public key to encrypt data</li>
+                                <li>A private key to decrypt it</li>
+                            </ul>
+                        </li>
+                        <li>Example: RSA, ECC</li>
+                        <li>Used for SSL/TLS (HTTPS), digital signatures, etc.</li>
+                    </ul>
+                    <pre><code>
+Public Key → Encrypts
+Private Key → Decrypts
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🌍 Real-World Examples</h2>
+            <ul>
+                <li>HTTPS websites use encryption (SSL/TLS) so your data is safe when sent to a server.</li>
+                <li>Messaging apps (like WhatsApp or Signal) use end-to-end encryption so only you and the recipient can read messages.</li>
+                <li>AWS, Firebase, and Azure all use encryption for securing stored and transmitted data.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

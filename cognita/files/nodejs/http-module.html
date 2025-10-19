@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Built-in http module in Node.js</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Built-in http module in Node.js</h1>
+                    <p class="subtitle">Great! Let's dive into using the built-in http module in Node.js to build a simple server with basic routing — no external frameworks like Express.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧱 Step-by-Step: Node.js HTTP Server + Router</h2>
+            <p>✅ 1. Import the http module</p>
+            <pre><code>
+const http = require('http');
+const url = require('url');
+            </code></pre>
+
+            <p>✅ 2. Define routes and handlers</p>
+            <p>We'll map paths and methods to specific functions.</p>
+            <pre><code>
+const routes = {
+    'GET /': (req, res) => {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('Welcome to the Home Page');
+    },
+    'GET /about': (req, res) => {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('This is the About Page');
+    },
+    'POST /data': (req, res) => {
+        let body = '';
+        req.on('data', chunk => {
+        body += chunk;
+        });
+    
+        req.on('end', () => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ received: body }));
+        });
+    },
+};                  
+            </code></pre>
+
+            <p>✅ 3. Create the HTTP server</p>
+            <p>Use the http.createServer() function.</p>
+            <pre><code>
+const server = http.createServer((req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    const path = parsedUrl.pathname.replace(/\/+$/, '') || '/';
+    const method = req.method.toUpperCase();
+    const routeKey = `${method} ${path}`;
+    
+    const handler = routes[routeKey];
+    
+    if (handler) {
+        handler(req, res);
+    } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('404 Not Found');
+    }
+});                  
+            </code></pre>
+
+            <p>✅ 4. Start the server</p>
+            <pre><code>
+const PORT = 3000;
+server.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📄 Full Example: server.js</h2>
+            <pre><code>
+const http = require('http');
+const url = require('url');
+
+const routes = {
+  'GET /': (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Welcome to the Home Page');
+  },
+  'GET /about': (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('This is the About Page');
+  },
+  'POST /data': (req, res) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+    });
+
+    req.on('end', () => {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ received: body }));
+    });
+  },
+};
+
+const server = http.createServer((req, res) => {
+  const parsedUrl = url.parse(req.url, true);
+  const path = parsedUrl.pathname.replace(/\/+$/, '') || '/';
+  const method = req.method.toUpperCase();
+  const routeKey = `${method} ${path}`;
+
+  const handler = routes[routeKey];
+
+  if (handler) {
+    handler(req, res);
+  } else {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('404 Not Found');
+  }
+});
+
+const PORT = 3000;
+server.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 Test</h2>
+            <p>Run the server:</p>
+            <pre><code>
+node server.js
+            </code></pre>
+
+            <p>Then:</p>
+            <ul>
+                <li>Open http://localhost:3000/ → Home Page</li>
+                <li>Open http://localhost:3000/about → About Page</li>
+                <li>curl -X POST -d "Hello" http://localhost:3000/data → Receives JSON with "Hello"</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

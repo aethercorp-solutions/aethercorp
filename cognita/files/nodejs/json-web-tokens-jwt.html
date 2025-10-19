@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JSON Web Tokens (JWTs)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JSON Web Tokens (JWTs)</h1>
+                    <p class="subtitle">JSON Web Tokens (JWTs) are a popular way to securely transmit information between parties as a JSON object. Here's a breakdown of how jsonwebtoken works:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is a JSON Web Token (JWT)?</h2>
+            <p>A JWT is a compact, URL-safe token format that represents claims to be transferred between two parties. It’s commonly used for authentication and information exchange.</p>
+        </section>
+
+        <section>
+            <h2>Structure of a JWT</h2>
+            <p>A JWT is composed of three parts, separated by dots (.):</p>
+            <ol>
+                <li>Header</li>
+                <li>Payload</li>
+                <li>Signature</li>
+            </ol>
+            <p>Example:</p>
+            <pre><code>
+xxxxx.yyyyy.zzzzz
+            </code></pre>
+            <ul>
+                <li>
+                    Header: Specifies the algorithm used for signing (e.g., HS256 for HMAC SHA256) and the token type (usually JWT).
+                    <pre><code>
+{
+    "alg": "HS256",
+    "typ": "JWT"
+}                          
+                    </code></pre>
+                </li>
+                <li>
+                    Payload: Contains the claims or data you want to transmit, like user ID, roles, expiration time, etc.
+                    <pre><code>
+{
+    "sub": "1234567890",
+    "name": "John Doe",
+    "iat": 1516239022
+}                          
+                    </code></pre>
+                </li>
+                <li>
+                    Signature: A cryptographic signature created by taking the encoded header and payload, a secret key, and the algorithm specified in the header. This ensures the token hasn’t been tampered with.
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. How jsonwebtoken library works (e.g., in Node.js)</h2>
+            <p>Creating (Signing) a token:</p>
+            <p>You call a function like:</p>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+const token = jwt.sign({ userId: 123 }, 'secretKey', { expiresIn: '1h' });
+            </code></pre>
+
+            <ul>
+                <li>jwt.sign creates a JWT by encoding the header and payload, then signing it with the secret key.</li>
+                <li>The output is a JWT string that you can send to the client.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Verifying a token:</h2>
+            <p>When a client sends back the token, the server can verify it:</p>
+            <pre><code>
+jwt.verify(token, 'secretKey', (err, decoded) => {
+    if (err) {
+        // token invalid or expired
+    } else {
+        // token valid, decoded contains the payload
+    }
+});                  
+            </code></pre>
+            <ul>
+                <li>jwt.verify decodes the token and checks the signature using the secret key.</li>
+                <li>It also checks claims like expiration.</li>
+                <li>If valid, it returns the decoded payload.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why use JWT?</h2>
+            <ul>
+                <li>Stateless Authentication: No need to store session info on the server.</li>
+                <li>Compact & URL-safe: Good for passing in headers or URLs.</li>
+                <li>Self-contained: Carries necessary info within the token.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

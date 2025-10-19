@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Temporal workflows</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Temporal workflows</h1>
+                    <p class="subtitle">"Temporal workflows" typically refer to workflows managed using Temporal
+                        — a powerful open-source workflow orchestration platform designed to build and manage reliable, long-running, and distributed systems.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🚀 What Are Temporal Workflows?</h2>
+            <p>Temporal workflows are code-based definitions of business logic that need to be executed reliably and with state. They’re written in normal programming languages (like Go, Java, TypeScript, Python) but run in a fault-tolerant, durable, and distributed environment managed by the Temporal platform.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Key Concepts</h2>
+            <p>1. Workflow</p>
+            <ul>
+                <li>A function representing a business process.</li>
+                <li>Can run for seconds or years.</li>
+                <li>Automatically resumes after crashes, restarts, or failures.</li>
+                <li>Maintains state across events.</li>
+            </ul>
+
+            <p>2. Activities</p>
+            <ul>
+                <li>External, non-deterministic tasks executed outside the workflow.</li>
+                <li>These could be API calls, database operations, or anything side-effecting.</li>
+                <li>They are retriable and idempotent.</li>
+            </ul>
+
+            <p>3. Temporal Server</p>
+            <ul>
+                <li>Central orchestration service that manages workflows, scheduling, retries, task queues, etc.</li>
+                <li>Your code runs in a worker, while the server keeps state.</li>
+            </ul>
+
+            <p>4. Worker</p>
+            <ul>
+                <li>Hosts your application code (workflow and activities).</li>
+                <li>Polls the Temporal server for tasks and executes them.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 Basic Structure (Pseudocode)</h2>
+            <pre><code>
+# Workflow definition
+@workflow.defn
+class OrderWorkflow:
+    @workflow.run
+    async def run(self, order_id: str):
+        await workflow.execute_activity(process_payment, order_id)
+        await workflow.execute_activity(ship_order, order_id)
+
+# Activities
+@activity.defn
+async def process_payment(order_id: str):
+    # Charge payment gateway
+    ...
+
+@activity.defn
+async def ship_order(order_id: str):
+    # Call shipping API
+    ...
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔁 Features</h2>
+            <ul>
+                <li>Durability: Workflow state is stored durably and can survive process or server failures.</li>
+                <li>Scalability: Horizontally scalable workers and servers.</li>
+                <li>Retries & Error Handling: Built-in retries, timeouts, and custom retry logic.</li>
+                <li>Timers & Scheduling: Native support for delays, timeouts, cron jobs.</li>
+                <li>Signals & Queries: Receive external inputs or expose state during execution.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧑‍💻 Use Cases</h2>
+            <ul>
+                <li>Payment processing</li>
+                <li>Order fulfillment</li>
+                <li>Data pipelines</li>
+                <li>Microservice orchestration</li>
+                <li>CI/CD systems</li>
+                <li>Video processing</li>
+                <li>Human-in-the-loop workflows</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ Supported SDKs</h2>
+            <ul>
+                <li>Go</li>
+                <li>Java</li>
+                <li>TypeScript</li>
+                <li>Python (Beta)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📘 Learning Resources</h2>
+            <ul>
+                <li><a href="https://docs.temporal.io/">Temporal Documentation</a></li>
+                <li><a href="https://github.com/temporalio/temporal">GitHub Repository</a></li>
+                <li><a href="https://github.com/temporalio/samples-typescript">Temporal Samples</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

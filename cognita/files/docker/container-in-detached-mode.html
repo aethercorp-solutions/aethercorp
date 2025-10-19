@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Container in Detached Mode</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Container in Detached Mode</h1>
+                    <p class="subtitle">
+                        When you run a container in detached mode using the -d flag (e.g., docker run -d ...), it means:
+                        <p>🔹 The container runs in the background, and you get your terminal prompt back immediately.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>📌 Without -d (attached mode):</h2>
+            <ul>
+                <li>The container runs in the foreground.</li>
+                <li>You see the container’s output (e.g., logs) directly in your terminal.</li>
+                <li>You’ll stay attached to the container process until it stops or you exit (usually with Ctrl+C).</li>
+            </ul>
+
+            <h2>📌 With -d (detached mode):</h2>
+            <ul>
+                <li>Docker starts the container, but you don’t see its output unless you explicitly request it.</li>
+                <li>Your terminal is freed up to run other commands.</li>
+                <li>
+                    You can still interact with or monitor the container using commands like:
+                    <ul>
+                        <li>docker ps — see running containers</li>
+                        <li>docker logs &lt;container_id&gt; — view its output</li>
+                        <li>docker exec -it &lt;container_id&gt; bash — run commands inside it</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Example:</h2>
+            <p>docker run -d nginx</p>
+            <p>This starts an Nginx web server in the background.</p>
+            <p>You can then do:</p>
+            <pre><code>
+docker ps
+docker logs &lt;container_id&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Why run an NGINX web server in Docker?</h2>
+            <p>Running NGINX inside Docker is popular because Docker provides an isolated, lightweight, and consistent environment for running applications. Here’s why it's beneficial:</p>
+
+            <p>🔹 1. Portability</p>
+            <ul>
+                <li>The NGINX container works the same on any system (Linux, macOS, Windows) with Docker installed.</li>
+                <li>You avoid the headache of “works on my machine” issues.</li>
+            </ul>
+
+            <p>🔹 2. Isolation</p>
+            <ul>
+                <li>The NGINX server runs independently of your host system.</li>
+                <li>No risk of messing with your host’s web server config or conflicting ports.</li>
+            </ul>
+
+            <p>🔹 3. Ease of Setup</p>
+            <ul>
+                <li>
+                    You can start NGINX in one line:
+                    <pre><code>
+docker run -d -p 8080:80 nginx
+                    </code></pre>
+                    <p>This pulls the official NGINX image, runs it in detached mode, and maps port 80 inside the container to port 8080 on your host.</p>
+                </li>
+            </ul>
+
+            <p>🔹 4. Reproducibility</p>
+            <ul>
+                <li>Docker lets you version-control your NGINX setup using a Dockerfile or docker-compose.yml, so teams and systems use the exact same configuration.</li>
+            </ul>
+
+            <p>🔹 5. Flexibility for Development</p>
+            <ul>
+                <li>Easily test different NGINX configs without affecting your real web server.</li>
+                <li>Quickly spin up multiple versions (e.g., NGINX 1.18 vs 1.24) for testing.</li>
+            </ul>
+
+            <p>🔹 6. Integration with Other Containers</p>
+            <ul>
+                <li>NGINX is often used as a reverse proxy or load balancer in multi-container setups (e.g., with Node.js, Flask, Django apps).</li>
+                <li>Docker Compose makes it easy to define and run these connected services.</li>
+            </ul>
+
+            <p>🛠️ Real-life example:</p>
+            <p>Imagine you’re building a web app with:</p>
+            <ul>
+                <li>A backend API in Node.js</li>
+                <li>A frontend built with React</li>
+                <li>NGINX to serve the frontend and reverse-proxy requests to the backend</li>
+            </ul>
+            <p>You can containerize all three and have NGINX coordinate them cleanly — no manual setup across environments.</p>
+        </section>
+
+        <section>
+            <p>Excellent follow-up. Let’s compare running NGINX in Docker vs installing it traditionally on your system (e.g., using apt, yum, or a manual download).</p>
+            <h2>🆚 Dockerized NGINX vs Traditional NGINX Installation</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature / Concern</th>
+                        <th>🐳 Dockerized NGINX</th>
+                        <th>🧱 Traditional Installation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Isolation</td>
+                        <td>Runs in its own container, isolated from host OS</td>
+                        <td>Runs directly on host system</td>
+                    </tr>
+                    <tr>
+                        <td>Ease of Setup</td>
+                        <td>One command (docker run nginx)</td>
+                        <td>Multiple steps: install via package manager, configure</td>
+                    </tr>
+                    <tr>
+                        <td>Portability</td>
+                        <td>Works the same on any system with Docker</td>
+                        <td>Depends on OS and version</td>
+                    </tr>
+                    <tr>
+                        <td>Dependency Management</td>
+                        <td>Container includes all dependencies it needs</td>
+                        <td>You must install/configure dependencies manually</td>
+                    </tr>
+                    <tr>
+                        <td>Version Control</td>
+                        <td>Easily switch NGINX versions via image tags</td>
+                        <td>Harder to switch versions, risk of conflicts</td>
+                    </tr>
+                    <tr>
+                        <td>Configuration</td>
+                        <td>Can mount configs using Docker volumes</td>
+                        <td>Configs live on host file system</td>
+                    </tr>
+                    <tr>
+                        <td>Multiple Instances</td>
+                        <td>Run multiple versions side-by-side easily</td>
+                        <td>Risk of port conflicts and config collisions</td>
+                    </tr>
+                    <tr>
+                        <td>Resource Usage</td>
+                        <td>Lightweight, but containers still add some overhead</td>
+                        <td>Uses less abstraction (bare metal)</td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td>Isolated from host, but needs secure Docker config</td>
+                        <td>Depends heavily on host’s security setup</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>Slight overhead vs bare-metal, but usually minor</td>
+                        <td>Native performance (no container layer)</td>
+                    </tr>
+                    <tr>
+                        <td>Best for</td>
+                        <td>Development, CI/CD, microservices, testing</td>
+                        <td>Production servers, minimalist systems, sysadmins</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Use Dockerized NGINX if:</h2>
+            <ul>
+                <li>You're developing or testing websites or apps.</li>
+                <li>You want to quickly spin up an NGINX server without touching your host system.</li>
+                <li>You need multiple NGINX versions or configurations.</li>
+                <li>You're using Docker Compose or Kubernetes.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Use Traditional NGINX if:</h2>
+            <ul>
+                <li>You're setting up a dedicated production web server (especially on a VPS or bare metal).</li>
+                <li>You want fine-grained control over system-level networking, logging, and performance.</li>
+                <li>You’re running on low-resource environments where Docker adds unnecessary overhead.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Dockerized NGINX = fast, portable, isolated.</p>
+            <p>Traditional NGINX = native, stable, production-hardened.</p>
+            <p>Both are valid — it depends on your goal and environment.</p>
+            <p>Want help running a small NGINX container now, or seeing how to replace a traditional setup with a Docker version?</p>
+        </section>
+
+        <section>
+            <p>Great! Let's walk through running a basic NGINX web server in Docker, step by step. It will only take a few minutes.</p>
+            <h2>🛠️ Step-by-Step: Run NGINX in Docker</h2>
+            <p>✅ 1. Prerequisite: Docker installed</p>
+            <ul>
+                <li>
+                    Confirm Docker is working:
+                    <pre><code>
+docker --version
+                    </code></pre>
+                    <p>If it responds with something like Docker version 20.xx..., you're good to go.</p>
+                </li>
+            </ul>
+
+            <p>✅ 2. Run NGINX Container</p>
+            <p>Run this command:</p>
+            <pre><code>
+docker run -d -p 8080:80 --name my-nginx nginx
+            </code></pre>
+
+            <p>🔍 What this does:</p>
+            <ul>
+                <li>docker run: starts a container</li>
+                <li>-d: detached mode (runs in background)</li>
+                <li>-p 8080:80: maps port 80 in the container to port 8080 on your host</li>
+                <li>--name my-nginx: names the container my-nginx</li>
+                <li>nginx: uses the official NGINX image from Docker Hub</li>
+            </ul>
+
+            <p>✅ 3. Test It</p>
+            <p>Now open a browser and go to:</p>
+            <pre><code>
+http://localhost:8080
+            </code></pre>
+            <p>You should see the default NGINX welcome page.</p>
+
+            <p>✅ 4. View Logs</p>
+            <p>To see what NGINX is doing behind the scenes:</p>
+            <pre><code>
+docker logs my-nginx
+            </code></pre>
+
+            <p>✅ 5. Stop and Remove the Container</p>
+            <p>Stop it:</p>
+            <pre><code>
+docker stop my-nginx
+            </code></pre>
+            <p>Remove it:</p>
+            <pre><code>
+docker rm my-nginx
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📁 Want to Customize NGINX (HTML/Config)?</h2>
+            <p>You can serve your own HTML files by mounting a volume.</p>
+            <p>Example:</p>
+            <pre><code>
+docker run -d -p 8080:80 -v $(pwd)/my-site:/usr/share/nginx/html nginx
+            </code></pre>
+            <ul>
+                <li>$(pwd)/my-site: local folder with your HTML files</li>
+                <li>NGINX will serve those files instead of the default welcome page.</li>
+            </ul>
+
+            <p>Want help running a small NGINX container now, or seeing how to replace a traditional setup with a Docker version?</p>
+        </section>
+
+        <section>
+            <p>Great! Let's walk through running a basic NGINX web server in Docker, step by step. It will only take a few minutes.</p>
+            <h2>🛠️ Step-by-Step: Run NGINX in Docker</h2>
+            <p>✅ 1. Prerequisite: Docker installed</p>
+
+            <ul>
+                <li>
+                    Confirm Docker is working:
+                    <pre><code>
+docker --version
+                    </code></pre>
+                </li>
+            </ul>
+            <p>If it responds with something like Docker version 20.xx..., you're good to go.</p>
+
+            <p>✅ 2. Run NGINX Container</p>
+            <p>Run this command:</p>
+
+            <pre><code>
+docker run -d -p 8080:80 --name my-nginx nginx
+            </code></pre>
+
+            <h2>🔍 What this does:</h2>
+            <ul>
+                <li>docker run: starts a container</li>
+                <li>-d: detached mode (runs in background)</li>
+                <li>-p 8080:80: maps port 80 in the container to port 8080 on your host</li>
+                <li>--name my-nginx: names the container my-nginx</li>
+                <li>nginx: uses the official NGINX image from Docker Hub</li>
+            </ul>
+
+            <p>✅ 3. Test It</p>
+            <p>
+                Now open a browser and go to:
+                <pre><code>
+http://localhost:8080
+                </code></pre>
+            </p>
+            <p>You should see the default NGINX welcome page.</p>
+
+            <p>✅ 4. View Logs</p>
+            <p>To see what NGINX is doing behind the scenes:</p>
+            <pre><code>
+docker logs my-nginx
+            </code></pre>
+
+            <p>✅ 5. Stop and Remove the Container</p>
+            <p>Stop it:</p>
+            <pre><code>
+docker stop my-nginx
+            </code></pre>
+
+            <p>Remove it:</p>
+            <pre><code>
+docker rm my-nginx
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📁 Want to Customize NGINX (HTML/Config)?</h2>
+            <p>You can serve your own HTML files by mounting a volume.</p>
+            <p>Example:</p>
+            <pre><code>
+docker run -d -p 8080:80 -v $(pwd)/my-site:/usr/share/nginx/html nginx
+            </code></pre>
+
+            <ul>
+                <li>$(pwd)/my-site: local folder with your HTML files</li>
+                <li>NGINX will serve those files instead of the default welcome page.</li>
+            </ul>
+
+            <p>Want to try customizing NGINX with your own page or config next? I can guide you.</p>
+        </section>
+
+        <section>
+            <p>Perfect — let’s look at how NGINX is used in real-world scenarios and how to implement it (both inside and outside Docker).</p>
+            <h2>🚀 NGINX: Usage & Implementation Guide</h2>
+            <p>✅ 1. Common Use Cases for NGINX</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Static File Server</td>
+                        <td>Serves HTML, CSS, JS, images, etc. very efficiently</td>
+                    </tr>
+                    <tr>
+                        <td>Reverse Proxy</td>
+                        <td>Forwards client requests to backend servers (e.g., Node.js, Python, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>Load Balancer</td>
+                        <td>Distributes traffic to multiple backend servers</td>
+                    </tr>
+                    <tr>
+                        <td>SSL Termination</td>
+                        <td>Handles HTTPS encryption, offloading that work from backend apps</td>
+                    </tr>
+                    <tr>
+                        <td>API Gateway</td>
+                        <td>Routes and secures access to APIs</td>
+                    </tr>
+                    <tr>
+                        <td>Caching Proxy</td>
+                        <td>Caches responses from backend servers for performance</td>
+                    </tr>
+                    <tr>
+                        <td>WebSocket Proxy</td>
+                        <td>Supports modern apps needing real-time bidirectional communication</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠️ 2. Implementation Options</h2>
+            <p>🧱 A. Traditional Installation (On Host Machine)</p>
+            <p>➤ Install on Ubuntu:</p>
+
+            <pre><code>
+sudo apt update
+sudo apt install nginx
+            </code></pre>
+
+            <p>➤ Start and enable:</p>
+            <pre><code>
+sudo systemctl start nginx
+sudo systemctl enable nginx
+            </code></pre>
+
+            <p> Configuration file:</p>
+            <p>Main config:</p>
+            <pre><code>
+/etc/nginx/nginx.conf
+            </code></pre>
+
+            <p>Site-specific config (common in Ubuntu):</p>
+            <pre><code>
+/etc/nginx/sites-available/
+            </code></pre>
+
+            <p>Enable a site:</p>
+            <pre><code>
+sudo ln -s /etc/nginx/sites-available/mysite /etc/nginx/sites-enabled/
+sudo systemctl reload nginx
+            </code></pre>
+
+            <p>➤ Simple example config:</p>
+            <pre><code>
+server {
+    listen 80;
+    server_name example.com;
+
+    location / {
+        root /var/www/html;
+        index index.html;
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🐳 B. Using NGINX with Docker</h2>
+            <p>➤ Run default NGINX:</p>
+
+            <pre><code>
+docker run -d -p 8080:80 nginx
+            </code></pre>
+
+            <p>➤ Serve your own HTML:</p>
+            <p>Assume you have a folder called my-site with index.html inside.</p>
+            <pre><code>
+docker run -d -p 8080:80 \
+  -v $(pwd)/my-site:/usr/share/nginx/html \
+  nginx
+            </code></pre>
+
+            <p> Use custom NGINX config:</p>
+            <pre><code>
+docker run -d -p 8080:80 \
+  -v $(pwd)/nginx.conf:/etc/nginx/nginx.conf:ro \
+  nginx
+            </code></pre>
+
+            <p>Make sure your nginx.conf is valid.</p>
+        </section>
+
+        <section>
+            <h2>🔄 Example: Reverse Proxy to a Node.js App</h2>
+            <p>Backend Node app running at port 3000, and you want NGINX to proxy from port 80.</p>
+            <pre><code>
+server {
+    listen 80;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}                
+            </code></pre>
+
+            <p>In Docker, the backend would be another container, and you'd use the service name or container name instead of localhost.</p>
+        </section>
+
+        <section>
+            <h2>🧩 Advanced Features You Can Add</h2>
+            <ul>
+                <li>HTTPS (TLS) with Let’s Encrypt + Certbot</li>
+                <li>Basic Auth for protecting pages</li>
+                <li>Rate limiting for abuse protection</li>
+                <li>Gzip compression to reduce payload size</li>
+                <li>Logging & monitoring via access logs or third-party tools</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 Want to Try a Specific Use Case?</h2>
+            <p>Let me know if you want help with a hands-on example like:</p>
+            <ul>
+                <li>Serving your own website with NGINX</li>
+                <li>Setting up a reverse proxy for a backend</li>
+                <li>Running a full Docker + NGINX setup with multiple services</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

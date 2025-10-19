@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Material-UI (MUI)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Material-UI (MUI)</h1>
+                    <p class="subtitle">Material-UI (MUI) — now officially called MUI — is a popular React component library that provides ready-made UI components following Google’s Material Design guidelines. It helps you build beautiful, responsive, and consistent interfaces quickly.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Here’s a quick overview 👇</p>
+            <h2>🧱 Core Packages</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Package</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@mui/material</td>
+                        <td>Core React components (Buttons, Dialogs, Cards, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>@mui/icons-material</td>
+                        <td>Material Design icons</td>
+                    </tr>
+                    <tr>
+                        <td>@emotion/react, @emotion/styled</td>
+                        <td>Styling engine used by MUI (required peer dependencies)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>⚙️ Installation (MUI v5)</h2>
+            <pre><code>
+# Core MUI
+npm install @mui/material @emotion/react @emotion/styled
+
+# Optional: Icons
+npm install @mui/icons-material
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🪄 Basic Usage Example</h2>
+            <pre><code>
+import * as React from "react";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+
+export default function App() {
+  return (
+    &lt;Container sx={{ mt: 4 }}&gt;
+        &lt;Typography variant="h4" gutterBottom&gt;
+            Welcome to Material UI
+        &lt;/Typography&gt;
+        &lt;Button variant="contained" color="primary"&gt;
+            Click Me
+        &lt;/Button&gt;
+    &lt;/Container&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🎨 Custom Theme Example</h2>
+            <pre><code>
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import Button from "@mui/material/Button";
+
+const theme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: {
+      main: "#1976d2",
+    },
+  },
+});
+
+export default function ThemedApp() {
+  return (
+    &lt;ThemeProvider theme={theme}&gt;
+        &lt;CssBaseline /&gt;
+        &lt;Button variant="contained" color="primary"&gt;
+            Dark Mode Button
+        &lt;/Button&gt;
+    &lt;/ThemeProvider&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 Common Components</h2>
+            <ul>
+                <li>AppBar, Toolbar, Drawer → Navigation</li>
+                <li>Button, IconButton, Fab → Actions</li>
+                <li>Card, Paper, Grid → Layout</li>
+                <li>TextField, Select, Checkbox → Forms</li>
+                <li>Dialog, Snackbar, Tooltip → Feedback</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

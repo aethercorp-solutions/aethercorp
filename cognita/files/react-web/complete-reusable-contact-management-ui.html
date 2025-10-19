@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Complete Reusable Contact Management UI built with React + Material UI (MUI v5)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Complete Reusable Contact Management UI built with React + Material UI (MUI v5)</h1>
+                    <p class="subtitle">
+                        Here’s a complete reusable Contact Management UI built with React + Material UI (MUI v5).
+It includes modular, reusable components for:
+                        <ul>
+                            <li>Contact list (with search, sort, delete)</li>
+                            <li>Contact form (for adding/editing contacts)</li>
+                            <li>Contact card (display individual contact)</li>
+                        </ul>
+                        You can integrate this into any React app easily.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>📁 Folder Structure</h2>
+            <pre><code>
+src/
+ └── components/
+     ├── ContactCard.jsx
+     ├── ContactForm.jsx
+     └── ContactList.jsx
+ └── pages/
+     └── ContactManager.jsx
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ ContactCard.jsx</h2>
+            <p>A reusable display card for a contact.</p>
+            <pre><code>
+&lt;script type="text/jsx"&gt;
+import React from "react";
+import { Card, CardContent, Typography, IconButton, Stack, Avatar } from "@mui/material";
+import { Edit, Delete } from "@mui/icons-material";
+
+const ContactCard = ({ contact, onEdit, onDelete }) =&gt; {
+  return (
+    &lt;Card variant="outlined" sx={{ borderRadius: 3, p: 1, boxShadow: 2 }}&gt;
+      &lt;CardContent&gt;
+        &lt;Stack direction="row" alignItems="center" spacing={2}&gt;
+          &lt;Avatar sx={{ bgcolor: "primary.main" }}&gt;
+            {contact.name?.charAt(0).toUpperCase()}
+          &lt;/Avatar&gt;
+          &lt;Stack flex={1}&gt;
+            &lt;Typography variant="subtitle1" fontWeight={600}&gt;
+              {contact.name}
+            &lt;/Typography&gt;
+            &lt;Typography variant="body2" color="text.secondary"&gt;
+              {contact.email}
+            &lt;/Typography&gt;
+            &lt;Typography variant="body2" color="text.secondary"&gt;
+              {contact.phone}
+            &lt;/Typography&gt;
+          &lt;/Stack&gt;
+          &lt;Stack direction="row" spacing={1}&gt;
+            &lt;IconButton color="primary" onClick={() =&gt; onEdit(contact)}&gt;
+              &lt;Edit /&gt;
+            &lt;/IconButton&gt;
+            &lt;IconButton color="error" onClick={() =&gt; onDelete(contact)}&gt;
+              &lt;Delete /&gt;
+            &lt;/IconButton&gt;
+          &lt;/Stack&gt;
+        &lt;/Stack&gt;
+      &lt;/CardContent&gt;
+    &lt;/Card&gt;
+  );
+};
+
+export default ContactCard;
+&lt;/script&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ ContactForm.jsx</h2>
+            <p>Reusable form component for adding or editing a contact.</p>
+            <pre><code>
+&lt;script type="text/jsx"&gt;
+import React, { useState, useEffect } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack } from "@mui/material";
+
+const ContactForm = ({ open, onClose, onSave, contact }) =&gt; {
+  const [form, setForm] = useState({ name: "", email: "", phone: "" });
+
+  useEffect(() =&gt; {
+    if (contact) setForm(contact);
+    else setForm({ name: "", email: "", phone: "" });
+  }, [contact]);
+
+  const handleChange = (e) =&gt; {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = () =&gt; {
+    onSave(form);
+    onClose();
+  };
+
+  return (
+    &lt;Dialog open={open} onClose={onClose} fullWidth maxWidth="sm"&gt;
+      &lt;DialogTitle&gt;{contact ? "Edit Contact" : "Add Contact"}&lt;/DialogTitle&gt;
+      &lt;DialogContent&gt;
+        &lt;Stack spacing={2} sx={{ mt: 1 }}&gt;
+          &lt;TextField name="name" label="Name" value={form.name} onChange={handleChange} fullWidth /&gt;
+          &lt;TextField name="email" label="Email" value={form.email} onChange={handleChange} fullWidth /&gt;
+          &lt;TextField name="phone" label="Phone" value={form.phone} onChange={handleChange} fullWidth /&gt;
+        &lt;/Stack&gt;
+      &lt;/DialogContent&gt;
+      &lt;DialogActions&gt;
+        &lt;Button onClick={onClose}&gt;Cancel&lt;/Button&gt;
+        &lt;Button onClick={handleSubmit} variant="contained"&gt;
+          {contact ? "Update" : "Save"}
+        &lt;/Button&gt;
+      &lt;/DialogActions&gt;
+    &lt;/Dialog&gt;
+  );
+};
+
+export default ContactForm;
+&lt;/script&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ ContactList.jsx</h2>
+            <p>Reusable searchable list of contacts.</p>
+            <pre><code>
+&lt;script type="text/jsx"&gt;
+import React, { useState } from "react";
+import { Box, TextField, Stack, Typography, Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import ContactCard from "./ContactCard";
+import ContactForm from "./ContactForm";
+
+const ContactList = ({ contacts, setContacts }) =&gt; {
+  const [search, setSearch] = useState("");
+  const [openForm, setOpenForm] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(null);
+
+  const filtered = contacts.filter(
+    (c) =&gt;
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.email.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleSave = (contact) =&gt; {
+    if (selectedContact) {
+      setContacts((prev) =&gt;
+        prev.map((c) =&gt; (c.email === selectedContact.email ? contact : c))
+      );
+    } else {
+      setContacts((prev) =&gt; [...prev, contact]);
+    }
+    setSelectedContact(null);
+  };
+
+  const handleDelete = (contact) =&gt; {
+    setContacts((prev) =&gt; prev.filter((c) =&gt; c.email !== contact.email));
+  };
+
+  return (
+    &lt;Box&gt;
+      &lt;Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}&gt;
+        &lt;TextField
+          label="Search contacts..."
+          size="small"
+          value={search}
+          onChange={(e) =&gt; setSearch(e.target.value)}
+        /&gt;
+        &lt;Button
+          variant="contained"
+          startIcon={&lt;AddIcon /&gt;}
+          onClick={() =&gt; setOpenForm(true)}
+        &gt;
+          Add Contact
+        &lt;/Button&gt;
+      &lt;/Stack&gt;
+
+      {filtered.length === 0 ? (
+        &lt;Typography color="text.secondary" align="center"&gt;
+          No contacts found.
+        &lt;/Typography&gt;
+      ) : (
+        &lt;Stack spacing={2}&gt;
+          {filtered.map((contact) =&gt; (
+            &lt;ContactCard
+              key={contact.email}
+              contact={contact}
+              onEdit={(c) =&gt; {
+                setSelectedContact(c);
+                setOpenForm(true);
+              }}
+              onDelete={handleDelete}
+            /&gt;
+          ))}
+        &lt;/Stack&gt;
+      )}
+
+      &lt;ContactForm
+        open={openForm}
+        onClose={() =&gt; {
+          setOpenForm(false);
+          setSelectedContact(null);
+        }}
+        onSave={handleSave}
+        contact={selectedContact}
+      /&gt;
+    &lt;/Box&gt;
+  );
+};
+
+export default ContactList;
+&lt;/script&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ ContactManager.jsx</h2>
+            <p>Main page to use all components together.</p>
+            <pre><code>
+&lt;script type="text/jsx"&gt;
+import React, { useState } from "react";
+import { Container, Typography, Box } from "@mui/material";
+import ContactList from "../components/ContactList";
+
+const ContactManager = () =&gt; {
+  const [contacts, setContacts] = useState([
+    { name: "Paul Dionisio", email: "paul@example.com", phone: "+63 912 345 6789" },
+  ]);
+
+  return (
+    &lt;Container maxWidth="md" sx={{ mt: 5 }}&gt;
+      &lt;Box textAlign="center" mb={4}&gt;
+        &lt;Typography variant="h4" fontWeight={600}&gt;
+          Contact Management
+        &lt;/Typography&gt;
+        &lt;Typography color="text.secondary"&gt;
+          Manage your contacts easily
+        &lt;/Typography&gt;
+      &lt;/Box&gt;
+      &lt;ContactList contacts={contacts} setContacts={setContacts} /&gt;
+    &lt;/Container&gt;
+  );
+};
+
+export default ContactManager;
+&lt;/script&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 Features</h2>
+            <p>✅ Modular and reusable for CRUD</p>
+            <p>✅ Built entirely with Material UI</p>
+            <p>✅ Responsive design</p>
+            <p>✅ Ready to connect to backend or API</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

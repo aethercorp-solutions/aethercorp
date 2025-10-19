@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>File-based routing in React Native</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">File-based routing in React Native</h1>
+                    <p class="subtitle">File-based routing in React Native isn't supported out-of-the-box like in Next.js or Remix, but you can achieve a similar experience using libraries or tooling that adds this functionality on top of React Navigation.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ What is File-Based Routing?</h2>
+            <p>File-based routing means your file/folder structure determines your app's routes. For example:</p>
+            <pre><code>
+/screens
+  /Home.js         => route: "/"
+  /Profile.js      => route: "/profile"
+  /settings/Index.js => route: "/settings"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 Libraries That Support File-Based Routing in React Native</h2>
+            <ol>
+                <li>
+                    Expo Router (Recommended)
+                    <a href="https://expo.dev/router">Expo Router</a> brings file-based routing to React Native, built on top of React Navigation, and works well for both Expo and bare React Native projects.
+                    <p>🔧 Setup</p>
+                    <ol>
+                        <li>
+                            Create a new Expo project (or use an existing one):
+                            <pre><code>
+npx create-expo-app my-app
+cd my-app
+                            </code></pre>
+                        </li>
+                        <li>
+                            Install Expo Router:
+                            <pre><code>
+npx expo install expo-router
+                            </code></pre>
+                        </li>
+                        <li>
+                            Set up the routing structure:
+                            <p>Create an app/ directory:</p>
+                            <pre><code>
+/app
+  /index.js         => route: "/"
+  /profile.js       => route: "/profile"
+  /settings/index.js => route: "/settings"
+                            </code></pre>
+                        </li>
+                        <li>
+                            Update app/_layout.js for navigation:
+                            <pre><code>
+// app/_layout.js
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return &lt;Stack /&gt;;
+}
+                            </code></pre>
+                        </li>
+                        <li>
+                            Run the app:
+                            <pre><code>
+        npx expo start
+                            </code></pre>
+                        </li>
+                    </ol>
+                    ➕ Pros:
+                    <ul>
+                        <li>Simple, clean, and scalable routing</li>
+                        <li>Deep linking and web support built-in</li>
+                        <li>Supported by Expo team</li>
+                    </ul>
+                </li>
+                
+                <li>
+                    React Native File Router
+                    <p>For non-Expo projects or custom setups, you might use libraries like:</p>
+                    <ul>
+                        <li>react-native-file-router (less popular)</li>
+                        <li>Custom implementations (using Babel or Metro plugins)</li>
+                    </ul>
+                    <p>However, Expo Router is more actively maintained and better integrated.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ When to Use File-Based Routing</h2>
+            <ul>
+                <li>You want clean code organization</li>
+                <li>You prefer convention over configuration</li>
+                <li>You need deep linking, universal linking, or web support</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>❌ When Not to Use</h2>
+            <ul>
+                <li>You prefer programmatic or manual route configuration</li>
+                <li>Your project already has a custom navigation setup</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Great question! While React (for web) and React Native are based on the same core concepts (like components, props, and state), they differ significantly in how they render UI and what platforms they target.</p>
+            <p>Here's a detailed breakdown:</p>
+            <h2>⚛️ React (Web) vs React Native: Key Differences</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>React (Web)</th>
+                        <th>React Native</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Platform</td>
+                        <td>Web browsers</td>
+                        <td>iOS, Android, Windows, macOS</td>
+                    </tr>
+                    <tr>
+                        <td>Rendering</td>
+                        <td>Uses HTML, CSS, and DOM APIs</td>
+                        <td>Uses native UI components (via a bridge to platform SDKs)</td>
+                    </tr>
+                    <tr>
+                        <td>Styling</td>
+                        <td>CSS, SCSS, styled-components, etc.</td>
+                        <td>StyleSheet.create, inline styles similar to CSS-in-JS</td>
+                    </tr>
+                    <tr>
+                        <td>Routing</td>
+                        <td>react-router, Next.js, etc.</td>
+                        <td>react-navigation, Expo Router, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>DOM Elements</td>
+                        <td>&lt;div&gt;, &lt;span&gt;, &lt;p&gt;&lt;/p&gt;</td>
+                        <td>&lt;View&gt;, &lt;Text&gt;, &lt;ScrollView&gt;&lt;/ScrollView&gt;</td>
+                    </tr>
+                    <tr>
+                        <td>Animation</td>
+                        <td>CSS animations, JS libraries (Framer Motion)</td>
+                        <td>Animated, react-native-reanimated</td>
+                    </tr>
+                    <tr>
+                        <td>Build Tools</td>
+                        <td>Webpack, Vite, Next.js</td>
+                        <td>Metro bundler, Expo CLI, EAS</td>
+                    </tr>
+                    <tr>
+                        <td>Deployment</td>
+                        <td>Hosted on a web server</td>
+                        <td>Built as native apps, deployed via App Store / Play Store</td>
+                    </tr>
+                    <tr>
+                        <td>Access to Native APIs</td>
+                        <td>Limited to browser APIs (camera, geolocation, etc.)</td>
+                        <td>Full access to native device features (camera, Bluetooth, GPS, etc.)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔧 Example: UI Code Comparison</h2>
+            <p>React (Web)</p>
+            <pre><code>
+function App() {
+    return (
+        &lt;div style={{ padding: 20 }}&gt;
+        &lt;h1&gt;Hello, Web!&lt;/h1&gt;
+        &lt;/div&gt;
+    );
+}                  
+            </code></pre>
+
+            <p>React Native</p>
+            <pre><code>
+import { View, Text } from 'react-native';
+
+function App() {
+  return (
+    &lt;View style={{ padding: 20 }}&gt;
+        &lt;Text&gt;Hello, Mobile!&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+            </code></pre>
+
+            <p>Notice:</p>
+            <ul>
+                <li>No &lt;div&gt; or &lt;h1&gt; in React Native.</li>
+                <li>Uses &lt;View&gt; and &lt;Text&gt; — these map to native components.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🤝 Shared Concepts</h2>
+            <p>Despite the differences, you can share logic (state management, hooks, business logic, API calls) between React and React Native.</p>
+            <p>Shared tools include:</p>
+            <ul>
+                <li>React Hooks (useState, useEffect, etc.)</li>
+                <li>Context API</li>
+                <li>State libraries (Redux, Zustand, Recoil)</li>
+                <li>UI Libraries (with cross-platform support like React Native Paper, Tamagui, or NativeWind)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Can React Native Be Used on the Web?</h2>
+            <p>Yes! With React Native for Web, you can run React Native code on the web.</p>
+            <p>Tools like Expo let you write once and run on:</p>
+            <ul>
+                <li>iOS</li>
+                <li>Android</li>
+                <li>Web</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>React</th>
+                        <th>React Native</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Targets</td>
+                        <td>Browsers</td>
+                        <td>Mobile platforms</td>
+                    </tr>
+                    <tr>
+                        <td>Elements</td>
+                        <td>HTML/DOM</td>
+                        <td>Native components</td>
+                    </tr>
+                    <tr>
+                        <td>Styling</td>
+                        <td>CSS</td>
+                        <td>StyleSheet / inline styles</td>
+                    </tr>
+                    <tr>
+                        <td>Navigation</td>
+                        <td>Web routers</td>
+                        <td>React Navigation / Expo Router</td>
+                    </tr>
+                    <tr>
+                        <td>Deployment</td>
+                        <td>Web servers</td>
+                        <td>App Stores or devices</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <p>Great question. The CLI commands to create a React Web app vs a React Native app differ because they use different tools and scaffolding systems.</p>
+            <h2>🧱 1. Creating a React Web App</h2>
+            <p>▶️ Command</p>
+            <pre><code>
+npx create-react-app my-web-app
+            </code></pre>
+
+            <p>This uses Create React App (CRA), which sets up:</p>
+            <ul>
+                <li>Webpack</li>
+                <li>Babel</li>
+                <li>React</li>
+                <li>HTML/CSS build system</li>
+            </ul>
+
+            <p>✅ Output</p>
+            <ul>
+                <li>Runs in a web browser</li>
+                <li>Creates a public/index.html and injects React into it</li>
+                <li>Uses HTML, CSS, JSX</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📱 2. Creating a React Native App</h2>
+            <p>There are two common ways to do this:</p>
+            <p>Option A: Using Expo CLI (Recommended)</p>
+            <pre><code>
+npx create-expo-app my-native-app
+cd my-native-app
+npx expo start
+            </code></pre>
+
+            <p>✅ Output</p>
+            <ul>
+                <li>Cross-platform (iOS, Android, Web)</li>
+                <li>Includes Metro bundler</li>
+                <li>Very beginner-friendly</li>
+                <li>No need for Xcode or Android Studio to start</li>
+            </ul>
+
+            <p>Option B: Using React Native CLI (Bare Workflow)</p>
+            <pre><code>
+npx react-native init MyNativeApp
+cd MyNativeApp
+npx react-native run-android  # or run-ios (macOS only)
+            </code></pre>
+
+            <p>✅ Output</p>
+            <ul>
+                <li>Gives more native control (e.g., custom native modules)</li>
+                <li>
+                    Requires:
+                    <ul>
+                        <li>Android Studio (for Android)</li>
+                        <li>Xcode (for iOS/macOS)</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔍 CLI Comparison Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>React Web (CRA)</th>
+                        <th>React Native (Expo CLI)</th>
+                        <th>React Native (Bare CLI)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CLI Tool</td>
+                        <td>create-react-app</td>
+                        <td>create-expo-app</td>
+                        <td>react-native init</td>
+                    </tr>
+                    <tr>
+                        <td>Output</td>
+                        <td>Web-only app</td>
+                        <td>Cross-platform mobile/web app</td>
+                        <td>Mobile app (iOS/Android only)</td>
+                    </tr>
+                    <tr>
+                        <td>Requirements</td>
+                        <td>Node.js only</td>
+                        <td>Node.js, optional Expo Go app</td>
+                        <td>Node.js, Android Studio, Xcode</td>
+                    </tr>
+                    <tr>
+                        <td>Runs on Web?</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>❌ (without RN Web setup)</td>
+                    </tr>
+                    <tr>
+                        <td>Easy to set up?</td>
+                        <td>✅</td>
+                        <td>✅✅</td>
+                        <td>❌ (more complex)</td>
+                    </tr>
+                    <tr>
+                        <td>Native code access</td>
+                        <td>❌</td>
+                        <td>⚠️ Limited</td>
+                        <td>✅ Full access</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <ul>
+                <li>
+                    Web App? → Use:
+                    <pre><code>
+npx create-react-app my-web-app
+                    </code></pre>
+                </li>
+                <li>
+                    Mobile App (Simple, Cross-platform)? → Use:
+                    <pre><code>
+npx create-expo-app my-native-app
+                    </code></pre>
+                </li>
+                <li>
+                    Mobile App (Advanced Native Needs)? → Use:
+                    <pre><code>
+npx react-native init MyNativeApp
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

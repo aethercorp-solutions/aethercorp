@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>QuickStart: Deploy a Node.js application to Elastic Beanstalk</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">QuickStart: Deploy a Node.js application to Elastic Beanstalk</h1>
+                    <p class="subtitle">This QuickStart tutorial walks you through the process of creating a Node.js application and deploying it to an AWS Elastic Beanstalk environment.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Sure! AWS Elastic Beanstalk is a Platform as a Service (PaaS) offered by Amazon Web Services that simplifies the deployment, management, and scaling of web applications and services.</p>
+            <h2>What is AWS Elastic Beanstalk?</h2>
+
+            <p>Elastic Beanstalk allows developers to quickly deploy and manage applications without worrying about the underlying infrastructure. You just upload your application code, and Elastic Beanstalk automatically handles:</p>
+            <ul>
+                <li>Provisioning of resources (like EC2 instances, load balancers)</li>
+                <li>Capacity provisioning and load balancing</li>
+                <li>Auto-scaling</li>
+                <li>Health monitoring and application updates</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key Features:</h2>
+            <ul>
+                <li>Supports multiple platforms: Java, .NET, Node.js, Python, Ruby, Go, PHP, Docker, and more.</li>
+                <li>Automatic scaling: Adjusts capacity based on your traffic.</li>
+                <li>Integrated monitoring: Provides health dashboards and integrates with CloudWatch.</li>
+                <li>Customization: You can customize your environment using configuration files or the AWS Management Console.</li>
+                <li>Managed environment: Handles OS patching, software stack updates, and infrastructure.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Typical Workflow:</h2>
+            <ul>
+                <li>Create an application.</li>
+                <li>Upload your code or connect to your source repository.</li>
+                <li>Choose the platform (runtime environment).</li>
+                <li>Deploy the application.</li>
+                <li>Monitor, update, and scale as needed.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>When to Use Elastic Beanstalk?</h2>
+            <ul>
+                <li>When you want to focus on application development without managing infrastructure.</li>
+                <li>For quickly deploying applications that need to scale.</li>
+                <li>When you prefer a managed service that handles operational tasks.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>This QuickStart tutorial walks you through the process of creating a Node.js application and deploying it to an AWS Elastic Beanstalk environment.</p>
+            <p>Not for production use</p>
+            <p>Examples are intended for demonstration only. Do not use example applications in production.</p>
+
+            <h2>Prerequisites</h2>
+            <p>To follow the procedures in this guide, you will need a command line terminal or shell to run commands. Commands are shown in listings preceded by a prompt symbol ($) and the name of the current directory, when appropriate.</p>
+            <pre><code>
+~/eb-project$ this is a command
+this is output
+            </code></pre>
+
+            <p>On Linux and macOS, you can use your preferred shell and package manager. On Windows you can <a href="https://learn.microsoft.com/en-us/windows/wsl/install">install the Windows Subsystem for Linux</a> to get a Windows-integrated version of Ubuntu and Bash.</p>
+        
+            <p>EB CLI</p>
+            <p>This tutorial uses the Elastic Beanstalk Command Line Interface (EB CLI). For details on installing and configuring the EB CLI, see <a href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3.html#eb-cli3-install">Install EB CLI with setup script (recommended)</a> and <a href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-configuration.html">Configure the EB CLI</a>.</p>
+        
+            <p>Node.js</p>
+            <p>Install Node.js on your local machine by following How to install Node.js on the Node.js website.</p>
+            <p>Verify your Node.js installation by running the following command.</p>
+
+            <pre><code>
+~$ node -v
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 1: Create a Node.js application</h2>
+            <p>Create a project directory.</p>
+
+            <pre><code>
+~$ mkdir eb-nodejs
+~$ cd eb-nodejs
+            </code></pre>
+
+            <p>Next, create an application that you'll deploy using Elastic Beanstalk. We'll create a "Hello World" RESTful web service.</p>
+            <p>Example ~/eb-nodejs/server.js</p>
+
+            <pre><code>
+const http = require('node:http');
+
+const hostname = '127.0.0.1';
+const port = 8080;
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello Elastic Beanstalk!\n');
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+            </code></pre>
+
+            <p>This application opens a listener on port 8080. Elastic Beanstalk forwards requests to your application on port 8080 by default for Node.js.</p>
+        </section>
+
+        <section>
+            <h2>Step 2: Run your application locally</h2>
+            <p>Run the following command to run your application locally.</p>
+            <pre><code>
+~/eb-nodejs$ node server.js
+            </code></pre>
+
+            <p>You should see the following text.</p>
+            <pre><code>
+Server running at http://127.0.0.1:8080/
+            </code></pre>
+
+            <p>Enter the URL address http://127.0.0.1:8080/ in your web browser. The browser should display “Hello Elastic Beanstalk!”.</p>
+        </section>
+
+        <section>
+            <h2>Step 3: Deploy your Node.js application with the EB CLI</h2>
+            <p>Run the following commands to create an Elastic Beanstalk environment for this application.</p>
+            <p>To create an environment and deploy your Node.js application</p>
+
+            <ol>
+                <li>
+                    Initialize your EB CLI repository with the eb init command.
+                    <pre><code>
+~/eb-nodejs$ eb init -p node.js nodejs-tutorial --region us-east-2
+                    </code></pre>
+                    <p>This command creates an application named nodejs-tutorial and configures your local repository to create environments with the latest Node.js platform version.</p>
+                </li>
+                <li>
+                    (Optional) Run eb init again to configure a default key pair so that you can use SSH to connect to the EC2 instance running your application.
+                    <pre><code>
+~/eb-nodejs$ eb init
+Do you want to set up SSH for your instances?
+(y/n): y
+Select a keypair.
+1. my-keypair
+2. [ Create new KeyPair ]
+                    </code></pre>
+                    <p>Select a key pair if you have one already, or follow the prompts to create one. If you don't see the prompt or need to change your settings later, run eb init -i.</p>
+                </li>
+                <li>
+                    Create an environment and deploy your application to it with eb create. Elastic Beanstalk automatically builds a zip file for your application and deploys it to an EC2 instance in the environment. After deploying your application, Elastic Beanstalk starts it on port 8080.
+                    <pre><code>
+~/eb-nodejs$ eb create nodejs-env
+                    </code></pre>
+                    <p>It takes about five minutes for Elastic Beanstalk to create your environment.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 4: Run your application on Elastic Beanstalk</h2>
+            <p>When the process to create your environment completes, open your website with eb open.</p>
+            <pre><code>
+~/eb-nodejs$ eb open
+            </code></pre>
+            <p>Congratulations! You've deployed a Node.js application with Elastic Beanstalk! This opens a browser window using the domain name created for your application.</p>
+        </section>
+
+        <section>
+            <h2>Step 5: Clean up</h2>
+            <p>You can terminate your environment when you finish working with your application. Elastic Beanstalk terminates all AWS resources associated with your environment.</p>
+            <p>To terminate your Elastic Beanstalk environment with the EB CLI run the following command.</p>
+
+            <pre><code>
+~/eb-nodejs$ eb terminate
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>AWS resources for your application</h2>
+            <p>You just created a single instance application. It serves as a straightforward sample application with a single EC2 instance, so it doesn't require load balancing or auto scaling. For single instance applications Elastic Beanstalk creates the following AWS resources:</p>
+            <ul>
+                <li>
+                    <p>EC2 instance – An Amazon EC2 virtual machine configured to run web apps on the platform you choose.</p>
+                    <p>Each platform runs a different set of software, configuration files, and scripts to support a specific language version, framework, web container, or combination thereof. Most platforms use either Apache or nginx as a reverse proxy that processes web traffic in front of your web app, forwards requests to it, serves static assets, and generates access and error logs.</p>
+                </li>
+                <li>
+                    Instance security group – An Amazon EC2 security group configured to allow incoming traffic on port 80. This resource lets HTTP traffic from the load balancer reach the EC2 instance running your web app. By default, traffic is not allowed on other ports.
+                </li>
+                <li>
+                    Amazon S3 bucket – A storage location for your source code, logs, and other artifacts that are created when you use Elastic Beanstalk.
+                </li>
+                <li>
+                    Amazon CloudWatch alarms – Two CloudWatch alarms that monitor the load on the instances in your environment and are triggered if the load is too high or too low. When an alarm is triggered, your Auto Scaling group scales up or down in response.
+                </li>
+                <li>
+                    AWS CloudFormation stack – Elastic Beanstalk uses AWS CloudFormation to launch the resources in your environment and propagate configuration changes. The resources are defined in a template that you can view in the <a href="https://console.aws.amazon.com/cloudformation">AWS CloudFormation console</a>
+                </li>
+                <li>
+                    Domain name – A domain name that routes to your web app in the form subdomain.region.elasticbeanstalk.com.
+                </li>
+            </ul>
+            <p>Elastic Beanstalk manages all of these resources. When you terminate your environment, Elastic Beanstalk terminates all the resources that it contains.</p>
+        </section>
+
+        <section>
+            <h2>Next steps</h2>
+            <p>After you have an environment running an application, you can deploy a new version of the application or a different application at any time. Deploying a new application version is very quick because it doesn't require provisioning or restarting EC2 instances. You can also explore your new environment using the Elastic Beanstalk console. For detailed steps, see <a href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/GettingStarted.html#GettingStarted.Explore"> Explore your environment </a> in the Getting started chapter of this guide.</p>
+        </section>
+
+        <section>
+            <h2>Deploy with the Elastic Beanstalk console</h2>
+            <p>You can also use the Elastic Beanstalk console to launch the sample application. For detailed steps, see <a href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/GettingStarted.html#GettingStarted.CreateApp">Create an example application</a> in the Getting started chapter of this guide.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

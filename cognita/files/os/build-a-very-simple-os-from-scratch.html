@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Build a very simple OS from scratch</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Build a very simple OS from scratch</h1>
+                    <p class="subtitle">Awesome! Let’s get started on building a very simple OS from scratch. I’ll guide you step-by-step, assuming you want a minimal bootable OS that you can run in an emulator like QEMU.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Step 1: Set Up Your Development Environment</h2>
+            <p>You’ll need:</p>
+            <ul>
+                <li>A C compiler (gcc)</li>
+                <li>Assembler (nasm)</li>
+                <li>Linker (ld)</li>
+                <li>Emulator (QEMU or Bochs)</li>
+            </ul>
+
+            <p>If you’re on Linux or macOS, these can be installed via package managers:</p>
+            <pre><code>
+sudo apt install build-essential nasm qemu   # Ubuntu/Debian
+brew install nasm qemu                        # macOS (using Homebrew)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2: Write a Bootloader (Assembly)</h2>
+            <p>The bootloader is the first thing that runs when your PC boots. It loads your OS kernel into memory and jumps to it.</p>
+            <p>Create a file bootloader.asm:</p>
+
+            <pre><code>
+; bootloader.asm - 512 bytes bootloader that loads kernel.bin
+BITS 16               ; 16-bit real mode
+ORG 0x7C00            ; BIOS loads bootloader at memory address 0x7C00
+
+start:
+    ; Set up stack
+    cli
+    xor ax, ax
+    mov ss, ax
+    mov sp, 0x7C00
+    sti
+
+    ; Load kernel (assumes kernel.bin is next sector)
+    mov si, kernel_msg
+    call print_string
+
+    mov bx, 0x8000     ; load kernel to 0x8000
+    mov dh, 1          ; number of sectors to read
+    mov dl, 0x00       ; drive 0 (floppy/hard disk)
+    mov ah, 0x02       ; BIOS read sectors function
+    mov al, dh        ; sectors to read
+    mov ch, 0          ; cylinder
+    mov cl, 2          ; sector 2 (after bootloader)
+    mov dh, 0          ; head 0
+    int 0x13           ; BIOS disk interrupt
+
+    jc disk_error      ; if carry flag set, error
+
+    ; Jump to kernel
+    jmp 0x8000:0000
+
+disk_error:
+    mov si, err_msg
+    call print_string
+    hlt
+
+; Prints a string pointed to by SI
+print_string:
+    mov ah, 0x0E
+.print_char:
+    lodsb
+    cmp al, 0
+    je .done
+    int 0x10
+    jmp .print_char
+.done:
+    ret
+
+kernel_msg db 'Loading kernel...', 0
+err_msg db 'Disk read error!', 0
+
+TIMES 510-($-$$) DB 0   ; fill the rest of the 512-byte sector with zeros
+DW 0xAA55               ; boot signature
+
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3: Write a Simple Kernel (C + Assembly)</h2>
+            <p>Create kernel.c:</p>
+
+            <pre><code>
+// kernel.c - very simple kernel
+void kernel_main() {
+    const char *msg = "Hello, Simple OS!";
+    char *video_memory = (char *)0xB8000;
+    for (int i = 0; msg[i] != '\0'; i++) {
+        video_memory[i * 2] = msg[i];
+        video_memory[i * 2 + 1] = 0x07;  // light grey on black
+    }
+    while (1) {}  // Loop forever
+}
+            </code></pre>
+
+            <p>Create a simple assembly stub kernel_entry.asm to call the C function:</p>
+            <pre><code>
+; kernel_entry.asm
+BITS 32
+GLOBAL kernel_entry
+
+SECTION .text
+kernel_entry:
+    call kernel_main
+    jmp $
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4: Compile and Link</h2>
+            <ol>
+                <li>
+                    Assemble the bootloader:
+                    <pre><code>
+nasm -f bin bootloader.asm -o bootloader.bin
+                    </code></pre>
+                </li>
+                <li>
+                    Assemble the kernel entry:
+                    <pre><code>
+nasm -f elf32 kernel_entry.asm -o kernel_entry.o
+                    </code></pre>
+                </li>
+                <li>
+                    Compile the kernel in 32-bit mode:
+                    <pre><code>
+gcc -m32 -ffreestanding -c kernel.c -o kernel.o
+                    </code></pre>
+                </li>
+                <li>
+                    Link kernel:
+                    <p>Create a linker script linker.ld:</p>
+                    <pre><code>
+ENTRY(kernel_entry)
+
+SECTIONS
+{
+  . = 0x8000;
+  .text : { *(.text) }
+  .rodata : { *(.rodata) }
+  .data : { *(.data) }
+  .bss : { *(.bss) }
+}
+                    </code></pre>
+                </li>
+            </ol>
+
+            <p>Link:</p>
+            <pre><code>
+ld -m elf_i386 -T linker.ld -o kernel.bin kernel_entry.o kernel.o
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 5: Create a Bootable Disk Image</h2>
+            <p>We need to combine bootloader + kernel:</p>
+            <pre><code>
+cat bootloader.bin kernel.bin > os-image.bin
+            </code></pre>
+
+            <p>Make sure the total size is a multiple of 512 bytes (pad if necessary):</p>
+            <pre><code>
+# pad to 2 sectors (1024 bytes)
+dd if=/dev/zero bs=1 count=1024 status=none | dd conv=notrunc of=os-image.bin bs=1 seek=$(stat -c%s os-image.bin) status=none
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 6: Run in QEMU</h2>
+            <p>Run your OS:</p>
+            <pre><code>
+qemu-system-x86_64 -drive format=raw,file=os-image.bin
+            </code></pre>
+
+            <p>You should see your bootloader message "Loading kernel..." followed by "Hello, Simple OS!" on the screen.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

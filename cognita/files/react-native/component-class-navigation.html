@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Navigation in Class Components</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Navigation in Class Components</h1>
+                    <p class="subtitle">In React Native, using navigation in class components is slightly different compared to function components, which can directly use hooks like useNavigation(). Since hooks can’t be used inside class components, you’ll need to use props.navigation or a HOC (Higher Order Component) like withNavigation.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Here’s a step-by-step guide to implement navigation in a React Native class component using React Navigation (v5 or newer):</p>
+            <h2>✅ Prerequisites</h2>
+            <p>Make sure you have React Navigation installed and set up:</p>
+            <pre><code>
+npm install @react-navigation/native @react-navigation/native-stack react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated
+            </code></pre>
+            
+            <p>Then in your App.js or main entry file:</p>
+            <pre><code>
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+import DetailsScreen from './screens/DetailsScreen';
+
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+        &lt;Stack.Navigator initialRouteName="Home"&gt;
+            &lt;Stack.Screen name="Home" component={HomeScreen} /&gt;
+            &lt;Stack.Screen name="Details" component={DetailsScreen} /&gt;
+        &lt;/Stack.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 Example: Using Navigation in a Class Component</h2>
+            <p>Let’s say you have a class component HomeScreen and want to navigate to DetailsScreen.</p>
+
+            <p>🏠 HomeScreen.js – Class Component</p>
+            <pre><code>
+import React, { Component } from 'react';
+import { View, Text, Button } from 'react-native';
+
+class HomeScreen extends Component {
+  navigateToDetails = () => {
+    // Using props.navigation
+    this.props.navigation.navigate('Details', {
+      itemId: 86,
+      otherParam: 'Anything you want here',
+    });
+  };
+
+  render() {
+    return (
+      &lt;View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}&gt;
+        &lt;Text>Home Screen (Class Component)&lt;/Text&gt;
+            &lt;Button
+                title="Go to Details"
+                onPress={this.navigateToDetails}
+            /&gt;
+      &lt;/View&gt;
+    );
+  }
+}
+
+export default HomeScreen;
+            </code></pre>
+
+            <p>📄 DetailsScreen.js – Class Component</p>
+
+            <pre><code>
+import React, { Component } from 'react';
+import { View, Text } from 'react-native';
+
+class DetailsScreen extends Component {
+  render() {
+    const { itemId, otherParam } = this.props.route.params;
+
+    return (
+      &lt;View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}&gt;
+        &lt;Text&gt;Details Screen&lt;/Text&gt;
+        &lt;Text&gt;Item ID: {itemId}&lt;/Text&gt;
+        &lt;Text&gt;Other Param: {otherParam}&lt;/Text&gt;
+    &lt;/View&gt;
+    );
+  }
+}
+
+export default DetailsScreen;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <ul>
+                <li>In class components, access navigation via <b>this.props.navigation</b>.</li>
+                <li>You must ensure the component is registered as a screen in your <b>navigator</b>.</li>
+                <li>For accessing route params: <b>this.props.route.params</b>.</li>
+                <li>Avoid withNavigation in new projects (v6+), as it is deprecated.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>In React Native using React Navigation, when navigating back to a class component, and you want to pass parameters back, you can use the navigation.navigate() or navigation.goBack() along with route.params and optionally a callback function.</p>
+            <h2>✅ Example Use Case:</h2>
+            <p>You have:</p>
+            <ul>
+                <li>Screen A (a class component)</li>
+                <li>Navigates to Screen B</li>
+                <li>After some interaction in Screen B, you navigate back to Screen A, passing data.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Solution 1: Using a Callback Function (Recommended for Class Components)</h2>
+            <p>🅰️ Screen A (Class Component)</p>
+            <pre><code>
+import React from 'react';
+import { View, Text, Button } from 'react-native';
+
+class ScreenA extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      resultFromB: '',
+    };
+  }
+
+  handleResult = (data) => {
+    this.setState({ resultFromB: data });
+  };
+
+  goToScreenB = () => {
+    this.props.navigation.navigate('ScreenB', {
+      onGoBack: this.handleResult,
+    });
+  };
+
+  render() {
+    return (
+      &lt;View&gt;
+        &lt;Text&gt;Data from B: {this.state.resultFromB}&lt;/Text&gt;
+        &lt;Button title="Go to Screen B" onPress={this.goToScreenB} /&gt;
+      &lt;/View&gt;
+    );
+  }
+}
+
+export default ScreenA;
+            </code></pre>
+
+            <p>🅱️ Screen B (Function or Class Component)</p>
+            <pre><code>
+import React from 'react';
+import { View, Button } from 'react-native';
+
+const ScreenB = ({ navigation, route }) => {
+  const sendDataBack = () => {
+    if (route.params?.onGoBack) {
+      route.params.onGoBack('Hello from Screen B!');
+    }
+    navigation.goBack();
+  };
+
+  return (
+    &lt;View&gt;
+        &lt;Button title="Go Back with Data" onPress={sendDataBack} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default ScreenB;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Alternative:</h2>
+            <p>Using navigation.navigate on back (Not ideal for "Back" button)</p>
+            <p>You can also use navigation.navigate('ScreenA', { paramName: value }), but this won’t work well when the user presses the hardware back button or gesture to go back.</p>
+        </section>
+
+        <section>
+            <h2>🔁 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Works with Class Component</th>
+                        <th>Recommended</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Callback via route.params.onGoBack</td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Passing via navigate('ScreenA', { ... })</td>
+                        <td>⚠️ Not ideal for "goBack"</td>
+                        <td>❌ No</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+          <p>You're navigating to ContactListScreen using react-navigation, passing several parameters in the navigation call. Let's break this down and point out some best practices and potential improvements:</p>
+          <h2>🧾 Code Breakdown</h2>
+          <pre><code>
+navigation.navigate(ScreenNames.ContactListScreen, {
+  title: listName, // The title of the list you're passing
+  parentScreenName: this.props.navigation.state.routeName, // Gets current screen's name
+  frequency: this.props.frequency, // Frequency from props
+  theme: theme, // Theme variable (assumed from current scope)
+  onGoback: () => {
+    if (navigation.state.params.onGoback) {
+      navigation.state.params.onGoback();
+    }
+  }
+})            
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>✅ Things to Note</h2>
+          <ol>
+            <li>
+              Passing a callback (onGoback):
+              <ul>
+                <li>This pattern is useful when you want to trigger some logic when returning to the previous screen.</li>
+                <li>However, navigation.state.params is deprecated in React Navigation v5 and later.</li>
+              </ul>
+            </li>
+            <li>
+              Deprecated API Usage Warning:
+              <ul>
+                <li>this.props.navigation.state.routeName and navigation.state.params are deprecated in React Navigation v5+.</li>
+                <li>
+                  Instead, you should use the route prop directly like this:
+                  <pre><code>
+const route = useRoute(); // in a function component
+const currentScreen = route.name;
+                  </code></pre>
+                </li>
+                <li>
+                  To access params:
+                  <pre><code>
+const { onGoback } = route.params ?? {};
+                  </code></pre>
+                </li>
+              </ul>
+            </li>
+          </ol>
+        </section>
+
+        <section>
+          <h2>Function Component Update (if applicable):</h2>
+          <p>If you're using React Navigation v5 or later, this logic should be inside a function component, and you should use the useNavigation and useRoute hooks:</p>
+          <pre><code>
+const navigation = useNavigation();
+const route = useRoute();
+
+navigation.navigate(ScreenNames.ContactListScreen, {
+  title: listName,
+  parentScreenName: route.name,
+  frequency,
+  theme,
+  onGoback: () => {
+    if (route.params?.onGoback) {
+      route.params.onGoback();
+    }
+  }
+});
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>💡 Suggestions</h2>
+          <ul>
+            <li>If you're on React Navigation v5 or higher, avoid using navigation.state and switch to using route and navigation.getParent() or context-aware navigation logic.</li>
+            <li>Consider wrapping the onGoback logic in a useCallback to prevent re-renders or stale closures.</li>
+            <li>If theme is coming from props or context, ensure it's defined.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>✅ Final Version (React Navigation v5+ with hooks)</h2>
+          <pre><code>
+import { useNavigation, useRoute } from '@react-navigation/native';
+
+const MyComponent = ({ listName, frequency, theme }) => {
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  const handleNavigate = () => {
+    navigation.navigate(ScreenNames.ContactListScreen, {
+      title: listName,
+      parentScreenName: route.name,
+      frequency,
+      theme,
+      onGoback: () => {
+        if (route.params?.onGoback) {
+          route.params.onGoback();
+        }
+      }
+    });
+  };
+
+  return (
+    &lt;Button title="Go to Contact List" onPress={handleNavigate} /&gt;
+  );
+};
+          </code></pre>
+        </section>
+
+        <section>
+          <p>To pass a parameter when navigating back in React Navigation (especially in older versions like v4), you can use a callback function (onGoBack) passed as a parameter to the route.</p>
+          <p>From your code, it seems you're already attempting this approach.</p>
+          <p>Here’s how to correctly implement passing data back when navigating back, based on the version of React Navigation you’re using.</p>
+        
+          <h2>✅ Solution using a callback (onGoBack) in older React Navigation (v4 or early v5):</h2>
+          <p>1. In the first screen, when navigating to another screen:</p>
+          <pre><code>
+navigation.navigate('SecondScreen', {
+  onGoBack: (data) => {
+    console.log('Data returned:', data);
+    // do something with `data`
+  },
+});            
+          </code></pre>
+
+          <p>2. In the second screen, when going back:</p>
+          <p>Update your code like this:</p>
+          <pre><code>
+&lt;TouchableOpacity
+  style={{ paddingLeft: spacings.padding }}
+  onPress={() => {
+    if (navigation.state.params?.onGoBack) {
+      navigation.state.params.onGoBack('someValue'); // pass your value here
+    }
+    navigation.goBack();
+  }}
+&gt;
+  &lt;Text&gt;Go Back&lt;/Text&gt;
+&lt;/TouchableOpacity&gt;
+          </code></pre>
+
+          <p>Replace 'someValue' with the actual data you want to pass back (e.g., an object, string, boolean, etc.).</p>
+          <p>⚠️ If you're using React Navigation v5 or newer, the pattern changes:</p>
+          <p>You would use navigation.navigate and useFocusEffect or useEffect with navigation.addListener to catch returned params.</p>
+          <p>But since your code shows navigation.state.params, it suggests you’re on v4 or early v5 — so the above pattern is correct.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

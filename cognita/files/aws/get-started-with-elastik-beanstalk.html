@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Learn how to get started with Elastic Beanstalk</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Learn how to get started with Elastic Beanstalk</h1>
+                    <p class="subtitle">With Elastic Beanstalk you can deploy, monitor, and scale web applications and services. Typically, you will develop your code locally then deploy it to Amazon EC2 server instances. Theses instances, also called environments, run on platforms that can be upgraded through the AWS console or the command line.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>After completing this tutorial, you will understand the basics of creating, configuring, deploying, updating, and monitoring an Elastic Beanstalk application with environments running on Amazon EC2 instances.</p>
+            <h2>What you will build</h2>
+            <p>Your first Elastic Beanstalk application will consist of a single Amazon EC2 environment running the PHP sample on a PHP managed platform.</p>
+        
+            <p>Elastic Beanstalk application</p>
+            <ul>
+                <li>An Elastic Beanstalk application is a container for Elastic Beanstalk components, including environments where your application code runs on platforms provided and managed by Elastic Beanstalk, or in custom containers that you provide.</li>
+            </ul>
+        
+            <p>Environment</p>
+            <ul>
+                <li>An Elastic Beanstalk environment is a collection of AWS resources running together including an Amazon EC2 instance. When you create an environment, Elastic Beanstalk provisions the necessary resources into your AWS account.</li>
+            </ul>
+        
+            <p>Platform</p>
+            <ul>
+                <li>A platform is a combination of an operating system, programming language runtime, web server, application server, and additional Elastic Beanstalk components. Elastic Beanstalk provides manged platforms, or you can provide your own platform in a container.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Elastic Beanstalk supports platforms for different programming languages, application servers, and Docker containers. When you create an environment, you must choose the platform. You can upgrade the platform, but you cannot change the platform for an environment.</p>
+            <p>Switching platforms</p>
+            <p>If you need to change programming languages, you must create and switch to a new environment on a different platform.</p>
+        </section>
+
+        <section>
+            <h2>Step 1 - Create an application</h2>
+            <p>To create your example application, you'll use the Create application console wizard. It creates an Elastic Beanstalk application and launches an environment within it.</p>
+            <p>Reminder: an environment is a collection of AWS resources required to run your application code.</p>
+        </section>
+
+        <section>
+            <h2>To create an application</h2>
+            <ol>
+                <li>Open the Elastic Beanstalk console</li>
+                <li>Choose Create application.</li>
+                <li>For Application name enter getting-started-app</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>To configure an environment</h2>
+            <ol>
+                <li>In Environment information, for Environment name enter: gs-app-web-env.</li>
+                <li>For Platform, choose the PHP platform.</li>
+                <li>For Application code and Presets, accept the defaults (Sample application and Single instance), then choose Next.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>To configure service access</h2>
+            <p>Next, you need two roles. A service role allows Elastic Beanstalk to monitor your EC2 instances and upgrade your environment’s platform. An EC2 instance profile role permits tasks such as writing logs and interacting with other services.</p>
+        </section>
+
+        <section>
+            <h2>To create or select the Service role</h2>
+            <ol>
+                <li>If you have previously created a Service role and would like to choose an existing one, select the value from the Service role drop-down and skip the remainder of these steps to create a Service role.</li>
+                <li>If you don't see any values listed for Service role, or you'd like to create a new one, continue with the next steps.</li>
+                <li>For Service role, choose Create role.</li>
+                <li>For Trusted entity type, choose AWS service.</li>
+                <li>For Use case, choose Elastic Beanstalk – Environment.</li>
+                <li>Choose Next.</li>
+                <li>
+                    Verify that Permissions policies include the following, then choose Next:
+                    <ul>
+                        <li>AWSElasticBeanstalkEnhancedHealth</li>
+                        <li>AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy</li>
+                    </ul>
+                </li>
+                <li>Choose Create role.</li>
+                <li>Return to the Configure service access tab, refresh the list, then select the newly created service role.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>To create or select an EC2 instance profile</h2>
+            <ol>
+                <li>If you have previously created an EC2 instance profile and would like to choose an existing one, select the value from the EC2 instance profile drop-down and skip the remainder of these steps to create an EC2 instance profile.</li>
+                <li>If you don't see any values listed for EC2 instance profile, or you'd like to create a new one, continue with the next steps.</li>
+                <li>Choose Create role.</li>
+                <li>For Trusted entity type, choose AWS service.</li>
+                <li>For Use case, choose Elastic Beanstalk – Compute.</li>
+                <li>Choose Next.</li>
+                <li>
+                    Verify that Permissions policies include the following, then choose Next:
+                    <ul>
+                        <li>AWSElasticBeanstalkWebTier</li>
+                        <li>AWSElasticBeanstalkWorkerTier</li>
+                        <li>AWSElasticBeanstalkMulticontainerDocker</li>
+                    </ul>
+                </li>
+                <li>Choose Create role.</li>
+                <li>Return to the Configure service access tab, refresh the list, then select the newly created EC2 instance profile.</li>
+            </ol>
+
+            <p>To finish configuring and creating your application</p>
+            <ol>
+                <li>
+                    Skip over EC2 key pair.
+                    <ul>
+                        <li>We'll show you other ways to connect to your Amazon EC2 instances through the Console.</li>
+                    </ul>
+                </li>
+                <li>
+                    Choose Skip to Review to move over several optional steps.
+                    <ul>
+                        <li>Optional steps: networking, databases, scaling parameters, advanced configuration for updates, monitoring, and logging.</li>
+                    </ul>
+                </li>
+                <li>On the Review page which shows a summary of your choices, choose Submit.</li>
+            </ol>
+        </section>
+
+        <section>
+            <p>In AWS Elastic Beanstalk, application tags are key-value pairs that you can assign to your Elastic Beanstalk applications to help you organize, track, and manage resources. These tags are primarily used for:</p>
+            <h2>🔹 What Are Application Tags?</h2>
+            <p>Tags in Elastic Beanstalk (and AWS in general) are metadata labels made up of:</p>
+            <ul>
+                <li>Key (e.g., Environment, Project, Owner, CostCenter)</li>
+                <li>Value (e.g., Production, MyApp, Alice, CC-1234)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Where Are Tags Applied?</h2>
+            <p>Elastic Beanstalk allows you to tag:</p>
+            <ul>
+                <li>Applications: The high-level container for your environments.</li>
+                <li>Environments: The deployed instances of your application.</li>
+                <li>Resources: Underlying AWS resources created by Elastic Beanstalk (like EC2, ELB, etc.), depending on how tagging is configured.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Why Use Application Tags?</h2>
+            <ol>
+                <li>Cost allocation – Track AWS costs by team, project, or department.</li>
+                <li>Resource management – Easily filter and manage AWS resources.</li>
+                <li>Automation – Use tags with scripts or automation tools (like Terraform or CloudFormation).</li>
+                <li>Security and Compliance – Identify resource ownership and purpose.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 Example</h2>
+            <pre><code>
+Key: Project        Value: MyWebApp
+Key: Owner          Value: DevTeam
+Key: Environment    Value: Production
+Key: CostCenter     Value: CC-2025
+            </code></pre>
+            <p>This helps you group and identify which applications are used in production, who owns them, and which team should be billed.</p>
+        </section>
+
+        <section>
+            <h2>🔹 How to Add Tags in Elastic Beanstalk?</h2>
+            <p>You can add application tags via:</p>
+            <ul>
+                <li>AWS Management Console: When creating or updating an application.</li>
+                <li>AWS CLI: Using commands like eb create or aws elasticbeanstalk create-application.</li>
+                <li>AWS SDKs and CloudFormation: For infrastructure as code.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Important Notes</h2>
+            <ul>
+                <li>Tags on the application level do not automatically propagate to environments or resources.</li>
+                <li>You can configure resource tagging propagation using Elastic Beanstalk configuration files (.ebextensions) or through the console/CLI.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Below are examples of how to apply Elastic Beanstalk application tags using both the AWS CLI and .ebextensions config files.</p>
+            <h2>✅ 1. Using AWS CLI</h2>
+            <p>▶️ Create a new Elastic Beanstalk application with tags:</p>
+            <pre><code>
+aws elasticbeanstalk create-application \
+  --application-name MyWebApp \
+  --tags Key=Project,Value=MyWebApp Key=Environment,Value=Production Key=Owner,Value=DevTeam
+            </code></pre>
+
+            <p>▶️ Add tags to an existing application:</p>
+            <pre><code>
+aws elasticbeanstalk update-tags-for-resource \
+  --resource-arn arn:aws:elasticbeanstalk:region:account-id:application/MyWebApp \
+  --tags-to-add Key=CostCenter,Value=CC-1234
+            </code></pre>
+
+            <p>🔍 Tip: You can find the application ARN using:</p>
+            <pre><code>
+aws elasticbeanstalk describe-applications
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 2. Using .ebextensions to Tag Underlying Resources</h2>
+            <p>Elastic Beanstalk doesn’t allow direct tagging of the application via .ebextensions, but you can tag EC2 instances and other resources created by the environment.</p>
+            <p>▶️ Example: .ebextensions/resource-tags.config</p>
+            <pre><code>
+Resources:
+  AWSEBAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      Tags:
+        - Key: Project
+          Value: MyWebApp
+          PropagateAtLaunch: true
+        - Key: Environment
+          Value: Production
+          PropagateAtLaunch: true
+        - Key: Owner
+          Value: DevTeam
+          PropagateAtLaunch: true
+            </code></pre>
+            <p>⚠️ This config file must be placed in the .ebextensions directory in your app root. These tags apply to Auto Scaling group instances, and you can modify it to tag other resources.</p>
+        </section>
+
+        <section>
+            <h2>✅ 3. Using AWS Console (Optional)</h2>
+            <ol>
+                <li>Go to Elastic Beanstalk > Applications.</li>
+                <li>Select your application.</li>
+                <li>Choose the "Tags" tab.</li>
+                <li>Add key-value pairs.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>What It Tags</th>
+                        <th>When to Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CLI</td>
+                        <td>Application or environment</td>
+                        <td>Automating via scripts</td>
+                    </tr>
+                    <tr>
+                        <td>.ebextensions</td>
+                        <td>Underlying AWS resources</td>
+                        <td>Customizing EC2, ASG, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>Console</td>
+                        <td>Manual tagging of applications</td>
+                        <td>Simple and quick edits</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>NGINX and AWS usage and implementation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">NGINX and AWS usage and implementation</h1>
+                    <p class="subtitle">Here’s a high-level and practical overview of NGINX and AWS usage and implementation, especially focusing on how they can work together in a typical web application deployment scenario.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 NGINX Overview</h2>
+            <p>NGINX (pronounced "Engine-X") is a high-performance web server, reverse proxy, and load balancer.</p>
+
+            <p>🔑 Common Use Cases:</p>
+            <ul>
+                <li>Serving static content (HTML, CSS, JS, images)</li>
+                <li>Reverse proxy to backend servers (e.g., Node.js, Python, PHP)</li>
+                <li>Load balancing</li>
+                <li>SSL termination</li>
+                <li>API Gateway (basic)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>☁️ AWS Overview</h2>
+            <p>Amazon Web Services (AWS) is a cloud computing platform providing on-demand infrastructure and services.</p>
+            <p>🔑 Core Services Involved with NGINX:</p>
+
+            <ul>
+                <li>EC2 – Virtual servers to host your app and NGINX</li>
+                <li>S3 – Static file hosting</li>
+                <li>ELB (Elastic Load Balancer) – AWS-native load balancer</li>
+                <li>Route 53 – DNS service</li>
+                <li>ACM – SSL certificate management</li>
+                <li>ACM – SSL certificate management</li>
+                <li>CloudFront – CDN (for faster content delivery)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ Common NGINX + AWS Implementation Patterns</h2>
+            <p>✅ 1. NGINX on EC2 (Reverse Proxy + Web Server)</p>
+            <p>Use Case: You want full control over your infrastructure.</p>
+            <p>🚀 Steps:</p>
+            <ol>
+                <li>Launch EC2 instance (Amazon Linux 2, Ubuntu, etc.)</li>
+                <li>
+                    Install NGINX:
+                    <pre><code>
+sudo apt update
+sudo apt install nginx
+                    </code></pre>
+                </li>
+                <li>
+                    Configure NGINX:
+                    <ul>
+                        <li>
+                            Set up a reverse proxy to backend app (e.g., Node.js):
+                            <pre><code>
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}                                
+                            </code></pre>
+                        </li>
+                        <li>Open security group ports (e.g., 80, 443)</li>
+                        <li>Route 53 to map domain to EC2 public IP</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧰 Optional:</h2>
+            <ul>
+                <li>Use Let’s Encrypt or ACM (with Load Balancer) for HTTPS</li>
+                <li>Install PM2 or systemd to keep backend service alive</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 2. NGINX as Load Balancer in AWS</h2>
+            <p>Use Case: You're managing multiple backend servers manually (instead of using AWS ELB)</p>
+            <p>🚀 Configuration Example:</p>
+            <pre><code>
+http {
+    upstream backend_servers {
+        server backend1.example.com;
+        server backend2.example.com;
+    }
+
+    server {
+        listen 80;
+
+        location / {
+            proxy_pass http://backend_servers;
+        }
+    }
+}                
+            </code></pre>
+            <p>Use this if you're not relying on AWS's Elastic Load Balancer and want more custom logic.</p>
+        </section>
+
+        <section>
+            <h2>✅ 3. NGINX with S3 + CloudFront</h2>
+            <p>Use Case: Serve static content with high availability</p>
+
+            <p>🔄 Workflow:</p>
+            <ol>
+                <li>Host static files in S3</li>
+                <li>Use CloudFront to distribute globally</li>
+                <li>
+                    Use NGINX for:
+                    <ul>
+                        <li>Reverse proxy to dynamic backend (e.g., API)</li>
+                        <li>Caching</li>
+                        <li>HTTPS (if not using CloudFront/ELB)</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ 4. NGINX + Docker + ECS or EC2</h2>
+            <p>Use Case: Containerized NGINX</p>
+            <ol>
+                <li>
+                    Dockerfile:
+                    <pre><code>
+FROM nginx
+COPY ./nginx.conf /etc/nginx/nginx.conf
+                    </code></pre>
+                </li>
+                <li>
+                    Deploy via:
+                    <ul>
+                        <li>Amazon ECS (Fargate) for serverless container deployment</li>
+                        <li>Or on EC2 with Docker installed</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ 5. NGINX Ingress Controller on AWS EKS</h2>
+            <p>Use Case: Kubernetes workload</p>
+            <ul>
+                <li>Deploy NGINX Ingress Controller in an Amazon EKS cluster</li>
+                <li>Manage routes to services via Ingress objects</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 TLS/SSL with NGINX on AWS</h2>
+            <ul>
+                <li>Use Let's Encrypt (with certbot) on EC2</li>
+                <li>Or use AWS ACM + ALB/NLB (if NGINX behind ELB)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📊 Monitoring & Scaling</h2>
+            <ul>
+                <li>Use CloudWatch Agent to collect NGINX logs</li>
+                <li>Auto-scale EC2 via Auto Scaling Groups</li>
+                <li>Consider replacing NGINX load balancer with AWS ALB if you need tight integration</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example Architecture Diagram</h2>
+            <pre><code>
+[ Route 53 ]
+      |
+      v
++------------------+
+|   AWS Cloud      |
+| +--------------+ |        +------------+
+| |   EC2 (NGINX)|&lt;--------&gt;| S3/CloudFront |
+| | + App Server | |        +------------+
+| +--------------+ |
++------------------+
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Best Practices</h2>
+            <ul>
+                <li>Use NGINX caching for static/dynamic content</li>
+                <li>Offload SSL termination to ELB if using AWS-native services</li>
+                <li>Monitor logs with CloudWatch Logs</li>
+                <li>Secure your EC2 using IAM Roles and Security Groups</li>
+                <li>Automate provisioning with Terraform or CloudFormation</li>
+            </ul>
+
+            <p>Want Help With a Specific Setup?</p>
+            <p>Let me know what you're building (e.g., web app, API, microservices, etc.), and I can provide a tailored guide (or even code/config snippets).</p>
+        </section>
+
+        <section>
+            <p>Here's a hands-on tutorial for deploying a simple web application using NGINX as a reverse proxy. This example will show you how to:</p>
+            <ul>
+                <li>Host a static website (HTML/JS/CSS).</li>
+                <li>Use NGINX to serve it.</li>
+                <li>Optionally, proxy requests to a backend (like a Node.js or Python app).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Goal</h2>
+            <ul>
+                <li>Deploy a static website using NGINX.</li>
+                <li>Optional: Proxy API requests to a backend (e.g., running on port 5000).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 Prerequisites</h2>
+            <ul>
+                <li>A Linux system (e.g., Ubuntu)</li>
+                <li>nginx installed</li>
+                <li>curl or a browser to test</li>
+                <li>(Optional) A backend app (Node.js, Python, etc.)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. 🔧 Install NGINX</h2>
+            <pre><code>
+sudo apt update
+sudo apt install nginx -y
+            </code></pre>
+
+            <p>Check status:</p>
+            <pre><code>
+sudo systemctl status nginx
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. 📁 Create a Static Website</h2>
+            <p>Create a simple HTML file:</p>
+            <pre><code>
+sudo mkdir -p /var/www/myapp
+echo "&lt;h1&gt;Hello from NGINX!&lt;/h1&gt;" | sudo tee /var/www/myapp/index.html
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. ⚙️ Configure NGINX to Serve Your Site</h2>
+            <p>Create a new server block:</p>
+            <pre><code>
+sudo nano /etc/nginx/sites-available/myapp
+            </code></pre>
+            <p>Paste this config:</p>
+            <pre><code>
+server {
+    listen 80;
+    server_name localhost;
+
+    root /var/www/myapp;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}                
+            </code></pre>
+
+            <p>Enable the site:</p>
+            <pre><code>
+sudo ln -s /etc/nginx/sites-available/myapp /etc/nginx/sites-enabled/
+            </code></pre>
+
+            <p>Test config and reload:</p>
+            <pre><code>
+sudo nginx -t
+sudo systemctl reload nginx
+            </code></pre>
+
+            <p>Open a browser and go to http://localhost — you should see “Hello from NGINX!”.</p>
+        </section>
+
+        <section>
+            <h2>4. 🔁 (Optional) Reverse Proxy to a Backend App</h2>
+            <p>Let’s say you have a backend running on port 5000:</p>
+            <pre><code>
+# Example backend: Python Flask
+pip install flask
+
+cat &lt;&lt;EOF &gt; app.py
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/api/hello")
+def hello():
+    return {"message": "Hello from Flask!"}
+
+if __name__ == "__main__":
+    app.run(port=5000)
+EOF
+
+python3 app.py
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Now update your NGINX config to proxy /api:</h2>
+            <pre><code>
+location /api/ {
+    proxy_pass http://localhost:5000/;
+    proxy_set_header Host \$host;
+    proxy_set_header X-Real-IP \$remote_addr;
+}                
+            </code></pre>
+
+            <p>Reload NGINX:</p>
+            <pre><code>
+sudo nginx -t
+sudo systemctl reload nginx
+            </code></pre>
+
+            <p>Test:</p>
+            <pre><code>
+curl http://localhost/api/hello
+            </code></pre>
+
+            <p>You should get a JSON response from the Flask app.</p>
+        </section>
+
+        <section>
+            <h2>📦 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>NGINX</td>
+                        <td>Serves static files + proxy</td>
+                    </tr>
+                    <tr>
+                        <td>/var/www/myapp</td>
+                        <td>Static site files</td>
+                    </tr>
+                    <tr>
+                        <td>Flask (optional)</td>
+                        <td>Backend API</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

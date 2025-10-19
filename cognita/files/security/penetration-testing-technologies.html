@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Penetration‑testing Technologies</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Penetration‑testing technologies — overview, tools, workflows, and learning path</h1>
+                    <p class="subtitle">Great topic. Below is a compact, practical survey of the technologies, tool categories, common products, workflows, and safe/ethical considerations used in modern penetration testing. I’ll avoid step‑by‑step exploit instructions (can’t help with illegal hacking), but this will give you a clear map of the landscape so you can study, choose tools, or plan engagements.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Pentest types / scopes</h2>
+            <ul>
+                <li>Network (internal / external) — scanning, port/service enumeration, exploiting network services.</li>
+                <li>Web application — OWASP Top Ten vulnerabilities (injection, auth flaws, XSS, CSRF, etc.).</li>
+                <li>Mobile app — Android/iOS app analysis (client logic, insecure storage, API abuse).</li>
+                <li>Cloud — misconfigurations, identity and access management (IAM), storage, serverless.</li>
+                <li>Wireless / Bluetooth / IoT — Wi‑Fi/WPA attacks, device firmware, protocol abuses.</li>
+                <li>Social engineering / physical — phishing, vishing, physical access (requires explicit authorization).</li>
+                <li>Red team / adversary emulation — long engagements simulating sophisticated attackers (opsec, persistence).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Typical pentest phases (high level)</h2>
+            <ol>
+                <li>Scoping & legal approval — rules of engagement, target lists, time windows, liability.</li>
+                <li>Reconnaissance — passive and active information gathering (DNS, WHOIS, public footprints).</li>
+                <li>Scanning & enumeration — port scans, service/version discovery, vulnerability scanning.</li>
+                <li>Exploitation / validation — confirm vulnerabilities in a controlled, authorized manner.</li>
+                <li>Post‑exploitation — privilege escalation, lateral movement (only if scoped).</li>
+                <li>Reporting & remediation verification — clear technical report + executive summary; retest if agreed.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>3. Tool categories & notable tools (what they do, not how to exploit)</h2>
+            <ul>
+                <li>
+                    Port & service discovery
+                    <ul>
+                        <li>Nmap — network/port/service/version discovery and basic scripting.</li>
+                    </ul>
+                </li>
+                <li>
+                    Vulnerability scanners
+                    <ul>
+                        <li>Nessus, OpenVAS, Qualys — automated vulnerability discovery and reporting.</li>
+                    </ul>
+                </li>
+                <li>
+                    Web application testing
+                    <ul>
+                        <li>Burp Suite (Community/Pro), OWASP ZAP — intercepting proxy, spidering, scanning, manipulation.</li>
+                        <li>Nikto — web server scanning for known issues.</li>
+                        <li>SQLmap — automated detection of SQL injection (use responsibly).</li>
+                    </ul>
+                </li>
+                <li>
+                    Exploitation frameworks
+                    <ul>
+                        <li>Metasploit Framework — proof‑of‑concept exploits, payloads, auxiliary modules (use only in authorized tests).</li>
+                    </ul>
+                </li>
+                <li>
+                    Network protocol / traffic analysis
+                    <ul>
+                        <li>Wireshark — packet capture and analysis.</li>
+                    </ul>
+                </li>
+                <li>
+                    Password / credential tools
+                    <ul>
+                        <li>Hashcat, John the Ripper, Hydra — password cracking / credential testing (offline / authorized use only).</li>
+                    </ul>
+                </li>
+                <li>
+                    Wireless / RF
+                    <ul>
+                        <li>Aircrack-ng — Wi‑Fi auditing tools (monitoring, cracking WEP/WPA, etc.).</li>
+                    </ul>
+                </li>
+                <li>
+                    Active directory / enterprise
+                    <ul>
+                        <li>BloodHound — graphing AD relationships and privilege escalation paths.</li>
+                    </ul>
+                </li>
+                <li>
+                    Cloud security tools
+                    <ul>
+                        <li>Cloud security posture tools / auditors, IaC scanners (e.g., checkov, tfsec) — detect misconfigurations; specialized offensive/cloud tools exist (use cautiously and only in scope).</li>
+                    </ul>
+                </li>
+                <li>
+                    Reverse engineering & binary analysis
+                    <ul>
+                        <li>Ghidra, IDA, Binary Ninja — static/dynamic analysis of binaries and firmware.</li>
+                    </ul>
+                </li>
+                <li>
+                    Reporting / management
+                    <ul>
+                        <li>Dradis, Serpico, Faraday — collaboration and report generation.</li>
+                    </ul>
+                </li>
+                <li>
+                    Training / lab platforms
+                    <ul>
+                        <li>Metasploitable, DVWA, Hack The Box, TryHackMe, OWASP Juice Shop — legal practice environments.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Frameworks, standards & intel</h2>
+            <ul>
+                <li>OWASP Top Ten / ASVS — web app vulnerability guidance.</li>
+                <li>MITRE ATT&CK — adversary tactics, techniques, and procedures mapping (very useful for red team planning and reporting).</li>
+                <li>NIST 800‑115 — technical guide to information security testing and assessment.</li>
+                <li>PTES / OSSTMM — penetration testing methodologies and rules of engagement templates.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Defensive / detection technologies (what pentesters should know)</h2>
+            <ul>
+                <li>EDR (Endpoint Detection & Response) — e.g., CrowdStrike, SentinelOne — blocks or detects post‑exploitation activity.</li>
+                <li>SIEM — centralized logging and alerting for suspicious actions.</li>
+                <li>WAF (Web Application Firewall) — mod_security, cloud WAFs — mitigates some web attacks.</li>
+                <li>IAM best practices / least privilege — crucial in cloud and AD environments.</li>
+                <li>Network segmentation, MFA, patching, secure coding — primary mitigations for common findings.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Safe / legal & ethical rules (musts)</h2>
+            <ul>
+                <li>Always get explicit written authorization (rules of engagement).</li>
+                <li>Define scope, allowed techniques, and fail‑safes (what to exclude: safety‑critical systems, destructive tests).</li>
+                <li>Avoid any activity outside agreed scope — unauthorized testing is illegal.</li>
+                <li>Maintain an evidence trail and communicate major findings immediately if you discover critical issues that risk data loss or safety.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Learning path / how to gain competence</h2>
+            <ul>
+                <li>Foundations: TCP/IP, HTTP(s), Linux, scripting (Python, Bash).</li>
+                <li>Web dev basics: know how apps are built (HTML, JS, SQL, authentication flows).</li>
+                <li>Practice in legal labs: TryHackMe, Hack The Box, OWASP Juice Shop, Metasploitable.</li>
+                <li>Study resources: OWASP Top Ten, MITRE ATT&CK, practical exploit writeups (for learning only).</li>
+                <li>Certifications (optional): OSCP (practical), GPEN, OSWE, eCPPT — they teach methodology and reporting.</li>
+                <li>Contribute / read: writeups, capture‑the‑flag (CTF) challenges, GitHub projects for tooling.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Typical pentester toolstack (example)</h2>
+            <ul>
+                <li>Recon: Amass, theHarvester, Nmap</li>
+                <li>Web testing: Burp Suite, OWASP ZAP, SQLmap</li>
+                <li>Exploitation: Metasploit (and manual PoCs)</li>
+                <li>Post‑exploit/AD: BloodHound, PowerView</li>
+                <li>Traffic & visibility: Wireshark</li>
+                <li>Passwords: Hashcat</li>
+                <li>Notes/reporting: Dradis or templates + screenshots</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Reporting: what customers actually need</h2>
+            <ul>
+                <li>Executive summary — risk impact in business terms and remediation priority.</li>
+                <li>Technical findings — reproduction steps (kept concise), evidence, affected assets.</li>
+                <li>Risk rating & remediation — clear remediation steps, suggested fixes, and references.</li>
+                <li>Validation guidance — how to verify fixes or request retest.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

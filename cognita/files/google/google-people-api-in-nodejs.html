@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Google People API in Node.js</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Google People API in Node.js</h1>
+                    <p class="subtitle">
+                        To use the Google People API in Node.js, you’ll need to:
+                        <ol>
+                            <li>Set up a Google Cloud project.</li>
+                            <li>Use OAuth 2.0 to authorize users and get access tokens.</li>
+                            <li>Use Google’s googleapis library to interact with the People API.</li>
+                        </ol>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Use Case Example: Node.js Server to Read User Contacts</h2>
+            <p>✅ 1. Set Up Google Cloud</p>
+
+            <ul>
+                <li>Go to Google Cloud Console</li>
+                <li>Create/select a project.</li>
+                <li>Enable the People API.</li>
+                <li>
+                    Create OAuth 2.0 credentials:
+                    <ul>
+                        <li>Go to APIs & Services > Credentials > Create Credentials > OAuth Client ID.</li>
+                        <li>Choose Web Application.</li>
+                        <li>
+                            Set Authorized redirect URIs, e.g.:
+                            <p>http://localhost:3000/oauth2callback</p>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <p>📌 Save the Client ID and Client Secret for use in your app.</p>
+        </section>
+
+        <section>
+            <h2>📦 2. Install Dependencies</h2>
+            <pre><code>
+npm install googleapis express open
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧱 3. Basic Node.js Server Example</h2>
+            <pre><code>
+// index.js
+
+const express = require('express');
+const { google } = require('googleapis');
+const open = require('open');
+
+const app = express();
+const port = 3000;
+
+// Replace with your credentials
+const CLIENT_ID = 'YOUR_CLIENT_ID';
+const CLIENT_SECRET = 'YOUR_CLIENT_SECRET';
+const REDIRECT_URI = 'http://localhost:3000/oauth2callback';
+
+const oAuth2Client = new google.auth.OAuth2(
+  CLIENT_ID,
+  CLIENT_SECRET,
+  REDIRECT_URI
+);
+
+// Scopes
+const SCOPES = [
+  'https://www.googleapis.com/auth/contacts.readonly',
+  'https://www.googleapis.com/auth/userinfo.profile',
+  'https://www.googleapis.com/auth/user.emails.read',
+];
+
+// Start auth flow
+app.get('/', (req, res) => {
+  const authUrl = oAuth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: SCOPES,
+  });
+  res.send(`&lt;a href="${authUrl}"&gt;Login with Google&lt;/a&gt;`);
+  open(authUrl); // Automatically open in browser
+});
+
+// Handle OAuth callback
+app.get('/oauth2callback', async (req, res) => {
+  const code = req.query.code;
+  const { tokens } = await oAuth2Client.getToken(code);
+  oAuth2Client.setCredentials(tokens);
+
+  res.send('Authentication successful! You can close this tab.');
+  fetchContacts(oAuth2Client);
+});
+
+// Fetch contacts using People API
+async function fetchContacts(auth) {
+  const peopleService = google.people({ version: 'v1', auth });
+
+  const response = await peopleService.people.connections.list({
+    resourceName: 'people/me',
+    personFields: 'names,emailAddresses',
+    pageSize: 10,
+  });
+
+  const connections = response.data.connections || [];
+  console.log('\nFetched Contacts:');
+  connections.forEach((person) => {
+    const name = person.names?.[0]?.displayName;
+    const email = person.emailAddresses?.[0]?.value;
+    console.log(`${name} - ${email}`);
+  });
+}
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 Run the App</h2>
+            <pre><code>
+node index.js
+            </code></pre>
+            <ul>
+                <li>Opens a browser to sign in with Google.</li>
+                <li>Grants access to contacts.</li>
+                <li>Lists top 10 contact names + emails in the console.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛡️ Security Tips</h2>
+            <ul>
+                <li>Never commit client_secret to source control.</li>
+                <li>Use environment variables for credentials in production.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

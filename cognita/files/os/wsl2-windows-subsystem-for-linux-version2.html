@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>WSL 2 (Windows Subsystem for Linux version 2)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">WSL 2 (Windows Subsystem for Linux version 2)</h1>
+                    <p class="subtitle">WSL 2 (Windows Subsystem for Linux version 2) is a compatibility layer developed by Microsoft that allows you to run a full Linux distribution on Windows, without the need for a virtual machine or dual-boot setup. It's particularly popular among developers who want to use Linux tools while working in a Windows environment.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔍 Key Features of WSL 2:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Full Linux kernel</td>
+                        <td>WSL 2 uses a real Linux kernel built by Microsoft, improving compatibility with Linux applications.</td>
+                    </tr>
+                    <tr>
+                        <td>Faster performance</td>
+                        <td>File system operations are much faster than in WSL 1, especially when accessing Linux files.</td>
+                    </tr>
+                    <tr>
+                        <td>Full system call compatibility</td>
+                        <td>Supports more applications (e.g., Docker) because it handles system calls like a traditional Linux kernel.</td>
+                    </tr>
+                    <tr>
+                        <td>Lightweight</td>
+                        <td>Much lighter than using a full virtual machine.</td>
+                    </tr>
+                    <tr>
+                        <td>Integration with Windows</td>
+                        <td>You can access Windows files from Linux and vice versa (/mnt/c for example).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🚀 How to Install WSL 2:</h2>
+            <ol>
+                <li>
+                    Enable WSL and Virtual Machine Platform:
+                    <pre><code>
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+                    </code></pre>
+                </li>
+                <li>Restart your computer.</li>
+                <li>
+                    Install WSL 2 as the default version:
+                    <pre><code>
+wsl --set-default-version 2
+                    </code></pre>
+                </li>
+                <li>
+                    Install a Linux distribution:
+                    <ul>
+                        <li>Open Microsoft Store.</li>
+                        <li>Search for a distro (e.g., Ubuntu, Debian, Kali Linux).</li>
+                        <li>Click install.</li>
+                    </ul>
+                </li>
+                <li>
+                    Set the installed distro to use WSL 2 (if needed):
+                    <pre><code>
+wsl --set-version &lt;distro-name&gt; 2
+                    </code></pre>
+                    <p>Example:</p>
+                    <pre><code>
+wsl --set-version Ubuntu 2
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧰 Helpful Commands:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>wsl -l -v</td>
+                        <td>Lists installed distros with their WSL version.</td>
+                    </tr>
+                    <tr>
+                        <td>wsl --set-version &lt;distro&gt; 2</td>
+                        <td>Converts a distro to WSL 2.</td>
+                    </tr>
+                    <tr>
+                        <td>wsl</td>
+                        <td>Opens the default Linux shell.</td>
+                    </tr>
+                    <tr>
+                        <td>wsl --install</td>
+                        <td>One-command WSL installation (Windows 11 or updated Windows 10).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🐳 WSL 2 and Docker:</h2>
+            <p>Docker Desktop uses WSL 2 for its backend. You can install Docker Desktop on Windows and enable WSL 2 integration, allowing you to run Linux containers natively on Windows.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

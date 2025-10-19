@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is Cross-Origin Resource Sharing?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is Cross-Origin Resource Sharing?</h1>
+                    <p class="subtitle">Cross-origin resource sharing (CORS) is a mechanism for integrating applications. CORS defines a way for client web applications that are loaded in one domain to interact with resources in a different domain. This is useful because complex applications often reference third-party APIs and resources in their client-side code. For example, your application may use your browser to pull videos from a video platform API, use fonts from a public font library, or display weather data from a national weather database. CORS allows the client browser to check with the third-party servers if the request is authorized before any data transfers.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why is cross-origin resource sharing important?</h2>
+            <p>In the past, when internet technologies were still new, cross-site request forgery (CSRF) issues happened. These issues sent fake client requests from the victim's browser to another application.</p>
+            
+            <p>For example, the victim logged into their bank's application. Then they were tricked into loading an external website on a new browser tab. The external website then used the victim's cookie credentials and relayed data to the bank application while pretending to be the victim. Unauthorized users then had unintended access to the bank application.</p>
+            <p>To prevent such CSRF issues, all browsers now implement the same-origin policy.</p>
+        </section>
+
+        <section>
+            <h2>Same-origin policy</h2>
+            <p>Today, browsers enforce that clients can only send requests to a resource with the same origin as the client's URL. The protocol, port, and hostname of the client's URL should all match the server it requests.</p>
+            <p>For example, consider the origin comparison for the below URLs with the client URL http://store.aws.com/dir/page.html.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Outcome</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>http://store.aws.com/dir2/new.html</td>
+                        <td>Same origin</td>
+                        <td>Only the path differs</td>
+                    </tr>
+                    <tr>
+                        <td>http://store.aws.com/dir/inner/other.html</td>
+                        <td>Same origin</td>
+                        <td>Only the path differs</td>
+                    </tr>
+                    <tr>
+                        <td>https://store.aws.com/page.html</td>
+                        <td>Different origin</td>
+                        <td>Different protocol</td>
+                    </tr>
+                    <tr>
+                        <td>http://store.aws.com:81/dir/page.html</td>
+                        <td>Different origin</td>
+                        <td>Different port (http:// is port 80 by default)</td>
+                    </tr>
+                    <tr>
+                        <td>http://news.aws.com/dir/page.html</td>
+                        <td>Different origin</td>
+                        <td>Different host</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>So, the same-origin policy is highly secure but inflexible for genuine use cases.</p>
+            <p>Cross-origin resource sharing (CORS) is an extension of the same-origin policy. You need it for authorized resource sharing with external third parties. For example, you need CORS when you want to pull data from external APIs that are public or authorized. You also need CORS if you want to allow authorized third-party access to your own server resources.</p>
+        </section>
+
+        <section>
+            <h2>How does cross-origin resource sharing work?</h2>
+            <p>In standard internet communication, your browser sends an HTTP request to the application server, receives data as an HTTP response, and displays it. In browser terminology, the current browser URL is called the current origin and the third-party URL is cross-origin.</p>
+
+            <p>When you make a cross-origin request, this is the request-response process:</p>
+            <ol>
+                <li>The browser adds an origin header to the request with information about the current origin's protocol, host, and port</li>
+                <li>The server checks the current origin header and responds with the requested data and an Access-Control-Allow-Origin header</li>
+                <li>The browser sees the access control request headers and shares the returned data with the client application</li>
+            </ol>
+
+            <p>Alternatively, if the server doesn’t want to allow cross-origin access, it responds with an error message.</p>
+        
+            <p><b>Cross-origin resource sharing example</b></p>
+            <p>For example, consider a site called https://news.example.com. This site wants to access resources from an API at partner-api.com.</p>
+            <p>Developers at https://partner-api.com first configure the cross-origin resource sharing (CORS) headers on their server by adding new.example.com to the allowed origins list. They do this by adding the below line to their server configuration file.</p>
+        
+            <p>Access-Control-Allow-Origin: https://news.example.com</p>
+            <p>Once CORS access is configured, news.example.com can request resources from partner-api.com. For every request, partner-api.com will respond with Access-Control-Allow-Credentials : "true." The browser then knows the communication is authorized and permits cross-origin access.</p>
+            <p>If you want grant access to multiple origins, use a comma-separated list or wildcard characters like * that grant access to everyone.</p>
+        </section>
+
+        <section>
+            <h2>What is a CORS preflight request?</h2>
+            <p>In HTTP, request methods are the data operations the client wants the server to perform. Common HTTP methods include GET, POST, PUT, and DELETE.</p>
+            <p>In a regular cross-origin resource sharing (CORS) interaction, the browser sends the request and access control headers at the same time. These are usually GET data requests and are considered low-risk.</p>
+            <p>However, some HTTP requests are considered complex and require server confirmation before the actual request is sent. The preapproval process is called preflight request.</p>
+            
+            <p><b>Complex cross-origin requests</b></p>
+            <p>Cross-origin requests are complex if they use any of the following:</p>
+            <ul>
+                <li>Methods other than GET, POST, or HEAD</li>
+                <li>Headers other than Accept-Language, Accept, or Content-Language</li>
+                <li>Content-Type headers other than multipart/form-data, application/x-www-form-urlencoded, or text/plain</li>
+            </ul>
+            <p>So, for example, requests to delete or modify existing data are considered complex.</p>
+
+            <p><b>How preflight requests work</b></p>
+            <p>Browsers create preflight requests if they are needed. It's an OPTIONS request like the following one.</p>
+            <pre><code>
+OPTIONS /data HTTP/1.1
+Origin: https://example.com
+Access-Control-Request-Method: DELETE
+            </code></pre>
+        </section>
+
+        <section>
+            <p>The browser sends the preflight request before the actual request message. The server must respond to the preflight request with information about the cross-origin requests the server’s willing to accept from the client URL. The server response headers must include the following:</p>
+            <ul>
+                <li>Access-Control-Allow-Methods</li>
+                <li>Access-Control-Allow-Headers</li>
+                <li>Access-Control-Allow-Origin</li>
+            </ul>
+            <p>An example server response is given below.</p>
+
+            <pre><code>
+HTTP/1.1 200 OK
+
+Access-Control-Allow-Headers: Content-Type
+
+Access-Control-Allow-Origin: https://news.example.com
+
+Access-Control-Allow-Methods: GET, DELETE, HEAD, OPTIONS
+            </code></pre>
+
+            <p>The preflight response sometimes includes an additional Access-Control-Max-Age header. This metric specifies the duration (in seconds) for the browser to cache preflight results in the browser. Caching allows the browser to send several complex requests between preflight requests. It doesn’t have to send another preflight request until the time specified by max-age elapses.</p>
+        
+            <pre>
+                <code>
+yourdomain.com (origin)                             example.com (cross origin server)
+
+1. Preflight request
+    GET http://www.example.com/resource
+    Access Request: OPTIONS
+    Origin: http://www.yourdomain.com
+
+2. Preflight response
+    Allow Origin: http://www.yourdomain.com
+    Request Method: GET, PUT, POST ...
+
+3. Request
+    GET http://www.example.com/resource
+    Access Request: GET
+    Origin: http://wwww.yourdomain.com
+
+4. Response
+    http://www.example.com/resource
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h2>What is the difference between CORS and JSONP?</h2>
+            <p>JSON with Padding (JSONP) is a historical technique that allows communication between web applications running on different domains.</p>
+            <p>With JSONP, you use HTML script tags in the client page. The script tag loads external JavaScript files or embeds JavaScript code directly within an HTML page. Because scripts aren’t subject to the same-origin policy, you can retrieve cross-origin data through the JavaScript code.</p>
+            <p>However, the data must be in JSON format. Also, JSONP is less secure than cross-origin resource sharing (CORS) because it relies on the trustworthiness of the external domain to provide safe data.</p>
+            <p>Modern browsers have added some security features, so older code containing JSONP will no longer work on them. CORS is the current global web standard for cross-origin access control.</p>
+        </section>
+
+        <section>
+            <h2>What are some CORS best practices?</h2>
+            <p>You should note the following when you configure cross-origin resource sharing (CORS) on your server.</p>
+            <p>Define appropriate access lists</p>
+            <p>It is always best to grant access to individual domains using comma-separated lists. Avoid using wildcards unless you want to make the API public. Otherwise, using wildcards and regular expressions may create vulnerabilities.</p>
+            <p>For example, let's say you write a regular expression that grants access to all sites with the suffix permitted-website.com. With one expression, you grant access to api.permitted-website.com and news.permitted-website.com. But you also inadvertently grant access to unauthorized sites that may use domains like maliciouspermitted-website.com.</p>
+        
+            <p><b>Avoid using null origin in your list</b></p>
+            <p>Some browsers send the value null in the request header for certain scenarios like file requests or requests from the local host.</p>
+            <p>However, you shouldn’t include the null value in your access list. It also introduces security risks as unauthorized requests containing null headers may get access.</p>
+        </section>
+
+        <section>
+            <h2>How can AWS support your CORS requirements?</h2>
+            <p>Many of our services have built-in cross-origin resource sharing (CORS) support. So, you can control cross-origin access to your APIs and resources hosted on Amazon Web Services (AWS).</p>
+            <p>Here are some AWS services with CORS support:</p>
+            <p>Amazon Simple Storage Service (Amazon S3) is an object storage service with cost-effective storage classes for all data storage use cases. Amazon S3 lets you create a CORS configuration document with rules that identify the origins you will allow to access your S3 data, the operations (HTTP methods) you will support for each origin, and other operation-specific information. You can add up to 100 rules to the configuration.</p>
+            <p>Amazon API Gateway is a fully managed service that makes it easy for you to create, publish, maintain, monitor, and secure APIs at any scale. You can enable CORS for your REST APIs with one click directly in the Amazon API Gateway console.</p>    
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

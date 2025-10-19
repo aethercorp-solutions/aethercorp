@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ROM Boot Loader</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">ROM Boot Loader</h1>
+                    <p class="subtitle">A ROM Boot Loader (also called a Bootstrap Loader) is a small piece of code stored in Read-Only Memory (ROM) that is executed when a computer or embedded system is powered on or reset. Its main job is to initialize the hardware and load the main operating system or firmware into memory so it can start running.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Functions of a ROM Boot Loader</h2>
+            <ol>
+                <li>
+                    Power-On Initialization
+                    <ul>
+                        <li>Initializes CPU, memory, and essential peripherals.</li>
+                        <li>May run basic self-tests (like POST on PCs).</li>
+                    </ul>
+                </li>
+                <li>
+                    Load Secondary Software
+                    <ul>
+                        <li>
+                            Loads a larger bootloader (like U-Boot, GRUB) or the OS kernel from:
+                            <ul>
+                                <li>Flash memory</li>
+                                <li>EEPROM</li>
+                                <li>SD card</li>
+                                <li>Hard drive</li>
+                                <li>Network (via TFTP, PXE, etc.)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Transfer Control
+                    <ul>
+                        <li>Passes control to the loaded software (e.g., jumps to the OS entry point).</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 Why it's in ROM</h2>
+            <ul>
+                <li>ROM is non-volatile, so it retains data without power.</li>
+                <li>Ensures that the system can always boot, even if storage is corrupted.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔄 Boot Sequence (Simplified)</h2>
+            <ol>
+                <li>Power On</li>
+                <li>CPU starts executing code at a fixed address in ROM</li>
+                <li>ROM bootloader runs</li>
+                <li>ROM bootloader loads 2nd stage bootloader or OS from storage</li>
+                <li>Control is handed over</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔍 Examples</h2>
+            <ul>
+                <li>ARM processors: Have a built-in ROM bootloader that loads code from flash or SD.</li>
+                <li>x86 PCs: The BIOS or UEFI firmware in ROM acts as the bootloader.</li>
+                <li>Microcontrollers (e.g., STM32): Include a ROM bootloader that supports UART, USB, or CAN boot.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>❓ How does ROM retain data without power?</h2>
+            <p>ROM stands for Read-Only Memory, and it's designed to retain data even when the power is turned off. This is because it's made using non-volatile memory technology, which stores data in a way that doesn't require constant electrical power.</p>
+        </section>
+
+        <section>
+            <h2>🔬 Types of ROM and How They Work</h2>
+            <p>Here’s how various types of ROM keep data without power:</p>
+
+            <ol>
+                <li>
+                    Mask ROM
+                    <ul>
+                        <li>Data is permanently written during chip manufacturing.</li>
+                        <li>Uses physical wiring or fuses to represent 1s and 0s.</li>
+                        <li>Cannot be changed after production.</li>
+                        <li>Non-volatility: Data is "hard-coded" in the silicon itself.</li>
+                    </ul>
+                </li>
+                <li>
+                    PROM (Programmable ROM)
+                    <ul>
+                        <li>One-time programmable using special equipment.</li>
+                        <li>Uses fuses or antifuses that are blown (or connected) to represent data.</li>
+                        <li>Non-volatility: Once programmed, the changes are physical and permanent.</li>
+                    </ul>
+                </li>
+                <li>
+                    EPROM (Erasable Programmable ROM)
+                    <ul>
+                        <li>Can be erased with ultraviolet (UV) light.</li>
+                        <li>Uses floating-gate transistors to store data.</li>
+                        <li>Non-volatility: The charge stored on the floating gate stays trapped even when power is removed.</li>
+                    </ul>
+                </li>
+                <li>
+                    EEPROM / Flash Memory
+                    <ul>
+                        <li>Electronically erasable and reprogrammable.</li>
+                        <li>Also uses floating-gate MOSFETs.</li>
+                        <li>Non-volatility: The trapped electrons in the floating gate maintain their state without power.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚡ So, How Does It Actually Retain Data?</h2>
+            <p>At the hardware level:</p>
+            <ul>
+                <li>These memory types use charge trapping or physical changes (like fuses or wiring) to store bits.</li>
+                <li>Because the data is not stored in a temporary electrical state (like in RAM), no electricity is needed to "remember" the values.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📌 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ROM Type</th>
+                        <th>Programmable?</th>
+                        <th>Erasable?</th>
+                        <th>How It Retains Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mask ROM</td>
+                        <td>No</td>
+                        <td>No</td>
+                        <td>Hard-wired during fab</td>
+                    </tr>
+                    <tr>
+                        <td>PROM</td>
+                        <td>Yes (once)</td>
+                        <td>No</td>
+                        <td>Fuses/antifuses</td>
+                    </tr>
+                    <tr>
+                        <td>EPROM</td>
+                        <td>Yes</td>
+                        <td>Yes (UV light)</td>
+                        <td>Floating gate transistors</td>
+                    </tr>
+                    <tr>
+                        <td>EEPROM/Flash</td>
+                        <td>Yes</td>
+                        <td>Yes (electrically)</td>
+                        <td>Floating gate transistors</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

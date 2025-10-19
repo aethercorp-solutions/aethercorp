@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Routing Object</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Routing Object</h1>
+                    <p class="subtitle">
+                        This JavaScript code defines a simple routing object named routes used in a basic Node.js HTTP server setup. Each key in the object represents an HTTP method and a path (like 'GET /'), and the value is the handler function to execute for that route.
+                        <p>Here's a breakdown of what each route does:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ GET /</h2>
+            <p>Handler:</p>
+            <pre><code>
+(req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Welcome to the Home Page');
+}                
+            </code></pre>
+            <p>Functionality: Responds with plain text "Welcome to the Home Page" when someone accesses the root path / using the GET method.</p>
+        
+            <p>✅ GET /about</p>
+            <p>Handler:</p>
+            <pre><code>
+(req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('This is the About Page');
+}                
+            </code></pre>
+            <p>Functionality: Responds with "This is the About Page" when accessing /about with a GET request.</p>
+        </section>
+
+        <section>
+            <h2>✅ POST /data</h2>
+            <p>Handler:</p>
+            <pre><code>
+(req, res) => {
+    let body = '';
+    req.on('data', chunk => {
+        body += chunk;
+    });
+
+    req.on('end', () => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ received: body }));
+    });
+}                
+            </code></pre>
+            <p>Functionality:</p>
+            <ul>
+                <li>Waits for data chunks from the POST request.</li>
+                <li>Collects them into a body string.</li>
+                <li>Once the request ends, it responds with a JSON object that contains the received data.</li>
+            </ul>
+            <p>Example response:</p>
+            <pre><code>
+{ "received": "some posted data" }
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔧 Usage Context</h2>
+            <p>This routes object is usually used in a larger HTTP server setup like:</p>
+            <pre><code>
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+    const routeKey = `${req.method} ${req.url}`;
+    const route = routes[routeKey];
+
+    if (route) {
+        route(req, res);
+    } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('404 Not Found');
+    }
+});
+
+server.listen(3000, () => {
+    console.log('Server listening on port 3000');
+});
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

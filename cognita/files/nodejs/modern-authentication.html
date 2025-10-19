@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Modern Authentication</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Modern Authentication</h1>
+                    <p class="subtitle">Modern authentication refers to advanced, secure, and flexible authentication methods used in today's applications and systems. It often contrasts with "legacy" authentication (like basic username/password or NTLM in older Windows systems), offering better security and user experience.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔑 Core Principles of Modern Authentication</h2>
+            <ol>
+                <li>
+                    Token-Based Authentication
+                    <ul>
+                        <li>Uses tokens like OAuth2, OpenID Connect, or JWTs (JSON Web Tokens) instead of sessions.</li>
+                        <li>Tokens are passed with each request (typically via headers) and verified by the server.</li>
+                        <li>Stateless and scalable.</li>
+                    </ul>
+                </li>
+                <li>
+                    Single Sign-On (SSO)
+                    <ul>
+                        <li>Users authenticate once and gain access to multiple apps.</li>
+                        <li>Common in enterprise environments.</li>
+                        <li>Example: Logging in to Microsoft 365 gives you access to Teams, Outlook, OneDrive, etc.</li>
+                    </ul>
+                </li>
+                <li>
+                    Multi-Factor Authentication (MFA)
+                    <ul>
+                        <li>
+                            Requires two or more forms of identity verification.
+                            <ul>
+                                <li>Something you know (password)</li>
+                                <li>Something you have (phone or security key)</li>
+                                <li>Something you are (biometric)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    OAuth 2.0 & OpenID Connect (OIDC)
+                    <ul>
+                        <li>OAuth 2.0: Framework for authorization (e.g., grant access to a user's Google Drive).</li>
+                        <li>OpenID Connect: Extension of OAuth for authentication (e.g., who the user is).</li>
+                        <li>Used by providers like Google, Facebook, Microsoft, GitHub.</li>
+                    </ul>
+                </li>
+                <li>
+                    Passwordless Authentication
+                    <ul>
+                        <li>Uses email links, magic codes, biometrics, or security keys instead of passwords.</li>
+                        <li>Reduces phishing risks.</li>
+                    </ul>
+                </li>
+                <li>
+                    Decoupled Frontend/Backend with APIs
+                    <ul>
+                        <li>Modern apps (e.g., SPAs, mobile apps) use REST or GraphQL APIs secured via tokens.</li>
+                        <li>No reliance on server-side sessions.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔒 Examples of Modern Authentication</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OAuth2 + JWT</td>
+                        <td>Popular for APIs and SPAs</td>
+                    </tr>
+                    <tr>
+                        <td>Google Sign-In</td>
+                        <td>OIDC + OAuth2 via Google</td>
+                    </tr>
+                    <tr>
+                        <td>Magic Link</td>
+                        <td>User receives an email link to log in</td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft SSO</td>
+                        <td>Enterprise SSO with Azure AD + MFA</td>
+                    </tr>
+                    <tr>
+                        <td>FIDO2/WebAuthn</td>
+                        <td>Hardware security key or biometric authentication</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>💡 Why Modern Authentication?</h2>
+            <ul>
+                <li>Better Security: MFA, less reliance on passwords.</li>
+                <li>Improved UX: SSO, passwordless login.</li>
+                <li>Scalability: Stateless tokens work well in distributed systems.</li>
+                <li>Compliance: Meets modern security standards (like GDPR, HIPAA, etc.).</li>
+            </ul>
+            <p>If you're building a modern web or mobile app today, using modern authentication (like OAuth2 with JWTs, or passwordless login) is generally the recommended route — and libraries like Passport.js can help bridge legacy and modern approaches.</p>
+        </section>
+
+        <section>
+            <p>Great question — you're essentially comparing modern authentication as a concept vs. Passport.js as a tool.</p>
+            <p>Let’s break it down clearly:</p>
+
+            <h2>🧠 Concept vs. Tool</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Modern Authentication</th>
+                        <th>Passport.js</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>What it is</td>
+                        <td>A conceptual approach using modern protocols and practices</td>
+                        <td>A Node.js middleware to implement authentication strategies</td>
+                    </tr>
+                    <tr>
+                        <td>Scope</td>
+                        <td>High-level standards & practices</td>
+                        <td>Implementation library for Express apps</td>
+                    </tr>
+                    <tr>
+                        <td>Examples</td>
+                        <td>OAuth 2.0, OpenID Connect, SSO, MFA, JWT, Passwordless</td>
+                        <td>LocalStrategy, JWTStrategy, Google OAuth via Passport</td>
+                    </tr>
+                    <tr>
+                        <td>Supports Modern Auth?</td>
+                        <td>It is modern auth</td>
+                        <td>Yes, partially — it supports modern auth through plugins</td>
+                    </tr>
+                    <tr>
+                        <td>Use Case</td>
+                        <td>Design secure, scalable, user-friendly auth</td>
+                        <td>Implement login in a Node.js app using strategies</td>
+                    </tr>
+                    <tr>
+                        <td>Token-based support</td>
+                        <td>Core to modern auth (e.g., JWT, OAuth2)</td>
+                        <td>Supports token strategies like JWT and OAuth2 via plugins</td>
+                    </tr>
+                    <tr>
+                        <td>MFA, SSO, Passwordless</td>
+                        <td>Fully embraces these</td>
+                        <td>Possible, but requires extra work or external services</td>
+                    </tr>
+                    <tr>
+                        <td>Vendor-neutral?</td>
+                        <td>Yes</td>
+                        <td>Yes — integrates with many providers via strategies</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔍 Deeper Comparison</h2>
+            <p>✅ What Modern Authentication Looks Like</p>
+            <p>Modern auth often includes:</p>
+            <ul>
+                <li>OAuth 2.0 for authorization (e.g., Google login)</li>
+                <li>OpenID Connect (OIDC) for authentication (e.g., identify user)</li>
+                <li>JWT tokens instead of sessions (stateless)</li>
+                <li>MFA or passwordless flows (e.g., magic links, SMS, biometrics)</li>
+                <li>SSO via identity providers (like Azure AD, Okta)</li>
+            </ul>
+
+            <p>🔧 What Passport.js Offers</p>
+            <p>Passport.js provides the building blocks:</p>
+            <ul>
+                <li>passport-local → traditional username/password</li>
+                <li>passport-jwt → modern token-based auth</li>
+                <li>passport-google-oauth20, passport-facebook, etc. → OAuth2-based</li>
+                <li>Session management → older model, but still usable</li>
+                <li>You wire up your own logic (e.g., token handling, SSO, user DB)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 How They Work Together</h2>
+            <p>Think of it like this:</p>
+            <p>🏗️ Passport.js is a tool that helps you implement parts of modern authentication in your Node.js app.</p>
+            <p>You can use Passport.js to:</p>
+            <ul>
+                <li>Authenticate users with Google (OIDC)</li>
+                <li>Handle JWT tokens for APIs</li>
+                <li>Support multi-provider SSO</li>
+            </ul>
+            <p>However:</p>
+            <ul>
+                <li>Passport.js does not enforce modern best practices — you must build that structure yourself.</li>
+                <li>
+                    For truly modern systems (e.g., microservices, SPAs, passwordless login), you might use dedicated services like:
+                    <ul>
+                        <li>Auth0</li>
+                        <li>Firebase Auth</li>
+                        <li>AWS Cognito</li>
+                        <li>Keycloak</li>
+                        <li>Or hand-roll with JWT, OAuth2 libraries, etc.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🏁 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Answer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Is Passport.js modern authentication?</td>
+                        <td>No, but it can be used to implement modern authentication features.</td>
+                    </tr>
+                    <tr>
+                        <td>Can Passport.js support modern auth like OAuth2, JWT, and SSO?</td>
+                        <td>Yes — but requires configuration and manual setup.</td>
+                    </tr>
+                    <tr>
+                        <td>Should I use Passport.js in a modern app?</td>
+                        <td>✅ Use it if you're in Node.js and want flexibility. ❌ Consider auth providers if you want faster implementation or advanced features like MFA, SSO, and user management out-of-the-box.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

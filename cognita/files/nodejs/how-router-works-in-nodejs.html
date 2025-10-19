@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Routers</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Routers</h1>
+                    <p class="subtitle">Great question! In Node.js, especially when using Express.js, routers are a way to modularize your application — separating your route logic into manageable chunks. This is super useful for keeping your code organized as your app grows.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🚦 What is a Router in Express?</h2>
+            <p>A Router in Express behaves like a mini application. It has its own set of:</p>
+            <ul>
+                <li>Routes (.get(), .post(), etc.)</li>
+                <li>Middleware (.use() )</li>
+                <li>Param handlers</li>
+            </ul>
+            <p>You can mount routers on specific paths, helping you group related routes together.</p>
+        </section>
+
+        <section>
+            <h2>✅ Basic Example of a Router</h2>
+            <p>Step 1: Create a router file (routes/userRoutes.js)</p>
+            <pre><code>
+const express = require('express');
+const router = express.Router(); // Create a new router instance
+
+// Define routes on the router
+router.get('/', (req, res) => {
+  res.send('User Home Page');
+});
+
+router.get('/:id', (req, res) => {
+  res.send(`User ID: ${req.params.id}`);
+});
+
+module.exports = router;
+            </code></pre>
+
+            <p>Step 2: Use the router in your main file (app.js)</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+// Import the router
+const userRoutes = require('./routes/userRoutes');
+
+// Mount the router on '/users' path
+app.use('/users', userRoutes);
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});
+            </code></pre>
+
+            <p>Output:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Response</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>/users</td>
+                        <td>User Home Page</td>
+                    </tr>
+                    <tr>
+                        <td>/users/123</td>
+                        <td>User ID: 123</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📌 Why Use Routers?</h2>
+            <ul>
+                <li>Separation of concerns – keep user routes separate from admin/product/etc.</li>
+                <li>Maintainability – easier to debug and manage</li>
+                <li>Reusability – routers can be imported anywhere</li>
+                <li>Cleaner code structure</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 How It Works Internally</h2>
+            <ul>
+                <li>express.Router() returns a middleware-like object.</li>
+                <li>When you call app.use('/path', router), Express delegates all matching requests to that router.</li>
+                <li>The router behaves just like the main app — but it’s scoped to the /path prefix.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 Example with Middleware in Router</h2>
+            <pre><code>
+const router = express.Router();
+
+// Middleware only for this router
+router.use((req, res, next) => {
+  console.log('Time:', Date.now());
+  next();
+});
+
+router.get('/', (req, res) => {
+  res.send('User Dashboard');
+});
+
+module.exports = router;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 Nested Routers (Optional Advanced Concept)</h2>
+            <p>You can even nest routers, especially for things like API versions:</p>
+            <pre><code>
+app.use('/api/v1/users', userRoutes);
+            </code></pre>
+
+            <p>This results in clean RESTful paths like:</p>
+            <pre><code>
+GET /api/v1/users
+GET /api/v1/users/:id
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>express.Router()</td>
+                        <td>Creates a mini Express instance</td>
+                    </tr>
+                    <tr>
+                        <td>router.get() / .post()</td>
+                        <td>Define route handlers</td>
+                    </tr>
+                    <tr>
+                        <td>app.use('/path', router)</td>
+                        <td>Mount router at path</td>
+                    </tr>
+                    <tr>
+                        <td>Good for</td>
+                        <td>Modularity, scalability, organization</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

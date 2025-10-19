@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS Certificate Manager (ACM)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS Certificate Manager (ACM)</h1>
+                    <p class="subtitle">
+                        AWS Certificate Manager (ACM) is an AWS service that lets you provision, manage, and deploy SSL/TLS certificates for use with AWS services and your internal connected resources. These certificates are used to secure network communications and establish the identity of your websites over HTTPS.
+                        <p>Here’s a quick overview 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Key Features</h2>
+            <ol>
+                <li>Free Public Certificates
+                    <ul>
+                        <li>AWS issues free SSL/TLS certificates for domains you own (e.g., api.trycastanet.com).</li>
+                        <li>Managed by AWS — automatic renewal before expiry.</li>
+                    </ul>
+                </li>
+                <li>
+                    Automatic Renewal
+                    <ul>
+                        <li>ACM automatically renews certificates that are in use (e.g., on CloudFront, ALB, or API Gateway).</li>
+                    </ul>
+                </li>
+                <li>
+                    Easy Integration
+                    <ul>
+                        <li>
+                            Works seamlessly with:
+                            <ul>
+                                <li>Amazon CloudFront</li>
+                                <li>Elastic Load Balancing (ALB/NLB)</li>
+                                <li>Amazon API Gateway</li>
+                                <li>AWS Elastic Beanstalk</li>
+                                <li>AWS App Runner</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Private Certificates
+                    <ul>
+                        <li>You can issue internal (non-public) certificates via AWS Private CA for internal systems.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🪪 Types of Certificates</h2>
+            <ul>
+                <li>Public Certificates – For domains validated via DNS or email.</li>
+                <li>Private Certificates – For internal services using AWS Private CA.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🌐 Common Use Case: Custom Domain for API Gateway</h2>
+            <p>If you’re using API Gateway with a custom domain (e.g., api.trycastanet.com), here’s the setup process:</p>
+            <ol>
+                <li>
+                    Request a Certificate
+                    <pre><code>
+aws acm request-certificate \
+  --domain-name "api.trycastanet.com" \
+  --validation-method DNS \
+  --region us-east-1
+                    </code></pre>
+                    <p>Note: API Gateway custom domains must use certificates in us-east-1.</p>
+                </li>
+                <li>
+                    Validate the Domain
+                    <ul>
+                        <li>ACM gives you a DNS record (CNAME).</li>
+                        <li>Add it to your domain’s DNS (e.g., Route 53, Cloudflare, etc.).</li>
+                        <li>Wait until ACM shows “Issued” status.</li>
+                    </ul>
+                </li>
+                <li>
+                    Attach Certificate to API Gateway
+                    <ul>
+                        <li>
+                            Use Serverless Framework or AWS Console to associate the certificate ARN with your custom domain.
+                            <pre><code>
+custom:
+  customDomain:
+    domainName: api.trycastanet.com
+    certificateArn: arn:aws:acm:us-east-1:XXXXXXXXXXXX:certificate/abc123
+    basePath: ""
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Deploy API
+                    <ul>
+                        <li>Run sls deploy or redeploy the API Gateway custom domain.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧩 Useful CLI Commands</h2>
+            <p>List all certificates:</p>
+            <pre><code>
+aws acm list-certificates --region us-east-1
+            </code></pre>
+
+            <p>Describe a specific certificate:</p>
+            <pre><code>
+aws acm describe-certificate \
+  --certificate-arn arn:aws:acm:us-east-1:XXXXXXXXXXXX:certificate/abc123
+            </code></pre>
+
+            <p>Delete a certificate:</p>
+            <pre><code>
+aws acm delete-certificate \
+  --certificate-arn arn:aws:acm:us-east-1:XXXXXXXXXXXX:certificate/abc123
+            </code></pre>
+        </section>
+
+        <section>
+            <pre><code>
+aws acm request-certificate \
+  --domain-name "api.trycastanet.com" \
+  --validation-method DNS \
+  --region us-east-1
+            </code></pre>
+
+            <p>The command you provided is correct for requesting an AWS ACM (AWS Certificate Manager) certificate using DNS validation. Here's a detailed breakdown and what to expect next:</p>
+            <ul>
+                <li><b>aws acm request-certificate</b>: Requests a new SSL/TLS certificate.</li>
+                <li><b>--domain-name "api.trycastanet.com"</b>: The exact domain you want the certificate for.</li>
+                <li><b>--validation-method DNS</b>: Uses DNS validation (you will need to add a DNS record to prove domain ownership).</li>
+                <li><b>--region us-east-1</b>: ACM certificates for use with CloudFront must be in us-east-1. For API Gateway regional endpoints, you can use your endpoint’s region.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What happens after running this</h2>
+            <ol>
+                <li>AWS will issue a Certificate ARN in the response.</li>
+                <li>ACM will provide DNS validation records (CNAME) you must add to your domain’s DNS.</li>
+                <li>Once the DNS record propagates, ACM validates the domain and issues the certificate.</li>
+                <li>
+                    After issuance, you can attach it to:
+                    <ul>
+                        <li>API Gateway custom domains</li>
+                        <li>CloudFront distributions</li>
+                        <li>Elastic Load Balancers</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <p>Would you like me to show the step-by-step setup for ACM + API Gateway + Lambda custom domain (like api.trycastanet.com)?</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

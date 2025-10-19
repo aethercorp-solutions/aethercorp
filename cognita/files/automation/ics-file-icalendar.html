@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>.ics file (also known as an iCalendar file)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">.ics file (also known as an iCalendar file)</h1>
+                    <p class="subtitle">A .ics file (also known as an iCalendar file) is a plain text file format used to store calendar information. It's commonly used to share event details between different calendar applications and systems.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 What does a .ics file contain?</h2>
+            <p>An .ics file can include details such as:</p>
+            <ul>
+                <li>Event title (summary)</li>
+                <li>Start and end time/date</li>
+                <li>Location</li>
+                <li>Description or notes</li>
+                <li>Recurrence rules (e.g. repeating weekly)</li>
+                <li>Alarms or reminders</li>
+                <li>Organizer and attendee information</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 What is it used for?</h2>
+            <ul>
+                <li>Sending meeting invites via email</li>
+                <li>Subscribing to calendars (e.g., sports schedules, holidays)</li>
+                <li>Importing/exporting events between calendar applications</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Common apps that use .ics files:</h2>
+            <ul>
+                <li>Google Calendar</li>
+                <li>Microsoft Outlook</li>
+                <li>Apple Calendar (iCal)</li>
+                <li>Mozilla Thunderbird with Lightning</li>
+                <li>Any app that supports the iCalendar standard</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 How to open or use an .ics file?</h2>
+            <ul>
+                <li>Double-click it – it often opens in your default calendar app.</li>
+                <li>Import it manually – within your calendar app (e.g., "File > Import").</li>
+                <li>Subscribe to a .ics URL – for live calendar updates (e.g., syncing public calendars).</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>You can create a .ics (iCalendar) file in several ways, depending on how you want to use it: manually, through a calendar app, or with code.</p>
+            <h2>✅ 1. Create a .ics file Manually (Basic Text File)</h2>
+            <p>You can create a .ics file using any text editor (e.g., Notepad, VS Code):</p>
+            <p>🔹 Sample .ics File Content:</p>
+            <pre><code>
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Your Company//Your Product//EN
+BEGIN:VEVENT
+UID:20251005T090000@example.com
+DTSTAMP:20251005T090000Z
+DTSTART:20251006T140000Z
+DTEND:20251006T150000Z
+SUMMARY:Team Meeting
+DESCRIPTION:Discuss Q4 targets.
+LOCATION:Meeting Room 1
+END:VEVENT
+END:VCALENDAR
+            </code></pre>
+            <p>📌 Instructions:</p>
+            <ol>
+                <li>Open a text editor.</li>
+                <li>Paste the content above and customize it (dates, summary, location, etc.).</li>
+                <li>Save the file with a .ics extension, e.g., meeting.ics.</li>
+                <li>You can now open or import this into Google Calendar, Outlook, etc.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ 2. Create a .ics File Using Google Calendar</h2>
+            <p>Google Calendar doesn’t export single events as .ics directly, but here’s a workaround:</p>
+            <p>Steps:</p>
+            <ol>
+                <li>Create an event in Google Calendar.</li>
+                <li>Click on the event → Click the 3-dot menu → Choose "Publish event".</li>
+                <li>Copy the ICS link or use it to download the .ics file.</li>
+            </ol>
+            <p>For full calendar export:</p>
+            <ul>
+                <li>Go to Settings > Import & export > Export, and Google will give you a .zip with .ics files.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 3. Create a .ics File in Microsoft Outlook</h2>
+            <ol>
+                <li>Create a calendar event in Outlook.</li>
+                <li>Click File > Save As.</li>
+                <li>Choose .ics as the format.</li>
+                <li>Save the file.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ 4. Generate .ics Files Programmatically</h2>
+            <p>If you're working with a website or app, you can create .ics files dynamically:</p>
+            <p>Example in Python:</p>
+            <pre><code>
+with open("event.ics", "w") as f:
+    f.write("""BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:Doctor Appointment
+DTSTART:20251007T100000Z
+DTEND:20251007T110000Z
+LOCATION:Clinic
+DESCRIPTION:Annual checkup
+END:VEVENT
+END:VCALENDAR""")
+            </code></pre>
+        </section>
+
+        <section>
+            <p>To read a .ics file programmatically in React Native, you'll need to:</p>
+            <ol>
+                <li>Access or load the file (e.g. from local storage or a URL).</li>
+                <li>Parse the contents of the .ics file (it's plain text based on the iCalendar format).</li>
+                <li>Extract the event data (like SUMMARY, DTSTART, etc.).</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ Step-by-Step Guide</h2>
+            <p>🔹 1. Install Required Packages</p>
+            <p>You’ll need a parser library to make your life easier. There’s a Node.js-compatible package called ical.js
+                , and it can work with React Native (with small tweaks).</p>
+            <p>Option A: Use ical.js (recommended for complex files)</p>
+            <pre><code>
+npm install ical.js
+            </code></pre>
+            <p>⚠️ You might need a polyfill for fs, Buffer, or other Node modules depending on your setup.</p>
+        </section>
+
+        <section>
+            <h2>🔹 2. Read the .ics File</h2>
+            <p>You can read the file from:</p>
+            <ol>
+                <li>Local assets</li>
+                <li>Remote URL</li>
+                <li>Device file system (using libraries like react-native-fs)</li>
+            </ol>
+            <p>Example with react-native-fs:</p>
+            <pre><code>
+npm install react-native-fs
+            </code></pre>
+
+            <pre><code>
+import RNFS from 'react-native-fs';
+
+// Path to your .ics file (can be local or downloaded)
+const path = RNFS.DocumentDirectoryPath + '/calendar.ics';
+
+RNFS.readFile(path)
+  .then(content => {
+    console.log("ICS file content:", content);
+    // Pass to parser here
+  })
+  .catch(err => {
+    console.error("Failed to read file", err);
+  });
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 3. Parse with ical.js</h2>
+            <pre><code>
+import ICAL from 'ical.js';
+
+// Assuming you have the .ics content as a string
+function parseICS(icsContent) {
+  const jcalData = ICAL.parse(icsContent);
+  const comp = new ICAL.Component(jcalData);
+  const vevents = comp.getAllSubcomponents('vevent');
+
+  const events = vevents.map(eventComp => {
+    const event = new ICAL.Event(eventComp);
+    return {
+      summary: event.summary,
+      description: event.description,
+      location: event.location,
+      start: event.startDate.toJSDate(),
+      end: event.endDate.toJSDate(),
+    };
+  });
+
+  return events;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 4. Example Result</h2>
+            <pre><code>
+[
+  {
+    "summary": "Team Meeting",
+    "description": "Discuss Q4 targets.",
+    "location": "Meeting Room 1",
+    "start": "2025-10-06T14:00:00.000Z",
+    "end": "2025-10-06T15:00:00.000Z"
+  }
+]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🛠️ Alternative: Parse ICS Manually (for simple use-cases)</h2>
+            <p>If your .ics files are basic and you want to avoid dependencies:</p>
+            <pre><code>
+function parseICSManually(icsText) {
+    const events = [];
+    const lines = icsText.split(/\r?\n/);
+    let event = {};
+    let inEvent = false;
+    
+    lines.forEach(line => {
+        if (line.startsWith('BEGIN:VEVENT')) {
+        inEvent = true;
+        event = {};
+        } else if (line.startsWith('END:VEVENT')) {
+        inEvent = false;
+        events.push(event);
+        } else if (inEvent) {
+        if (line.startsWith('SUMMARY:')) event.summary = line.replace('SUMMARY:', '');
+        if (line.startsWith('DTSTART:')) event.start = line.replace('DTSTART:', '');
+        if (line.startsWith('DTEND:')) event.end = line.replace('DTEND:', '');
+        if (line.startsWith('DESCRIPTION:')) event.description = line.replace('DESCRIPTION:', '');
+        if (line.startsWith('LOCATION:')) event.location = line.replace('LOCATION:', '');
+        }
+    });
+    
+    return events;
+    }                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Tool</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Read local/remote files</td>
+                        <td>react-native-fs, fetch()</td>
+                    </tr>
+                    <tr>
+                        <td>Parse .ics content</td>
+                        <td>ical.js or custom parser</td>
+                    </tr>
+                    <tr>
+                        <td>Use data</td>
+                        <td>Display in your app, sync with calendar, etc.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

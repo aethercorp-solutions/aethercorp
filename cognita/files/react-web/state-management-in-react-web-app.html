@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>State management in a React web app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">State management in a React web app</h1>
+                    <p class="subtitle">State management in a React web app is about how you handle and synchronize data (state) across your components so that your UI stays consistent and reactive.</p>
+                    <p>Here’s a breakdown of React state management, from simplest to most advanced:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 1. Local State (useState, useReducer)</h2>
+            <p>Best for: small to medium components or isolated UI states.</p>
+            <p>Example (using useState)</p>
+
+            <pre><code>
+import React, { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;div&gt;
+        &lt;p&gt;Count: {count}&lt;/p&gt;
+        &lt;button onClick={() => setCount(count + 1)}>Increment&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+            </code></pre>
+
+            <p>Example (using useReducer for complex logic)</p>
+            <pre><code>
+import React, { useReducer } from "react";
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + 1 };
+    case "decrement":
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+  return (
+    &lt;&gt;
+        &lt;p&gt;Count: &#123;state.count&#125;&lt;/p&gt;
+        &lt;button onClick=&#123;() =&gt; dispatch(&#123; type: &quot;increment&quot; &#125;)&#125;&gt;+&lt;/button&gt;
+        &lt;button onClick=&#123;() =&gt; dispatch(&#123; type: &quot;decrement&quot; &#125;)&#125;&gt;−&lt;/button&gt;
+    &lt;/&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🌐 2. Global State (Context API)</h2>
+            <p>Best for: sharing state across multiple components (like authentication, themes, user preferences).</p>
+            <p>Example: Context for authentication</p>
+
+            <pre><code>
+// AuthContext.jsx
+import React, { createContext, useContext, useState } from "react";
+
+const AuthContext = createContext();
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+
+  const login = (userData) => setUser(userData);
+  const logout = () => setUser(null);
+
+  return (
+    &lt;AuthContext.Provider value={{ user, login, logout }}&gt;
+      {children}
+    &lt;/AuthContext.Provider&gt;
+  );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
+}
+            </code></pre>
+
+            <p>Then wrap your app:</p>
+            <pre><code>
+// App.jsx
+import { AuthProvider } from "./context/AuthContext";
+import Dashboard from "./pages/Dashboard";
+
+function App() {
+  return (
+    &lt;AuthProvider&gt;
+        &lt;Dashboard /&gt;
+    &lt;/AuthProvider&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ 3. Third-Party State Libraries</h2>
+            <p>When your app grows, Context alone can become inefficient or hard to scale.</p>
+            <p>🔹 Redux Toolkit</p>
+            <p>Best for: large apps, predictable state updates, complex logic.</p>
+
+            <pre><code>
+npm install @reduxjs/toolkit react-redux
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+// store.js
+import { configureStore, createSlice } from "@reduxjs/toolkit";
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: { value: 0 },
+  reducers: {
+    increment: (state) => { state.value += 1; },
+  },
+});
+
+export const { increment } = counterSlice.actions;
+export const store = configureStore({ reducer: { counter: counterSlice.reducer } });
+            </code></pre>
+
+            <pre><code>
+// App.jsx
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { store, increment } from "./store";
+
+function Counter() {
+  const count = useSelector((state) => state.counter.value);
+  const dispatch = useDispatch();
+  return (
+    &lt;button onClick={() => dispatch(increment())}&gt;
+      Count: {count}
+    &lt;/button&gt;
+  );
+}
+
+export default function App() {
+  return (
+    &lt;Provider store={store}&gt;
+        &lt;Counter /&gt;
+    &lt;/Provider&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Zustand (lightweight alternative)</h2>
+            <p>Best for: simpler global state without boilerplate.</p>
+            <pre><code>
+npm install zustand
+            </code></pre>
+
+            <p>Example:</p>
+
+            <pre><code>
+import { create } from "zustand";
+
+const useStore = create((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+}));
+
+function Counter() {
+  const { count, increment } = useStore();
+  return &lt;button onClick={increment}&gt;Count: {count}&lt;/button&gt;;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Recoil / Jotai / MobX</h2>
+            <p>Other good options, depending on your needs:</p>
+            <ul>
+                <li>Recoil → integrates closely with React’s concurrent features.</li>
+                <li>Jotai → minimal, atom-based state management.</li>
+                <li>MobX → reactive programming for dynamic apps.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔄 4. Server State (React Query, SWR)</h2>
+            <p>Best for: managing remote data (API calls, caching, background updates).</p>
+            <p>Example (React Query)</p>
+
+            <pre><code>
+npm install @tanstack/react-query
+            </code></pre>
+
+            <pre><code>
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+function Users() {
+  const { data, isLoading, error } = useQuery(["users"], async () => {
+    const res = await axios.get("/api/users");
+    return res.data;
+  });
+
+  if (isLoading) return &lt;p>Loading...&lt;/p&gt;;
+  if (error) return &lt;p>Error!</p>;
+
+  return data.map((user) => &lt;p key={user.id}>{user.name}&lt;/p&gt;);
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Recommended Combinations</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>App Size</th>
+                        <th>Recommended Setup</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Small</td>
+                        <td>useState, useContext</td>
+                    </tr>
+                    <tr>
+                        <td>Medium</td>
+                        <td>Context + useReducer or Zustand</td>
+                    </tr>
+                    <tr>
+                        <td>Large</td>
+                        <td>Redux Toolkit + React Query</td>
+                    </tr>
+                    <tr>
+                        <td>API-heavy</td>
+                        <td>React Query + local state</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

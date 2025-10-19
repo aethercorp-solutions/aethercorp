@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Creating a CLI (Command Line Interface)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Creating a CLI (Command Line Interface)</h1>
+                    <p class="subtitle">Creating a CLI (Command Line Interface) from scratch involves writing a program that can parse user input from the terminal, execute actions based on commands or flags, and provide helpful output. Here’s a clear step-by-step guide to creating one from scratch, using Python as an example language (though the same principles apply in most languages).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Step-by-Step: Building a CLI from Scratch in Python</h2>
+            <p>🧱 1. Decide What Your CLI Should Do</p>
+            <p>Before coding, answer:</p>
+            <ul>
+                <li>What is the purpose of the CLI?</li>
+                <li>What commands or options will it support?</li>
+            </ul>
+            <p>Example CLI: mycli greet --name John</p>
+
+            <p>🛠️ 2. Create a Basic Script</p>
+            <p>Create a file: mycli.py</p>
+            <pre><code>
+#!/usr/bin/env python3
+import sys
+
+def main():
+    print("Arguments:", sys.argv)
+
+if __name__ == "__main__":
+    main()
+            </code></pre>
+
+            <p>Make it executable:</p>
+            <pre><code>
+chmod +x mycli.py
+            </code></pre>
+
+            <p>Run it:</p>
+            <pre><code>
+./mycli.py hello world
+            </code></pre>
+
+            <p>You'll see:</p>
+            <pre><code>
+Arguments: ['./mycli.py', 'hello', 'world']
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ 3. Parse Arguments Manually (from Scratch)</h2>
+            <pre><code>
+import sys
+
+def main():
+    if len(sys.argv) &lt; 2:
+        print("Usage: mycli <command> [options]")
+        return
+
+    command = sys.argv[1]
+
+    if command == "greet":
+        name = "there"
+        if "--name" in sys.argv:
+            name_index = sys.argv.index("--name") + 1
+            if name_index &lt; len(sys.argv):
+                name = sys.argv[name_index]
+        print(f"Hello, {name}!")
+    else:
+        print(f"Unknown command: {command}")
+
+if __name__ == "__main__":
+    main()
+            </code></pre>
+
+            <p>Try:</p>
+            <pre><code>
+./mycli.py greet --name Alice
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 4. Make it a Real CLI Tool (Optional)</h2>
+            <p>You can install it locally using setup.py or pyproject.toml, or link it manually:</p>
+            <pre><code>
+ln -s $(pwd)/mycli.py /usr/local/bin/mycli
+            </code></pre>
+
+            <p>Then run it from anywhere:</p>
+            <pre><code>
+mycli greet --name Alice
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧰 5. Alternative: Use argparse or Libraries (Not From Scratch)</h2>
+            <p>If you're open to using libraries:</p>
+            <pre><code>
+import argparse
+
+parser = argparse.ArgumentParser(description="A simple greeting CLI")
+parser.add_argument("command", choices=["greet"])
+parser.add_argument("--name", help="Name to greet", default="there")
+
+args = parser.parse_args()
+
+if args.command == "greet":
+    print(f"Hello, {args.name}!")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ CLI from Scratch: Key Takeaways</h2>
+            <ul>
+                <li>Use sys.argv to read arguments directly (for a truly "from scratch" approach).</li>
+                <li>Implement command parsing logic manually.</li>
+                <li>Add error handling, help messages, and validation for user-friendly output.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Sure! Let’s look at how to build a CLI from scratch in different programming languages – each using only built-in tools (no CLI libraries like argparse or commander, unless you ask).</p>
+            <h2>🚀 1. Node.js (JavaScript)</h2>
+            <p>🔧 cli.js</p>
+            <pre><code>
+#!/usr/bin/env node
+
+const args = process.argv.slice(2); // skip ['node', 'cli.js']
+
+if (args.length === 0) {
+  console.log("Usage: cli.js greet --name &lt;name&gt;");
+  process.exit(1);
+}
+
+const command = args[0];
+
+if (command === "greet") {
+  const nameIndex = args.indexOf("--name");
+  let name = "there";
+  if (nameIndex !== -1 && nameIndex + 1 &lt; args.length) {
+    name = args[nameIndex + 1];
+  }
+  console.log(`Hello, ${name}!`);
+} else {
+  console.log(`Unknown command: ${command}`);
+}
+            </code></pre>
+
+            <p>▶️ Run it:</p>
+            <pre><code>
+chmod +x cli.js
+./cli.js greet --name Alice
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

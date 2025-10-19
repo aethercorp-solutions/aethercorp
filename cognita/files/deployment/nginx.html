@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Nginx</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Nginx</h1>
+                    <p class="subtitle">Sure! “Nginx” (pronounced engine-x) is a high-performance web server and reverse proxy server. It's widely used for serving static content, load balancing, and acting as a reverse proxy for HTTP, HTTPS, SMTP, POP3, and IMAP protocols.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Here’s a quick breakdown of what Nginx does and where it's used:</p>
+            <h2>🔧 Common Use Cases</h2>
+            <ol>
+                <li>Web Server – Serving static content like HTML, CSS, JS, images.</li>
+                <li>Reverse Proxy – Forwarding client requests to other servers (like application servers).</li>
+                <li>Load Balancer – Distributing traffic across multiple backend servers.</li>
+                <li>SSL Termination – Handling HTTPS encryption/decryption.</li>
+                <li>Caching – Improves performance by caching responses.</li>
+                <li>API Gateway – Handling microservices traffic.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📦 Example Nginx Configuration</h2>
+            <p>A simple configuration to serve a static site:</p>
+            <pre><code>
+server {
+    listen 80;
+    server_name example.com;
+
+    root /var/www/html;
+    index index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 Nginx vs Apache</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Nginx</th>
+                        <th>Apache</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Architecture</td>
+                        <td>Event-driven</td>
+                        <td>Process/thread-based</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>Better under high load</td>
+                        <td>Can be slower</td>
+                    </tr>
+                    <tr>
+                        <td>Static Content</td>
+                        <td>Very fast</td>
+                        <td>Decent</td>
+                    </tr>
+                    <tr>
+                        <td>Configuration</td>
+                        <td>More complex for beginners</td>
+                        <td>Easier to start</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📚 Want to Do Something Specific with Nginx?</h2>
+            <p>Let me know if you're:</p>
+            <ul>
+                <li>Trying to set up a reverse proxy?</li>
+                <li>Using Nginx with Docker?</li>
+                <li>Hosting multiple sites (virtual hosts)?</li>
+                <li>Working with SSL (HTTPS)?</li>
+                <li>Using it with Node.js, Python (Flask/Django), or PHP?</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Great — using Nginx with Node.js is a common and powerful setup. Nginx acts as a reverse proxy in front of your Node.js app, handling incoming web requests, SSL termination, and load balancing, while Node.js handles the application logic.</p>
+            <h2>✅ Why Use Nginx with Node.js?</h2>
+            <ul>
+                <li>Handles static files more efficiently than Node.js</li>
+                <li>Improves performance by offloading HTTP work</li>
+                <li>Adds security layers (e.g., only expose Nginx to the internet)</li>
+                <li>Easier SSL setup with Let's Encrypt</li>
+                <li>Enables load balancing for multiple Node processes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔧 Typical Setup</h2>
+            <p>Let’s say your Node.js app is running on:</p>
+            <ul>
+                <li>localhost:3000</li>
+            </ul>
+            <p>You want Nginx to:</p>
+            <ul>
+                <li>Listen on port 80</li>
+                <li>Forward requests to Node.js</li>
+                <li>Optionally serve static files</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🗂️ 1. Node.js App Example</h2>
+            <p>Start with a basic Express app:</p>
+            <pre><code>
+// app.js
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) => {
+    res.send('Hello from Node.js!');
+});
+
+app.listen(3000, () => {
+    console.log('Server running on http://localhost:3000');
+});
+            </code></pre>
+
+            <p>Run it:</p>
+            <pre><code>
+node app.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🛠️ 2. Nginx Config (Reverse Proxy)</h2>
+            <p>Open your Nginx config file (often in /etc/nginx/sites-available/default or /etc/nginx/nginx.conf):</p>
+            <pre><code>
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}                
+            </code></pre>
+
+            <p>Then restart Nginx:</p>
+            <pre><code>
+sudo nginx -t      # Test config
+sudo systemctl restart nginx
+            </code></pre>
+
+            <p>Now your Node.js app is accessible via http://yourdomain.com</p>
+        </section>
+
+        <section>
+            <h2>🔐 3. Optional: Add SSL with Let's Encrypt</h2>
+            <p>Use <a href="https://certbot.eff.org/">Certbot</a> to enable HTTPS</p>
+            <pre><code>
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📁 4. Optional: Serve Static Files via Nginx</h2>
+            <p>You can configure Nginx to serve files like images or stylesheets:</p>
+            <pre><code>
+location /static/ {
+    root /var/www/html/;
+}                
+            </code></pre>
+
+            <p>And have your Node app reference those assets from /static/...</p>
+        </section>
+
+        <section>
+            <h2>🧠 Summary</h2>
+            <ul>
+                <li>Nginx is your public-facing server.</li>
+                <li>Node.js runs your app logic behind the scenes.</li>
+                <li>You use reverse proxying to connect them securely and efficiently.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Making a web server on your local machine accessible from the internet is possible — but it requires a few networking and security steps, because your local computer is behind a router and likely has a dynamic IP from your ISP.</p>
+            <p>Here’s a clear step-by-step breakdown:</p>
+
+            <h2>🧭 Overview</h2>
+            <p>Your local setup:</p>
+            <pre><code>
+[Internet] 🌐
+     ⬇
+ [Your Router] (Public IP)
+     ⬇
+ [Your Computer] (Local IP, e.g., 192.168.1.5)
+            </code></pre>
+
+            <p>To make your local server (e.g., running Nginx + Node.js on port 3000) available publicly, you need to:</p>
+        </section>
+
+        <section>
+            <h2>✅ Step-by-Step Guide</h2>
+            <p>1. 🛠️ Run the Server Locally</p>
+            <p>Make sure your app is running and accessible locally.</p>
+            <p>Example (Node.js):</p>
+
+            <pre><code>
+node app.js
+            </code></pre>
+
+            <p>Test:</p>
+            <pre><code>
+curl http://localhost:3000
+            </code></pre>
+
+            <p>2. 📡 Find Your Local IP Address</p>
+            <p>On your computer, find your private IP:</p>
+            <ul>
+                <li>Windows: ipconfig in Command Prompt</li>
+                <li>Linux/macOS: ip a or ifconfig</li>
+            </ul>
+
+            <p>Example result:</p>
+            <pre><code>
+192.168.1.5
+            </code></pre>
+            <p>This is your machine’s IP on the local network.</p>
+        </section>
+
+        <section>
+            <h2>3. 🚪 Set Up Port Forwarding on Your Router</h2>
+            <p>You need to forward a port from your public IP to your local IP.</p>
+            <p>How:</p>
+            <ul>
+                <li>Login to your router's admin interface (usually 192.168.1.1 or similar)</li>
+                <li>Look for a section like Port Forwarding or NAT</li>
+                <li>Add a rule:</li>
+            </ul>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Setting</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>External Port</td>
+                        <td>80 (or another public port)</td>
+                    </tr>
+                    <tr>
+                        <td>Internal IP</td>
+                        <td>192.168.1.5 (your machine)</td>
+                    </tr>
+                    <tr>
+                        <td>Internal Port</td>
+                        <td>3000 (Node.js app port)</td>
+                    </tr>
+                    <tr>
+                        <td>Protocol</td>
+                        <td>TCP</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>➡️ This means anyone visiting your public IP on port 80 will be forwarded to your local server on port 3000.</p>
+        </section>
+
+        <section>
+            <h2>4. 🌐 Find Your Public IP Address</h2>
+            <p>Visit:</p>
+            <ul>
+                <li><a href="https://whatismyipaddress.com">https://whatismyipaddress.com</a></li>
+                <li>
+                    Or run:
+                    <pre><code>
+curl ifconfig.me
+                    </code></pre>
+                </li>
+            </ul>
+            <p>Example: 203.0.113.25</p>
+            <p>Now, try from another device or network:</p>
+            <pre><code>
+http://203.0.113.25
+            </code></pre>
+
+            <p>✅ If port forwarding and firewall are working, it should load your local server.</p>
+        </section>
+
+        <section>
+            <h2>5. 🔥 Allow Through Firewall (If Needed)</h2>
+            <p>On your computer, make sure the firewall allows incoming traffic on the port you're using.</p>
+            <p>On Linux (UFW):</p>
+            <pre><code>
+sudo ufw allow 3000
+            </code></pre>
+
+            <p>On Windows:</p>
+            <ul>
+                <li>Go to Windows Defender Firewall settings</li>
+                <li>Allow your app or port through public/private networks</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. 🔁 Handle Dynamic IP (Optional but Important)</h2>
+            <p>Your public IP can change (e.g., your ISP reassigns it).</p>
+            <p>To deal with this:</p>
+            <ul>
+                <li>
+                    Use a Dynamic DNS (DDNS) service like:
+                    <ul>
+                        <li><a href="https://www.noip.com/">No-IP</a></li>
+                        <li><a href="https://www.duckdns.org/">DuckDNS</a></li>
+                    </ul>
+                </li>
+                <li>Install their updater tool so your domain always points to your current IP</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. 🔐 Secure with HTTPS (Optional but Recommended)</h2>
+            <p>If you're exposing your local server to the internet:</p>
+            <ul>
+                <li>Use Let's Encrypt with DNS challenge (since port 80 might be blocked)</li>
+                <li>Or use Cloudflare Tunnel (more below)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚨 Alternative (and Safer) Option: Use a Tunnel</h2>
+            <p>If you can’t or don’t want to mess with router settings, use a tunneling service:</p>
+            <p>🔄 Tools:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ngrok</td>
+                        <td>Easiest option. Free tier gives you a temporary public URL.</td>
+                    </tr>
+                    <tr>
+                        <td>Cloudflare Tunnel</td>
+                        <td>Free and stable tunnel from internet to your machine. Good for production too.</td>
+                    </tr>
+                    <tr>
+                        <td>Localtunnel</td>
+                        <td>Simple, open-source tool for quick testing.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Example: Ngrok</p>
+            <pre><code>
+ngrok http 3000
+            </code></pre>
+
+            <p>Output:</p>
+            <pre><code>
+Forwarding: https://abc123.ngrok.io -> http://localhost:3000
+            </code></pre>
+
+            <p>Share that URL to access your local server anywhere.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>What You Do</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Run your local server (Node.js, Nginx, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Set up port forwarding on your router</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Open your firewall to allow the traffic</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Get your public IP (or use DDNS)</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Use tunneling (Ngrok, Cloudflare) if you can’t forward ports</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>(Optional) Secure with HTTPS</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Final Tip</h2>
+            <p>If this is for development or testing, tunneling (Ngrok, Cloudflare Tunnel) is easiest and safest.</p>
+            <p>If it's for production, hosting on a VPS (e.g., DigitalOcean, AWS) is safer and more reliable than using your home machine.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

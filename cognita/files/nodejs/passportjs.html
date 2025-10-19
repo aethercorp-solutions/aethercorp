@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Passport.js</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Passport.js</h1>
+                    <p class="subtitle">Passport.js is a popular authentication middleware for Node.js. It helps developers easily implement authentication in web applications.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔐 What does Passport.js do?</h2>
+            <p>Passport.js handles the authentication logic, allowing you to:</p>
+            <ul>
+                <li>
+                    Sign users in with:
+                    <ul>
+                        <li>Username/password (local strategy)</li>
+                        <li>
+                            OAuth providers like:
+                            <ul>
+                                <li>Google</li>
+                                <li>Facebook</li>
+                                <li>Twitter</li>
+                                <li>GitHub</li>
+                            </ul>
+                        </li>
+                        <li>JWT (JSON Web Tokens) for token-based auth</li>
+                        <li>And many more — over 500+ strategies!</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 How it works (High-Level Overview)</h2>
+            <ol>
+                <li>Middleware is added to your Express app.</li>
+                <li>Passport checks the request (e.g., login form or OAuth callback).</li>
+                <li>If authentication succeeds, it attaches a user object to the request.</li>
+                <li>You can access req.user in your routes to check if a user is logged in.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🛠 Example with Local Strategy</h2>
+            <pre><code>
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
+// Setup
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    // Replace with DB check
+    if (username === 'admin' && password === '1234') {
+      return done(null, { id: 1, name: 'Admin' });
+    } else {
+      return done(null, false, { message: 'Invalid credentials' });
+    }
+  }
+));
+
+// Required for sessions
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser((id, done) => {
+  // Replace with DB lookup
+  done(null, { id: 1, name: 'Admin' });
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Benefits</h2>
+            <ul>
+                <li>Modular: You can plug in just the strategies you need.</li>
+                <li>Minimalistic: Doesn’t force you into a specific structure.</li>
+                <li>Huge ecosystem: Supports a wide range of auth methods.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>❌ Drawbacks</h2>
+            <ul>
+                <li>A bit barebones — you'll often need to write extra logic for sessions, tokens, or error handling.</li>
+                <li>Some parts of the API can feel low-level or outdated compared to modern frameworks.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>When to use Passport.js?</h2>
+            <p>Use it when:</p>
+            <ul>
+                <li>You're building a Node.js/Express app.</li>
+                <li>You need multiple authentication methods (e.g., login + Google).</li>
+                <li>You want flexibility and don’t mind adding extra auth logic.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

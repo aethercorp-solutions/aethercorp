@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Google People API in both React Native (frontend) and Node.js (backend)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Google People API in both React Native (frontend) and Node.js (backend)</h1>
+                    <p class="subtitle">Integrating the Google People API in both React Native (frontend) and Node.js (backend) requires a secure and scalable architecture.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Here's how you can do it:</p>
+            <h2>🔄 Architecture Overview</h2>
+
+            <pre><code>
+[ React Native App ]
+     |
+     | --- (Google Sign-In) ---> [ Google OAuth Servers ]
+     |
+     | --- (Access Token) ---> [ Node.js Backend ]
+                                     |
+                                     | --- (Uses token to call)
+                                     v
+                         [ Google People API ]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧱 Tech Stack</h2>
+            <ul>
+                <li>React Native: Handles Google Sign-In and sends the access token to the backend.</li>
+                <li>Node.js/Express: Verifies the token and uses it to access the Google People API.</li>
+                <li>Google People API: Provides access to contacts, profile info, etc.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Step-by-Step Guide</h2>
+            <p>1. 🔐 Google Cloud Setup</p>
+
+            <p>Create a project on the Google Cloud Console</p>
+            <ul>
+                <li>Enable Google People API.</li>
+                <li>
+                    Create:
+                    <ul>
+                        <li>OAuth Client ID (Web) → For your Node.js backend.</li>
+                        <li>OAuth Client ID (iOS/Android) → For React Native.</li>
+                    </ul>
+                </li>
+                <li>Configure OAuth consent screen.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. 📱 React Native Frontend</h2>
+            <p>➕ Install dependencies</p>
+
+            <pre><code>
+npm install @react-native-google-signin/google-signin axios
+npx pod-install # iOS only
+            </code></pre>
+
+            <p>⚙️ Configure Google Sign-In</p>
+            <pre><code>
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // from Google Cloud
+  scopes: ['https://www.googleapis.com/auth/contacts.readonly'],
+});
+            </code></pre>
+
+            <p>🔐 Sign in and get access token</p>
+            <pre><code>
+const signInWithGoogle = async () => {
+    try {
+        await GoogleSignin.hasPlayServices();
+        const userInfo = await GoogleSignin.signIn();
+        const { accessToken } = await GoogleSignin.getTokens();
+    
+        // Send token to backend
+        await axios.post('http://localhost:3000/api/people', { accessToken });
+    
+    } catch (error) {
+        console.error('Google Sign-In Error', error);
+    }
+};                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. 🖥️ Node.js Backend</h2>
+            <p>➕ Install dependencies</p>
+
+            <pre><code>
+npm install express googleapis body-parser
+            </code></pre>
+
+            <p>🧠 Backend Code</p>
+            <pre><code>
+// server.js
+const express = require('express');
+const { google } = require('googleapis');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+app.post('/api/people', async (req, res) => {
+  const { accessToken } = req.body;
+
+  if (!accessToken) {
+    return res.status(400).json({ error: 'Access token missing' });
+  }
+
+  try {
+    const oauth2Client = new google.auth.OAuth2();
+    oauth2Client.setCredentials({ access_token: accessToken });
+
+    const peopleService = google.people({ version: 'v1', auth: oauth2Client });
+
+    const response = await peopleService.people.connections.list({
+      resourceName: 'people/me',
+      personFields: 'names,emailAddresses',
+      pageSize: 10,
+    });
+
+    const contacts = response.data.connections || [];
+    res.json(contacts.map(contact => ({
+      name: contact.names?.[0]?.displayName,
+      email: contact.emailAddresses?.[0]?.value,
+    })));
+
+  } catch (error) {
+    console.error('Google People API error:', error);
+    res.status(500).json({ error: 'Failed to fetch contacts' });
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Final Flow</h2>
+            <ol>
+                <li>User logs in via Google in the React Native app.</li>
+                <li>App gets the accessToken.</li>
+                <li>App sends it to your Node.js server via HTTP POST.</li>
+                <li>Backend uses the token to fetch data from Google People API.</li>
+                <li>Returns contacts to the app or stores them.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔐 Security Considerations</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Frontend (React Native)</th>
+                        <th>Backend (Node.js)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Never store sensitive data</td>
+                        <td>Validate tokens before use</td>
+                    </tr>
+                    <tr>
+                        <td>Use webClientId not native one for getting token</td>
+                        <td>Don’t trust frontend blindly</td>
+                    </tr>
+                    <tr>
+                        <td>Don’t hardcode secrets</td>
+                        <td>Consider verifying token with Google</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧪 Extra (Verify Token on Backend – Optional but Recommended)</h2>
+            <pre><code>
+const ticket = await oauth2Client.verifyIdToken({
+    idToken: accessToken,
+    audience: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+});
+const payload = ticket.getPayload();
+console.log('Authenticated user:', payload.email);                  
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

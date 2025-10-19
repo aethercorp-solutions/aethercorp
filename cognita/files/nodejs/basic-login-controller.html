@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Basic login controller using Express.js</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Basic login controller using Express.js</h1>
+                    <p class="subtitle">Your code snippet is a basic login controller using Express.js, bcrypt for password hashing, and jsonwebtoken for issuing tokens. It's mostly correct and functional, but I’ll break it down with a quick review and point out improvements and best practices you should consider:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ What this code does well</h2>
+            <ol>
+                <li>Password Comparison: Uses bcrypt.compare() to securely check the password.</li>
+                <li>JWT Token Creation: Generates a token with jwt.sign() that includes a user ID and expires in 1 hour.</li>
+                <li>Error Handling: Returns a 401 error for invalid login attempts.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔒 Security and Code Improvements</h2>
+            <p>1. Move Secret Key to Environment Variable</p>
+            <p>Hardcoding SECRET_KEY is a security risk.</p>
+            <p>Instead:</p>
+            <pre><code>
+const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            </code></pre>
+
+            <p>Ensure you load environment variables via:</p>
+            <pre><code>
+require('dotenv').config();
+            </code></pre>
+
+            <p>Add to .env:</p>
+            <pre><code>
+JWT_SECRET=your_secret_key_here
+            </code></pre>
+
+            <p>2. Add Basic Input Validation</p>
+            <p>Ensure username and password are present.</p>
+            <p>Add this near the top of the handler:</p>
+            <pre><code>
+if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+}                  
+            </code></pre>
+
+            <p>3. Consider Including More JWT Payload Data</p>
+            <p>You might want to include the username or roles, if applicable:</p>
+            <pre><code>
+const token = jwt.sign(
+  { id: user._id, username: user.username },
+  process.env.JWT_SECRET,
+  { expiresIn: '1h' }
+);
+            </code></pre>
+
+            <p>4. Avoid Leaking Information on Failed Login</p>
+            <p>You're currently returning the same error for wrong username or password — this is good. Avoid making errors more specific (like “user not found” vs “wrong password”), as that helps prevent user enumeration attacks.</p>
+            <p>You're already doing this correctly here:</p>
+
+            <pre><code>
+if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+}                  
+            </code></pre>
+
+            <p>5. Rate Limiting and Brute-Force Protection</p>
+            <p>Add rate-limiting middleware like express-rate-limit to prevent brute-force login attempts.</p>
+
+            <p>Example:</p>
+            <pre><code>
+const rateLimit = require('express-rate-limit');
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 10 login requests per window
+  message: 'Too many login attempts. Please try again later.',
+});
+
+app.post('/login', loginLimiter, async (req, res) => {
+  ...
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧼 Final (Improved) Version Example</h2>
+            <pre><code>
+require('dotenv').config();
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
+
+// Login rate limiter
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: 'Too many login attempts. Please try again later.',
+});
+
+app.post('/login', loginLimiter, async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+
+  const user = await User.findOne({ username });
+
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  const token = jwt.sign(
+    { id: user._id, username: user.username },
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
+  );
+
+  res.json({ token });
+});
+            </code></pre>
+
+            <p>Let me know if you want to add:</p>
+            <ul>
+                <li>Refresh tokens</li>
+                <li>Token blacklist / logout</li>
+                <li>Two-factor auth</li>
+                <li>Middleware to verify JWT on protected routes</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

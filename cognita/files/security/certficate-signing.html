@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Certificate Signing</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Certificate Signing</h1>
+                    <p class="subtitle">
+                        Certificate signing is the process of having a Certificate Authority (CA) digitally verify and sign a certificate signing request (CSR) to create a valid SSL/TLS certificate. This signature tells browsers, APIs, and systems that your website or service can be trusted.
+                        <p>Here’s a simple breakdown 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 Step-by-Step Process</h2>
+            <ol>
+                <li>
+                    Generate a Key Pair
+                    <ul>
+                        <li>
+                            You create:
+                            <ul>
+                                <li>A private key — kept secret on your server.</li>
+                                <li>A public key — shared with others and included in the certificate.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Example:
+                            <pre><code>
+openssl genrsa -out private.key 2048
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Create a Certificate Signing Request (CSR)
+                    <ul>
+                        <li>
+                            The CSR contains:
+                            <ul>
+                                <li>Your public key</li>
+                                <li>Your domain name (e.g., api.trycastanet.com)</li>
+                                <li>Your organization info</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Example:
+                            <pre><code>
+openssl req -new -key private.key -out request.csr
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Submit CSR to a Certificate Authority (CA)
+                    <ul>
+                        <li>The CA verifies that you control the domain (via DNS or email).</li>
+                        <li>AWS ACM, Let's Encrypt, DigiCert, or GoDaddy can act as your CA.</li>
+                    </ul>
+                </li>
+                <li>
+                    CA Signs and Issues the Certificate
+                    <ul>
+                        <li>The CA uses its own private key to sign your certificate.</li>
+                        <li>This makes your certificate trusted by browsers and clients that trust that CA.</li>
+                    </ul>
+                </li>
+                <li>
+                    Install the Certificate
+                    <ul>
+                        <li>You install the signed certificate (and possibly an intermediate certificate chain) on your server or service — e.g. AWS API Gateway custom domain.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔐 Why It Matters</h2>
+            <p>When clients (like browsers or apps) connect:</p>
+            <ul>
+                <li>They receive your certificate.</li>
+                <li>They verify it was signed by a trusted CA.</li>
+                <li>They ensure data is encrypted (HTTPS) and that the connection is authentic.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📘 Example: AWS Certificate Manager (ACM)</h2>
+            <p>If you use AWS ACM:</p>
+            <ul>
+                <li>ACM acts as the CA.</li>
+                <li>
+                    You request a certificate:
+                    <pre><code>
+aws acm request-certificate \
+  --domain-name "api.trycastanet.com" \
+  --validation-method DNS
+                    </code></pre>
+                </li>
+                <li>ACM provides DNS validation records (CNAME) to prove domain ownership.</li>
+                <li>Once validated, ACM signs and issues the certificate automatically.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Perfect 👍 Let’s go through exactly how AWS Certificate Manager (ACM), API Gateway, and Lambda work together to enable HTTPS on your custom domain (api.trycastanet.com).</p>
+            <h2>🧭 Overview</h2>
+            <p>When you use ACM + API Gateway + Lambda, the flow looks like this:</p>
+            <pre><code>
+Client (browser or app)
+        │
+        ▼
+ https://api.trycastanet.com
+        │
+        ▼
+  API Gateway (Custom Domain)
+        │
+        ▼
+ACM SSL/TLS Certificate (for encryption + trust)
+        │
+        ▼
+ Lambda Integration (your Node.js backend)
+        │
+        ▼
+ MongoDB (Atlas or AWS)
+
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ Step-by-Step Breakdown</h2>
+            <p>1. You request a certificate from AWS ACM</p>
+            <p>You did this step:</p>
+            <pre><code>
+aws acm request-certificate \
+  --domain-name "api.trycastanet.com" \
+  --validation-method DNS \
+  --region us-east-1
+            </code></pre>
+            <ul>
+                <li>ACM generates a public/private key pair and a certificate signing request (CSR) internally.</li>
+                <li>AWS’s trusted CA signs the certificate after you prove you own the domain.</li>
+                <li>You complete validation by adding a DNS CNAME record in your domain provider (e.g., Route53, GoDaddy, Namecheap).</li>
+            </ul>
+            <p>✅ Once validated, ACM issues the signed SSL/TLS certificate.</p>
+
+            <p>2. You create a custom domain in API Gateway</p>
+            <p>In your AWS Console → API Gateway:</p>
+            <ul>
+                <li>
+                    Go to Custom domain names
+                    <ul>
+                        <li>Domain name: api.trycastanet.com</li>
+                        <li>Endpoint type: Regional (recommended)</li>
+                        <li>ACM Certificate ARN: (select the one issued for your domain)</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>This step binds the ACM certificate to API Gateway’s domain endpoint.</p>
+            <p>📘 API Gateway now supports HTTPS using your ACM certificate.</p>
+        </section>
+
+        <section>
+            <h2>3. API Gateway provides a target domain</h2>
+            <p>When you create the custom domain, AWS gives you a target domain like:</p>
+            <pre><code>
+d-abcdef123.execute-api.us-east-1.amazonaws.com
+            </code></pre>
+            <p>You then update your DNS (in Route 53 or your registrar) to point:</p>
+            <pre><code>
+api.trycastanet.com → d-abcdef123.execute-api.us-east-1.amazonaws.com
+            </code></pre>
+            <p>(using an Alias (A) record or CNAME)</p>
+            <p>Now, all HTTPS traffic to your domain is routed to your API Gateway endpoint.</p>
+        </section>
+
+        <section>
+            <h2>4. API Gateway routes the request to Lambda</h2>
+            <p>Inside API Gateway:</p>
+            <ul>
+                <li>You map the custom domain → your API stage (e.g., /prod)</li>
+                <li>API Gateway handles HTTPS termination using your ACM certificate</li>
+                <li>It then forwards the request securely (via AWS internal network) to your Lambda function</li>
+            </ul>
+            <p>Your Lambda function runs your Node.js backend and handles:</p>
+            <ul>
+                <li>Authentication (Firebase / Azure AD / Cognito)</li>
+                <li>CRUD logic</li>
+                <li>MongoDB queries</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. The full HTTPS request flow</h2>
+            <p>Here’s the detailed handshake & data flow:</p>
+            <ol>
+                <li>Client (React Native app or browser) connects to https://api.trycastanet.com</li>
+                <li>
+                    TLS Handshake
+                    <ul>
+                        <li>API Gateway presents the ACM-signed certificate</li>
+                        <li>The client verifies the signature → trusts AWS CA → connection encrypted</li>
+                    </ul>
+                </li>
+                <li>API Gateway validates the path (e.g., /api/contacts/list)</li>
+                <li>Lambda Function executes and returns response</li>
+                <li>API Gateway sends the HTTPS response back to client</li>
+            </ol>
+            <p>✅ The entire process ensures:</p>
+            <ul>
+                <li>Encryption: Data can’t be read by others.</li>
+                <li>Authentication: The server is verified as api.trycastanet.com.</li>
+                <li>Integrity: Data isn’t modified in transit.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔒 Security Layers Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Role</th>
+                        <th>Security Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ACM Certificate</td>
+                        <td>TLS encryption</td>
+                        <td>Signed by AWS CA</td>
+                    </tr>
+                    <tr>
+                        <td>API Gateway</td>
+                        <td>HTTPS endpoint</td>
+                        <td>Validates domain + routing</td>
+                    </tr>
+                    <tr>
+                        <td>Lambda</td>
+                        <td>Application logic</td>
+                        <td>IAM roles + JWT auth</td>
+                    </tr>
+                    <tr>
+                        <td>MongoDB</td>
+                        <td>Data store</td>
+                        <td>Encrypted connection string (TLS)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ In short:</h2>
+            <ul>
+                <li>ACM provides the certificate</li>
+                <li>API Gateway provides the secure HTTPS endpoint</li>
+                <li>Lambda provides the serverless backend logic</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Good question — there are a few common reasons why you might not see your custom domains in the AWS API Gateway console. Let’s go through them step-by-step so you can pinpoint what’s happening 👇</p>
+            <h2>🔍 1. Wrong AWS Region</h2>
+            <p>Custom domains in API Gateway are region-specific.</p>
+            <p>✅ Check:</p>
+            <ul>
+                <li>
+                    At the top-right of the AWS Console, make sure you’ve selected the same region where your custom domain was created.
+                    <ul>
+                        <li>
+                            Example: If you ran
+                            <pre><code>
+aws acm request-certificate --region us-east-1
+                            </code></pre>
+                            and
+                            <pre><code>
+aws apigateway create-domain-name --region us-east-1
+                            </code></pre>
+                            <p>—then you need to view us-east-1 in the API Gateway console.</p>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <p>❗ Note:</p>
+            <p>If you’re using an Edge-Optimized domain, it will always reside in us-east-1 (even if your API is deployed in another region).</p>
+        </section>
+
+        <section>
+            <h2>🌍 2. Using the Wrong API Gateway Type</h2>
+            <p>AWS has two separate API Gateway consoles:</p>
+            <ul>
+                <li>API Gateway (REST APIs / WebSocket APIs) → older version</li>
+                <li>API Gateway v2 (HTTP APIs) → newer version</li>
+            </ul>
+            <p>Custom domains are stored separately for these.</p>
+            <p>✅ Check:</p>
+            <ul>
+                <li>
+                    Go to the AWS console and try both:
+                    <ul>
+                        <li>API Gateway (REST/WebSocket)</li>
+                        <li>API Gateway v2 (HTTP APIs)</li>
+                    </ul>
+                </li>
+                <li>In each one, check “Custom domain names” on the left panel.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 3. Different AWS Account</h2>
+            <p>If you’re using multiple AWS accounts (e.g., dev vs prod), your domain may have been created in another one.</p>
+            <p>✅ Check:</p>
+            <p>Run this command to confirm where the domain exists:</p>
+            <pre><code>
+aws apigateway get-domain-names --region us-east-1
+            </code></pre>
+            <p>Or, for HTTP APIs:</p>
+            <pre><code>
+aws apigatewayv2 get-domain-names --region us-east-1
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ 4. Missing IAM Permissions</h2>
+            <p>If you’re using a limited IAM role/user, the console may hide certain resources.</p>
+            <p>✅ Check:</p>
+            <p>Ensure your IAM user or role has at least:</p>
+            <pre><code>
+"Effect": "Allow",
+"Action": [
+  "apigateway:GET",
+  "apigateway:GETDomainNames",
+  "apigatewayv2:GET",
+  "apigatewayv2:GETDomainNames"
+],
+"Resource": "*"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧾 5. Custom Domain Was Created by CloudFormation / Serverless Framework</h2>
+            <p>If your domain was created through a deployment tool (e.g., Serverless Framework, CDK, Terraform), sometimes:</p>
+            <ul>
+                <li>It’s created under apigatewayv2 resources.</li>
+                <li>Or the domain mapping wasn’t created yet.</li>
+            </ul>
+            <p>✅ Check your CloudFormation stack outputs or run:</p>
+            <pre><code>
+aws cloudformation describe-stacks --region us-east-1
+            </code></pre>
+            <p>If you want, you can paste the output of:</p>
+            <pre><code>
+aws apigateway get-domain-names --region us-east-1
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

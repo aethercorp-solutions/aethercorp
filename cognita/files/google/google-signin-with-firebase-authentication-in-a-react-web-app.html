@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Google Sign-In with Firebase Authentication in a React web app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Google Sign-In with Firebase Authentication in a React web app</h1>
+                    <p class="subtitle">To implement Google Sign-In with Firebase Authentication in a React web app, follow this step-by-step guide:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Prerequisites</h2>
+            <ul>
+                <li>Node.js & npm installed</li>
+                <li>A React project (create-react-app or Vite)</li>
+                <li>A Firebase project (console.firebase.google.com)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ Step 1: Install Firebase</h2>
+            <pre><code>
+npm install firebase
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 Step 2: Configure Firebase</h2>
+            <p>Go to the Firebase Console:</p>
+            <ol>
+                <li>Create a project</li>
+                <li>Add a web app to your Firebase project</li>
+                <li>Copy the Firebase config</li>
+            </ol>
+
+            <p>Enable Google Auth Provider:</p>
+            <ul>
+                <li>Go to Authentication > Sign-in method</li>
+                <li>Enable Google under the sign-in providers</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📁 Step 3: Setup Firebase in Your Project</h2>
+            <p>Create a firebase.js file in src/:</p>
+            <pre><code>
+// src/firebase.js
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  appId: "YOUR_APP_ID",
+  // ...other config
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+export { auth, provider };
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 Step 4: Implement Google Sign-In in React</h2>
+            <p>Create a component like Login.js:</p>
+            <pre><code>
+// src/Login.js
+import React from 'react';
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from './firebase';
+
+const Login = () => {
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("User Info:", user);
+    } catch (error) {
+      console.error("Google Sign-in Error:", error);
+    }
+  };
+
+  return (
+    &lt;div&gt;
+        &lt;h2gt;Login with Google&lt;/h2gt;
+        &lt;button onClick={handleGoogleSignIn}>Sign in with Google&lt;/buttongt;
+    &lt;/divgt;
+  );
+};
+
+export default Login;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Step 5: Track Authentication State (Optional)</h2>
+            <p>Use React state or Context to manage auth:</p>
+            <pre><code>
+// src/App.js
+import React, { useEffect, useState } from 'react';
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from './firebase';
+import Login from './Login';
+
+const App = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = () => {
+    signOut(auth);
+  };
+
+  return (
+    &lt;div&gt;
+      {user ? (
+        &lt;div&gt;
+            &lt;h2&gt;Welcome, {user.displayName}&lt;/h2&gt;
+            &lt;img src={user.photoURL} alt="profile" /&gt;
+            &lt;button onClick={handleSignOut}>Sign Out&lt;/button&gt;
+        &lt;/div&gt;
+      ) : (
+        &lt;Login /&gt;
+      )}
+    &lt;/div&gt;
+  );
+};
+
+export default App;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Done!</h2>
+            <p>You now have Google Sign-In integrated with Firebase Auth in a React app.</p>
+            <p>🔒 Security Notes</p>
+            <ul>
+                <li>For production, configure OAuth consent screen properly</li>
+                <li>Restrict API keys and use App Check for enhanced security</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

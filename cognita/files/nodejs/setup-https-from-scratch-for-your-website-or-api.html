@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Set Up HTTPS from scratch for your website or API</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Set Up HTTPS from scratch for your website or API</h1>
+                    <p class="subtitle">Got it — let’s go step by step on how to set up HTTPS from scratch for your website or API.
+                        We’ll cover both local testing and production (e.g. AWS, custom domain).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧱 1. Understand What HTTPS Is</h2>
+            <p>HTTPS = HTTP + SSL/TLS encryption.</p>
+            <p>You need three main components:</p>
+            <ol>
+                <li>Private key – secret file used to encrypt/decrypt traffic.</li>
+                <li>Certificate Signing Request (CSR) – file used to request a certificate.</li>
+                <li>SSL/TLS certificate – issued by a Certificate Authority (CA) (like Let’s Encrypt, AWS ACM, or DigiCert).</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>💻 2. For Local Testing (Self-Signed Certificate)</h2>
+            <p>If you’re just testing locally (e.g., Node.js, localhost), use OpenSSL:</p>
+            <p>Generate private key and certificate</p>
+            <pre><code>
+# Create private key
+openssl genrsa -out server.key 2048
+
+# Create CSR (you’ll be asked for details like Common Name = localhost)
+openssl req -new -key server.key -out server.csr
+
+# Create self-signed certificate valid for 365 days
+openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+            </code></pre>
+
+            <p>Now you have:</p>
+            <ul>
+                <li>server.key (private key)</li>
+                <li>server.crt (certificate)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Use in Node.js</h2>
+            <pre><code>
+import https from "https";
+import fs from "fs";
+import express from "express";
+
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Hello HTTPS!");
+});
+
+https.createServer(
+  {
+    key: fs.readFileSync("server.key"),
+    cert: fs.readFileSync("server.crt"),
+  },
+  app
+).listen(443, () => console.log("Server running on https://localhost"));
+            </code></pre>
+            <p>💡 You’ll get a browser warning (“not trusted”) — that’s expected for self-signed certs.</p>
+        </section>
+
+        <section>
+            <h2>🌍 3. For Production (Custom Domain)</h2>
+            <p>A. Get a Domain</p>
+            <p>Buy one (e.g., from Namecheap, GoDaddy, or AWS Route 53).</p>
+            <p>Example:</p>
+            <pre><code>
+api.trycastanet.com
+            </code></pre>
+
+            <p>B. Request a Certificate from a Trusted CA</p>
+            <p>If you use AWS, use ACM (AWS Certificate Manager):</p>
+            <pre><code>
+aws acm request-certificate \
+  --domain-name "api.trycastanet.com" \
+  --validation-method DNS \
+  --region us-east-1
+            </code></pre>
+            <p>Then AWS will give you DNS validation records (CNAME).</p>
+            <p>Add those to your domain’s DNS (e.g., Route 53 or your registrar’s DNS panel).</p>
+            <p>Once validated, the certificate will show as “Issued” in ACM.</p>
+        </section>
+
+        <section>
+            <h2>C. Attach Certificate to Your API or Load Balancer</h2>
+            <p>For API Gateway Custom Domain:</p>
+            <ol>
+                <li>Go to API Gateway Console → Custom Domain Names</li>
+                <li>Click Create Custom Domain</li>
+                <li>Choose your domain (e.g., api.trycastanet.com)</li>
+                <li>Select your ACM certificate</li>
+                <li>Map the base path to your API</li>
+                <li>Copy the API Gateway domain name (e.g., d12345.cloudfront.net)</li>
+                <li>Add a CNAME in your DNS:</li>
+            </ol>
+            <pre><code>
+api.trycastanet.com → d12345.cloudfront.net
+            </code></pre>
+            <p>Now your API is accessible securely via:</p>
+            <pre><code>
+https://api.trycastanet.com
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 4. Alternative: Free HTTPS via Let’s Encrypt</h2>
+            <p>For VPS or EC2 servers:</p>
+            <pre><code>
+sudo apt install certbot
+sudo certbot certonly --standalone -d example.com
+            </code></pre>
+            <p>Then configure your web server (Nginx, Apache, Node.js) to use the certificate:</p>
+            <pre><code>
+/etc/letsencrypt/live/example.com/fullchain.pem
+/etc/letsencrypt/live/example.com/privkey.pem
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Environment</th>
+                        <th>Certificate Type</th>
+                        <th>Issued By</th>
+                        <th>Trusted?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Local dev</td>
+                        <td>Self-signed</td>
+                        <td>You</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Production (AWS)</td>
+                        <td>ACM Certificate</td>
+                        <td>AWS (CA)</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>VPS / EC2</td>
+                        <td>Let’s Encrypt</td>
+                        <td>Let’s Encrypt</td>
+                        <td>✅</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Google Sign-In tokens in a React web app using Firebase Authentication</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Google Sign-In tokens in a React web app using Firebase Authentication</h1>
+                    <p class="subtitle">
+                        To manage Google Sign-In tokens in a React web app using Firebase Authentication, you typically need to handle:
+                        <ol>
+                            <li>Sign-in and retrieve tokens</li>
+                            <li>Store the token securely (in-memory or local storage)</li>
+                            <li>Attach the token to API requests (if using a backend)</li>
+                            <li>Refresh the token automatically</li>
+                        </ol>
+                        <p>Let’s break this down step by step 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 1. Setup Firebase Google Sign-In</h2>
+            <p>Install Firebase:</p>
+            <pre><code>
+npm install firebase
+            </code></pre>
+            <p>Initialize Firebase in your project (e.g., firebase.js):</p>
+            <pre><code>
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+export { auth, provider, signInWithPopup };
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 2. Sign In and Retrieve Token</h2>
+            <p>In your component (e.g., Login.jsx):</p>
+            <pre><code>
+import React from "react";
+import { auth, provider, signInWithPopup } from "../firebase";
+
+function Login() {
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const idToken = await user.getIdToken(); // Firebase ID token
+
+      // Optionally save to localStorage or sessionStorage
+      localStorage.setItem("token", idToken);
+
+      console.log("User:", user);
+      console.log("Token:", idToken);
+    } catch (error) {
+      console.error("Error signing in:", error);
+    }
+  };
+
+  return &lt;button onClick={handleGoogleSignIn}&gt;Sign in with Google&lt;/button&gt;;
+}
+
+export default Login;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 3. Manage Token Storage</h2>
+            <p>Option A: Store in Memory (Recommended for Security)</p>
+            <ul>
+                <li>Use React Context to store the token (cleared when page refreshes).</li>
+                <li>Safer because it’s not persisted in browser storage.</li>
+            </ul>
+            <p>Option B: Store in LocalStorage/SessionStorage</p>
+            <ul>
+                <li>Use localStorage.setItem("token", idToken) to persist between sessions.</li>
+                <li>Retrieve it with localStorage.getItem("token").</li>
+                <li>⚠️ Note: less secure — vulnerable to XSS if your app isn’t protected.</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+// After sign in
+localStorage.setItem("token", idToken);
+
+// On app load
+const token = localStorage.getItem("token");
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🌐 4. Send Token to Your Backend API</h2>
+            <p>When calling your backend (e.g., AWS Lambda or Express API):</p>
+            <pre><code>
+const token = localStorage.getItem("token");
+
+fetch("https://api.example.com/secure-endpoint", {
+  method: "GET",
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+            </code></pre>
+
+            <p>Then, in your backend, verify it with Firebase Admin SDK:</p>
+
+            <pre><code>
+import admin from "firebase-admin";
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+const decodedToken = await admin.auth().verifyIdToken(idToken);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>♻️ 5. Automatically Refresh Token</h2>
+            <p>Firebase automatically refreshes the ID token every hour.</p>
+            <p>You can listen for changes using:</p>
+            <pre><code>
+import { onIdTokenChanged } from "firebase/auth";
+import { auth } from "../firebase";
+
+onIdTokenChanged(auth, async (user) => {
+  if (user) {
+    const token = await user.getIdToken();
+    localStorage.setItem("token", token);
+  } else {
+    localStorage.removeItem("token");
+  }
+});
+            </code></pre>
+            <p>You can place this in an AuthContext or useEffect in your root component (App.js).</p>
+        </section>
+
+        <section>
+            <h2>⚙️ 6. Example Auth Context for Token Management</h2>
+            <pre><code>
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { auth } from "../firebase";
+import { onIdTokenChanged } from "firebase/auth";
+
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onIdTokenChanged(auth, async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        setToken(token);
+        setUser(user);
+        localStorage.setItem("token", token);
+      } else {
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem("token");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    &lt;AuthContext.Provider value={{ user, token }}&gt;
+      {children}
+    &lt;/AuthContext.Provider&gt;
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS Lambda + API Gateway</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS Lambda + API Gateway</h1>
+                    <p class="subtitle">
+                        AWS Lambda + API Gateway is a powerful combination for building serverless APIs — that is, APIs that don’t require you to manage or provision servers.
+                        <p>Here’s a breakdown of what each does and how they work together:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 AWS Lambda</h2>
+            <p>AWS Lambda is a serverless compute service that lets you run code without managing servers.</p>
+            <p>You just upload your function code (in Node.js, Python, Go, etc.), and AWS runs it on demand — when triggered by an event such as an API request, file upload, or scheduled task.</p>
+        
+            <p>Key points:</p>
+            <ul>
+                <li>You pay only for the execution time (when your code runs).</li>
+                <li>Lambda automatically scales based on incoming requests.</li>
+                <li>Each Lambda function runs in a stateless container that AWS provisions automatically.</li>
+            </ul>
+
+            <p>Example use cases:</p>
+            <ul>
+                <li>Process HTTP requests (e.g., from API Gateway)</li>
+                <li>Run background tasks (e.g., image processing)</li>
+                <li>Respond to events from AWS S3, DynamoDB, or CloudWatch</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🌐 Amazon API Gateway</h2>
+            <p>API Gateway is a fully managed service for creating, publishing, and managing APIs.</p>
+            <p>It acts as a front door that:</p>
+            <ul>
+                <li>Receives HTTP requests (e.g., from browsers or mobile apps)</li>
+                <li>Validates and transforms them</li>
+                <li>Forwards them to backend services — like AWS Lambda</li>
+            </ul>
+
+            <p>Key features:</p>
+            <ul>
+                <li>Supports REST, WebSocket, and HTTP APIs</li>
+                <li>Handles authentication, rate limiting, and CORS</li>
+                <li>Can generate API keys and usage plans</li>
+                <li>Natively integrates with AWS Lambda</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ How They Work Together</h2>
+            <p>When combined, API Gateway + Lambda form a complete serverless backend architecture.</p>
+            <p>Flow example:</p>
+            <ol>
+                <li>A client (like a React app or mobile app) makes a request → https://api.example.com/users</li>
+                <li>API Gateway receives the request.</li>
+                <li>API Gateway triggers your Lambda function.</li>
+                <li>Lambda executes your logic — e.g., read/write to a database.</li>
+                <li>Lambda returns a response to API Gateway.</li>
+                <li>API Gateway sends the response back to the client.</li>
+            </ol>
+
+            <pre><code>
+Client → API Gateway → Lambda → (e.g., DynamoDB / MongoDB)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Benefits</h2>
+            <ul>
+                <li>Fully serverless: No servers to manage or scale.</li>
+                <li>Cost-efficient: Pay only per request and execution time.</li>
+                <li>Scalable: Handles thousands of requests automatically.</li>
+                <li>Secure: Integrates with Cognito, IAM, and custom authorizers.</li>
+                <li>Flexible: Works with multiple runtimes (Node.js, Python, etc.).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💡 Example Use Case</h2>
+            <p>For example, your app TryCastanet could use this setup to:</p>
+            <ul>
+                <li>Handle authentication (POST /auth/login)</li>
+                <li>Fetch user contacts (GET /contacts)</li>
+                <li>Manage subscriptions (POST /subscription/upgrade)</li>
+            </ul>
+            <p>Each route in API Gateway calls a different Lambda function to handle the business logic.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

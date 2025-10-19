@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Process</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Process</h1>
+                    <p class="subtitle">Great question! Let's break down what a "process" is in computing and how it really works at a technical level.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 What Is a Process? (Response1)</h2>
+            <p>A process is an instance of a computer program that's being executed. It contains everything needed to run a program, such as:</p>
+            <ul>
+                <li>The program code</li>
+                <li>A memory space (heap, stack, code, data)</li>
+                <li>CPU registers</li>
+                <li>File descriptors (for reading/writing files)</li>
+                <li>Process ID (PID)</li>
+            </ul>
+            <p>Each process is isolated and managed by the operating system (OS).</p>
+        </section>
+
+        <section>
+            <h2>🧠 How a Process Works: Step by Step</h2>
+            <ol>
+                <li>
+                    Program is Started
+                    <ul>
+                        <li>You click an app or run a command like python app.py.</li>
+                        <li>The OS loads the executable file from disk into memory.</li>
+                    </ul>
+                </li>
+                <li>
+                    OS Creates the Process
+                    <ul>
+                        <li>The OS creates a Process Control Block (PCB) — a data structure to manage the process.</li>
+                        <li>
+                            The PCB stores:
+                            <ul>
+                                <li>Process ID</li>
+                                <li>Memory pointers</li>
+                                <li>CPU state (registers, stack pointer)</li>
+                                <li>File handles</li>
+                                <li>Scheduling info</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Memory Is Allocated
+                    <ul>
+                        <li>
+                            The OS assigns memory to the process:
+                            <ul>
+                                <li>Code segment: contains the compiled program instructions</li>
+                                <li>Stack: stores function calls and local variables</li>
+                                <li>Heap: dynamically allocated memory (malloc, new)</li>
+                                <li>Data segment: global/static variables</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Scheduler Puts Process on the CPU
+                    <ul>
+                        <ul>
+                            <li>The OS scheduler selects the process and gives it CPU time.</li>
+                            <li>On a multi-core CPU, several processes may run truly in parallel.</li>
+                        </ul>
+                    </ul>
+                </li>
+                <li>
+                    Process Executes
+                    <ul>
+                        <li>The CPU fetches instructions and executes them.</li>
+                        <li>System calls allow the process to interact with the OS (e.g., open a file, allocate memory).</li>
+                    </ul>
+                </li>
+                <li>
+                    Context Switching
+                    <ul>
+                        <li>
+                            When switching to another process (multi-tasking), the OS:
+                            <ul>
+                                <li>Saves the current process’s state (CPU registers, etc.)</li>
+                                <li>Loads the new process’s state</li>
+                                <li>This is called a context switch</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Process Ends (Termination)
+                    <ul>
+                        <li>
+                            A process ends when:
+                            <ul>
+                                <li>It finishes normally</li>
+                                <li>It crashes</li>
+                                <li>It’s killed (manually or due to errors)</li>
+                            </ul>
+                        </li>
+                        <li>
+                            The OS cleans up:
+                            <ul>
+                                <li>Frees memory</li>
+                                <li>Closes files</li>
+                                <li>Removes it from process tables</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧩 Related Concepts</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Thread</td>
+                        <td>A lightweight sub-unit of a process. Shares memory with other threads.</td>
+                    </tr>
+                    <tr>
+                        <td>Fork</td>
+                        <td>A system call to create a child process (like in Linux).</td>
+                    </tr>
+                    <tr>
+                        <td>Exec</td>
+                        <td>Replaces the current process image with a new program.</td>
+                    </tr>
+                    <tr>
+                        <td>Multitasking</td>
+                        <td>Running multiple processes "at the same time" via fast switching.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <pre><code>
+[ Program on disk ]
+         ↓
+[ OS loads program into memory ]
+         ↓
+[ OS creates PCB and memory space ]
+         ↓
+[ Scheduler assigns CPU time ]
+         ↓
+[ Process executes instructions ]
+         ↓
+[ Context switches if needed ]
+         ↓
+[ Process terminates → OS cleans up ]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 What is a Process? (Response 2)</h2>
+            <p>In computing, a process is an instance of a program in execution. It includes everything needed to run a program:</p>
+            <ul>
+                <li>The program's code</li>
+                <li>The current activity (e.g. which instruction is being executed)</li>
+                <li>The registers and CPU state</li>
+                <li>Memory (code, data, stack, and heap)</li>
+                <li>I/O resources like open files or network connections</li>
+            </ul>
+            <p>Think of a program as a recipe, and the process as a chef actively cooking from that recipe, using ingredients (data) and kitchen tools (resources).</p>
+        </section>
+
+        <section>
+            <h2>🔹 Lifecycle of a Process</h2>
+            <ol>
+                <li>
+                    Creation
+                    <ul>
+                        <li>A process is created by the operating system (OS).</li>
+                        <li>Usually, one process creates another using system calls like fork() (Unix/Linux) or CreateProcess() (Windows).</li>
+                    </ul>
+                </li>
+                <li>
+                    Ready State
+                    <ul>
+                        <li>The process is ready to run but waiting for the CPU.</li>
+                    </ul>
+                </li>
+                <li>
+                    Running
+                    <ul>
+                        <li>The OS scheduler picks it and the CPU executes its instructions.</li>
+                    </ul>
+                </li>
+                <li>
+                    Waiting / Blocked
+                    <ul>
+                        <li>The process waits for something external, like reading a file or waiting for input.</li>
+                    </ul>
+                </li>
+                <li>
+                    Terminated
+                    <ul>
+                        <li>The process finishes execution or is killed.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 Key Components of a Process</h2>
+            <ol>
+                <li>Process ID (PID): Unique number assigned by the OS.</li>
+                <li>Program Counter (PC): Keeps track of the next instruction to execute.</li>
+                <li>Registers: Store intermediate data and instructions.</li>
+                <li>
+                    Memory Segments:
+                    <ul>
+                        <li>Code segment: Executable instructions.</li>
+                        <li>Stack: Holds function calls, local variables.</li>
+                        <li>Heap: Dynamically allocated memory (e.g., using malloc or new).</li>
+                    </ul>
+                </li>
+                <li>I/O State: Open files, sockets, etc.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 How the OS Manages Processes</h2>
+            <ol>
+                <li>
+                    Process Control Block (PCB)
+                    <ul>
+                        <li>Data structure that stores all info about a process.</li>
+                        <li>The OS uses the PCB to manage and switch between processes.</li>
+                    </ul>
+                </li>
+                <li>
+                    Context Switching
+                    <ul>
+                        <li>The CPU switches between processes.</li>
+                        <li>The OS saves the state of the current process and loads the state of the next one.</li>
+                        <li>It allows multitasking, but it's expensive (CPU cycles lost).</li>
+                    </ul>
+                </li>
+                <li>
+                    Schedulers
+                    <ul>
+                        <li>Decide which process runs next (e.g., Round Robin, Priority-based).</li>
+                        <li>Part of the kernel, the core part of the OS.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 Multitasking and Multiprocessing</h2>
+            <ul>
+                <li>Multitasking: Multiple processes share the CPU using time slices.</li>
+                <li>Multiprocessing: Multiple CPUs/cores handle different processes simultaneously.</li>
+                <li>Threads: Lightweight processes that share memory space.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Visual Summary</h2>
+            <pre><code>
+Program → [OS loads into memory] → Process
+        → gets PID, memory, PCB, etc.
+        → Runs under CPU control
+        → Uses memory, I/O, threads
+        → Finishes or is killed
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Example (Linux)</h2>
+            <pre><code>
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+    printf("PID: %d\n", getpid());
+    while(1);  // Keeps running
+}                    
+            </code></pre>
+
+            <p>When you run this:</p>
+            <ol>
+                <li>Shell executes the binary → OS creates a process.</li>
+                <li>The process gets memory, registers, and a PID.</li>
+                <li>It prints its PID and loops forever.</li>
+                <li>You can see it with ps or kill it with kill.</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

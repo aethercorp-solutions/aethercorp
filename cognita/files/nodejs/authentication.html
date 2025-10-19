@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Authentication</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Authentication</h1>
+                    <p class="subtitle">Authentication is a process used to verify the identity of a user, device, or system. It's a core component of cybersecurity and software development, especially in applications that involve user accounts or sensitive data.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔐 Authentication Usage</h2>
+            <p>Authentication is used in scenarios such as:</p>
+            <ol>
+                <li>
+                    Logging into Applications
+                    <ul>
+                        <li>Websites, mobile apps, or desktop software often require username/email and password combinations.</li>
+                    </ul>
+                </li>
+                <li>
+                    APIs and Services
+                    <ul>
+                        <li>Secure API access with tokens (e.g., JWTs, OAuth).</li>
+                    </ul>
+                </li>
+                <li>
+                    Multi-Factor Authentication (MFA)
+                    <ul>
+                        <li>Adds extra layers of verification like SMS codes, authenticator apps, or biometrics.</li>
+                    </ul>
+                </li>
+                <li>
+                    Enterprise Systems
+                    <ul>
+                        <li>Active Directory, Single Sign-On (SSO), LDAP-based authentication.</li>
+                    </ul>
+                </li>
+                <li>
+                    IoT and Device Auth
+                    <ul>
+                        <li>Devices authenticate themselves to cloud services.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚙️ Authentication Implementation</h2>
+            <p>Implementation depends on the type and context. Here's an overview of common approaches:</p>
+
+            <p>1. Username and Password Authentication</p>
+            <p>Backend (e.g., Node.js + Express):</p>
+
+            <pre><code>
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+// Example login controller
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  const user = await User.findOne({ username });
+
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  const token = jwt.sign({ id: user._id }, 'SECRET_KEY', { expiresIn: '1h' });
+  res.json({ token });
+});
+            </code></pre>
+
+            <p>Frontend (React):</p>
+            <pre><code>
+// Fetch API call to login
+fetch('/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ username, password }),
+})
+.then(res => res.json())
+.then(data => localStorage.setItem('token', data.token));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Token-Based Authentication (JWT)</h2>
+            <ul>
+                <li>After login, a token (JWT) is issued.</li>
+                <li>The client includes this token in headers for future requests.</li>
+            </ul>
+
+            <pre><code>
+GET /profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsIn...
+            </code></pre>
+
+            <p>Middleware Example (Node.js):</p>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+function authMiddleware(req, res, next) {
+  const token = req.headers['authorization']?.split(' ')[1];
+  if (!token) return res.status(401).send('Access Denied');
+
+  try {
+    req.user = jwt.verify(token, 'SECRET_KEY');
+    next();
+  } catch {
+    res.status(403).send('Invalid Token');
+  }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. OAuth 2.0 / OpenID Connect</h2>
+            <p>Used for third-party login (e.g., Google, Facebook, GitHub).</p>
+            <p>Example Flow:</p>
+            <ol>
+                <li>User clicks "Login with Google".</li>
+                <li>Redirect to Google OAuth.</li>
+                <li>Google authenticates and redirects back with a token.</li>
+                <li>Use the token to get user info and create/login account.</li>
+            </ol>
+            <p>Libraries:</p>
+            <ul>
+                <li>Node.js: passport.js</li>
+                <li>Python: Flask-OAuthlib, Authlib</li>
+                <li>Frontend: OAuth SDKs from Google, Facebook, etc.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Multi-Factor Authentication (MFA)</h2>
+            <p>Adds extra layers beyond password.</p>
+            <p>Implementation Tools:</p>
+            <ul>
+                <li>TOTP (Time-Based One-Time Password): Apps like Google Authenticator.</li>
+                <li>SMS/Email Codes: Code sent to user’s phone/email.</li>
+                <li>Biometrics: Face ID, fingerprint (e.g., WebAuthn API).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Session-Based Authentication</h2>
+            <p>Used in traditional web apps (e.g., PHP, Django).</p>
+            <ol>
+                <li>Server stores session in memory/database.</li>
+                <li>Client gets session cookie.</li>
+                <li>On every request, the cookie is used to look up session.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>6. Biometric and Hardware-Based Auth</h2>
+            <ul>
+                <li>WebAuthn (FIDO2): Fingerprint, facial recognition.</li>
+                <li>Smart Cards / Hardware Keys (e.g., YubiKey).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧰 Authentication Libraries/Tools</h2>
+            <ul>
+                <li>Backend: Passport.js, Devise (Rails), Spring Security, Auth0, Firebase Auth</li>
+                <li>Frontend: Firebase UI, Auth0 SDKs</li>
+                <li>API Gateway Auth: AWS Cognito, API Gateway + Lambda Authorizers</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📌 Best Practices</h2>
+            <ul>
+                <li>Always hash passwords (e.g., bcrypt, argon2).</li>
+                <li>Use HTTPS to protect credentials in transit.</li>
+                <li>Enforce strong password policies.</li>
+                <li>Enable MFA for sensitive applications.</li>
+                <li>Use secure token storage on the client (avoid localStorage for sensitive data).</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

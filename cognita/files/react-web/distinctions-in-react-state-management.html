@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Distinctions in React state management</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Distinctions in React state management</h1>
+                    <p class="subtitle">Excellent question — this is one of the most important distinctions in React state management. 👇</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 useState vs useReducer in React</h2>
+            <p>Both are React Hooks used to manage state in function components — but they differ in complexity, use case, and how state updates happen.</p>
+            <p>Let’s break it down clearly:</p>
+
+            <h2>🔹 1. Basic Concept</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hook</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>useState</td>
+                        <td>A simple state management hook for individual or simple values.</td>
+                    </tr>
+                    <tr>
+                        <td>useReducer</td>
+                        <td>A more advanced hook that manages complex state logic or multiple related values using a reducer function (similar to Redux).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔹 2. Syntax</h2>
+            <p>✅ useState</p>
+            <pre><code>
+const [count, setCount] = useState(0);
+            </code></pre>
+            <p>You directly call setCount(newValue) to update the state.</p>
+
+            <p>✅ useReducer</p>
+            <pre><code>
+const [state, dispatch] = useReducer(reducer, initialState);
+            </code></pre>
+
+            <p>You update state by dispatching actions:</p>
+            <pre><code>
+dispatch({ type: "increment" });
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 3. Example Comparison</h2>
+            <p>🟢 useState Example</p>
+            <p>Simple and straightforward:</p>
+
+            <pre><code>
+function Counter() {
+    const [count, setCount] = useState(0);
+    
+    return (
+        &lt;&gt;
+        &lt;p&gt;Count: {count}&lt;/p&gt;
+        &lt;button onClick={() => setCount(count + 1)}&gt;+&lt;/button&gt;
+        &lt;button onClick={() => setCount(count - 1)}&gt;−&lt;/button&gt;
+        &lt;/&gt;
+    );
+}                  
+            </code></pre>
+            <p>🔵 useReducer Example</p>
+            <p>Better for complex or multi-action logic:</p>
+            <pre><code>
+function reducer(state, action) {
+    switch (action.type) {
+        case "increment":
+        return { count: state.count + 1 };
+        case "decrement":
+        return { count: state.count - 1 };
+        case "reset":
+        return { count: 0 };
+        default:
+        return state;
+    }
+    }
+    
+function Counter() {
+    const [state, dispatch] = useReducer(reducer, { count: 0 });
+    
+    return (
+        &lt;&gt;
+        &lt;p>Count: {state.count}&lt;/p&gt;
+        &lt;button onClick={() => dispatch({ type: "increment" })}&gt;+&lt;/button&gt;
+        &lt;button onClick={() => dispatch({ type: "decrement" })}&gt;−&lt;/button&gt;
+        &lt;button onClick={() => dispatch({ type: "reset" })}&gt;Reset&lt;/button&gt;
+        &lt;/&gt;
+    );
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 4. When to Use Each</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Choose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>You’re managing a simple state (e.g. one variable or flag).</td>
+                        <td>✅ useState</td>
+                    </tr>
+                    <tr>
+                        <td>You’re updating state based on previous state (count++, toggle).</td>
+                        <td>✅ useState</td>
+                    </tr>
+                    <tr>
+                        <td>You have multiple related state values (e.g., form fields, complex logic).</td>
+                        <td>✅ useReducer</td>
+                    </tr>
+                    <tr>
+                        <td>You want centralized and predictable state transitions.</td>
+                        <td>✅ useReducer</td>
+                    </tr>
+                    <tr>
+                        <td>You may later scale logic to global state (Redux-style).</td>
+                        <td>✅ useReducer</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔹 5. Analogy</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hook</th>
+                        <th>Analogy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>useState</td>
+                        <td>Like a simple switch — “on/off,” “count +1.”</td>
+                    </tr>
+                    <tr>
+                        <td>useReducer</td>
+                        <td>Like a control panel — you tell it what action to perform, and it decides how to update the state.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔹 6. Performance</h2>
+            <ul>
+                <li>useReducer can help optimize performance in components with many state updates, since the reducer function can be memoized and passed down as a stable dispatch.</li>
+                <li>useState is slightly simpler and faster to set up, but can get messy if you have multiple interrelated states.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 7. Real Example (Form Handling)</h2>
+            <p>❌ Using many useState calls:</p>
+            <pre><code>
+const [name, setName] = useState("");
+const [email, setEmail] = useState("");
+const [age, setAge] = useState(0);
+            </code></pre>
+
+            <p>✅ Using one useReducer:</p>
+            <pre><code>
+function formReducer(state, action) {
+    return { ...state, [action.field]: action.value };
+}
+    
+const [form, dispatch] = useReducer(formReducer, { name: "", email: "", age: 0 });
+
+// usage
+&lt;input
+    name="name"
+    value={form.name}
+    onChange={(e) => dispatch({ field: "name", value: e.target.value })}
+/&gt;                  
+            </code></pre>
+
+            <p>Much cleaner for large forms.</p>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>useState</th>
+                        <th>useReducer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Simplicity</td>
+                        <td>Easier</td>
+                        <td>More setup</td>
+                    </tr>
+                    <tr>
+                        <td>State type</td>
+                        <td>Simple values</td>
+                        <td>Complex objects</td>
+                    </tr>
+                    <tr>
+                        <td>Update method</td>
+                        <td>Direct (setState)</td>
+                        <td>Action-based (dispatch)</td>
+                    </tr>
+                    <tr>
+                        <td>Best for</td>
+                        <td>Local UI state</td>
+                        <td>Complex logic or related states</td>
+                    </tr>
+                    <tr>
+                        <td>Similar to</td>
+                        <td>this.setState in class components</td>
+                        <td>Redux reducer</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

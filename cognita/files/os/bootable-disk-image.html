@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Bootable Disk Image</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Bootable Disk Image</h1>
+                    <p class="subtitle">
+                        <p>A bootable disk image is a special type of file (or actual disk) that contains all the necessary code and structure for a computer to boot an operating system from it.</p>
+                        <p>Let’s break that down:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 What is a Disk Image?</h2>
+            <p>A disk image is a file that represents a storage device, like a hard drive, floppy disk, or USB drive. It contains all the data and file system structure as if it were an actual physical disk.</p>
+            <p>Common formats:</p>
+            <ul>
+                <li>.img (raw disk image)</li>
+                <li>.iso (optical disk image)</li>
+                <li>.vmdk, .vdi (virtual machine disks)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 What Makes It "Bootable"?</h2>
+            <p>To be bootable, a disk image must:</p>
+            <ol>
+                <li>Contain bootloader code at a specific location — the Master Boot Record (MBR) or Volume Boot Record.</li>
+                <li>Include a valid boot signature (0xAA55) at byte 510–511 of the first 512 bytes (the first sector).</li>
+                <li>Be arranged so the BIOS or UEFI can load the first 512 bytes into memory and start executing it.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧩 Anatomy of a Bootable Disk (MBR Style)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Offset (Bytes)</th>
+                        <th>Contents</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0–445</td>
+                        <td>Bootloader code</td>
+                    </tr>
+                    <tr>
+                        <td>446–509</td>
+                        <td>Partition table (optional)</td>
+                    </tr>
+                    <tr>
+                        <td>510–511</td>
+                        <td>Boot signature (0x55AA)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>That first 512-byte sector is loaded into memory by the BIOS at boot time, and execution begins at address 0x7C00.</p>
+        </section>
+
+        <section>
+            <h2>🛠 Example: In Your Simple OS</h2>
+            <p>When you created os-image.bin:</p>
+            <pre><code>
+cat bootloader.bin kernel.bin > os-image.bin
+            </code></pre>
+
+            <ul>
+                <li>bootloader.bin → contains the bootable MBR (with boot signature).</li>
+                <li>kernel.bin → your actual OS code, loaded by the bootloader.</li>
+                <li>
+                    os-image.bin → is now a bootable disk image that can be:
+                    <ul>
+                        <li>Run in QEMU or VirtualBox.</li>
+                        <li>Written to a USB or floppy and booted on real hardware.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 How BIOS/UEFI Boots from a Disk Image</h2>
+            <p>Here’s what happens:</p>
+            <ol>
+                <li>The PC powers on.</li>
+                <li>BIOS (or UEFI in legacy mode) looks for bootable devices.</li>
+                <li>It loads the first 512 bytes (the bootloader) from the selected device/image into memory at address 0x7C00.</li>
+                <li>It checks the boot signature (0xAA55).</li>
+                <li>If valid, it jumps to execute the bootloader code.</li>
+                <li>The bootloader loads your kernel (e.g., from sector 2) and jumps to it.</li>
+                <li>Your OS runs!</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧪 How You Use It</h2>
+            <p>In development, you can run your bootable disk image using an emulator:</p>
+            <pre><code>
+qemu-system-x86_64 -drive format=raw,file=os-image.bin
+            </code></pre>
+
+            <p>Or, write it to a USB (⚠️ CAUTION: this erases data):</p>
+            <pre><code>
+sudo dd if=os-image.bin of=/dev/sdX bs=512
+            </code></pre>
+
+            <p>(Replace /dev/sdX with your USB device)</p>
+        </section>
+
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Disk Image</td>
+                        <td>File that simulates a full storage device</td>
+                    </tr>
+                    <tr>
+                        <td>Bootable</td>
+                        <td>Can be used to start (boot) a computer</td>
+                    </tr>
+                    <tr>
+                        <td>Bootloader</td>
+                        <td>Code that BIOS loads and runs at startup</td>
+                    </tr>
+                    <tr>
+                        <td>MBR</td>
+                        <td>Master Boot Record, contains bootloader code and partition info</td>
+                    </tr>
+                    <tr>
+                        <td>Boot Signature</td>
+                        <td>0xAA55, marks a sector as bootable</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

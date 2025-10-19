@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>File-based routing</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">File-based routing</h1>
+                    <p class="subtitle">File-based routing is a technique used in web development where the file structure of your project (usually under a pages or routes directory) determines the routes (URLs) of your application. Instead of manually defining routes in a routing configuration file, the framework automatically creates routes based on the location and name of your files.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧭 How It Works</h2>
+            <p>If you have a file structure like:</p>
+            <pre><code>
+/pages
+  ├── index.js
+  ├── about.js
+  └── blog
+      └── [id].js
+            </code></pre>
+            <p>It would generate these routes:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>File Path</th>
+                        <th>URL Route</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>pages/index.js</td>
+                        <td>/</td>
+                    </tr>
+                    <tr>
+                        <td>pages/about.js</td>
+                        <td>/about</td>
+                    </tr>
+                    <tr>
+                        <td>pages/blog/[id].js</td>
+                        <td>/blog/:id</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>The [id] syntax is used for dynamic routing—it acts like a placeholder for route parameters.</p>
+        </section>
+
+        <section>
+            <h2>📦 Frameworks That Use File-Based Routing</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Framework</th>
+                        <th>Directory Used</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Next.js</td>
+                        <td>/pages or /app</td>
+                        <td>Very popular for React apps</td>
+                    </tr>
+                    <tr>
+                        <td>Nuxt.js</td>
+                        <td>/pages</td>
+                        <td>Vue.js-based framework</td>
+                    </tr>
+                    <tr>
+                        <td>SvelteKit</td>
+                        <td>/routes</td>
+                        <td>For Svelte apps</td>
+                    </tr>
+                    <tr>
+                        <td>Remix</td>
+                        <td>/routes</td>
+                        <td>Also supports nested layouts</td>
+                    </tr>
+                    <tr>
+                        <td>Astro</td>
+                        <td>/pages</td>
+                        <td>Static site generation and islands architecture</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Benefits</h2>
+            <ul>
+                <li>Less boilerplate: No need to write explicit routing code.</li>
+                <li>Convention over configuration: Easier for teams to collaborate.</li>
+                <li>Scalable: Nested folders = nested routes.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Tradeoffs</h2>
+            <ul>
+                <li>Less flexible for advanced use cases</li>
+                <li>Might need to learn conventions specific to the framework</li>
+                <li>Can get messy with lots of deeply nested files</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Creating a router from scratch using only HTML, CSS, and JavaScript (no frameworks like React or Vue) is a great way to understand how client-side routing works in Single Page Applications (SPAs).</p>
+            <h2>🧭 What We'll Build</h2>
+            <p>A simple SPA with:</p>
+            <ul>
+                <li>No page reloads</li>
+                <li>URL changes using the History API</li>
+                <li>Dynamic content based on route</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 File Structure</h2>
+            <pre><code>
+/project
+├── index.html
+├── styles.css
+└── router.js
+            </code></pre>
+
+            <p>📄 index.html</p>
+            <pre><code>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;
+  &lt;title&gt;Simple Router&lt;/title&gt;
+  &lt;link rel="stylesheet" href="styles.css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;nav&gt;
+    &lt;a href="/" data-link&gt;Home&lt;/a&gt;
+    &lt;a href="/about" data-link&gt;About&lt;/a&gt;
+    &lt;a href="/contact" data-link&gt;Contact&lt;/a&gt;
+  &lt;/nav&gt;
+
+  &lt;div id="app"&gt;
+    &lt;!-- Dynamic content will go here --&gt;
+  &lt;/div&gt;
+
+  &lt;script src="router.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+
+            <p>🎨 styles.css (optional, just to make it look better)</p>
+            <pre><code>
+body {
+    font-family: sans-serif;
+    padding: 20px;
+}
+    
+nav {
+    margin-bottom: 20px;
+}
+    
+nav a {
+    margin-right: 10px;
+    text-decoration: none;
+    color: blue;
+}
+    
+nav a:hover {
+    text-decoration: underline;
+}                  
+            </code></pre>
+
+            <p>⚙️ router.js</p>
+            <pre><code>
+// Routes definition
+const routes = {
+  "/": () => "&lt;h1&gt;Home Page&lt;/h1&gt;&lt;p&gt;Welcome to the homepage.&lt;/p&gt;",
+  "/about": () => "&lt;h1&gt;About Page&lt;/h1&gt;&lt;p&gt;Learn more about us here.&lt;/p&gt;",
+  "/contact": () => "&lt;h1&gt;Contact Page&lt;/h1&gt;&lt;p&gt;Contact us at example@example.com.&lt;/p&gt;",
+};
+
+// Router logic
+function router() {
+  const path = window.location.pathname;
+  const render = routes[path] || (() => "&lt;h1&gt;404 Not Found&lt;/h1&gt;");
+  document.getElementById("app").innerHTML = render();
+}
+
+// Handle navigation
+function navigate(event) {
+  event.preventDefault();
+  const path = event.target.href.replace(window.location.origin, "");
+  window.history.pushState({}, "", path);
+  router();
+}
+
+// Attach click handlers
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("a[data-link]").forEach(link => {
+    link.addEventListener("click", navigate);
+  });
+
+  // Handle browser navigation (back/forward)
+  window.addEventListener("popstate", router);
+
+  // Initial render
+  router();
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Features</h2>
+            <ul>
+                <li>✅ No reloads</li>
+                <li>✅ Dynamic route handling</li>
+                <li>✅ 404 fallback</li>
+                <li>✅ Works with browser back/forward buttons</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 How to Run</h2>
+            <ol>
+                <li>Save the files in a folder.</li>
+                <li>
+                    Open index.html in a browser via local server (not file://).
+                    <ul>
+                        <li>
+                            Use <a href="https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer">Live Server</a> (VSCode plugin) or run a quick server:
+                        <pre><code>
+npx serve
+# or
+python -m http.server
+                        </code></pre>
+                        </li>
+                    </ul>
+                </li>
+                <li>Click the links — they’ll change the URL and content without reloading.</li>
+            </ol>
+
+            <p>Would you like me to extend this with:</p>
+            <ul>
+                <li>Dynamic route params (e.g., /user/123)</li>
+                <li>Nested routes</li>
+                <li>Lazy-loading pages?</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

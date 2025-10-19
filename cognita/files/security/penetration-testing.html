@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Penetration‑testing — practical playbook and checklist</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Penetration‑testing — practical playbook and checklist</h1>
+                    <p class="subtitle">Nice — here’s a compact, practical, and usable penetration‑testing playbook you can apply to engagements or learning. I can’t browse the web right now, so everything below sticks to stable, broadly relevant practices, tools, and examples (no time‑sensitive references). If you want a version tailored to a specific target type (web app, cloud, AD, IoT), say which and I’ll adapt it right away.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. High‑level phases (do these in order)</h2>
+            <ol>
+                <li>Engagement setup / legal — written authorization, scope, allowed tools/techniques, safe hours, escalation contacts, data handling rules.</li>
+                <li>Reconnaissance (passive → active) — gather public info (DNS, subdomains, credentials leaks, OSINT), then active discovery (port/host discovery).</li>
+                <li>Enumeration & scanning — identify services, versions, directories, API endpoints, user accounts, etc.</li>
+                <li>Vulnerability analysis — map findings to candidate vulnerabilities and prioritize by impact/likelihood.</li>
+                <li>Exploitation / validation (only if in scope) — safely confirm vulnerabilities; avoid destructive tests unless explicitly allowed.</li>
+                <li>Post‑exploitation (if permitted) — persistence, lateral movement, data access validated per scope.</li>
+                <li>Reporting & remediation verification — deliver executive summary + technical report, include mitigation steps and retest if agreed.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>2. Rules of engagement (ROE) checklist — must be documented</h2>
+            <ul>
+                <li>Authorized targets (IP ranges, hostnames) and excluded assets (production printers, safety systems).</li>
+                <li>Time windows and contact person(s) for emergencies.</li>
+                <li>Allowed techniques (social engineering? physical testing?) — explicit yes/no.</li>
+                <li>Data handling & storage rules (sensitive data treatment, exfiltration limits).</li>
+                <li>Agreed deliverables (format, level of detail, retest policy).</li>
+                <li>Liability/insurance and incident handling process.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Recon & enumeration — prioritized tasks</h2>
+            <ul>
+                <li>Passive OSINT: domain WHOIS, public subdomains, certificate transparency, employee names, public GitHub leaks.</li>
+                <li>Subdomain discovery & DNS mapping.</li>
+                <li>Port & service discovery for live hosts.</li>
+                <li>Web enumeration: directory brute force, hidden endpoints, common parameters.</li>
+                <li>Technology fingerprinting: frameworks, server types, exposed APIs.</li>
+                <li>Credential/credential stuffing checks only if explicitly allowed.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example (non‑destructive) command snippets you’ll often use:</h2>
+            <ul>
+                <li>nmap -sS -sV -p- -T4 --open target.com (TCP SYN + service/version scan, show open ports)</li>
+                <li>nmap -sU -sV -pU:53,161 target (UDP where needed)</li>
+                <li>
+                    gobuster dir -u https://example.com -w /path/wordlist.txt -x php,html,txt (web directory discovery)
+                    <p>(Use these only with authorization and adapt flags to the environment.)</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Web app focus — core checklist</h2>
+            <ul>
+                <li>Authentication / session management testing (weak auth, session fixation).</li>
+                <li>Input validation & output encoding (SQLi, XSS, command injection).</li>
+                <li>Access control: horizontal & vertical.</li>
+                <li>Logic flaws and API abuse (rate limits, object IDs, parameter manipulation).</li>
+                <li>File upload handling and insecure direct object references (IDOR).</li>
+                <li>
+                    CSRF protections and CORS misconfigurations.
+                    <p>Tools commonly used: intercepting proxy (Burp/OWASP ZAP), scanners, curl, browser devtools.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Network & infrastructure focus — core checklist</h2>
+            <ul>
+                <li>Unpatched services (versions and known CVEs).</li>
+                <li>Weak/default credentials, unsecured management interfaces.</li>
+                <li>Misconfigured VPNs, exposed internal services.</li>
+                <li>Weak SMB/NetBIOS/LDAP configurations.</li>
+                <li>
+                    Segmentation validation — can you reach sensitive network zones?
+                    <p>Tools: Nmap, Nessus/OpenVAS (for automated scanning), Wireshark for traffic analysis, Metasploit for proof‑of‑concept (only if in scope).</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Active Directory / enterprise (if in scope)</h2>
+            <ul>
+                <li>Enumerate users, groups, trusts, ACLs.</li>
+                <li>Identify overly permissive groups and service accounts.</li>
+                <li>Look for Kerberoasting, delegation misconfigs, unconstrained delegation (conceptually — validate per scope).</li>
+                <li>
+                    Map privilege escalation and lateral movement paths (e.g., with graphing tools).
+                    <p>Always follow strict ROE — AD testing can be disruptive.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Cloud & containers (if in scope)</h2>
+            <ul>
+                <li>Check IAM policies and over‑permissive roles.</li>
+                <li>Misconfigured storage (open S3/GCS buckets).</li>
+                <li>Publicly exposed management consoles or keys in code.</li>
+                <li>Container image vulnerabilities and insecure orchestration configs.
+                    <p>Use cloud provider audit tools and IaC scanning in combination with manual checks.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Post‑exploitation cautions & limits</h2>
+            <ul>
+                <li>Never exfiltrate production data unless explicitly allowed and necessary for proof.</li>
+                <li>Prefer screenshots or hashed evidence over downloading large datasets.</li>
+                <li>Avoid actions that cause downtime or data corruption unless scoped.</li>
+                <li>Keep detailed logs of every action and time stamp everything for reporting and legal traceability.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Risk rating & reporting — what to include</h2>
+            <ul>
+                <li>Executive summary — business impact, highest risks, remediation priorities.</li>
+                <li>Technical findings — clear title, affected asset, CVSS (if used), evidence (screenshots/logs), reproduction steps (concise), remediation steps.</li>
+                <li>Remediation timeline & verification steps — how to check the fix.</li>
+                <li>Appendices — tools used, IPs scanned, raw logs (sensitive info redacted), compliance mapping if requested.</li>
+            </ul>
+
+            <p>Quick template for a finding:</p>
+            <ul>
+                <li>Title: [Short descriptor]</li>
+                <li>Severity: High / Medium / Low (justify)</li>
+                <li>Affected asset: IP / URL / hostname</li>
+                <li>Summary: what the issue is and business impact</li>
+                <li>Evidence: screenshot, request/response, log excerpt (redact sensitive data)</li>
+                <li>Reproduction: steps to reproduce (concise)</li>
+                <li>Recommendation: detailed fix and references</li>
+            </ul>
+        </section>
+        
+        <section>
+            <h2>10. Tools & learning resources (stable list)</h2>
+            <ul>
+                <li>Recon/Scanning: Nmap, Amass (subdomain mapping).</li>
+                <li>Web testing: Burp Suite, OWASP ZAP, Nikto, SQLmap (authorized use only).</li>
+                <li>Exploitation: Metasploit (use only when allowed).</li>
+                <li>Packet analysis: Wireshark.</li>
+                <li>AD: BloodHound, PowerView (use per scope).</li>
+                <li>Binary/RE: Ghidra, radare2.</li>
+                <li>Passwords: Hashcat, John the Ripper (offline only).</li>
+                <li>Labs/Practice: TryHackMe, Hack The Box, OWASP Juice Shop, CTFs.</li>
+                <li>Methodologies: OWASP Top Ten, MITRE ATT&CK, NIST 800‑115.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>11. Learning / certification path (practical)</h2>
+            <ul>
+                <li>Fundamentals: TCP/IP, Linux, scripting (Python/Bash), HTTP, databases.</li>
+                <li>Practical labs: start with web app CTFs and progressively do network and AD labs.</li>
+                <li>Certifications if desired: OSCP, GPEN, OSWE — they teach practical, methodological testing and reporting.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>12. Quick starter checklist you can print</h2>
+            <ul>
+                <li>Written authorization & scope signed</li>
+                <li>Emergency contact & blackout windows defined</li>
+                <li>Recon: subdomains, certs, public leaks done</li>
+                <li>Scanning: ports & services identified, non‑intrusive first</li>
+                <li>Web enumeration: directories, endpoints, APIs listed</li>
+                <li>Vulnerability mapping: prioritized list created</li>
+                <li>Exploitation: PoC created only within scope</li>
+                <li>Report: exec summary + technical findings drafted</li>
+                <li>Retest / verification plan agreed</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

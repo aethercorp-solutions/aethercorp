@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Basic Python automation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Basic Python automation</h1>
+                    <p class="subtitle">Basic Python automation means using Python scripts to handle repetitive tasks automatically — saving time and reducing errors.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Here’s a quick overview and some examples to get you started 👇</p>
+            <h2>🧠 What Is Automation in Python?</h2>
+            <p>Automation is when you write code to perform routine tasks — like renaming files, sending emails, scraping websites, or processing data — without manual input.</p>
+        </section>
+
+        <section>
+            <h2>🧰 Common Libraries for Automation</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Purpose</th>
+                        <th>Library</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>File operations</td>
+                        <td>os, shutil, pathlib</td>
+                        <td>Rename, move, or delete files</td>
+                    </tr>
+                    <tr>
+                        <td>Excel/CSV tasks</td>
+                        <td>pandas, openpyxl, csv</td>
+                        <td>Read/write spreadsheets</td>
+                    </tr>
+                    <tr>
+                        <td>Web automation</td>
+                        <td>selenium, playwright</td>
+                        <td>Fill forms, scrape websites</td>
+                    </tr>
+                    <tr>
+                        <td>Emails</td>
+                        <td>smtplib, email</td>
+                        <td>Send automated reports</td>
+                    </tr>
+                    <tr>
+                        <td>Task scheduling</td>
+                        <td>schedule, time, cron</td>
+                        <td>Run scripts periodically</td>
+                    </tr>
+                    <tr>
+                        <td>APIs</td>
+                        <td>requests</td>
+                        <td>Interact with web services</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>⚙️ Simple Automation Examples</h2>
+            <p>1. Rename Files in a Folder</p>
+            <pre><code>
+import os
+
+folder = "/path/to/folder"
+for count, filename in enumerate(os.listdir(folder)):
+    old = os.path.join(folder, filename)
+    new = os.path.join(folder, f"file_{count}.txt")
+    os.rename(old, new)
+
+print("Files renamed successfully!")
+            </code></pre>
+
+            <p>2. Send an Email Automatically</p>
+            <pre><code>
+import smtplib
+from email.mime.text import MIMEText
+
+sender = "you@example.com"
+receiver = "friend@example.com"
+msg = MIMEText("This is an automated message.")
+msg["Subject"] = "Automation Test"
+msg["From"] = sender
+msg["To"] = receiver
+
+with smtplib.SMTP("smtp.gmail.com", 587) as server:
+    server.starttls()
+    server.login(sender, "your-app-password")
+    server.send_message(msg)
+
+print("Email sent!")
+            </code></pre>
+
+            <p>3. Read and Process Excel Data</p>
+            <pre><code>
+import pandas as pd
+
+data = pd.read_excel("data.xlsx")
+filtered = data[data["Status"] == "Pending"]
+filtered.to_excel("pending.xlsx", index=False)
+print("Filtered data saved!")
+            </code></pre>
+
+            <p>4. Automate a Web Browser (Selenium)</p>
+            <pre><code>
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+driver.get("https://example.com")
+driver.find_element("name", "q").send_keys("Python automation\n")
+print(driver.title)
+driver.quit()
+            </code></pre>
+
+            <p>5. Run a Script Every Hour</p>
+            <pre><code>
+import schedule
+import time
+
+def job():
+    print("Running automation task...")
+
+schedule.every(1).hours.do(job)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

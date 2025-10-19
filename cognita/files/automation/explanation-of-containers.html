@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Explanation of Containers</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Explanation of Containers</h1>
+                    <p class="subtitle">Here's a clear explanation of containers—focusing on Docker, images, volumes, and registries—including their usage and implementation.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 What Are Containers?</h2>
+            <p>Containers are lightweight, portable, and self-sufficient units that package application code along with all its dependencies, libraries, and runtime environment. They ensure that the application runs consistently regardless of the underlying system.</p>
+            <p>🛠 Tools like Docker make containerization practical and widely adopted.</p>
+        </section>
+
+        <section>
+            <h2>🔸 1. Docker</h2>
+            <p>✅ Usage:</p>
+            <ul>
+                <li>Create, deploy, and manage containers.</li>
+                <li>Package applications with all dependencies.</li>
+                <li>Run applications consistently across environments (dev, test, prod).</li>
+            </ul>
+
+            <p>⚙️ Implementation:</p>
+            <ol>
+                <li>Install Docker Engine on your system.</li>
+                <li>Create a Dockerfile that defines how your image is built.</li>
+                <li>
+                    Build the image:
+                    <pre><code>
+docker build -t my-app .
+                    </code></pre>
+                </li>
+                <li>
+                    Run a container from the image:
+                    <pre><code>
+docker run -d -p 8080:80 my-app
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔸 2. Docker Images</h2>
+            <p>✅ Usage:</p>
+            <ul>
+                <li>Blueprint for containers.</li>
+                <li>Created from Dockerfiles.</li>
+                <li>Immutable once built.</li>
+            </ul>
+
+            <p>⚙️ Implementation:</p>
+            <ol>
+                <li>
+                    Dockerfile Example:
+                    <pre><code>
+FROM node:18
+WORKDIR /app
+COPY . .
+RUN npm install
+CMD ["npm", "start"]
+
+                    </code></pre>
+                </li>
+                <li>
+                    Build Image:
+                    <pre><code>
+docker build -t my-node-app .
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔸 3. Docker Volumes</h2>
+            <p>✅ Usage:</p>
+            <ul>
+                <li>Persist data beyond the container's lifecycle.</li>
+                <li>Share data between containers.</li>
+                <li>Useful for databases, logs, or user uploads.</li>
+            </ul>
+            <p>⚙️ Implementation:</p>
+            <ol>
+                <li>
+                    Create a Volume:
+                    <pre><code>
+docker volume create my-data
+                    </code></pre>
+                </li>
+                <li>
+                    Use in Container:
+                    <pre><code>
+docker run -d -v my-data:/var/lib/mysql mysql
+                    </code></pre>
+                </li>
+            </ol>
+
+            <p>You can also mount a host directory:</p>
+            <pre><code>
+docker run -v $(pwd)/data:/app/data my-app
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔸 4. Docker Registries</h2>
+            <p>✅ Usage:</p>
+            <ul>
+                <li>Store and distribute Docker images.</li>
+                <li>Public (e.g., Docker Hub) or private (e.g., AWS ECR, GitHub Container Registry).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ Implementation:</h2>
+            <ol>
+                <li>
+                    Login to Docker Hub:
+                    <pre><code>
+docker login
+                    </code></pre>
+                </li>
+                <li>
+                    Tag Image:
+                    <pre><code>
+docker tag my-app username/my-app:latest
+                    </code></pre>
+                </li>
+                <li>
+                    Push to Registry:
+                    <pre><code>
+docker push username/my-app:latest
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📦 Example Workflow (End-to-End)</h2>
+            <ol>
+                <li>Write a Dockerfile for your app.</li>
+                <li>Build the Docker image.</li>
+                <li>Push the image to a registry.</li>
+                <li>Pull the image on another machine (e.g., production server).</li>
+                <li>Run the container with mounted volumes (for persistence).</li>
+                <li>Manage with Docker Compose or Kubernetes (for orchestration).</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Purpose</th>
+                        <th>Key Command</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Docker Engine</td>
+                        <td>Run/manage containers</td>
+                        <td>docker run, docker ps</td>
+                    </tr>
+                    <tr>
+                        <td>Images</td>
+                        <td>Blueprint for containers</td>
+                        <td>docker build, docker images</td>
+                    </tr>
+                    <tr>
+                        <td>Volumes</td>
+                        <td>Persistent storage</td>
+                        <td>docker volume, -v flag</td>
+                    </tr>
+                    <tr>
+                        <td>Registries</td>
+                        <td>Store/share images</td>
+                        <td>docker push, docker pull</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Docker Image</h2>
+            <p>A Docker image is a lightweight, standalone, and executable package that includes everything needed to run a piece of software, including:</p>
+            <ul>
+                <li>Source code or application binaries</li>
+                <li>Runtime environment</li>
+                <li>Libraries and dependencies</li>
+                <li>Configuration files</li>
+                <li>Operating system files (minimal)</li>
+            </ul>
+            <p>Think of a Docker image as a blueprint or snapshot of a system environment. When you run a Docker image, it becomes a Docker container — a running instance of that image.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Key Concepts:</h2>
+            <ul>
+                <li>Immutable: Docker images don't change. When you update software, you build a new image.</li>
+                <li>Layered structure: Images are built in layers. Each command in a Dockerfile creates a new layer. Docker caches these layers for efficiency.</li>
+                <li>Portable: You can run the same image on any machine that has Docker installed, regardless of the underlying OS (Linux, macOS, Windows).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Example:</h2>
+            <p>Let's say you're developing a Python web app using Flask. You can create a Docker image with:</p>
+            <ul>
+                <li>Python installed</li>
+                <li>Flask library installed</li>
+                <li>Your app code</li>
+                <li>Configuration to expose port 5000</li>
+            </ul>
+            <p>You write a Dockerfile describing these steps, then build it into an image:</p>
+            <pre><code>
+docker build -t my-flask-app .
+            </code></pre>
+
+            <p>Now my-flask-app is a Docker image. You can run it like this:</p>
+            <pre><code>
+docker run -p 5000:5000 my-flask-app
+            </code></pre>
+
+            <p>This starts a container from the image and maps it to your local port.</p>
+            <p>A Docker image is a packaged environment that contains everything needed to run a program. It's the template used to create Docker containers.</p>
+        </section>
+
+        <section>
+            <p>Great! Let’s walk through the basics of a Dockerfile — the script used to build a Docker image.</p>
+            <h2>🧱 What is a Dockerfile?</h2>
+            <p>A Dockerfile is a plain text file containing instructions on how to build a Docker image. Docker reads this file and follows the steps to create the image.</p>
+        </section>
+
+        <section>
+            <h2>📄 Example: Dockerfile for a Flask App</h2>
+            <p>Here’s a simple Dockerfile for a Python Flask web application:</p>
+            <pre><code>
+# 1. Base image
+FROM python:3.10-slim
+
+# 2. Set the working directory inside the container
+WORKDIR /app
+
+# 3. Copy the local files into the container
+COPY . /app
+
+# 4. Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 5. Expose the port Flask will run on
+EXPOSE 5000
+
+# 6. Command to run the app
+CMD ["python", "app.py"]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔍 Explanation of Each Line:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Line</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>FROM</td>
+                        <td>Uses an official Python image as the starting point</td>
+                    </tr>
+                    <tr>
+                        <td>WORKDIR</td>
+                        <td>Sets the working directory inside the container</td>
+                    </tr>
+                    <tr>
+                        <td>COPY</td>
+                        <td>Copies all files from your current directory into the container</td>
+                    </tr>
+                    <tr>
+                        <td>RUN</td>
+                        <td>Executes a command (like installing dependencies) while building the image</td>
+                    </tr>
+                    <tr>
+                        <td>EXPOSE</td>
+                        <td>Tells Docker that the app runs on port 5000 (informational only)</td>
+                    </tr>
+                    <tr>
+                        <td>CMD</td>
+                        <td>Defines the default command to run when the container starts</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>✅ Folder Structure Example</h2>
+            <p>Your project folder might look like this:</p>
+            <pre><code>
+flask-app/
+├── Dockerfile
+├── app.py
+├── requirements.txt
+            </code></pre>
+            <p>And requirements.txt could look like:</p>
+            <pre><code>
+flask
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔨 How to Build and Run It</h2>
+            <p>Step 1: Build the image</p>
+            <pre><code>
+docker build -t my-flask-app .
+            </code></pre>
+
+            <p>Step 2: Run a container from the image</p>
+            <pre><code>
+docker run -p 5000:5000 my-flask-app
+            </code></pre>
+            <p>Now your app should be available at http://localhost:5000</p>
+        </section>
+
+        <section>
+            <p>No, Docker is not a Software as a Service (SaaS) company — at least not primarily.</p>
+            <h2>✅ What Docker is:</h2>
+            <p>Docker Inc. is a software company that develops and maintains the Docker platform, which provides tools for building, sharing, and running containerized applications.</p>
+            <p>At its core, Docker is a platform (and runtime), not a SaaS product.</p>
+        </section>
+
+        <section>
+            <h2>🧱 Docker's Core Product:</h2>
+            <p>The main part of Docker is:</p>
+            <ul>
+                <li>Docker Engine: An open-source runtime that lets developers build and run containers on any system.</li>
+            </ul>
+            <p>This is installed locally on your machine (Linux, macOS, Windows) and runs your containers.</p>
+        </section>
+
+        <section>
+            <h2>🌐 Docker and SaaS Offerings:</h2>
+            <p>However, Docker Inc. does offer some SaaS tools, such as:</p>
+            <ul>
+                <li>Docker Hub: A cloud-based registry where users can store, share, and manage Docker images. This is a SaaS product.</li>
+                <li>Docker Scout: A service for container image analysis and security scanning — also SaaS.</li>
+                <li>Docker Desktop Pro/Team: Paid tiers of Docker Desktop with cloud features, integration, and support — partly SaaS.</li>
+            </ul>
+            <p>So, Docker offers SaaS components, but Docker itself is not a SaaS company in the traditional sense like Salesforce or Google Workspace.</p>
+        </section>
+
+        <section>
+            <h2>📌 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Docker Engine</td>
+                        <td>Software (local)</td>
+                    </tr>
+                    <tr>
+                        <td>Docker CLI / Desktop</td>
+                        <td>Software (local)</td>
+                    </tr>
+                    <tr>
+                        <td>Docker Hub</td>
+                        <td>SaaS (cloud image registry)</td>
+                    </tr>
+                    <tr>
+                        <td>Docker Inc. (the company)</td>
+                        <td>Software company with SaaS offerings</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Docker Engine</h2>
+            <p>The Docker Engine is the core software that runs and manages containers on your machine or server.</p>
+            <p>🧠 In Simple Terms:</p>
+            <p>Docker Engine is the runtime that lets you build, run, and manage containers.</p>
+            <p>It handles all the behind-the-scenes work to make containers run efficiently and isolated from each other.</p>
+        </section>
+
+        <section>
+            <h2>🔧 Components of Docker Engine</h2>
+            <p>The Docker Engine has 3 main components:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Docker Daemon (dockerd)</td>
+                        <td>Background service that does the actual work (build, run containers, manage images)</td>
+                    </tr>
+                    <tr>
+                        <td>Docker CLI (docker)</td>
+                        <td>The command-line interface you use to interact with Docker (docker run, docker build, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>REST API</td>
+                        <td>Interface used by tools (like Docker Desktop or 3rd party apps) to communicate with the Docker daemon programmatically</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🏗️ What Docker Engine Does</h2>
+            <p>Here’s what Docker Engine enables you to do:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Build container images</td>
+                        <td>docker build -t myapp .</td>
+                    </tr>
+                    <tr>
+                        <td>Run containers</td>
+                        <td>docker run myapp</td>
+                    </tr>
+                    <tr>
+                        <td>Pull images from Docker Hub</td>
+                        <td>docker pull nginx</td>
+                    </tr>
+                    <tr>
+                        <td>Manage images, containers, networks, volumes</td>
+                        <td>docker ps, docker images, etc.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📌 Example in Action:</h2>
+            <p>When you run:</p>
+            <pre><code>
+docker run -p 80:80 nginx
+            </code></pre>
+            <p>Here’s what happens:</p>
+            <ol>
+                <li>Docker CLI sends the command to the Docker daemon</li>
+                <li>Docker daemon checks if the nginx image is present</li>
+                <li>If not, it pulls it from Docker Hub</li>
+                <li>It creates a container from the image</li>
+                <li>It runs the container, mapping port 80 from the container to your machine</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧰 Docker Engine Is Installed On:</h2>
+            <ul>
+                <li>Linux servers (Ubuntu, CentOS, etc.)</li>
+                <li>macOS and Windows (through Docker Desktop, which bundles the Docker Engine)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📌 Summary</h2>
+            <p>Docker Engine is the container runtime — the core tool that runs and manages containers. It includes the Docker daemon, CLI, and REST API.</p>
+        </section>
+
+        <section>
+            <h2>What is the Docker Daemon?</h2>
+            <p>The Docker Daemon (called dockerd) is the background service that does all the heavy lifting for Docker.</p>
+            <p>🧑‍🏭 Role of the Docker Daemon:</p>
+            <ul>
+                <li>Builds Docker images</li>
+                <li>Runs and manages Docker containers</li>
+                <li>Handles networking, storage, and other container resources</li>
+                <li>Communicates with other daemons to manage Docker services in clusters (Swarm mode)</li>
+                <li>Listens for Docker API requests (from Docker CLI or other tools)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>How It Works:</h2>
+            <ul>
+                <li>The daemon runs continuously on your machine (server or desktop).</li>
+                <li>When you run commands like docker run or docker build, your Docker CLI sends these commands to the daemon via the REST API.</li>
+                <li>The daemon then processes the commands, doing things like downloading images, starting containers, and managing resources.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Summary:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Docker Daemon</td>
+                        <td>Background service that runs and manages Docker containers and images</td>
+                    </tr>
+                    <tr>
+                        <td>Docker CLI</td>
+                        <td>Command-line tool you type commands into</td>
+                    </tr>
+                    <tr>
+                        <td>Communication</td>
+                        <td>CLI sends commands to the daemon via REST API</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Quick analogy:</h2>
+            <ul>
+                <li>Think of Docker Daemon as the engine in a car running under the hood.</li>
+                <li>The Docker CLI is you steering and controlling the car.</li>
+                <li>You tell the CLI what to do, and the daemon makes it happen.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

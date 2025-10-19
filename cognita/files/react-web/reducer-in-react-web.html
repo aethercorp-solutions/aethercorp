@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Reducer in React (web) — quick, practical guide</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Reducer in React (web) — quick, practical guide</h1>
+                    <p class="subtitle">Nice and short: a reducer is a function that takes the current state and an action, and returns the next state. In React you commonly use reducers with the useReducer hook when state logic is complex or depends on previous state — especially when multiple related state fields must update together.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>When to use useReducer instead of useState</h2>
+            <ul>
+                <li>State updates are complex (many branches / derived values).</li>
+                <li>You update multiple related values in one action (e.g., form inputs + validation flags).</li>
+                <li>You want a single place to reason about state transitions (helps testing).</li>
+                <li>You use the same state logic in multiple components (can be extracted).</li>
+                <li>You plan to use React.Context + reducer for global-ish state (Redux-like pattern).</li>
+            </ul>
+            <p>Use useState for simple independent primitives (toggle, single input, etc).</p>
+        </section>
+
+        <section>
+            <h2>Reducer shape (concept)</h2>
+            <pre><code>
+// reducer(currentState, action) => newState
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return { ...state, count: state.count + 1 };
+    case 'setName':
+      return { ...state, name: action.payload };
+    default:
+      return state;
+  }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Simple example — counter</h2>
+            <pre><code>
+import React, { useReducer } from 'react';
+
+const initialState = { count: 0 };
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'decrement':
+      return { count: state.count - 1 };
+    case 'reset':
+      return initialState;
+    default:
+      throw new Error('Unknown action');
+  }
+}
+
+export default function Counter() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    &lt;div&gt;
+        &lt;p&gt;Count: {state.count}&lt;/p&gt;
+        &lt;button onClick={() => dispatch({ type: 'decrement' })}>−&lt;/button&gt;
+        &lt;button onClick={() => dispatch({ type: 'increment' })}>+&lt;/button&gt;
+        &lt;button onClick={() => dispatch({ type: 'reset' })}>Reset&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>More realistic example — form with validation</h2>
+            <pre><code>
+const initialForm = {
+    values: { name: '', email: '' },
+    errors: {},
+    submitting: false,
+};
+    
+function formReducer(state, action) {
+    switch (action.type) {
+        case 'CHANGE_FIELD':
+            return {
+                ...state,
+                values: { ...state.values, [action.field]: action.value },
+            };
+        case 'SET_ERRORS':
+            return { ...state, errors: action.errors };
+        case 'SUBMIT_START':
+            return { ...state, submitting: true };
+        case 'SUBMIT_END':
+            return { ...state, submitting: false };
+        default:
+            return state;
+    }
+} 
+            </code></pre>
+
+            <p>The syntax ...state is called the spread operator in JavaScript.</p>
+            <p>In this line:</p>
+            <pre><code>
+return {
+    ...state,
+    values: { ...state.values, [action.field]: action.value },
+};                  
+            </code></pre>
+            <p>it means “copy all properties from state into this new object.”</p>
+            <p>Let’s break it down:</p>
+
+            <p>🧩 Example</p>
+            <p>If your current state looks like this:</p>
+            <pre><code>
+{
+    values: { name: "Paul", email: "paul@example.com" },
+    errors: {},
+    submitting: false
+}                  
+            </code></pre>
+
+            <p>and your reducer runs:</p>
+            <pre><code>
+{
+    ...state,
+    submitting: true
+}                  
+            </code></pre>
+            <p>So it keeps all existing keys from the previous state,</p>
+            <p>but updates or overrides any key you specify after the spread (like submitting: true).</p>
+        </section>
+
+        <section>
+            <h2>🧠 Why use it?</h2>
+            <p>Because React state should be immutable — you shouldn’t modify the original state directly.</p>
+            <p>Instead, you create a new copy with any updated values using the spread operator.</p>
+            <p>Also in this line:</p>
+            <pre><code>
+values: { ...state.values, [action.field]: action.value }
+            </code></pre>
+
+            <p>It spreads (...state.values) the old form fields, and updates just one field dynamically:</p>
+            <ul>
+                <li>[action.field] means: use the field name from the action (e.g., "name" or "email")</li>
+                <li>action.value is the new value for that field.</li>
+            </ul>
+
+            <p>So if action = { type: "CHANGE_FIELD", field: "name", value: "John" },</p>
+            <p>the result becomes:</p>
+            <pre><code>
+values: { name: "John", email: "" }
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

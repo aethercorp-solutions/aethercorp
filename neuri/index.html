@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Aether Neuri</title>
+  <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
   <link rel="stylesheet" href="neuri.css" />
 </head>
+
 <body>
   <div class="container">
     <div class="header">
-        <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
       <img src="../assets/aether-logo.png" alt="Aether Logo" />
       <h1>Aether Neuri</h1>
     </div>
@@ -32,9 +34,8 @@
     const isGitHubPages = window.location.hostname.includes('github.io');
     const basePath = isGitHubPages ? `/${repoName}/neuri/` : './';
 
-    // Raw paths relative to basePath
+    // Files relative to basePath
     const htmlFiles = [
-      
     ];
 
     const htmlFilesWithBase = htmlFiles.map(file => basePath + file);
@@ -62,7 +63,7 @@
       const grouped = {};
       files.forEach(file => {
         const parts = file.replace(basePath, '').split('/');
-        const folder = parts[1]; // e.g., 'network'
+        const folder = parts[1]; // e.g., 'aws', 'ios', 'deployment', 'react-native', etc.
         if (!grouped[folder]) grouped[folder] = [];
         grouped[folder].push(file);
       });
@@ -112,12 +113,19 @@
     // Initial render
     displayList(htmlFilesWithBase, groupToggle.checked);
 
-    // Search input event
     searchInput.addEventListener('input', () => {
-      const query = searchInput.value.toLowerCase();
-      const filtered = htmlFilesWithBase.filter(file => file.toLowerCase().includes(query));
-      displayList(filtered, groupToggle.checked);
+      const query = searchInput.value.trim().toLowerCase();
+      const keywords = query.split(/\s+/).filter(Boolean);
+      const regex = new RegExp(keywords.map(k => `(?=.*${k})`).join(''), 'i');
+
+      const filtered = htmlFilesWithBase.filter(file => {
+        const fileName = file.split('/').pop().replace('.html', '').toLowerCase();
+        return regex.test(fileName);
+      });
+
+    displayList(filtered, groupToggle.checked);
     });
+
 
     // Group toggle event
     groupToggle.addEventListener('change', () => {
@@ -127,4 +135,5 @@
     });
   </script>
 </body>
+
 </html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JSON Web Token (JWT)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JSON Web Token (JWT)</h1>
+                    <p class="subtitle">A JSON Web Token (JWT) is a compact, URL-safe way of representing claims securely between two parties. It’s commonly used for authentication and authorization in web applications.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧱 Structure of a JWT</h2>
+            <p>A JWT has three parts, separated by dots (.):</p>
+            <pre><code>
+&lt;Header&gt;.&lt;Payload&gt;.&lt;Signature&gt;
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 1. Header</h2>
+            <p>The header typically consists of:</p>
+            <pre><code>
+{
+    "alg": "HS256",   // Algorithm used to sign the token
+    "typ": "JWT"      // Type of token
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📄 2. Payload (Claims)</h2>
+            <p>Contains the claims or data. Example:</p>
+            <pre><code>
+{
+    "sub": "1234567890",  // Subject (user ID)
+    "name": "John Doe",
+    "iat": 1516239022     // Issued at (Unix timestamp)
+}                  
+            </code></pre>
+
+            <p>You can also add custom claims like role, permissions, etc.</p>
+        </section>
+
+        <section>
+            <h2>🔒 3. Signature</h2>
+            <p>Used to verify that the token hasn’t been tampered with.</p>
+            <p>Formula:</p>
+
+            <pre><code>
+HMACSHA256(
+  base64UrlEncode(header) + "." + base64UrlEncode(payload),
+  secret
+)
+            </code></pre>
+
+            <p>If the token is altered, the signature validation will fail.</p>
+        </section>
+
+        <section>
+            <h2>🔐 Use Cases</h2>
+            <ol>
+                <li>
+                    Authentication
+                    <p>After logging in, the server generates a JWT and returns it. The client includes it in the Authorization header in future requests:</p>
+                    <pre><code>
+Authorization: Bearer &lt;token&gt;
+                    </code></pre>
+                </li>
+                <li>
+                    Authorization
+                    <p>The server uses claims in the token (like user role) to determine what resources the user can access.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚠️ Security Tips</h2>
+            <ul>
+                <li>Never store sensitive info in the payload (it’s Base64-encoded, not encrypted).</li>
+                <li>Use HTTPS to prevent token interception.</li>
+                <li>Set token expiration (exp claim).</li>
+                <li>Rotate and revoke tokens if compromised.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

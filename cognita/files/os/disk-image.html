@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Disk Image</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Disk Image</h1>
+                    <p class="subtitle">A disk image is a file that is an exact, byte-for-byte copy of the contents and structure of a storage device, such as a hard drive, USB drive, CD/DVD, or floppy disk.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Think of It Like...</h2>
+            <p>A disk image is a clone of a disk, just like a ZIP file is a clone of a folder — but with all data, partitions, boot sectors, and file systems preserved.</p>
+            <p>🔍 What Does a Disk Image Contain?</p>
+            <p>A disk image includes:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Files and folders</td>
+                        <td>Just like the files you'd see when browsing a USB or hard drive.</td>
+                    </tr>
+                    <tr>
+                        <td>File system info</td>
+                        <td>Like FAT32, NTFS, ext4, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>Boot sectors</td>
+                        <td>If the disk is bootable, it contains the bootloader.</td>
+                    </tr>
+                    <tr>
+                        <td>Partition table</td>
+                        <td>Describes how the disk is divided (partitions).</td>
+                    </tr>
+                    <tr>
+                        <td>Raw data</td>
+                        <td>All bytes on the disk, even empty space.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📂 Common Disk Image Formats</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Format</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>.img</td>
+                        <td>Raw disk image — exact byte-for-byte copy.</td>
+                    </tr>
+                    <tr>
+                        <td>.iso</td>
+                        <td>Optical disk (CD/DVD) image — popular for OS installers.</td>
+                    </tr>
+                    <tr>
+                        <td>.vdi, .vmdk, .vhd</td>
+                        <td>Used by VirtualBox, VMware, Hyper-V (virtual machine disk formats).</td>
+                    </tr>
+                    <tr>
+                        <td>.dmg</td>
+                        <td>macOS disk image format.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>💻 Why Use Disk Images?</h2>
+            <p>Disk images are used for:</p>
+            <ol>
+                <li>Creating bootable USBs or virtual OS environments.</li>
+                <li>Backing up entire disks (including OS, apps, and files).</li>
+                <li>Virtual machines — mount a disk image instead of a physical disk.</li>
+                <li>Deploying systems — clone a pre-configured OS to multiple machines.</li>
+                <li>Operating System development — test OS builds in an emulator (like you're doing).</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧪 Example: A Simple .img File</h2>
+            <p>Let’s say you have a USB with this structure:</p>
+            <pre><code>
+/boot
+/grub
+myfile.txt
+            </code></pre>
+            <p>If you create a disk image of this USB:</p>
+            <pre><code>
+dd if=/dev/sdX of=my-usb.img bs=1M
+            </code></pre>
+            <ul>
+                <li>my-usb.img now contains everything from the USB — including hidden data, partitions, and boot info.</li>
+                <li>You can mount it or run it in a virtual machine.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧰 Tools to Create and Use Disk Images</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>dd</td>
+                        <td>Create or write raw disk images on Linux/macOS.</td>
+                    </tr>
+                    <tr>
+                        <td>qemu, VirtualBox, VMware</td>
+                        <td>Run .img or .iso files as virtual machines.</td>
+                    </tr>
+                    <tr>
+                        <td>Etcher, Rufus</td>
+                        <td>Flash .img or .iso files to USB drives.</td>
+                    </tr>
+                    <tr>
+                        <td>mount (Linux)</td>
+                        <td>Access contents of a disk image.</td>
+                    </tr>
+                    <tr>
+                        <td>hdiutil (macOS)</td>
+                        <td>Handle .dmg and .img files.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Disk Image</td>
+                        <td>A file that is a complete copy of a disk (bit by bit).</td>
+                    </tr>
+                    <tr>
+                        <td>Raw Image</td>
+                        <td>A plain .img file, with no compression or metadata.</td>
+                    </tr>
+                    <tr>
+                        <td>Bootable Image</td>
+                        <td>A disk image with bootloader code that can start a computer.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

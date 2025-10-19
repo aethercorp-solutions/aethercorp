@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Google People API in a React Native app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Google People API in a React Native app</h1>
+                    <p class="subtitle">Integrating the Google People API in a React Native app involves the following high-level steps:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>📱 Overview: React Native + Google People API</h2>
+            <p>To integrate the Google People API in React Native, you'll:</p>
+            <ul>
+                <li>Authenticate the user with Google Sign-In (OAuth 2.0).</li>
+                <li>Get an access token.</li>
+                <li>Use that token to call Google People API endpoints (e.g., fetch contacts or profile info).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧰 Tools/Libraries Needed</h2>
+            <ul>
+                <li>@react-native-google-signin/google-signin – for authentication</li>
+                <li>axios or fetch – to call the Google People API manually</li>
+                <li>Google Cloud Project with People API enabled</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Step-by-Step Implementation</h2>
+            <p>1. Set Up Google Cloud Project</p>
+
+            <ul>
+                <li>Go to Google Cloud Console.</li>
+                <li>Create a project or select one.</li>
+                <li>Enable the People API.</li>
+                <li>
+                    Go to APIs & Services > Credentials and:
+                    <ul>
+                        <li>Create OAuth 2.0 Client ID for Android and/or iOS.</li>
+                        <li>For Android, set your package name and SHA1 key.</li>
+                        <li>For iOS, set your bundle ID.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Install Google Sign-In Package</h2>
+            <pre><code>
+npm install @react-native-google-signin/google-signin
+npx pod-install # for iOS
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Configure Google Sign-In</h2>
+            <pre><code>
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  scopes: [
+    'https://www.googleapis.com/auth/contacts.readonly',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/user.emails.read',
+  ],
+  webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // from Google Console
+  offlineAccess: true,
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Call Google People API</h2>
+            <p>You can now use axios or fetch with the access token.</p>
+            <p>Example: Get User Profile</p>
+            <pre><code>
+import axios from 'axios';
+
+const getGoogleProfile = async (accessToken) => {
+  const response = await axios.get(
+    'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos',
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  console.log('User profile:', response.data);
+};
+            </code></pre>
+
+            <p>Example: List Contacts</p>
+            <pre><code>
+const getContacts = async (accessToken) => {
+    const response = await axios.get(
+        'https://people.googleapis.com/v1/people/me/connections?personFields=names,emailAddresses,phoneNumbers',
+        {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        }
+    );
+    
+    const contacts = response.data.connections || [];
+    contacts.forEach(person => {
+        const name = person.names?.[0]?.displayName;
+        const email = person.emailAddresses?.[0]?.value;
+        console.log(`${name} - ${email}`);
+    });
+};                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚠️ Important Notes</h2>
+            <ul>
+                <li>You must publish your app (or use internal testing) in the Google Cloud OAuth consent screen if using sensitive scopes like contacts.</li>
+                <li>Don't forget to handle token expiration (usually 1 hour).</li>
+                <li>Use refresh tokens or re-authenticate as needed.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 Full Flow (Pseudocode)</h2>
+            <pre><code>
+const init = async () => {
+    const accessToken = await signInWithGoogle();
+    if (accessToken) {
+        await getGoogleProfile(accessToken);
+        await getContacts(accessToken);
+    }
+};                  
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

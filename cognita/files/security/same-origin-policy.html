@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Same-Origin Policy (SOP)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Same-Origin Policy (SOP)</h1>
+                    <p class="subtitle">The Same-Origin Policy (SOP) is a security mechanism built into web browsers that prevents scripts on one origin (domain) from interacting with data from a different origin, unless explicitly allowed.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 Definition</h2>
+            <p>The Same-Origin Policy restricts how a document or script loaded from one origin can interact with resources from another origin.</p>
+            <p>An origin is defined by the combination of:</p>
+            <pre><code>
+scheme (protocol) + host (domain) + port
+            </code></pre>
+
+            <p>For example:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Origin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>https://example.com:443</td>
+                        <td>scheme: https, host: example.com, port: 443</td>
+                    </tr>
+                    <tr>
+                        <td>https://sub.example.com</td>
+                        <td>different (different subdomain)</td>
+                    </tr>
+                    <tr>
+                        <td>http://example.com</td>
+                        <td>different (different protocol)</td>
+                    </tr>
+                    <tr>
+                        <td>https://example.com:8080</td>
+                        <td>different (different port)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔹 What It Protects Against</h2>
+            <p>SOP prevents a malicious website from reading sensitive data from another website (like cookies, localStorage, or API responses) that a user is logged into.</p>
+            <p>Example:</p>
+            <pre><code>
+// From attacker.com
+fetch("https://bank.com/account")
+  .then(r => r.text())
+  .then(console.log); // ❌ Blocked by same-origin policy
+            </code></pre>
+            <p>Without SOP, any random site could read your private banking info if you were logged into your bank in another tab.</p>
+        </section>
+
+        <section>
+            <h2>🔹 When You’ll Encounter It</h2>
+            <p>You’ll typically hit Same-Origin Policy errors when:</p>
+            <ul>
+                <li>A frontend app (React, Vue, etc.) tries to call an API on another domain.</li>
+                <li>
+                    You see browser errors like:
+                    <pre><code>
+Access to fetch at 'https://api.example.com' from origin 'http://localhost:3000' has been blocked by CORS policy
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 The Solution: CORS</h2>
+            <p>CORS (Cross-Origin Resource Sharing) is a way to relax the same-origin policy securely.</p>
+            <p>It lets the server declare which origins are allowed to access its resources.</p>
+            <p>Example (Node.js + Express):</p>
+            <pre><code>
+import cors from "cors";
+import express from "express";
+
+const app = express();
+
+// Allow requests from frontend
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Same-Origin Policy</td>
+                        <td>Browser security rule preventing cross-origin access</td>
+                    </tr>
+                    <tr>
+                        <td>Origin</td>
+                        <td>Combination of protocol, domain, and port</td>
+                    </tr>
+                    <tr>
+                        <td>Purpose</td>
+                        <td>Protect users’ data from malicious sites</td>
+                    </tr>
+                    <tr>
+                        <td>Problem</td>
+                        <td>Blocks legitimate cross-origin API calls</td>
+                    </tr>
+                    <tr>
+                        <td>Solution</td>
+                        <td>Use CORS headers from the server</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <p>Would you like me to show how to configure CORS properly in AWS API Gateway + Lambda to avoid Same-Origin errors in your setup?</p>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Docker for beginners</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Docker for beginners</h1>
+                    <p class="subtitle">Docker is a tool that allows developers, sys-admins etc. to easily deploy their applications in a sandbox (called containers) to run on the host operating system i.e. Linux.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>A Docker tutorial typically covers the following key aspects to guide users through the process of containerizing applications:</p>
+            <ol>
+                <li>
+                    Installation and Setup:
+                    <ul>
+                        <li>Installing Docker: Instructions for downloading and installing Docker Desktop (for macOS and Windows) or Docker Engine (for Linux).</li>
+                        <li>Verification: Confirming the installation by running a simple command like docker run hello-world</li>
+                    </ul>
+                </li>
+                <li>
+                    Docker Fundamentals:
+                    <ul>
+                        <li>Images: Understanding what Docker images are (read-only templates for creating containers) and how to obtain them (e.g., docker pull).</li>
+                        <li>Containers: Learning about Docker containers (runnable instances of images) and how to manage their lifecycle (e.g., docker run, docker ps, docker stop, docker rm).</li>
+                        <li>Dockerfiles: Creating custom images using Dockerfiles, which contain instructions for building an image layer by layer.</li>
+                        <li>Volumes: Managing persistent data in containers using Docker volumes to ensure data is not lost when containers are stopped or removed.</li>
+                    </ul>
+                </li>
+                <li>
+                    Working with Docker:
+                    <ul>
+                        <li>Running Applications: Launching applications inside Docker containers, potentially mapping ports to access them from the host machine.</li>
+                        <li>Networking: Understanding how containers communicate with each other and with the host system.</li>
+                        <li>Docker Compose: Orchestrating multi-container applications using docker compose and a compose.yaml file to define services, networks, and volumes.</li>
+                        <li>Building Images: Creating custom Docker images from Dockerfiles.</li>
+                        <li>Pushing/Pulling Images: Managing images with Docker registries like Docker Hub.</li>
+                    </ul>
+                </li>
+                <li>
+                    Advanced Concepts (Optional):
+                    <ul>
+                        <li>Debugging: Inspecting container logs and using docker exec to access a shell inside a running container.</li>
+                        <li>Environment Variables: Passing environment variables to containers at runtime.</li>
+                        <li>Security: Basic security considerations for Docker containers.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Example of a basic workflow:</h2>
+            <p>Write a Dockerfile.</p>
+
+            <pre><code>
+FROM python:3.9-slim-buster
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python", "app.py"]
+            </code></pre>
+
+            <p>build the image.</p>
+            <pre><code>
+docker build -t my-python-app .
+            </code></pre>
+
+            <p>Run the container.</p>
+            <pre><code>
+docker run -p 8000:5000 my-python-app
+            </code></pre>
+        </section>
+
+        <section>
+            <p>The key benefit of Docker is that it allows users to package an application with all of its dependencies into a standardized unit for software development. Unlike virtual machines, containers do not have high overhead and hence enable more efficient usage of the underlying system and resources.</p>
+            <h2>What are containers?</h2>
+            <p>The industry standard today is to use Virtual Machines (VMs) to run software applications. VMs run applications inside a guest Operating System, which runs on virtual hardware powered by the server’s host OS.</p>
+        
+            <p>VMs are great at providing full process isolation for applications: there are very few ways a problem in the host operating system can affect the software running in the guest operating system, and vice-versa. But this isolation comes at great cost — the computational overhead spent virtualizing hardware for a guest OS to use is substantial.</p>
+            <p>Containers take a different approach: by leveraging the low-level mechanics of the host operating system, containers provide most of the isolation of virtual machines at a fraction of the computing power.</p>
+        </section>
+
+        <section>
+            <h2>Why use containers?</h2>
+            <p>Containers offer a logical packaging mechanism in which applications can be abstracted from the environment in which they actually run. This decoupling allows container-based applications to be deployed easily and consistently, regardless of whether the target environment is a private data center, the public cloud, or even a developer’s personal laptop. This gives developers the ability to create predictable environments that are isolated from the rest of the applications and can be run anywhere.</p>
+            <p>From an operations standpoint, apart from portability containers also give more granular control over resources giving your infrastructure improved efficiency which can result in better utilization of your compute resources.</p>
+        </section>
+
+        <section>
+            <h2>What will this tutorial teach me?</h2>
+            <p>This tutorial aims to be the one-stop shop for getting your hands dirty with Docker. Apart from demystifying the Docker landscape, it'll give you hands-on experience with building and deploying your own webapps on the Cloud. We'll be using <a href="https://aws.amazon.com/">Amazon Web Services</a> to deploy a static website, and two dynamic webapps on <a href="https://aws.amazon.com/ec2/">EC2</a> using <a href="https://aws.amazon.com/elasticbeanstalk/">Elastic Beanstalk</a> and <a href="https://aws.amazon.com/ecs/">Elastic Container Service</a>. Even if you have no prior experience with deployments, this tutorial should be all you need to get started.</p>
+        </section>
+
+        <section>
+            <p>When I started using Docker, I quickly realized how powerful it was. Imagine setting up your development environment in minutes instead of hours or running applications across different machines without the classic "it works on my machine" problem.</p>
+            <p>Docker simplifies how we build, ship, and run applications by packaging them into lightweight, portable containers. Whether you're a developer, data scientist, or system administrator, mastering Docker can save you headaches and make your workflows more efficient.</p>
+            <p>In this tutorial, I’ll walk you through the basics—installing Docker, understanding key concepts, and running your first containerized application. By the end, you’ll not only know how Docker works but also have hands-on experience using it, setting a strong foundation for more advanced topics. Let’s dive in!</p>
+        </section>
+
+        <section>
+            <h2>What is Docker?</h2>
+            <p><a href="https://www.docker.com/">Docker</a> is an open-source containerization platform that simplifies application deployment by packaging software and its dependencies into a standardized unit called a container. <a href="https://www.datacamp.com/blog/containers-vs-virtual-machines">Unlike traditional virtual machines</a>, Docker containers share the host OS kernel, making them more efficient and lightweight.</p>
+            <p>Containers ensure that an application runs the same way in development, testing, and production environments. This reduces compatibility issues and enhances portability across various platforms. Due to its flexibility and scalability, Docker has become a crucial tool in modern DevOps and cloud-native development workflows.</p>
+        </section>
+
+        <section>
+            <h2>HELLO WORLD</h2>
+            <p>Playing with Busybox</p>
+            <p>To get started, let's run the following in our terminal:</p>
+            <pre><code>
+$ docker pull busybox
+            </code></pre>
+
+            <p>The pull command fetches the busybox image from the Docker registry and saves it to our system. You can use the docker images command to see a list of all images on your system.</p>
+            <pre><code>
+$ docker images
+REPOSITORY              TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+busybox                 latest              c51f86c28340        4 weeks ago         1.109 MB
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Docker Run</h2>
+            <pre><code>
+$ docker run busybox
+            </code></pre>
+
+            <p>Wait, nothing happened! Is that a bug? Well, no. Behind the scenes, a lot of stuff happened. When you call run, the Docker client finds the image (busybox in this case), loads up the container and then runs a command in that container. When we run docker run busybox, we didn't provide a command, so the container booted up, ran an empty command and then exited. Well, yeah - kind of a bummer. Let's try something more exciting.</p>
+            <pre><code>
+$ docker run busybox echo "hello from busybox"
+hello from busybox
+            </code></pre>
+            <p>Nice - finally we see some output. In this case, the Docker client dutifully ran the echo command in our busybox container and then exited it. If you've noticed, all of that happened pretty quickly. Imagine booting up a virtual machine, running a command and then killing it. Now you know why they say containers are fast! Ok, now it's time to see the docker ps command. The docker ps command shows you all containers that are currently running.</p>
+        
+            <pre><code>
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS  
+            </code></pre>
+
+            <p>Since no containers are running, we see a blank line. Let's try a more useful variant:</p>
+            <pre><code>
+docker ps -a
+
+$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                      PORTS               NAMES
+305297d7a235        busybox             "uptime"            11 minutes ago      Exited (0) 11 minutes ago                       distracted_goldstine
+ff0a5c3750b9        busybox             "sh"                12 minutes ago      Exited (0) 12 minutes ago                       elated_ramanujan
+14e5bd11d164        hello-world         "/hello"            2 minutes ago       Exited (0) 2 minutes ago                        thirsty_euclid
+            </code></pre>
+
+            <p>So what we see above is a list of all containers that we ran. Do notice that the STATUS column shows that these containers exited a few minutes ago.</p>
+            <p>You're probably wondering if there is a way to run more than just one command in a container. Let's try that now:</p>
+
+            <pre><code>
+$ docker run -it busybox sh
+/ # ls
+bin   dev   etc   home  proc  root  sys   tmp   usr   var
+/ # uptime
+ 05:45:21 up  5:58,  0 users,  load average: 0.00, 0.01, 0.04
+            </code></pre>
+
+            <p>Running the run command with the -it flags attaches us to an interactive tty in the container. Now we can run as many commands in the container as we want. Take some time to run your favorite commands.</p>
+        
+            <p>Before we move ahead though, let's quickly talk about deleting containers. We saw above that we can still see remnants of the container even after we've exited by running docker ps -a. Throughout this tutorial, you'll run docker run multiple times and leaving stray containers will eat up disk space. Hence, as a rule of thumb, I clean up containers once I'm done with them. To do that, you can run the docker rm command. Just copy the container IDs from above and paste them alongside the command.</p>
+            <pre><code>
+$ docker rm 305297d7a235 ff0a5c3750b9
+305297d7a235
+ff0a5c3750b9
+            </code></pre>
+
+            <p>On deletion, you should see the IDs echoed back to you. If you have a bunch of containers to delete in one go, copy-pasting IDs can be tedious. In that case, you can simply run -</p>
+            <pre><code>
+$ docker rm $(docker ps -a -q -f status=exited)
+            </code></pre>
+
+            <p>This command deletes all containers that have a status of exited. In case you're wondering, the -q flag, only returns the numeric IDs and -f filters output based on conditions provided. One last thing that'll be useful is the --rm flag that can be passed to docker run which automatically deletes the container once it's exited from. For one off docker runs, --rm flag is very useful.</p>
+            <p>Lastly, you can also delete images that you no longer need by running <pre><code>docker rmi</code></pre>.</p>
+        </section>
+
+        <section>
+            <h2>Terminology</h2>
+            <p>In the last section, we used a lot of Docker-specific jargon which might be confusing to some. So before we go further, let me clarify some terminology that is used frequently in the Docker ecosystem.</p>
+            <ul>
+                <li>Images - The blueprints of our application which form the basis of containers. In the demo above, we used the docker pull command to download the busybox image.</li>
+                <li>Containers - Created from Docker images and run the actual application. We create a container using docker run which we did using the busybox image that we downloaded. A list of running containers can be seen using the docker ps command.</li>
+                <li>Docker Daemon - The background service running on the host that manages building, running and distributing Docker containers. The daemon is the process that runs in the operating system which clients talk to.</li>
+                <li>Docker Client - The command line tool that allows the user to interact with the daemon. More generally, there can be other forms of clients too - such as Kitematic which provide a GUI to the users.</li>
+                <li>Docker Hub - A <a href="https://hub.docker.com/explore/">registry</a> of Docker images. You can think of the registry as a directory of all available Docker images. If required, one can host their own Docker registries and can use them for pulling images.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Installing Docker</h2>
+            <p>Docker can be installed on various operating systems, including Windows, macOS, and Linux. While the core functionality remains the same across all platforms, the installation process differs slightly depending on the system. Below, you'll find step-by-step instructions for installing Docker on your preferred operating system.</p>
+            <p>Installing Docker on Windows</p>
+            <ol>
+                <li>Download Docker Desktop for Windows.</li>
+                <li>Run the installer and follow the setup instructions.</li>
+                <li>Enable WSL 2 integration if prompted.</li>
+                <li>Verify installation by running docker –version in PowerShell.</li>
+                <li>Start the Docker Desktop app from your run menu.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Installing Docker on macOS</h2>
+            <ol>
+                <li>Download Docker Desktop for Mac.</li>
+                <li>Open the downloaded .dmg file and drag Docker to the Applications folder.</li>
+                <li>Launch Docker and complete the setup.</li>
+                <li>Verify installation using docker –version in the terminal.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Installing Docker on Linux (Ubuntu)</h2>
+            <ol>
+                <li>Update package lists: sudo apt update</li>
+                <li>Install dependencies: sudo apt install apt-transport-https ca-certificates curl software-properties-common </li>
+                <li>Add Docker’s official GPG key: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - </li>
+                <li>Add Docker’s repository: sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"</li>
+                <li>Install Docker: sudo apt install docker-ce</li>
+                <li>Verify installation: docker –version</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Basic Docker Concepts</h2>
+            <p>At the heart of Docker are images, which serve as blueprints for containers; containers, which are the running instances of these images; and Docker Hub, a centralized repository for sharing and managing images.</p>
+            
+            <p>Docker images</p>
+            <p>Docker images are the fundamental building blocks of containers. They are immutable, read-only templates containing everything needed to run an application, including the operating system, application code, runtime, and dependencies.</p>
+            <p>Images are built using a Dockerfile, which defines the instructions for creating an image layer by layer.</p>
+            <p>Images can be stored in and retrieved from container registries such as Docker Hub.</p>
+
+            <p>Here are some example commands for working with images:</p>
+            <pre><code>
+docker pull nginx
+            </code></pre>
+            <p> Fetch the latest Nginx image from Docker Hub.</p>
+
+            <pre><code>
+docker images
+            </code></pre>
+            <p>List all available images on the local machine.</p>
+
+            <pre><code>
+docker rmi nginx
+            </code></pre>
+            <p>Remove an image from the local machine.</p>
+        </section>
+
+        <section>
+            <h2>Docker containers</h2>
+            <p>A Docker container is a running instance of a Docker image. Containers provide an isolated runtime environment where applications can run without interfering with each other or the host system.Each container has its own filesystem, networking, and process space but shares the host kernel.</p>
+            <p>Containers follow a simple lifecycle involving creation, starting, stopping, and deletion. Here’s a breakdown of common container management commands:</p>
+            <ol>
+                <li>Creating a container: <b>docker create</b> or <b>docker run</b></li>
+                <li>Starting a container: <b>docker start</b></li>
+                <li>Stopping a container: <b>docker stop</b></li>
+                <li>Restarting a container: <b>docker restart</b></li>
+                <li>Deleting a container: <b>docker rm</b></li>
+            </ol>
+
+            <p>Let’s see a practical example. The following command runs an Nginx container in detached mode (running in the background), mapping port 80 inside the container to port 8080 on the host machine:</p>
+            <pre><code>
+docker run -d -p 8080:80 nginx
+            </code></pre>
+
+            <p>After running this command, Docker will pull the Nginx image (if not already available), create a container, and start it.</p>
+            <p>To check all running and stopped containers:</p>
+            <pre><code>
+docker ps -a
+            </code></pre>
+            <p>This will display a list of all containers and details like their status and assigned ports.</p>
+        </section>
+
+        <section>
+            <h2>Building Your First Docker Image</h2>
+            <p>So far, we’ve been running pre-built images from Docker Hub. But what if you need a custom environment tailored to your application? That’s where building your own Docker image comes in.</p>
+            <p>Creating a Docker image involves writing a Dockerfile, a script that automates image-building. This ensures consistency and portability across different environments. Once an image is built, it can be run as a container to execute applications in an isolated environment. </p>
+            <p>In this section, we’ll learn the fundamentals of writing a Dockerfile, building a custom image, and running it as a container.</p>
+        </section>
+
+        <section>
+            <h2>Dockerfile basics</h2>
+            <p>A Dockerfile is a script containing a series of instructions that define how a Docker image is built. It automates the image creation process, ensuring consistency across environments. Each instruction in a Dockerfile creates a new layer in the image. Here’s a breakdown of an example Dockerfile for a simple Python Flask app:</p>
+            <pre><code>
+# Base image containing Python runtime
+FROM python:3.9
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the application files from the host to the container
+COPY . /app
+
+# Install the dependencies listed in requirements.txt
+RUN pip install -r requirements.txt
+
+# Define the command to run the Flask app when the container starts
+CMD ["python", "app.py"]
+            </code></pre>
+
+            <p>In the above command:</p>
+            <ul>
+                <li>-v my-volume:/app/data mounts the my-volume storage to the /app/data directory inside the container.</li>
+                <li>Any data stored in /app/data will persist even if the container stops or is removed.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Breaking down the Dockerfile above:</p>
+            <ul>
+                <li>FROM python:3.9: Specifies the base image with Python 3.9 pre-installed.</li>
+                <li>WORKDIR /app: Sets /app as the working directory inside the container.</li>
+                <li>COPY . /app: Copies all files from the host’s current directory to /app in the container.</li>
+                <li>RUN pip install -r requirements.txt: Installs all required dependencies inside the container.</li>
+                <li>CMD ["python", "app.py"]: Defines the command to execute when the container starts.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Building and running the image</h2>
+            <p>Once the Dockerfile is defined, you can build and run the image using the following commands:</p>
+            <p>Step 1: Build the image</p>
+            <pre><code>
+docker build -t my-flask-app .
+            </code></pre>
+
+            <p>The above command:</p>
+            <ul>
+                <li>Uses the current directory (.) as the build context.</li>
+                <li>Reads the Dockerfile and executes its instructions.</li>
+                <li>Tags (-t) the resulting image as my-flask-app.</li>
+            </ul>
+
+            <p>Step 2: Run the image as a container</p>
+            <pre><code>
+docker run -d -p 5000:5000 my-flask-app
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

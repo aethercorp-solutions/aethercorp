@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Middleware</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Middleware</h1>
+                    <p class="subtitle">
+                        Middleware is a core concept in Node.js web frameworks like Express.js. It allows you to execute code during the request-response cycle. Middleware functions can:
+                        <ul>
+                            <li>Execute any code</li>
+                            <li>Modify the request and response objects</li>
+                            <li>End the request-response cycle</li>
+                            <li>Call the next middleware function in the stack</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 How Middleware Works in Node.js (with Express)</h2>
+            <p>When a request hits your server, Express passes it through a chain (stack) of middleware functions. Each function has access to:</p>
+            <pre><code>
+(req, res, next)
+            </code></pre>
+            <p>Where:</p>
+            <ul>
+                <li>req is the request object</li>
+                <li>res is the response object</li>
+                <li>next is a function that, when called, passes control to the next middleware in the stack</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Basic Example of Middleware</h2>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+// Middleware function
+function logger(req, res, next) {
+  console.log(`${req.method} ${req.url}`);
+  next(); // Pass to next middleware or route
+}
+
+// Use middleware globally
+app.use(logger);
+
+// A simple route
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
+// Start server
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧱 Types of Middleware</h2>
+            <ol>
+                <li>
+                    Application-level Middleware
+                    <pre><code>
+app.use((req, res, next) => {
+    console.log('This runs for every request');
+    next();
+});  
+                    </code></pre>
+                </li>
+                <li>
+                    Router-level Middleware
+                    <pre><code>
+const router = express.Router();
+
+router.use((req, res, next) => {
+  console.log('Router-level middleware');
+  next();
+});
+
+router.get('/user', (req, res) => {
+  res.send('User route');
+});
+
+app.use('/api', router);
+                    </code></pre>
+                </li>
+                <li>
+                    Error-handling Middleware
+                    <pre><code>
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});                          
+                    </code></pre>
+                    <p>Error-handling middleware must have four arguments, including err.</p>
+                </li>
+                <li>
+                    Built-in Middleware
+                    <p>Express provides built-in middleware like:</p>
+                    <pre><code>
+app.use(express.json());            // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+                    </code></pre>
+                </li>
+                <li>
+                    Third-party Middleware
+                    <p>Install via npm and use, e.g.:</p>
+                    <pre><code>
+npm install morgan
+                    </code></pre>
+                    <pre><code>
+const morgan = require('morgan');
+app.use(morgan('dev'));
+                    </code></pre>
+                </li>
+                <li>
+                    🧪 Custom Middleware Example
+                    <p>Add a timestamp to every request:</p>
+                    <pre><code>
+function addTimestamp(req, res, next) {
+    req.requestTime = new Date();
+    next();
+}
+    
+app.use(addTimestamp);
+    
+app.get('/', (req, res) => {
+res.send(`Request received at: ${req.requestTime}`);
+});                          
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📌 Key Points</h2>
+            <ul>
+                <li>Middleware functions must call next() to pass control.</li>
+                <li>Order matters — they execute in the order they’re added.</li>
+                <li>You can have multiple middleware for a single route.</li>
+                <li>You can create reusable middleware modules.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

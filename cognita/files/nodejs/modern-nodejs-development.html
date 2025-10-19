@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Modern Node.js development</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Modern Node.js development</h1>
+                    <p class="subtitle">In modern Node.js development, Express.js is the most common and recommended approach to create web server applications over using the built-in http module directly.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Here’s a breakdown comparing the built-in http module vs Express in terms of modern practices:</p>
+            <h2>🧱 1. Built-in http module</h2>
+            <p>Example:</p>
+            <pre><code>
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+  if (req.url === '/' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Hello World');
+  } else {
+    res.writeHead(404);
+    res.end('Not Found');
+  }
+});
+
+server.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});
+            </code></pre>
+            <p>✅ Pros:</p>
+            <ul>
+                <li>No dependencies.</li>
+                <li>Fine-grained control over requests/responses.</li>
+                <li>Good for learning core Node.js.</li>
+            </ul>
+            <p>❌ Cons:</p>
+            <ul>
+                <li>Verbose for routing.</li>
+                <li>No built-in middleware support (e.g., parsing JSON, URL-encoded bodies).</li>
+                <li>Harder to scale for larger apps.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ 2. Express.js (modern, widely adopted)</h2>
+            <p>Example:</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+app.use(express.json()); // for parsing application/json
+
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});
+            </code></pre>
+
+            <p>✅ Pros:</p>
+            <ul>
+                <li>Simple and readable syntax.</li>
+                <li>Built-in routing and middleware support.</li>
+                <li>Huge ecosystem and community support.</li>
+                <li>Scales better for real-world apps.</li>
+                <li>Easy integration with other tools (e.g., logging, error handling, validation).</li>
+            </ul>
+            <p>❌ Cons:</p>
+            <ul>
+                <li>Slightly more overhead due to abstraction.</li>
+                <li>Adds dependency (but widely trusted and maintained).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Recommended (Modern) Approach in 2025</h2>
+            <p>Use Express.js (or newer frameworks like Fastify if performance matters more) for most applications unless:</p>
+            <ul>
+                <li>You are building something very lightweight or educational.</li>
+                <li>You want full control over the HTTP lifecycle.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Even more modern options:</h2>
+            <ul>
+                <li>Fastify – Similar to Express but faster and with better TypeScript support.</li>
+                <li>NestJS – Full-featured framework inspired by Angular, good for enterprise-level apps.</li>
+                <li>Hono, Elysia, etc. – Newer frameworks focused on edge/runtime compatibility and performance.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>http Module</th>
+                        <th>Express.js (Modern)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Complexity</td>
+                        <td>Low-level</td>
+                        <td>High-level abstraction</td>
+                    </tr>
+                    <tr>
+                        <td>Routing</td>
+                        <td>Manual</td>
+                        <td>Built-in</td>
+                    </tr>
+                    <tr>
+                        <td>Middleware support</td>
+                        <td>Manual</td>
+                        <td>Built-in</td>
+                    </tr>
+                    <tr>
+                        <td>Community support</td>
+                        <td>Basic</td>
+                        <td>Huge</td>
+                    </tr>
+                    <tr>
+                        <td>Recommended for</td>
+                        <td>Learning, micro-tasks</td>
+                        <td>Most real-world apps</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Modern approach = Express.js or better frameworks like Fastify/NestJS.</h2>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

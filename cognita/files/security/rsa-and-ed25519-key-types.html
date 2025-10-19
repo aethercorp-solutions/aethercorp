@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>RSA and ED25519</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">RSA and ED25519</h1>
+                    <p class="subtitle">When choosing between RSA and ED25519 key types for cryptographic purposes (such as SSH authentication), there are several important differences to consider in terms of security, performance, and compatibility.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔐 ED25519 vs RSA Key Types</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>ED25519</th>
+                        <th>RSA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Security</td>
+                        <td>Very strong (based on elliptic curve crypto)</td>
+                        <td>Strong (depends on key length)</td>
+                    </tr>
+                    <tr>
+                        <td>Key Size</td>
+                        <td>Fixed 256-bit</td>
+                        <td>Variable (2048, 3072, 4096+ bits)</td>
+                    </tr>
+                    <tr>
+                        <td>Signature Size</td>
+                        <td>Small (64 bytes)</td>
+                        <td>Larger (depends on key size)</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>Fast (signing and verification)</td>
+                        <td>Slower, especially with larger keys</td>
+                    </tr>
+                    <tr>
+                        <td>Quantum Resistance</td>
+                        <td>❌ Not quantum-resistant</td>
+                        <td>❌ Not quantum-resistant</td>
+                    </tr>
+                    <tr>
+                        <td>Compatibility</td>
+                        <td>Supported by modern systems (OpenSSH 6.5+)</td>
+                        <td>Universally supported</td>
+                    </tr>
+                    <tr>
+                        <td>Deterministic Signing</td>
+                        <td>✅ Yes</td>
+                        <td>❌ No</td>
+                    </tr>
+                    <tr>
+                        <td>Key Generation Speed</td>
+                        <td>Very fast</td>
+                        <td>Slower (especially >2048 bits)</td>
+                    </tr>
+                    <tr>
+                        <td>Public Key Size</td>
+                        <td>Small (~32 bytes)</td>
+                        <td>Large (depends on key length)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>🟢 When to Use ED25519</h2>
+            <ul>
+                <li>You're using modern systems (e.g., recent versions of OpenSSH).</li>
+                <li>You want strong security with smaller and faster keys.</li>
+                <li>You're generating lots of keys or doing many auth operations.</li>
+                <li>You prefer shorter key files and faster performance.</li>
+            </ul>
+            <p>Best for: most modern personal and enterprise use-cases unless backward compatibility is required.</p>
+        </section>
+
+        <section>
+            <h2>🟡 When to Use RSA</h2>
+            <ul>
+                <li>You need maximum compatibility with older systems and protocols.</li>
+                <li>You're dealing with legacy infrastructure or embedded systems.</li>
+                <li>You have strict compliance requirements for RSA.</li>
+            </ul>
+            <p>Best for: compatibility with legacy systems or specific compliance environments.</p>
+        </section>
+
+        <section>
+            <h2>⚖️ Summary</h2>
+            <ul>
+                <li>Choose ED25519 if you can — it's faster, smaller, and more secure in most practical contexts.</li>
+                <li>Use RSA (2048+ bits) only if you must for compatibility reasons.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

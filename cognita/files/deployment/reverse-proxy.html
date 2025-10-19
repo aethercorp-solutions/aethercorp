@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Reverse Proxy</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Reverse Proxy</h1>
+                    <p class="subtitle">A reverse proxy is a type of server that sits between the client (browser) and one or more backend servers, and it handles incoming requests on behalf of those backend servers.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔁 In simple terms:</h2>
+            <p>It receives requests from users and forwards them to the appropriate server, then sends the server’s response back to the user.</p>
+        </section>
+
+        <section>
+            <h2>🔍 Why is it called a reverse proxy?</h2>
+            <ul>
+                <li>A forward proxy (like a VPN) hides the client from the server.</li>
+                <li>A reverse proxy hides the server from the client.</li>
+            </ul>
+            <p>So, in a reverse proxy setup:</p>
+            <ul>
+                <li>The client doesn't directly connect to the backend server.</li>
+                <li>Instead, it connects to the reverse proxy, which handles the request.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Common uses of a reverse proxy:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Load balancing</td>
+                        <td>Distributes traffic to multiple backend servers to prevent overloading any single one.</td>
+                    </tr>
+                    <tr>
+                        <td>SSL termination</td>
+                        <td>Handles HTTPS encryption/decryption so backend servers can stay on HTTP (simpler).</td>
+                    </tr>
+                    <tr>
+                        <td>Caching</td>
+                        <td>Caches responses to serve repeated requests faster.</td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td>Hides internal server structure, filters requests, blocks attacks.</td>
+                    </tr>
+                    <tr>
+                        <td>Compression / Optimization</td>
+                        <td>Compresses data before sending to the client.</td>
+                    </tr>
+                    <tr>
+                        <td>Routing / URL rewriting</td>
+                        <td>Directs traffic to different services based on URLs or headers.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🛠️ Examples of reverse proxy software:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Nginx</td>
+                        <td>Very popular for web servers and reverse proxying (lightweight and fast).</td>
+                    </tr>
+                    <tr>
+                        <td>Apache (mod_proxy)</td>
+                        <td>Powerful and flexible, common in legacy systems.</td>
+                    </tr>
+                    <tr>
+                        <td>HAProxy</td>
+                        <td>High-performance, used heavily in enterprise environments.</td>
+                    </tr>
+                    <tr>
+                        <td>Caddy</td>
+                        <td>Modern reverse proxy with automatic HTTPS.</td>
+                    </tr>
+                    <tr>
+                        <td>Cloudflare</td>
+                        <td>Acts as a reverse proxy at the edge, protecting and accelerating websites.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧭 Visual Example</h2>
+            <p>Here’s a simple diagram:</p>
+            <pre><code>
+Browser
+   ↓
+[ Reverse Proxy (e.g. Nginx) ]
+   ↓        ↓         ↓
+[ Web Server 1 ]  [ Web Server 2 ]  [ Web Server 3 ]
+            </code></pre>
+            <p>The browser doesn’t know which web server is handling its request — the reverse proxy manages that.</p>
+        </section>
+
+        <section>
+            <h2>✅ Real-world example:</h2>
+            <p>On a site like tonyrobbins.com, you might have:</p>
+            <ul>
+                <li>https://tonyrobbins.com/blog → forwarded to a WordPress server</li>
+                <li>https://tonyrobbins.com/events → forwarded to a Node.js backend</li>
+                <li>https://tonyrobbins.com/store → forwarded to a Shopify or custom e-commerce service</li>
+            </ul>
+        </section>
+        <p>The reverse proxy routes all of these while keeping the user-facing domain consistent.</p>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
