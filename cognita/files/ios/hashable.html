@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Hashable</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Hashable</h1>
+                    <p class="subtitle">
+                        When you make a class or struct conform to Hashable in Swift, it essentially means you are giving Swift a way to uniquely identify instances of that type using a hash value. This is important when you want to use your objects in collections like Set or as dictionary keys.
+                        <p>Let’s break it down:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ Why make something Hashable?</h2>
+            <ul>
+                <li>Set and Dictionary need a fast way to check if an element already exists.</li>
+                <li>They do this by computing a hash value for each element.</li>
+                <li>Hashable tells Swift how to generate that hash value for your type.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ How it works for structs</h2>
+            <p>Swift can automatically generate a hash for structs if all properties are Hashable:</p>
+            <pre><code>
+struct Point: Hashable {
+    var x: Int
+    var y: Int
+}
+
+let p1 = Point(x: 1, y: 2)
+let p2 = Point(x: 3, y: 4)
+
+var pointsSet: Set<Point> = [p1]
+pointsSet.insert(p2) // works because Point is Hashable                
+            </code></pre>
+            <ul>
+                <li>Each Point has a unique hash based on x and y.</li>
+                <li>Swift uses these hashes to quickly check for equality in sets or dictionary keys.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ How it works for classes</h2>
+            <p>Classes are reference types, so their default hash is based on the object’s memory address.</p>
+            <p>If you want value-based hashing (like structs), you need to implement hash(into:):</p>
+            <pre><code>
+class Person: Hashable {
+    var name: String
+    var age: Int
+
+    init(name: String, age: Int) {
+        self.name = name
+        self.age = age
+    }
+
+    static func == (lhs: Person, rhs: Person) -> Bool {
+        return lhs.name == rhs.name && lhs.age == rhs.age
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(age)
+    }
+}
+
+let alice1 = Person(name: "Alice", age: 30)
+let alice2 = Person(name: "Alice", age: 30)
+
+alice1 == alice2 // true                
+            </code></pre>
+
+            <ul>
+                <li>== defines when two instances are considered equal.</li>
+                <li>hash(into:) defines how the hash value is calculated.</li>
+            </ul>
+            <p>⚠️ Important: Two equal objects must have the same hash.</p>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <ul>
+                <li>Making a type Hashable allows it to be used in sets and as dictionary keys.</li>
+                <li>For structs, Swift can often generate it automatically.</li>
+                <li>For classes, you usually implement == and hash(into:) yourself.</li>
+                <li>Hash values are not unique IDs, they are just a fast way to check equality.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>You’re showing a Swift implementation of the hash(into:) method, which is part of conforming to the Hashable protocol. Let me break it down carefully:</p>
+            <pre><code>
+func hash(into hasher: inout Hasher) {
+    hasher.combine(name)
+    hasher.combine(age)
+}                
+            </code></pre>
+            <p>Explanation:</p>
+            <ol>
+                <li>
+                    Purpose:
+                    <p>The hash(into:) method allows you to define how instances of your type are hashed. Hashing is used for collections like Set or as dictionary keys, where the object’s hash value determines its uniqueness and location in the data structure.</p>
+                </li>
+                <li>
+                    Hasher parameter:
+                    <ul>
+                        <li>Hasher is a struct provided by Swift for building hash values in a safe way.</li>
+                        <li>You pass it inout so the method can modify it with your type’s properties.</li>
+                    </ul>
+                </li>
+                <li>
+                    combine(_:):
+                    <ul>
+                        <li>Each property that contributes to the uniqueness of the object is "combined" into the hasher.</li>
+                        <li>In your example, name and age are considered when computing the hash.</li>
+                        <li>The order matters: hasher.combine(name) followed by hasher.combine(age) is different from the reverse order.</li>
+                    </ul>
+                </li>
+                <li>
+                    Why do this manually?
+                    <ul>
+                        <li>Swift can auto-synthesize Hashable if all stored properties are Hashable.</li>
+                        <li>But sometimes you want custom hashing—for example, ignoring certain properties or combining only specific ones.</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <pre><code>
+struct Person: Hashable {
+    var name: String
+    var age: Int
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(age)
+    }
+
+    static func == (lhs: Person, rhs: Person) -> Bool {
+        lhs.name == rhs.name && lhs.age == rhs.age
+    }
+}
+
+let p1 = Person(name: "Alice", age: 25)
+let p2 = Person(name: "Bob", age: 30)
+
+var set = Set&lt;Person&gt;()
+set.insert(p1)
+set.insert(p2)                
+            </code></pre>
+            <p>Here, hash(into:) ensures that each Person gets a consistent hash based on their name and age.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

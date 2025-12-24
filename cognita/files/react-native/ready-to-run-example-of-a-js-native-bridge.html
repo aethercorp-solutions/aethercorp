@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Ready-to-Run Example of a JS ↔ native bridge</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Ready-to-Run Example of a JS ↔ native bridge</h1>
+                    <p class="subtitle">Nice — below is a compact, ready-to-run example of a JS ↔ native bridge where the JavaScript runs in a separate WebView process and communicates with native iOS code via the WKWebView bridge. It implements a simple request/response pattern with message IDs so JS can await native replies and native can invoke JS functions.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>I'll provide:</h2>
+            <ul>
+                <li>Swift (iOS) native side (WKWebView) — configure, inject bridge JS, handle incoming messages, send replies/calls to JS.</li>
+                <li>The injected JavaScript side — window.NativeBridge with send (native call) and onNative (native → JS calls), plus a Promise-based invokeNative.</li>
+            </ul>
+            <p>This pattern is robust, async, and avoids global namespace collisions.</p>
+        </section>
+
+        <section>
+            <h2>Swift — ViewController with WKWebView bridge</h2>
+            <pre><code>
+import UIKit
+import WebKit
+
+class BridgeViewController: UIViewController, WKScriptMessageHandler {
+    var webView: WKWebView!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupWebView()
+        loadExampleHTML()
+    }
+
+    func setupWebView() {
+        let contentController = WKUserContentController()
+
+        // Inject the bridge JS at document start so page scripts can use it immediately
+        let bridgeJS = BridgeViewController.injectedJavaScript()
+        let userScript = WKUserScript(source: bridgeJS, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+        contentController.addUserScript(userScript)
+
+        // Register message handler name &quot;nativeBridge&quot;
+        contentController.add(self, name: &quot;nativeBridge&quot;)
+
+        let config = WKWebViewConfiguration()
+        config.userContentController = contentController
+        config.preferences.javaScriptEnabled = true
+
+        webView = WKWebView(frame: view.bounds, configuration: config)
+        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(webView)
+    }
+
+    func loadExampleHTML() {
+        // Simple HTML page that uses window.NativeBridge
+        let html = &quot;&quot;&quot;
+        &lt;!doctype html&gt;
+        &lt;html&gt;
+        &lt;head&gt;
+            &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;/&gt;
+            &lt;title&gt;Bridge Demo&lt;/title&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+            &lt;h1&gt;WKWebView Bridge Demo&lt;/h1&gt;
+            &lt;button id=&quot;callNative&quot;&gt;Call Native&lt;/button&gt;
+            &lt;button id=&quot;nativeCallJs&quot;&gt;Ask Native to call JS&lt;/button&gt;
+            &lt;pre id=&quot;log&quot;&gt;&lt;/pre&gt;
+            &lt;script&gt;
+            document.getElementById('callNative').onclick = async () =&gt; {
+                const res = await window.NativeBridge.invokeNative('sum', {a: 5, b: 7});
+                addLog('sum result: ' + JSON.stringify(res));
+            };
+
+            document.getElementById('nativeCallJs').onclick = () =&gt; {
+                // tell native to call a JS handler
+                window.NativeBridge.invokeNative('nativeCallJs', {message: 'Please call JS handler'});
+            };
+
+            function addLog(s) {
+                const p = document.getElementById('log');
+                p.textContent += s + '\\n';
+            }
+
+            // register a JS handler callable by native
+            window.NativeBridge.registerHandler('helloFromNative', (payload) =&gt; {
+                addLog('native called JS handler with: ' + JSON.stringify(payload));
+                return {ack: true, time: Date.now()};
+            });
+
+            addLog('Bridge ready');
+            &lt;/script&gt;
+        &lt;/body&gt;
+        &lt;/html&gt;
+        &quot;&quot;&quot;
+        webView.loadHTMLString(html, baseURL: nil)
+    }
+
+    // MARK: - WKScriptMessageHandler
+
+    // Called when JS posts a message via window.webkit.messageHandlers.nativeBridge.postMessage(...)
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard message.name == &quot;nativeBridge&quot; else { return }
+        if let body = message.body as? [String: Any] {
+            handleMessageFromJS(body)
+        }
+    }
+
+    // Handle incoming messages (requests) from JS
+    func handleMessageFromJS(_ msg: [String: Any]) {
+        // Expected message structure:
+        // { id: &quot;uniqueId&quot;, method: &quot;methodName&quot;, params: {...} }
+        guard let id = msg[&quot;id&quot;] as? String,
+                let method = msg[&quot;method&quot;] as? String else {
+            return
+        }
+
+        // Example: implement a couple of methods
+        switch method {
+        case &quot;sum&quot;:
+            if let params = msg[&quot;params&quot;] as? [String: Any],
+                let a = params[&quot;a&quot;] as? Double,
+                let b = params[&quot;b&quot;] as? Double {
+                let result = a + b
+                sendResponseToJS(id: id, result: [&quot;value&quot;: result])
+            } else {
+                sendErrorToJS(id: id, error: &quot;invalid params&quot;)
+            }
+
+        case &quot;nativeCallJs&quot;:
+            // From JS: ask native to call a JS handler &quot;helloFromNative&quot;
+            if let params = msg[&quot;params&quot;] as? [String: Any] {
+                callJSHandler(name: &quot;helloFromNative&quot;, payload: params) { response in
+                    self.sendResponseToJS(id: id, result: response ?? [:])
+                }
+            } else {
+                sendErrorToJS(id: id, error: &quot;missing params&quot;)
+            }
+
+        default:
+            sendErrorToJS(id: id, error: &quot;unknown method&quot;)
+        }
+    }
+
+    // Send a success response to JS
+    func sendResponseToJS(id: String, result: Any) {
+        let payload: [String: Any] = [&quot;id&quot;: id, &quot;result&quot;: result]
+        if let json = jsonString(from: payload) {
+            let script = &quot;window.__nativeBridge__ &amp;&amp; window.__nativeBridge__.handleNativeResponse(\(json));&quot;
+            webView.evaluateJavaScript(script, completionHandler: nil)
+        }
+    }
+
+    // Send an error response to JS
+    func sendErrorToJS(id: String, error: String) {
+        let payload: [String: Any] = [&quot;id&quot;: id, &quot;error&quot;: error]
+        if let json = jsonString(from: payload) {
+            let script = &quot;window.__nativeBridge__ &amp;&amp; window.__nativeBridge__.handleNativeResponse(\(json));&quot;
+            webView.evaluateJavaScript(script, completionHandler: nil)
+        }
+    }
+
+    // Ask JS to run a registered handler and optionally get its result
+    func callJSHandler(name: String, payload: Any, completion: ((Any?) -&gt; Void)? = nil) {
+        let callbackId = UUID().uuidString
+        let payloadJson = jsonString(from: payload) ?? &quot;null&quot;
+        let script = &quot;&quot;&quot;
+        (function(){
+            const handler = window.__nativeBridge__ &amp;&amp; window.__nativeBridge__.registeredHandlers &amp;&amp; window.__nativeBridge__.registeredHandlers['\(escapeForJS(name))'];
+            if (!handler) {
+            window.webkit.messageHandlers.nativeBridge.postMessage({id: '\(callbackId)', error: 'handler_not_found'});
+            return;
+            }
+            try {
+            const result = handler(\(payloadJson));
+            if (result &amp;&amp; typeof result.then === 'function') {
+                result.then(r =&gt; window.webkit.messageHandlers.nativeBridge.postMessage({id: '\(callbackId)', result: r}))
+                    .catch(e =&gt; window.webkit.messageHandlers.nativeBridge.postMessage({id: '\(callbackId)', error: String(e)}));
+            } else {
+                window.webkit.messageHandlers.nativeBridge.postMessage({id: '\(callbackId)', result: result});
+            }
+            } catch (e) {
+            window.webkit.messageHandlers.nativeBridge.postMessage({id: '\(callbackId)', error: String(e)});
+            }
+        })();
+        &quot;&quot;&quot;
+
+        pendingJSCallbacks[callbackId] = completion
+        webView.evaluateJavaScript(script, completionHandler: nil)
+    }
+
+    func jsonString(from object: Any) -&gt; String? {
+        guard JSONSerialization.isValidJSONObject(object) || object is String || object is NSNumber else {
+            if let s = object as? String {
+                return &quot;\&quot;\(s)\&quot;&quot;
+            }
+            return nil
+        }
+        if let data = try? JSONSerialization.data(withJSONObject: object, options: []),
+            let s = String(data: data, encoding: .utf8) {
+            return s
+        }
+        return nil
+    }
+
+    func escapeForJS(_ s: String) -&gt; String {
+        return s.replacingOccurrences(of: &quot;\\&quot;, with: &quot;\\\\&quot;).replacingOccurrences(of: &quot;'&quot;, with: &quot;\\'&quot;)
+    }
+
+    var pendingJSCallbacks: [String: ((Any?) -&gt; Void)?] = [:]
+
+    func userContentControllerRouting(_ body: [String: Any]) {
+        if let id = body[&quot;id&quot;] as? String, let cb = pendingJSCallbacks[id] {
+            if let err = body[&quot;error&quot;] {
+                cb?([&quot;error&quot;: err])
+            } else {
+                cb?(body[&quot;result&quot;])
+            }
+            pendingJSCallbacks.removeValue(forKey: id)
+            return
+        }
+        handleMessageFromJS(body)
+    }
+
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage, fromFrame frame: WKFrameInfo) {
+        if let body = message.body as? [String: Any] {
+            userContentControllerRouting(body)
+        }
+    }
+
+    static func injectedJavaScript() -&gt; String {
+        return &quot;&quot;&quot;
+        (function(){
+            if (window.__nativeBridge__) return;
+
+            window.__nativeBridge__ = {
+            _callbacks: {},
+            registeredHandlers: {},
+            _nextId: 1,
+
+            handleNativeResponse: function(payload) {
+                try {
+                var id = payload.id;
+                if (!id) return;
+                var cb = this._callbacks[id];
+                if (!cb) return;
+                if (payload.error) cb.reject(payload.error);
+                else cb.resolve(payload.result);
+                delete this._callbacks[id];
+                } catch (e) {
+                console.error('handleNativeResponse error', e);
+                }
+            },
+
+            invokeNative: function(method, params) {
+                var id = 'js_' + (this._nextId++);
+                var self = this;
+                return new Promise(function(resolve, reject) {
+                self._callbacks[id] = { resolve: resolve, reject: reject };
+                var message = { id: id, method: method, params: params || {} };
+                try {
+                    window.webkit.messageHandlers.nativeBridge.postMessage(message);
+                } catch (e) {
+                    delete self._callbacks[id];
+                    reject(e);
+                }
+                });
+            },
+
+            registerHandler: function(name, fn) {
+                this.registeredHandlers[name] = fn;
+            }
+            };
+
+            window.NativeBridge = {
+            invokeNative: window.__nativeBridge__.invokeNative.bind(window.__nativeBridge__),
+            registerHandler: window.__nativeBridge__.registerHandler.bind(window.__nativeBridge__)
+            };
+        })();
+        &quot;&quot;&quot;
+    }
+}
+                </code></pre>
+                <p>Notes on the Swift code:</p>
+                <ul>
+                    <li>WKUserContentController injects a userScript at document start so the page can call window.NativeBridge.invokeNative(...).</li>
+                    <li>JS calls window.webkit.messageHandlers.nativeBridge.postMessage(...) which arrives in userContentController(_:didReceive:).</li>
+                    <li>The native side uses evaluateJavaScript(...) to call back into the page, invoking window.__nativeBridge__.handleNativeResponse(...) so the original Promise resolves.</li>
+                    <li>For native → JS handler calls, the native code evals a script that invokes a registered JS handler and posts the result back to native using the same nativeBridge message channel — this requires the native side to treat messages with callback IDs specially (see pendingJSCallbacks map).</li>
+                </ul>                
+        </section>
+
+        <section>
+            <h2>How the JS side (in the page) looks / behavior</h2>
+            <p>The injected JS (see injectedJavaScript) exposes window.NativeBridge.invokeNative(method, params) that returns a Promise. Example:</p>
+            <pre><code>
+                // call native sum method
+const result = await window.NativeBridge.invokeNative('sum', { a: 2, b: 3 });
+// { value: 5 } in our example
+            </code></pre>
+            <p>It also provides window.NativeBridge.registerHandler('helloFromNative', (payload) => { ... }) so native can call named handlers on the page.</p>
+        </section>
+
+        <section>
+            <h2>Android / WebView equivalent (brief)</h2>
+            <p>If you're using Android WebView, the common approach is addJavascriptInterface(obj, name) (exposes synchronous methods — be careful: must be annotated with @JavascriptInterface) and evaluateJavascript to call back. But addJavascriptInterface runs in a different bridging model and you must avoid exposing sensitive APIs. The WKWebView approach above is preferred on iOS.</p>
+        </section>
+
+        <section>
+            <h2>Why this is “JS in a separate thread/process”</h2>
+            <ul>
+                <li>WKWebView runs web content in a separate WebContent process (and the page's JS runs there). The message handler is asynchronous: postMessage doesn't block native UI thread.</li>
+                <li>The Promise + message-ID pattern ensures asynchronous, non-blocking request/response behavior with deterministic routing of replies.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Security & robustness tips</h2>
+            <ul>
+                <li>Validate/whitelist method names and input parameters on the native side.</li>
+                <li>Sanitize any string interpolation used to construct evaluateJavaScript(...).</li>
+                <li>Avoid injecting untrusted remote content with this bridge active — or lock down what methods are available for remote pages.</li>
+                <li>Use timeouts for pending Promises/handlers in case replies never arrive.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

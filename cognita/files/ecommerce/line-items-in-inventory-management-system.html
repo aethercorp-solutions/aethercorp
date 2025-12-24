@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Line Items</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Line Items</h1>
+                    <p class="subtitle">
+                        In an inventory management system, line items refer to the individual entries or components within a larger transaction record — such as a purchase order, sales order, invoice, or stock transfer.
+                        <p>Think of a line item as one distinct product entry in a transaction.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧾 Definition</h2>
+            <p>A line item represents one product (or SKU) along with its specific details — like quantity, unit price, discount, and total amount — within a transaction document.</p>
+            <p>In other words:</p>
+            <p>A line item = one row in the list of items involved in a transaction.</p>
+        </section>
+
+        <section>
+            <h2>📦 Example</h2>
+            <p>🛒 Example: Purchase Order (PO)</p>
+            <table>
+                <thead>
+                    <th>Line Item</th>
+                    <th>Product Code</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>SKU-1001</td>
+                        <td>Wireless Mouse</td>
+                        <td>50</td>
+                        <td>$10</td>
+                        <td>$500</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>SKU-2034</td>
+                        <td>Keyboard</td>
+                        <td>30</td>
+                        <td>$15</td>
+                        <td>$450</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Here:</p>
+            <ul>
+                <li>The purchase order has two line items.</li>
+                <li>Each line item refers to one distinct product being purchased.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ Where Line Items Are Used</h2>
+            <p>Line items appear in almost every type of inventory transaction:</p>
+            <ul>
+                <li>Purchase Orders (POs) – items being ordered from suppliers</li>
+                <li>Sales Orders / Invoices – items sold to customers</li>
+                <li>Goods Received Notes (GRN) – items received into inventory</li>
+                <li>Stock Transfers – items moved between warehouses or locations</li>
+                <li>Returns – items being sent back or refunded</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 What Each Line Item Typically Contains</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Item ID / SKU</td>
+                        <td>Unique identifier for the product</td>
+                    </tr>
+                    <tr>
+                        <td>Description</td>
+                        <td>Name or short details of the product</td>
+                    </tr>
+                    <tr>
+                        <td>Quantity</td>
+                        <td>How many units are involved</td>
+                    </tr>
+                    <tr>
+                        <td>Unit of Measure (UoM)</td>
+                        <td>e.g., pcs, box, kg, liter</td>
+                    </tr>
+                    <tr>
+                        <td>Unit Price / Cost</td>
+                        <td>Price per unit</td>
+                    </tr>
+                    <tr>
+                        <td>Discounts / Taxes</td>
+                        <td>Any applied discounts or tax details</td>
+                    </tr>
+                    <tr>
+                        <td>Total Value</td>
+                        <td>Quantity × Unit Price ± discounts/taxes</td>
+                    </tr>
+                    <tr>
+                        <td>Warehouse / Location</td>
+                        <td>Where the item is stored or sent</td>
+                    </tr>
+                    <tr>
+                        <td>Batch / Lot Number (optional)</td>
+                        <td>For tracking expiry or manufacturing batches</td>
+                    </tr>
+                    <tr>
+                        <td>UTR / Tracking Reference (optional)</td>
+                        <td>For unique transaction identification</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📘 Why Line Items Are Important</h2>
+            <ul>
+                <li>Allow granular tracking of what items were involved in a transaction</li>
+                <li>Enable partial updates (e.g., only one item received out of three ordered)</li>
+                <li>Provide the basis for inventory valuation and cost calculations</li>
+                <li>Make it easy to audit transactions item by item</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💡 In Code (Simplified Example)</h2>
+            <p>Example (JSON representation):</p>
+            <pre><code>
+{
+    "purchaseOrderId": "PO-2025-001",
+    "supplier": "Tech Supplies Inc.",
+    "date": "2025-10-25",
+    "lineItems": [
+        {
+        "sku": "SKU-1001",
+        "name": "Wireless Mouse",
+        "quantity": 50,
+        "unitPrice": 10.0,
+        "total": 500
+        },
+        {
+        "sku": "SKU-2034",
+        "name": "Keyboard",
+        "quantity": 30,
+        "unitPrice": 15.0,
+        "total": 450
+        }
+    ]
+}                  
+            </code></pre>
+            <p>Here, "lineItems" is an array representing all items in this transaction.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

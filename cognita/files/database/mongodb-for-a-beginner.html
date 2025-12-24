@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MongoDB for a beginner</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">MongoDB for a beginner</h1>
+                    <p class="subtitle">Absolutely! Let’s go step by step and break down MongoDB for a beginner in detail. I’ll cover concepts, architecture, commands, and practical usage.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is MongoDB?</h2>
+            <p>MongoDB is a NoSQL database. Unlike traditional SQL databases like MySQL or PostgreSQL, MongoDB:</p>
+            <ul>
+                <li>Stores data in documents, not tables.</li>
+                <li>Uses JSON-like format (called BSON internally) for data.</li>
+                <li>Is schema-less, meaning each document in a collection can have different fields.</li>
+                <li>Is designed to be scalable, flexible, and high-performance for modern applications.</li>
+            </ul>
+            <p>Think of it as storing objects instead of rows in a table.</p>
+        </section>
+
+        <section>
+            <h2>2. Key MongoDB Concepts</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Explanation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Database</td>
+                        <td>A container for collections (like a folder).</td>
+                    </tr>
+                    <tr>
+                        <td>Collection</td>
+                        <td>Like a table in SQL. A group of documents.</td>
+                    </tr>
+                    <tr>
+                        <td>Document</td>
+                        <td>A single record, stored in JSON/BSON. Example: { name: "John", age: 30 }</td>
+                    </tr>
+                    <tr>
+                        <td>Field</td>
+                        <td>Key-value pair inside a document. Example: name: "John"</td>
+                    </tr>
+                    <tr>
+                        <td>_id</td>
+                        <td>Unique identifier automatically added to every document.</td>
+                    </tr>
+                    <tr>
+                        <td>BSON</td>
+                        <td>Binary JSON format MongoDB uses internally.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>3. MongoDB vs SQL</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>SQL (MySQL)</th>
+                        <th>MongoDB</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Schema</td>
+                        <td>Fixed schema</td>
+                        <td>Flexible schema</td>
+                    </tr>
+                    <tr>
+                        <td>Data Format</td>
+                        <td>Rows & tables</td>
+                        <td>Documents (JSON)</td>
+                    </tr>
+                    <tr>
+                        <td>Joins</td>
+                        <td>Supports joins</td>
+                        <td>Usually avoided, can use $lookup</td>
+                    </tr>
+                    <tr>
+                        <td>Scalability</td>
+                        <td>Vertical scaling</td>
+                        <td>Horizontal scaling</td>
+                    </tr>
+                    <tr>
+                        <td>Query Language</td>
+                        <td>SQL</td>
+                        <td>MongoDB Query Language (MQL)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. Installing MongoDB</h2>
+            <p>You can install MongoDB locally or use MongoDB Atlas (cloud version).</p>
+            <p>Local Installation (macOS/Linux/Windows)</p>
+            <pre><code>
+# macOS using Homebrew
+brew tap mongodb/brew
+brew install mongodb-community@7.0
+brew services start mongodb-community@7.0
+            </code></pre>
+
+            <p>Cloud (MongoDB Atlas)</p>
+            <ol>
+                <li>Go to https://www.mongodb.com/cloud/atlas</li>
+                <li>Sign up and create a cluster.</li>
+                <li>Get the connection string to connect your app.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>5. MongoDB Basics: CLI</h2>
+            <p>Start MongoDB shell:</p>
+            <pre><code>
+mongosh
+            </code></pre>
+
+            <p>5.1 Show databases</p>
+            <pre><code>
+show dbs
+            </code></pre>
+
+            <p>5.2 Create or switch database</p>
+            <pre><code>
+use myDatabase
+            </code></pre>
+
+            <p>5.3 Show collections</p>
+            <pre><code>
+5.3 Show collections
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. CRUD Operations (Create, Read, Update, Delete)</h2>
+            <p>6.1 Insert Documents</p>
+            <pre><code>
+db.users.insertOne({ name: "Alice", age: 25, city: "Manila" })
+
+db.users.insertMany([
+  { name: "Bob", age: 30 },
+  { name: "Charlie", age: 28 }
+])
+            </code></pre>
+
+            <p>6.2 Query Documents</p>
+            <pre><code>
+// Find all documents
+db.users.find()
+
+// Find one document
+db.users.findOne({ name: "Alice" })
+
+// Find with condition
+db.users.find({ age: { $gt: 25 } }) // greater than 25
+            </code></pre>
+
+            <p>6.3 Update Documents</p>
+            <pre><code>
+// Update one
+db.users.updateOne(
+  { name: "Alice" },
+  { $set: { age: 26 } }
+)
+
+// Update many
+db.users.updateMany(
+  { age: { $lt: 30 } },
+  { $inc: { age: 1 } } // increment age by 1
+)
+            </code></pre>
+
+            <p>6.4 Delete Documents</p>
+            <pre><code>
+db.users.deleteOne({ name: "Charlie" })
+db.users.deleteMany({ age: { $lt: 25 } })
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Indexes</h2>
+            <p>Indexes improve query performance.</p>
+            <pre><code>
+db.users.createIndex({ name: 1 }) // 1 for ascending, -1 for descending
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Relationships in MongoDB</h2>
+            <p>MongoDB supports two types of relationships:</p>
+            <ul>
+                <li>
+                    Embedded documents (denormalization)
+                    <pre><code>
+{
+    name: "Alice",
+    orders: [
+        { product: "Laptop", qty: 1 },
+        { product: "Mouse", qty: 2 }
+    ]
+}                          
+                    </code></pre>
+                </li>
+                <li>
+                    References (normalization)
+                    <pre><code>
+// Users
+{ _id: 1, name: "Alice" }
+
+// Orders
+{ _id: 1, userId: 1, product: "Laptop" }
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Using MongoDB in Node.js</h2>
+            <ol>
+                <li>
+                    Install MongoDB driver:
+                    <pre><code>
+npm install mongodb
+                    </code></pre>
+                </li>
+                <li>
+                    Connect and perform operations:
+                    <pre><code>
+const { MongoClient } = require('mongodb');
+
+const url = 'mongodb://localhost:27017';
+const client = new MongoClient(url);
+
+async function main() {
+  await client.connect();
+  const db = client.db('myDatabase');
+  const users = db.collection('users');
+
+  await users.insertOne({ name: "John", age: 30 });
+  const allUsers = await users.find().toArray();
+  console.log(allUsers);
+
+  await client.close();
+}
+
+main();
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>10. Tips for Beginners</h2>
+            <ul>
+                <li>Always use _id as a unique identifier.</li>
+                <li>Start with MongoDB Atlas for simplicity.</li>
+                <li>Use Mongoose (ODM) if using Node.js – it simplifies schema and validation.</li>
+                <li>Use find() and findOne() often to explore your data.</li>
+                <li>Learn query operators like $gt, $lt, $in, $set.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Routing and Navigation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Routing and Navigation</h1>
+                    <p class="subtitle">Got it! Let’s go deep into routing and navigation, particularly for React Native, since that seems to be your main context. I’ll give a structured overview with explanations, examples, and best practices.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is Routing and Navigation?</h2>
+            <ul>
+                <li>Routing: Determines which screen or component should be shown for a given URL, state, or action.</li>
+                <li>Navigation: The mechanism to move between screens or pass data during transitions.</li>
+            </ul>
+            <p>In React Native, there’s no built-in routing like in web React, so libraries like React Navigation or React Native Navigation are used.</p>
+        </section>
+
+        <section>
+            <h2>2. React Navigation Overview</h2>
+            <p>React Navigation is the most popular library. It supports:</p>
+            <ol>
+                <li>Stack Navigation (like a call stack) – for push/pop transitions.</li>
+                <li>Tab Navigation – for bottom or top tabs.</li>
+                <li>Drawer Navigation – side menus.</li>
+                <li>Nested Navigation – combining the above (e.g., tab with stacks inside).</li>
+                <li>Deep Linking – linking to specific screens from external sources.</li>
+            </ol>
+
+            <p>2.1 Installation</p>
+            <pre><code>
+npm install @react-navigation/native
+npm install react-native-screens react-native-safe-area-context
+npm install @react-navigation/native-stack
+npm install @react-navigation/bottom-tabs
+            </code></pre>
+
+            <p>Then wrap your app:</p>
+            <pre><code>
+import { NavigationContainer } from '@react-navigation/native';
+
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+      {/* Your navigator goes here */}
+    &lt;/NavigationContainer&gt;
+  );
+}
+            </code></pre>
+
+            <p>2.2 Stack Navigation (Basic Example)</p>
+            <pre><code>
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+import DetailsScreen from './screens/DetailsScreen';
+
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+    return (
+    &lt;NavigationContainer&gt;
+        &lt;Stack.Navigator initialRouteName="Home"&gt;
+        &lt;Stack.Screen name="Home" component={HomeScreen} /&gt;
+        &lt;Stack.Screen name="Details" component={DetailsScreen} /&gt;
+        &lt;/Stack.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+    );
+}
+            </code></pre>
+
+<p>Navigate between screens:</p>
+<pre><code>
+// Inside HomeScreen
+&lt;Button
+  title="Go to Details"
+  onPress={() => navigation.navigate('Details', { itemId: 42 })}
+/&gt;
+
+// Inside DetailsScreen
+const { itemId } = route.params;
+            </code></pre>
+
+            <p>2.3 Tab Navigation Example</p>
+<pre><code>
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeScreen from './screens/HomeScreen';
+import ProfileScreen from './screens/ProfileScreen';
+
+const Tab = createBottomTabNavigator();
+
+export default function App() {
+    return (
+    &lt;NavigationContainer&gt;
+        &lt;Tab.Navigator&gt;
+        &lt;Tab.Screen name="Home" component={HomeScreen} /&gt;
+        &lt;Tab.Screen name="Profile" component={ProfileScreen} /&gt;
+        &lt;/Tab.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+    );
+}
+</code></pre>
+        <p>Tabs are great for persistent navigation across multiple screens, like in Instagram or Twitter.</p>
+        
+        <p>2.4 Drawer Navigation Example</p>
+        <pre><code>
+import { createDrawerNavigator } from '@react-navigation/drawer';
+
+const Drawer = createDrawerNavigator();
+
+&lt;Drawer.Navigator&gt;
+    &lt;Drawer.Screen name="Home" component={HomeScreen} /&gt;
+    &lt;Drawer.Screen name="Settings" component={SettingsScreen} /&gt;
+&lt;/Drawer.Navigator&gt;
+        </code></pre>
+
+        <p>2.5 Passing Data Between Screens</p>
+        <p>You can pass data with navigation.navigate:</p>
+
+        <pre><code>
+navigation.navigate('Details', {
+    itemId: 42,
+    otherParam: 'Hello'
+});              
+        </code></pre>
+        
+        <p>And read it via route.params:</p>
+        <pre><code>
+const { itemId, otherParam } = route.params;
+        </code></pre>
+
+        <p>2.6 Common Navigation Functions</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Function</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>navigate('Screen')</td>
+                    <td>Go to a screen (push if in stack)</td>
+                </tr>
+                <tr>
+                    <td>goBack()</td>
+                    <td>Go back to previous screen</td>
+                </tr>
+                <tr>
+                    <td>push('Screen')</td>
+                    <td>Push new instance even if already on screen</td>
+                </tr>
+                <tr>
+                    <td>replace('Screen')</td>
+                    <td>Replace current screen (no back)</td>
+                </tr>
+                <tr>
+                    <td>reset({ index, routes })</td>
+                    <td>Reset navigation state (common after login/logout)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>2.7 Nested Navigators</p>
+        <p>You can combine navigators:</p>
+        <pre><code>
+&lt;Tab.Navigator&gt;
+    &lt;Tab.Screen name="HomeStack" component={HomeStackNavigator} /&gt;
+    &lt;Tab.Screen name="ProfileStack" component={ProfileStackNavigator} /&gt;
+&lt;/Tab.Navigator&gt;              
+        </code></pre>
+        <p>This is common in large apps: tab bar with independent stacks for each tab.</p>
+
+        <p>2.8 Deep Linking (Optional Advanced)</p>
+        <p>React Navigation can handle URLs, e.g., myapp://details/42:</p>
+        <pre><code>
+const linking = {
+    prefixes: ['myapp://'],
+    config: {
+        screens: {
+        Home: 'home',
+        Details: 'details/:itemId',
+        },
+    },
+    };
+    
+&lt;NavigationContainer linking={linking}&gt;
+{/* ... */}
+&lt;/NavigationContainer&gt;              
+        </code></pre>
+
+        <p>✅ Best Practices</p>
+        <ol>
+            <li>Use Stack for hierarchical flows (login → dashboard → details).</li>
+            <li>Use Tab for major sections.</li>
+            <li>Use Drawer for app settings or secondary options.</li>
+            <li>Avoid too many nested navigators without need — it can be confusing.</li>
+            <li>Always type your params (TypeScript) for safety.</li>
+        </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

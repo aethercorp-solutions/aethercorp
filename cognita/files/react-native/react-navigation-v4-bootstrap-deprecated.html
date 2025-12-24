@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Navigation v4 “bootstrap”</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Navigation v4 “bootstrap”</h1>
+                    <p class="subtitle">You’re looking at a React Navigation v4 “bootstrap” pattern using createSwitchNavigator, which was very common before React Navigation v5+. I’ll explain what this code does, why it’s structured this way, and how the app flow works step-by-step.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+
+            <pre><code>
+import { createSwitchNavigator, createAppContainer } from 'react-navigation'
+import SplashNavigator from './SplashNavigator'
+import MenuNavigator from './MenuNavigator'
+import WalkthroughNavigator from './WalkthroughNavigator'
+
+const screens = {
+    Root: SplashNavigator,
+    Home: MenuNavigator,
+    Splash: SplashNavigator,
+    Walkthrough:WalkthroughNavigator,
+}
+
+const RootNavigation = createSwitchNavigator(screens)
+export default createAppContainer(RootNavigation)
+            </code></pre>
+
+            <p>App.js</p>
+            <pre><code>
+render() {
+    return (
+    &lt;IAPProvider&gt;
+        &lt;KeyboardAwareScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        enableOnAndroid={true}
+        extraScrollHeight={50}
+        extraHeight={100}
+        keyboardShouldPersistTaps=&quot;handled&quot;
+        &gt;
+        &lt;View style={styles.container}&gt;
+            &lt;AppSettingsContextProvider&gt;
+            &lt;RootNavigation /&gt;
+            &lt;NotificationPopup
+                ref={ref =&gt; this.notificationRef = ref}
+            /&gt;
+            &lt;/AppSettingsContextProvider&gt;
+        &lt;/View&gt;
+        &lt;/KeyboardAwareScrollView&gt;
+    &lt;/IAPProvider&gt;
+    );
+}
+                </code></pre>                
+
+            <h2>1️⃣ What this file is (App bootstrap)</h2>
+            <p>This file is your navigation bootstrap / entry point.</p>
+            <ul>
+                <li>It defines which navigator loads first</li>
+                <li>It decides where the app goes next (Splash → Walkthrough → Home)</li>
+                <li>It wraps everything in a container that connects navigation to React Native</li>
+            </ul>
+            <p>In short:</p>
+            <p>This file controls your app’s startup flow.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Imports explained</h2>
+            <pre><code>
+import { createSwitchNavigator, createAppContainer } from 'react-navigation'
+            </code></pre>
+            <p>createSwitchNavigator</p>
+            <ul>
+                <li>Creates a state-based navigator</li>
+                <li>No back button</li>
+                <li>No navigation history</li>
+                <li>
+                    Used for:
+                    <ul>
+                        <li>Splash screens</li>
+                        <li>Authentication flows</li>
+                        <li>Onboarding / walkthroughs</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Think of it like:</p>
+            <p>“Once I switch screens, I don’t want to go back.”</p>
+
+            <p>createAppContainer</p>
+            <ul>
+                <li>Wraps the root navigator</li>
+                <li>
+                    Injects:
+                    <ul>
+                        <li>Navigation state</li>
+                        <li>Gesture handling</li>
+                        <li>Linking support</li>
+                    </ul>
+                    Required in React Navigation v4
+                </li>
+            </ul>
+            <p>Without this, navigation will not work.</p>
+
+            <pre><code>
+import SplashNavigator from './SplashNavigator'
+import MenuNavigator from './MenuNavigator'
+import WalkthroughNavigator from './WalkthroughNavigator'
+            </code></pre>
+
+            <p>Each of these is another navigator, usually:</p>
+            <ul>
+                <li>createStackNavigator</li>
+                <li>createBottomTabNavigator</li>
+                <li>or even another SwitchNavigator</li>
+            </ul>
+            <p>So this is navigator nesting.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ The screens object (route registry)</h2>
+            <pre><code>
+const screens = {
+    Root: SplashNavigator,
+    Home: MenuNavigator,
+    Splash: SplashNavigator,
+    Walkthrough: WalkthroughNavigator,
+}                
+            </code></pre>
+            <p>This object defines routes for the switch navigator.</p>
+            <p>Key = route name</p>
+            <p>Value = screen or navigator</p>
+            <p>So you now have 4 top-level routes:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Route Name</th>
+                        <th>What it loads</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Root</td>
+                        <td>SplashNavigator</td>
+                    </tr>
+                    <tr>
+                        <td>Home</td>
+                        <td>MenuNavigator</td>
+                    </tr>
+                    <tr>
+                        <td>Splash</td>
+                        <td>SplashNavigator</td>
+                    </tr>
+                    <tr>
+                        <td>Walkthrough</td>
+                        <td>WalkthroughNavigator</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>⚠️ Important note</p>
+            <p>Root and Splash both point to SplashNavigator.</p>
+            <p>This is valid but slightly redundant. Usually Root alone is enough.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Creating the Switch Navigator</h2>
+            <pre><code>
+const RootNavigation = createSwitchNavigator(screens)
+            </code></pre>
+
+            <p>This creates a top-level state machine.</p>
+            <p>How SwitchNavigator behaves</p>
+            <ul>
+                <li>Only one screen active at a time</li>
+                <li>No back navigation</li>
+                <li>When you navigate(), the previous screen is discarded</li>
+            </ul>
+            <p>This is perfect for:</p>
+            <pre><code>
+Splash → Walkthrough → Home
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5️⃣ Exporting the App Container</h2>
+            <pre><code>
+export default createAppContainer(RootNavigation)
+            </code></pre>
+
+            <p>This makes the navigator:</p>
+            <ul>
+                <li>Stateful</li>
+                <li>A valid React component</li>
+                <li>The root component of your app</li>
+            </ul>
+            <p>In index.js you typically have:</p>
+            <pre><code>
+import App from './App'
+AppRegistry.registerComponent(appName, () => App)
+            </code></pre>
+            <p>So this navigation tree becomes your entire app UI.</p>
+        </section>
+
+        <section>
+            <h2>6️⃣ App startup flow (VERY IMPORTANT)</h2>
+            <p>🔄 Step-by-step execution</p>
+            <p>1. App launches</p>
+            <p>React Native loads App.js</p>
+
+            <p>2. createAppContainer(RootNavigation) mounts</p>
+            <ul>
+                <li>Default route is first key in screens</li>
+                <li>That is:</li>
+            </ul>
+            <pre><code>
+Root: SplashNavigator
+            </code></pre>
+            <p>So the app starts here:</p>
+            <pre><code>
+App
+ └── RootNavigation (SwitchNavigator)
+      └── Root
+           └── SplashNavigator
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7️⃣ What SplashNavigator usually does</h2>
+            <p>Inside SplashNavigator, you typically have logic like:</p>
+            <pre><code>
+componentDidMount() {
+    if (isFirstLaunch) {
+        navigation.navigate('Walkthrough')
+    } else if (isLoggedIn) {
+        navigation.navigate('Home')
+    } else {
+        navigation.navigate('Auth')
+    }
+}                  
+            </code></pre>
+            <p>This means:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Condition</th>
+                        <th>Navigation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>First time user</td>
+                        <td>Walkthrough</td>
+                    </tr>
+                    <tr>
+                        <td>Logged in</td>
+                        <td>Home</td>
+                    </tr>
+                    <tr>
+                        <td>Logged out</td>
+                        <td>Auth</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>8️⃣ Why SwitchNavigator is used here</h2>
+            <p>Compared to StackNavigator</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Switch</th>
+                        <th>Stack</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Back button</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>History</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Best for</td>
+                        <td>App flow</td>
+                        <td>Screens</td>
+                    </tr>
+                    <tr>
+                        <td>Auth flow</td>
+                        <td>✅ Perfect</td>
+                        <td>❌ Risky</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Switch ensures users cannot go back to:</p>
+            <ul>
+                <li>Splash screen</li>
+                <li>Walkthrough</li>
+                <li>Login screen</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9️⃣ Navigation between these routes</h2>
+            <p>From any screen inside a navigator, you can do:</p>
+            <pre><code>
+this.props.navigation.navigate('Home')
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+navigation.navigate('Walkthrough')
+            </code></pre>
+            <p>Once you navigate:</p>
+            <ul>
+                <li>The old navigator is destroyed</li>
+                <li>Memory is freed</li>
+                <li>State resets</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔟 Typical real-world structure</h2>
+            <pre><code>
+App.js
+ └── SwitchNavigator
+      ├── SplashNavigator
+      │     └── SplashScreen
+      ├── WalkthroughNavigator
+      │     ├── Intro1
+      │     ├── Intro2
+      └── MenuNavigator
+            ├── HomeScreen
+            ├── ProfileScreen
+            ├── SettingsScreen
+            </code></pre>
+
+            <p>1️⃣ Why this pattern was popular</p>
+            <ul>
+                <li>Clean app startup</li>
+                <li>Clear user flow</li>
+                <li>Secure auth handling</li>
+                <li>No accidental back navigation</li>
+            </ul>
+            <p>This is classic React Navigation v4 architecture.</p>
+
+            <p>2️⃣ Modern note (FYI)</p>
+            <p>In React Navigation v5+, this pattern is replaced by:</p>
+            <ul>
+                <li>NavigationContainer</li>
+                <li>Conditional rendering</li>
+            </ul>
+            <p>But your code is 100% correct for v4 and still widely used in legacy apps.</p>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <ul>
+                <li>App.js bootstraps navigation</li>
+                <li>SwitchNavigator controls app flow</li>
+                <li>Splash decides where to go</li>
+                <li>No back navigation = safer UX</li>
+                <li>This is a state machine, not a screen stack</li>
+            </ul>
+            <p>If you want, I can also:</p>
+            <ul>
+                <li>Refactor this to v6 style</li>
+                <li>Draw a flow diagram</li>
+                <li>Explain how to redirect programmatically</li>
+                <li>Explain how auth state fits in</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

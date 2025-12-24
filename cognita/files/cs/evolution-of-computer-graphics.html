@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Evolution of computer graphics and UI programming</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Evolution of computer graphics and UI programming</h1>
+                    <p class="subtitle">Here’s a detailed, structured explanation of the evolution of computer graphics and UI programming, from early systems to modern frameworks, with both conceptual and technical depth.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Pre-GUI Era (1940s–1960s): Text & Vector Displays</h2>
+            <p>Hardware</p>
+            <ul>
+                <li>CRT displays</li>
+                <li>Vector displays (oscilloscope-like)</li>
+                <li>No pixels → lines drawn directly by electron beam</li>
+            </ul>
+
+            <p>UI Characteristics</p>
+            <ul>
+                <li>Command-line only</li>
+                <li>No windows, icons, or mouse</li>
+                <li>Output was text or wireframe lines</li>
+            </ul>
+
+            <p>Programming Model</p>
+            <ul>
+                <li>Low-level hardware instructions</li>
+                <li>No abstraction layers</li>
+            </ul>
+
+            <p>Examples</p>
+            <ul>
+                <li>IBM punch cards</li>
+                <li>SAGE air-defense system</li>
+                <li>Early CAD (Sketchpad – 1963)</li>
+            </ul>
+            <p>🔹 Sketchpad (Ivan Sutherland)</p>
+            <p>First interactive graphical UI:</p>
+            <ul>
+                <li>Light pen</li>
+                <li>Constraints</li>
+                <li>
+                    Hierarchical objects
+                    <p>👉 Foundation of modern GUI & OOP concepts</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Raster Graphics & Early GUIs (1970s)</h2>
+            <p>Key Breakthrough</p>
+            <ul>
+                <li>Raster displays → pixels instead of vectors</li>
+            </ul>
+            <p>UI Innovations</p>
+            <ul>
+                <li>Bitmapped graphics</li>
+                <li>First windows, icons</li>
+                <li>Mouse interaction</li>
+            </ul>
+
+            <p>Programming Model</p>
+            <ul>
+                <li>Direct framebuffer manipulation</li>
+                <li>Manual redraw (no retained UI state)</li>
+            </ul>
+
+            <p>Influential Systems</p>
+            <ul>
+                <li>Xerox Alto</li>
+                <li>Xerox Star</li>
+            </ul>
+
+            <p>Concepts Introduced</p>
+            <ul>
+                <li>
+                    WIMP paradigm:
+                    <ul>
+                        <li>Windows</li>
+                        <li>Icons</li>
+                        <li>Menus</li>
+                        <li>Pointer</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Commercial GUIs (1980s)</h2>
+            <p>Major Platforms</p>
+            <table>
+                <thead>
+                    <th>
+                        <tr>Platform</tr>
+                        <tr>Year</tr>
+                    </th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Apple Macintosh</td>
+                        <td>1984</td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft Windows 1.0</td>
+                        <td>1985</td>
+                    </tr>
+                    <tr>
+                        <td>Amiga</td>
+                        <td>1985</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Graphics Model</h2>
+            <ul>
+                <li>1-bit → 8-bit color</li>
+                <li>CPU-based rendering</li>
+                <li>Software blitting</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>UI Programming</h2>
+            <ul>
+                <li>Immediate mode painting</li>
+                <li>Event loop (GetMessage, DispatchMessage)</li>
+                <li>OS-managed widgets</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>APIs</h2>
+            <ul>
+                <li>QuickDraw (Mac)</li>
+                <li>GDI (Windows)</li>
+            </ul>
+            <pre><code>
+while (GetMessage(&msg)) {
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+}                
+            </code></pre>
+            <p>🔹 UI logic and rendering tightly coupled</p>
+        </section>
+
+        <section>
+            <h2>4. Object-Oriented GUI Toolkits (1990s)</h2>
+            <p>Why This Emerged</p>
+            <ul>
+                <li>GUIs became complex</li>
+                <li>Need for reusability & abstraction</li>
+            </ul>
+
+            <p>Key Toolkits</p>
+            <ul>
+                <li>MFC (Windows)</li>
+                <li>Motif</li>
+                <li>Qt</li>
+                <li>GTK</li>
+            </ul>
+
+            <p>UI Programming Evolution</p>
+            <ul>
+                <li>Widgets as objects</li>
+                <li>Inheritance and callbacks</li>
+                <li>Message maps / signals & slots</li>
+            </ul>
+
+            <pre><code>
+connect(button, SIGNAL(clicked()), this, SLOT(onClick()));
+            </code></pre>
+
+            <p>Graphics</p>
+            <ul>
+                <li>Still CPU-rendered</li>
+                <li>Double buffering introduced</li>
+                <li>Region-based invalidation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Hardware Acceleration & 2D/3D APIs (Late 1990s–2000s)</h2>
+            <p>GPUs Enter UI</p>
+            <ul>
+                <li>OpenGL</li>
+                <li>Direct3D</li>
+            </ul>
+
+            <p>Impact</p>
+            <ul>
+                <li>Faster redraws</li>
+                <li>Transparency</li>
+                <li>Animations</li>
+                <li>Anti-aliasing</li>
+            </ul>
+
+            <p>UI Frameworks Adapting</p>
+            <ul>
+                <li>Quartz (macOS)</li>
+                <li>Direct2D / DirectWrite</li>
+                <li>XRender (Linux)</li>
+            </ul>
+
+            <p>Retained Mode Graphics</p>
+            <ul>
+                <li>Scene graph</li>
+                <li>OS handles redraw efficiently</li>
+            </ul>
+
+            <pre><code>
+UI Tree
+ ├── Window
+ │    ├── Button
+ │    └── TextLabel
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Declarative & Layout-Based UI (2000s)</h2>
+            <p>Problem with Imperative UI</p>
+            <ul>
+                <li>Too much state handling</li>
+                <li>Layout fragile across screen sizes</li>
+            </ul>
+            <p>Solutions</p>
+            <ul>
+                <li>Declarative UI</li>
+                <li>Constraint-based layout</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Frameworks</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th>Framework</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Web</td>
+                        <td>HTML + CSS</td>
+                    </tr>
+                    <tr>
+                        <td>iOS/macOS</td>
+                        <td>Auto Layout</td>
+                    </tr>
+                    <tr>
+                        <td>Windows</td>
+                        <td>XAML (WPF)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <pre><code>
+        &lt;Button Content="Save"
+HorizontalAlignment="Center"/&gt;
+            </code></pre>
+
+            <p>Graphics Stack</p>
+            <ul>
+                <li>Vector-based rendering</li>
+                <li>Resolution-independent UI</li>
+                <li>DPI scaling support</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Mobile & Touch UI Revolution (2007–2015)</h2>
+            <p>Trigger</p>
+            <ul>
+                <li>iPhone (2007)</li>
+            </ul>
+
+            <p>New Constraints</p>
+            <ul>
+                <li>Touch input</li>
+                <li>Small screens</li>
+                <li>Battery efficiency</li>
+            </ul>
+
+            <p>UI Programming Changes</p>
+            <ul>
+                <li>Gesture recognition</li>
+                <li>View hierarchies</li>
+                <li>Hardware-accelerated compositing</li>
+            </ul>
+
+            <p>APIs</p>
+            <ul>
+                <li>UIKit (iOS)</li>
+                <li>Android View System</li>
+            </ul>
+
+            <p>Graphics</p>
+            <ul>
+                <li>GPU-based compositing</li>
+                <li>Core Animation</li>
+                <li>OpenGL ES</li>
+            </ul>
+
+            <pre><code>
+[UIView animateWithDuration:0.3 animations:^{
+    view.alpha = 1.0;
+}];                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Reactive & State-Driven UI (2015–Present)</h2>
+            <p>Key Idea</p>
+            <p>UI is a function of state</p>
+
+            <p>Frameworks</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th>Framework</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Web</td>
+                        <td>React</td>
+                    </tr>
+                    <tr>
+                        <td>iOS</td>
+                        <td>SwiftUI</td>
+                    </tr>
+                    <tr>
+                        <td>Android</td>
+                        <td>Jetpack Compose</td>
+                    </tr>
+                    <tr>
+                        <td>Cross-platform</td>
+                        <td>Flutter</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <pre><code>
+var body: some View {
+    Text(isLoggedIn ? "Welcome" : "Login")
+}                
+            </code></pre>
+
+            <p>Benefits</p>
+            <ul>
+                <li>Less mutable state</li>
+                <li>Easier reasoning</li>
+                <li>Automatic diffing & redraw</li>
+            </ul>
+
+            <p>Rendering</p>
+            <ul>
+                <li>Virtual DOM / diffing</li>
+                <li>GPU-accelerated pipelines</li>
+                <li>Skia (Flutter)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Modern GPU Pipelines & Compositors (2020s)</h2>
+            <p>Graphics Architecture</p>
+            <pre><code>
+App → UI Framework → GPU → Compositor → Display
+            </code></pre>
+
+            <p>Key Features</p>
+            <ul>
+                <li>Scene graphs</li>
+                <li>Shaders for UI effects</li>
+                <li>Offscreen rendering</li>
+                <li>Metal / Vulkan / WebGPU</li>
+            </ul>
+
+            <p>OS Compositors</p>
+            <ul>
+                <li>Core Animation (Apple)</li>
+                <li>SurfaceFlinger (Android)</li>
+                <li>Wayland compositors (Linux)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Emerging & Future Trends</h2>
+            <p>Current Direction</p>
+            <ul>
+                <li>Spatial computing (AR/VR)</li>
+                <li>3D UIs</li>
+                <li>AI-assisted UI generation</li>
+                <li>Voice + gesture interfaces</li>
+            </ul>
+
+            <p>Technologies</p>
+            <ul>
+                <li>VisionOS</li>
+                <li>WebGPU</li>
+                <li>USD scene graphs</li>
+                <li>Neural UI layout prediction</li>
+            </ul>
+
+            <p>Programming Model Shift</p>
+            <pre><code>
+Imperative → Declarative → Reactive → Intent-based
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Summary Timeline</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Era</th>
+                        <th>Key Shift</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1960s</td>
+                        <td>Interactive graphics</td>
+                    </tr>
+                    <tr>
+                        <td>1970s</td>
+                        <td>Raster + mouse</td>
+                    </tr>
+                    <tr>
+                        <td>1980s</td>
+                        <td>Commercial GUIs</td>
+                    </tr>
+                    <tr>
+                        <td>1990s</td>
+                        <td>OOP toolkits</td>
+                    </tr>
+                    <tr>
+                        <td>2000s</td>
+                        <td>GPU acceleration</td>
+                    </tr>
+                    <tr>
+                        <td>2010s</td>
+                        <td>Mobile + touch</td>
+                    </tr>
+                    <tr>
+                        <td>2020s</td>
+                        <td>Reactive + GPU-first</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Key Insight</h2>
+            <p>UI programming evolved from “drawing pixels” → “managing widgets” → “describing state” → “declaring intent.”</p>
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Map this specifically to iOS / UIKit → SwiftUI</li>
+                <li>Compare Immediate vs Retained Mode rendering</li>
+                <li>Deep dive into how a button click travels from GPU to app code</li>
+                <li>Relate this evolution to game engines vs app UIs</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

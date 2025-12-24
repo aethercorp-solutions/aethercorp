@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>react-native-fs</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">react-native-fs</h1>
+                    <p class="subtitle">
+                        is an ES6 module import that imports all exported members from the react-native-fs package into a single object named RNFS.
+                        Let’s break it down in detail 👇
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 1. What react-native-fs is</h2>
+            <p>react-native-fs is a React Native library that provides access to the device’s file system.</p>
+            <p>It allows you to perform file operations such as:</p>
+            <ul>
+                <li>Reading and writing files</li>
+                <li>Creating directories</li>
+                <li>Deleting files</li>
+                <li>Checking if a file exists</li>
+                <li>Downloading or uploading files</li>
+            </ul>
+            <p>It works on both iOS and Android.</p>
+        </section>
+
+        <section>
+            <h2>🧠 2. What import * as RNFS from 'react-native-fs' does</h2>
+            <p>This syntax:</p>
+            <pre><code>
+import * as RNFS from 'react-native-fs';
+            </code></pre>
+            <p>means:</p>
+            <p>“Import everything that the react-native-fs module exports, and put it inside an object called RNFS.”</p>
+            <p>So you can access functions like this:</p>
+            <pre><code>
+RNFS.readFile(path)
+RNFS.writeFile(path, contents)
+RNFS.exists(path)
+RNFS.unlink(path)
+RNFS.downloadFile(options)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📁 3. Example usage</h2>
+            <p>Here’s a quick example of how you might use it:</p>
+            <pre><code>
+import * as RNFS from 'react-native-fs';
+
+const path = RNFS.DocumentDirectoryPath + '/example.txt';
+
+// Write a file
+await RNFS.writeFile(path, 'Hello World!', 'utf8');
+
+// Read the file
+const content = await RNFS.readFile(path, 'utf8');
+console.log('File content:', content);
+
+// Check if file exists
+const exists = await RNFS.exists(path);
+console.log('Exists?', exists);
+
+// Delete the file
+await RNFS.unlink(path);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ 4. Common directories</h2>
+            <p>react-native-fs gives you access to various standard directories:</p>
+            <ul>
+                <li>RNFS.DocumentDirectoryPath → app’s internal storage (recommended)</li>
+                <li>RNFS.ExternalDirectoryPath → external storage (Android)</li>
+                <li>RNFS.TemporaryDirectoryPath → temp files</li>
+                <li>RNFS.DownloadDirectoryPath → user’s downloads (Android)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Library</td>
+                        <td>react-native-fs</td>
+                    </tr>
+                    <tr>
+                        <td>Purpose</td>
+                        <td>Access device file system</td>
+                    </tr>
+                    <tr>
+                        <td>Import syntax</td>
+                        <td>import * as RNFS from 'react-native-fs';</td>
+                    </tr>
+                    <tr>
+                        <td>Access style</td>
+                        <td>RNFS.methodName()</td>
+                    </tr>
+                    <tr>
+                        <td>Example</td>
+                        <td>RNFS.readFile(path)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

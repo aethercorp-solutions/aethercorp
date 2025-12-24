@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How React Native Creates an Xcode Project</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How React Native Creates an Xcode Project</h1>
+                    <p class="subtitle">
+                        React Native does not generate a fresh Xcode project every time—instead, when you run npx react-native init, it scaffolds an iOS project inside the ios/ folder using a template maintained by the React Native team.
+                        <p>Here’s how it actually works under the hood:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ How React Native Creates an Xcode Project</h2>
+            <ol>
+                <li>
+                    You run this command
+                    <pre><code>
+npx react-native init MyApp
+                    </code></pre>
+                </li>
+                <li>
+                    The CLI copies iOS template files
+                    <p>React Native CLI internally pulls from this template:</p>
+                    <pre><code>
+node_modules/react-native/template/ios
+                    </code></pre>
+                    <p>These template files include:</p>
+                    <ul>
+                        <li>MyApp.xcodeproj (Xcode project)</li>
+                        <li>MyApp.xcworkspace (CocoaPods workspace)</li>
+                        <li>AppDelegate.mm</li>
+                        <li>Info.plist</li>
+                        <li>Podfile</li>
+                        <li>bridging config for Obj-C/Swift</li>
+                        <li>default assets & build configs</li>
+                    </ul>
+                </li>
+                <li>
+                    The CLI replaces template tokens
+                    <p>Anything with placeholders such as:</p>
+                    <ul>
+                        <li>__PROJECT_NAME__</li>
+                        <li>__ORG_IDENTIFIER__</li>
+                    </ul>
+                    <p>…gets replaced with the actual values:</p>
+                    <pre><code>
+MyApp
+com.mycompany.myapp
+                    </code></pre>
+                    <p>The result becomes your final ios/ folder.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🛠️ What happens inside the iOS folder</h2>
+            <p>When scaffolding completes, you get this structure:</p>
+            <pre><code>
+ios/
+ ├── MyApp.xcodeproj
+ ├── MyApp.xcworkspace
+ ├── Podfile
+ ├── MyApp
+ │   ├── AppDelegate.mm
+ │   ├── main.m
+ │   ├── Info.plist
+ │   ├── Images.xcassets
+ │   └── …
+            </code></pre>
+            <ul>
+                <li>xcodeproj = build definitions used by Xcode</li>
+                <li>xcworkspace = created after running pod install</li>
+                <li>AppDelegate.mm = entry point that initializes React Native</li>
+                <li>main.m = calls UIApplicationMain</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Extra details (for deeper understanding)</h2>
+            <p>React Native uses CocoaPods</p>
+            <p>During initialization, the CLI runs:</p>
+            <pre><code>
+cd ios && pod install
+            </code></pre>
+            <p>Which generates:</p>
+            <pre><code>
+Pods/
+MyApp.xcworkspace
+            </code></pre>
+            <p>Then Xcode will use the workspace, not the .xcodeproj.</p>
+        </section>
+
+        <section>
+            <h2>🧱 Internals: How the CLI actually does it</h2>
+            <p>The React Native CLI:</p>
+            <ol>
+                <li>Copies the template folder (react-native/template)</li>
+                <li>Replaces variables with project name</li>
+                <li>Installs iOS dependencies with CocoaPods</li>
+                <li>Finalizes Xcode project settings (bundle ID, files, build configs)</li>
+            </ol>
+            <p>Actual JS code responsible is in:</p>
+            <p>@react-native-community/cli → packages → cli → templates → ...</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

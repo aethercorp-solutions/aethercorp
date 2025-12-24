@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React.createRef()</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React.createRef()</h1>
+                    <p class="subtitle">
+                        React.createRef() is a method in React used to create a ref—an object that can hold a reference to a React element or a class component instance. Refs are primarily used when you need to directly access a DOM element or a component’s methods, bypassing the normal React data flow.
+                        <p>Here’s a breakdown of how it works and how to use it:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Creating a ref</h2>
+            <pre><code>
+import React, { Component } from 'react';
+
+class MyComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.myInputRef = React.createRef(); // Create a ref
+  }
+
+  focusInput = () => {
+    this.myInputRef.current.focus(); // Access the DOM node
+  }
+
+  render() {
+    return (
+      &lt;div&gt;
+        &lt;input type="text" ref={this.myInputRef} /&gt;
+        &lt;button onClick={this.focusInput}&gt;Focus Input&lt;/button&gt;
+    &lt;/div>
+    );
+  }
+}
+
+export default MyComponent;
+            </code></pre>
+
+            <ul>
+                <li>React.createRef() returns an object with a current property: { current: null }.</li>
+                <li>When attached to a JSX element via ref={...}, current will point to the DOM node (or component instance after mount).</li>
+                <li>You can then access methods like .focus(), .scrollIntoView(), etc.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Using refs with class components</h2>
+            <p>Refs can also point to class component instances:</p>
+            <pre><code>
+class Child extends Component {
+    sayHello() {
+        alert('Hello!');
+    }
+    
+    render() {
+        return &lt;div&gt;Child Component&lt;/div&gt;;
+    }
+}
+    
+class Parent extends Component {
+    constructor(props) {
+        super(props);
+        this.childRef = React.createRef();
+    }
+    
+    callChildMethod = () => {
+        this.childRef.current.sayHello(); // Call method on child
+    }
+    
+    render() {
+        return (
+        &lt;div&gt;
+            &lt;Child ref={this.childRef} /&gt;
+            &lt;button onClick={this.callChildMethod}>Call Child Method&lt;/button&gt;
+        &lt;/div&gt;
+        );
+    }
+}                  
+            </code></pre>
+
+            <ul>
+                <li>this.childRef.current now points to the Child instance.</li>
+                <li>You can call any public method defined in Child.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Using refs with functional components</h2>
+            <p>Functional components cannot be directly given refs unless you use forwardRef:</p>
+            <pre><code>
+import React, { forwardRef, useRef } from 'react';
+
+const Child = forwardRef((props, ref) => (
+  &lt;input ref={ref} placeholder="Type here" /&gt;
+));
+
+function Parent() {
+  const inputRef = useRef();
+
+  const focusInput = () => {
+    inputRef.current.focus();
+  };
+
+  return (
+    &lt;div>
+        &lt;Child ref={inputRef} /&gt;
+        &lt;button onClick={focusInput}&lt;Focus Input&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+            </code></pre>
+            <ul>
+                <li>Here, forwardRef allows the parent to attach a ref to the DOM element inside the functional child component.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key Points</h2>
+            <ul>
+                <li>Refs bypass React’s data flow, so use them sparingly.</li>
+                <li>Good for focusing inputs, controlling media playback, triggering animations, or integrating with third-party libraries.</li>
+                <li>Class components: React.createRef() in constructor.</li>
+                <li>Functional components: useRef() hook.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Video Computing</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Video Computing</h1>
+                    <p class="subtitle">
+                        Video computing refers to all the technologies, methods, and processes used to capture, process, analyze, transmit, and display video data. It sits at the intersection of computer science, multimedia processing, computer vision, and graphics.
+                        <p>Here’s a clear breakdown:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ 1. Video Capture</h2>
+            <p>How video is collected</p>
+            <ul>
+                <li>Cameras (phones, CCTV, webcams, drones)</li>
+                <li>Frame rate (fps), resolution (1080p, 4K, 8K)</li>
+                <li>Sensors and codecs (H.264, H.265, AV1)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 2. Video Compression & Encoding</h2>
+            <p>Since raw video is huge, it must be compressed.</p>
+            <p>Examples of video codecs:</p>
+            <ul>
+                <li>H.264 / AVC – common, efficient</li>
+                <li>H.265 / HEVC – better compression, used in 4K</li>
+                <li>AV1 – new open standard, very efficient</li>
+                <li>VP8/VP9 – used in YouTube, WebRTC</li>
+            </ul>
+            <p>Encoders/decoders manage this:</p>
+            <ul>
+                <li>ffmpeg</li>
+                <li>GPU-accelerated encoding (NVENC, Apple VideoToolbox)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 3. Video Processing</h2>
+            <p>Operations performed on video frames, such as:</p>
+            <ul>
+                <li>Filtering</li>
+                <li>Stabilization</li>
+                <li>Color correction</li>
+                <li>Noise reduction</li>
+                <li>Transcoding (changing resolution/format)</li>
+            </ul>
+            <p>Used in apps like Adobe Premiere, DaVinci Resolve, or server pipelines.</p>
+        </section>
+
+        <section>
+            <h2>✅ 4. Computer Vision on Video</h2>
+            <p>Machines interpreting video content:</p>
+            <ul>
+                <li>Object detection (people, vehicles)</li>
+                <li>Face recognition</li>
+                <li>Motion tracking</li>
+                <li>Activity recognition</li>
+                <li>OCR from video (reading text from frames)</li>
+                <li>Autonomous driving vision</li>
+            </ul>
+            <p>Frameworks: OpenCV, TensorFlow, PyTorch, YOLO, MediaPipe</p>
+        </section>
+
+        <section>
+            <h2>✅ 5. Video Streaming</h2>
+            <p>Sending and receiving live or on-demand video:</p>
+            <ul>
+                <li>Live streaming (RTMP → HLS/DASH)</li>
+                <li>WebRTC (real-time low-latency video calls)</li>
+                <li>CDN distribution (Netflix, YouTube)</li>
+            </ul>
+            <p>Protocols: RTP, RTSP, RTMP, HLS, DASH</p>
+        </section>
+
+        <section>
+            <h2>✅ 6. Video Rendering & Display</h2>
+            <p>How video is displayed:</p>
+            <ul>
+                <li>GPU-based rendering</li>
+                <li>Frame interpolation</li>
+                <li>HDR (Dolby Vision, HDR10)</li>
+                <li>Refresh rates (60Hz, 120Hz, 144Hz)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 7. Advanced Video Computing</h2>
+            <p>Modern innovations include:</p>
+            <p>AI Video Editing</p>
+            <ul>
+                <li>Automatic background removal</li>
+                <li>AI upscaling (4K from low-quality footage)</li>
+                <li>Deepfake creation</li>
+                <li>Virtual avatars</li>
+            </ul>
+            <p>Video Compression with AI</p>
+            <ul>
+                <li>Neural compression</li>
+                <li>Streaming with AI bitrate prediction</li>
+            </ul>
+            <p>Cloud Video Computing</p>
+            <ul>
+                <li>AWS Elemental</li>
+                <li>Google Cloud Video Intelligence</li>
+                <li>Azure Media Services</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Want a specific angle?</h2>
+            <p>I can explain:</p>
+            <ul>
+                <li>How video codecs work</li>
+                <li>How YouTube processes video</li>
+                <li>How to build a video streaming server</li>
+                <li>How computer vision reads and understands video</li>
+                <li>Hardware acceleration in video (GPU, ASIC, FPGA)</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here are the main video computing frameworks used today, categorized by purpose (processing, streaming, compression, computer vision, deep learning, GPU acceleration). This should give you a clean map of the ecosystem.</p>
+            <h2>🎥 1. Video Processing Frameworks</h2>
+            <p>Tools for editing, filtering, transcoding, and manipulating video.</p>
+            <p>✅ FFmpeg</p>
+            <ul>
+                <li>The most widely used video processing framework</li>
+                <li>Supports encoding, decoding, transcoding, muxing, demuxing</li>
+                <li>Powers many apps (YouTube, VLC, OBS)</li>
+            </ul>
+
+            <p>✅ GStreamer</p>
+            <ul>
+                <li>Modular multimedia framework</li>
+                <li>Ideal for real-time pipelines, IoT, and Linux systems</li>
+                <li>Used in robotics, drones, and media servers</li>
+            </ul>
+
+            <p>✅ OpenCV Video Module</p>
+            <ul>
+                <li>Video I/O, frame handling, and basic processing</li>
+                <li>Often used with computer vision tasks</li>
+            </ul>
+
+            <p>✅ MediaCodec (Android) / AVFoundation (iOS/macOS)</p>
+            <ul>
+                <li>Native OS-level video frameworks</li>
+                <li>Hardware-accelerated encoding/decoding</li>
+                <li>Used in mobile apps and native players</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔌 2. Video Streaming Frameworks</h2>
+            <p>Used for live streaming, VoIP, or VOD delivery.</p>
+            <p>✅ WebRTC</p>
+            <ul>
+                <li>Real-time peer-to-peer video</li>
+                <li>Used in Zoom, Google Meet, WebRTC-based apps</li>
+                <li>Supports STUN/TURN, adaptive bitrate</li>
+            </ul>
+            <p>✅ Wowza / Red5 / Ant Media Server</p>
+            <ul>
+                <li>Live streaming servers using RTMP, HLS, WebRTC</li>
+            </ul>
+            <p>✅ OBS (via LibOBS SDK)</p>
+            <ul>
+                <li>Framework for video capture, streaming, and broadcasting</li>
+            </ul>
+            <p>✅ Node-Media-Server</p>
+            <ul>
+                <li>Node.js RTMP/WebRTC server for lightweight apps</li>
+            </ul>
+        </section>
+        
+        <section>
+            <h2>🎦 3. Video Compression / Codec Frameworks</h2>
+            <p>Implementations of video codecs.</p>
+            <p>✅ x264 / x265 / SVT-AV1 / libaom-AV1</p>
+            <ul>
+                <li>Open-source codec libraries</li>
+                <li>Used for encoding H.264, H.265, and AV1</li>
+            </ul>
+            <p>✅ NVIDIA NVENC / NVDEC</p>
+            <ul>
+                <li>GPU hardware encoding + decoding</li>
+                <li>Extremely fast for video editing or real-time streaming</li>
+            </ul>
+            <p>✅ Apple VideoToolbox</p>
+            <ul>
+                <li>macOS/iOS hardware-accelerated video codecs</li>
+            </ul>
+            <p>✅ Intel QuickSync Video</p>
+            <ul>
+                <li>Hardware-accelerated video encoding for Intel CPUs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🤖 4. Video Computer Vision Frameworks</h2>
+            <p>For analyzing video content (tracking, detection, recognition).</p>
+            <p>✅ MediaPipe</p>
+            <ul>
+                <li>High-level ML video pipelines (pose, face mesh, segmentation)</li>
+            </ul>
+            <p>✅ OpenCV Video + Tracking Modules</p>
+            <ul>
+                <li>Motion tracking, optical flow, background subtraction</li>
+            </ul>
+            <p>✅ YOLO / OpenMMLab</p>
+            <ul>
+                <li>Real-time object detection in video</li>
+                <li>Supports GPU acceleration</li>
+            </ul>
+            <p>✅ TensorFlow / PyTorch (with video libraries)</p>
+            <ul>
+                <li>Used for deep-learning-based video analysis</li>
+                <li>3D CNNs, transformers for action recognition</li>
+            </ul>
+            <p>✅ NVIDIA DeepStream</p>
+            <ul>
+                <li>End-to-end AI pipeline for video analytics</li>
+                <li>Super optimized for multi-camera input</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 5. Deep Learning Video Frameworks</h2>
+            <p>For training and deploying video-based AI models.</p>
+            <p>✅ PyTorchVideo</p>
+            <ul>
+                <li>Facebook’s library for video deep learning (ResNet3D, TSM)</li>
+            </ul>
+            <p>✅ TensorFlow Video APIs</p>
+            <ul>
+                <li>Video models using tf.data pipelines</li>
+            </ul>
+            <p>✅ Kinetics, UCF101, HMDB</p>
+            <ul>
+                <li>Standard video datasets (not frameworks but related)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🖥️ 6. GPU Video Frameworks</h2>
+            <p>For real-time processing and acceleration.</p>
+            <p>✅ CUDA (NVIDIA)</p>
+            <ul>
+                <li>Used for real-time effects, video analytics</li>
+                <li>Foundational for DeepStream and ffmpeg GPU filters</li>
+            </ul>
+            <p>✅ Metal (Apple) / Vulkan (cross-platform)</p>
+            <ul>
+                <li>Low-level GPU access for video rendering</li>
+            </ul>
+            <p>✅ OpenGL / DirectX</p>
+            <ul>
+                <li>Video rendering, shader manipulation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🗂️ 7. Multimedia Application Frameworks</h2>
+            <p>For building complete video apps.</p>
+            <p>✅ FFmpeg + SDL</p>
+            <ul>
+                <li>For custom video players</li>
+            </ul>
+            <p>✅ Electron + WebRTC</p>
+            <ul>
+                <li>For video conferencing apps</li>
+            </ul>
+            <p>✅ Unity / Unreal Engine</p>
+            <ul>
+                <li>For AR/VR video integration, real-time rendering</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔍 Want recommendations?</h2>
+            <p>Tell me your goal and I can suggest the best framework:</p>
+            <ul>
+                <li>Building a video streaming server?</li>
+                <li>Real-time video AI analytics?</li>
+                <li>A mobile video recorder?</li>
+                <li>A browser-based video editor?</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here are the main iOS frameworks for video computing, grouped by use case. These are the official Apple frameworks plus the key tools widely used in iOS video apps.</p>
+            <h2>📱 1. Core iOS Video Frameworks</h2>
+            <p>🔵 AVFoundation (Primary Video Framework)</p>
+            <p>The MOST important framework for any video work on iOS.</p>
+            <p>You can use it for:</p>
+            <ul>
+                <li>Recording video (AVCaptureSession, AVCaptureVideoDataOutput)</li>
+                <li>Playing video (AVPlayer)</li>
+                <li>Editing (AVAsset, AVMutableComposition)</li>
+                <li>Exporting and transcoding (AVAssetExportSession)</li>
+                <li>Reading/writing metadata</li>
+                <li>Hardware-accelerated encoding/decoding (VideoToolbox integration)</li>
+            </ul>
+            <p>This is the heart of video computing on iOS.</p>
+        </section>
+
+        <section>
+            <h2>⚙️ 2. Video Encoding / Decoding Frameworks</h2>
+            <p>🔵 VideoToolbox</p>
+            <p>Low-level hardware-accelerated video codec framework.</p>
+            <p>Use when you need:</p>
+            <ul>
+                <li>Real-time encoding (H.264, H.265)</li>
+                <li>Real-time decoding for streaming</li>
+                <li>Custom video pipelines (like WebRTC or AI apps)</li>
+            </ul>
+            <p>Many apps like Zoom, TikTok, and WebRTC rely on this.</p>
+        </section>
+
+        <section>
+            <h2>🎛️ 3. Video Editing / Effects Frameworks</h2>
+            <p>🔵 Core Image (CIImage)</p>
+            <p>For GPU-accelerated video filtering:</p>
+            <ul>
+                <li>Color adjustments</li>
+                <li>Blurs</li>
+                <li>Transitions</li>
+                <li>Custom CIFilter shaders</li>
+            </ul>
+            <p>Often used with AVCaptureVideoDataOutput to apply filters in real time.</p>
+
+            <p>🔵 Metal / Metal Performance Shaders</p>
+            <p>For advanced or custom GPU processing:</p>
+            <ul>
+                <li>AR effects</li>
+                <li>Beautification filters</li>
+                <li>AI inference on video frames</li>
+                <li>Real-time shaders</li>
+            </ul>
+            <p>Apps like Instagram, TikTok, Snapchat use Metal for heavy effects.</p>
+        </section>
+
+        <section>
+            <h2>🎥 4. Video Playback Frameworks</h2>
+            <p>🔵 AVKit</p>
+            <p>UI wrapper around AVFoundation:</p>
+            <ul>
+                <li>AVPlayerViewController</li>
+                <li>Picture-in-Picture support</li>
+                <li>AirPlay support</li>
+            </ul>
+            <p>If you want a quick video player UI, use this.</p>
+            <p>🔵 Core Animation</p>
+            <p>For video compositing and layering animations over video.</p>
+        </section>
+
+        <section>
+            <h2>🌐 5. Real-Time Video Communication Frameworks</h2>
+            <p>🔵 WebRTC (third-party library)</p>
+            <p>Not built-in, but very commonly used:</p>
+            <ul>
+                <li>Real-time video calls</li>
+                <li>Peer-to-peer streaming</li>
+                <li>Used by Google Meet, Zoom, Messenger</li>
+            </ul>
+            <p>Internally uses:</p>
+            <ul>
+                <li>VideoToolbox (iOS hardware codecs)</li>
+                <li>AVFoundation (camera capture)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🤖 6. Video + AI / Computer Vision</h2>
+            <p>🔵 Vision Framework</p>
+            <p>High-level ML tasks on video frames:</p>
+            <ul>
+                <li>Face detection</li>
+                <li>Body pose detection</li>
+                <li>Text detection</li>
+                <li>Barcode detection</li>
+                <li>Object tracking</li>
+            </ul>
+            <p>🔵 Core ML</p>
+            <p>Run ML models on each video frame (object detection, segmentation, etc.)</p>
+            <p>Used with:</p>
+            <ul>
+                <li>CVPixelBuffer from camera frames</li>
+                <li>Metal for GPU optimization</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🎬 7. Motion / AR Video Frameworks</h2>
+            <p>🔵 ARKit</p>
+            <p>For AR video overlays, 3D objects, motion tracking.</p>
+            <p>🔵 Core Motion</p>
+            <p>Combine video and device motion (stabilization, VFX).</p>
+        </section>
+
+        <section>
+            <h2>📦 8. Storage and Sharing</h2>
+            <p>🔵 Photos Framework</p>
+            <ul>
+                <li>Access camera roll</li>
+                <li>Save edited videos</li>
+                <li>Batch export</li>
+                <li>Apply filters and adjustments (PhotoKit)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ Quick Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Purpose</th>
+                        <th>Framework</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Capture, playback, edit</td>
+                        <td>AVFoundation</td>
+                    </tr>
+                    <tr>
+                        <td>Hardware encoding/decoding</td>
+                        <td>VideoToolbox</td>
+                    </tr>
+                    <tr>
+                        <td>Video filters</td>
+                        <td>Core Image</td>
+                    </tr>
+                    <tr>
+                        <td>GPU shaders/video effects</td>
+                        <td>Metal</td>
+                    </tr>
+                    <tr>
+                        <td>UI video player</td>
+                        <td>AVKit</td>
+                    </tr>
+                    <tr>
+                        <td>Real-time calling</td>
+                        <td>WebRTC</td>
+                    </tr>
+                    <tr>
+                        <td>AI/object detection</td>
+                        <td>Vision + Core ML</td>
+                    </tr>
+                    <tr>
+                        <td>AR video</td>
+                        <td>ARKit</td>
+                    </tr>
+                    <tr>
+                        <td>Save to Photos</td>
+                        <td>Photos Framework</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

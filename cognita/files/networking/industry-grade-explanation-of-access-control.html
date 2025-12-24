@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Industry-grade explanation of Access Control</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Industry-grade explanation of Access Control</h1>
+                    <p class="subtitle">Here’s a beginner-friendly but industry-grade explanation of Access Control—what it is, when to use it, and how to implement it (with AWS examples since you're working on AWS serverless).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ What is Access Control?</h2>
+            <p>Access Control determines who can do what inside a system.</p>
+            <p>It answers two questions:</p>
+            <ol>
+                <li>Authentication – Who are you?</li>
+                <li>Authorization – What are you allowed to do?</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🎯 Why Access Control Matters</h2>
+            <p>Without access control, anyone could:</p>
+            <ul>
+                <li>view sensitive data</li>
+                <li>delete resources</li>
+                <li>perform unauthorized actions</li>
+                <li>impersonate users</li>
+            </ul>
+            <p>This is a core part of cybersecurity and compliance (SOC2, ISO27001, PCI-DSS).</p>
+        </section>
+
+        <section>
+            <h2>🔐 Types of Access Control</h2>
+            <p>1. RBAC – Role-Based Access Control</p>
+            <ul>
+                <li>Users are assigned roles (Admin, Editor, Viewer).</li>
+                <li>Roles have permissions.</li>
+                <li>Easy to manage for most apps.</li>
+            </ul>
+            <p>Example roles:</p>
+            <ul>
+                <li>Admin → create/update/delete</li>
+                <li>Staff → read/update</li>
+                <li>Viewer → read</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. ABAC – Attribute-Based Access Control</h2>
+            <p>Permissions depend on attributes:</p>
+            <ul>
+                <li>User attributes: department=“sales”</li>
+                <li>Resource attributes: owner_id=123</li>
+                <li>Context: time, location, IP</li>
+            </ul>
+            <p>Example:</p>
+            <p>Allow a user to edit a document only if user.id == document.ownerId.</p>
+        </section>
+
+        <section>
+            <h2>3. MAC – Mandatory Access Control</h2>
+            <ul>
+                <li>Used in military/security.</li>
+                <li>
+                    Strict rules based on classification:
+                    <ul>
+                        <li>Top Secret</li>
+                        <li>Secret</li>
+                        <li>Confidential</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. DAC – Discretionary Access Control</h2>
+            <ul>
+                <li>Resource owners can decide who has access.</li>
+                <li>Example: Google Drive sharing.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🏗 How Access Control Works (High-Level)</h2>
+            <ol>
+                <li>User authenticates (JWT, OAuth, Firebase, Cognito, AAD, etc.)</li>
+                <li>Server decodes the token → extracts claims/roles</li>
+                <li>Server checks the authorization rules</li>
+                <li>
+                    If allowed → access granted
+                    <p>If denied → return 403 Forbidden</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🛠 How to Implement Access Control (AWS Serverless)</h2>
+            <p>Since you're using AWS Lambda, API Gateway, MongoDB, Passport, Cognito, etc.</p>
+            <p>⭐ 1. Access Control in API Gateway</p>
+            <p>You can secure API endpoints using:</p>
+
+            <p>a. JWT Authorizer (Cognito, Firebase, Azure AD, Google Sign-In)</p>
+            <p>API Gateway verifies:</p>
+            <ul>
+                <li>token signature</li>
+                <li>token issuer</li>
+                <li>token expiration</li>
+            </ul>
+            <p>Only valid requests reach Lambda.</p>
+
+            <p>b. Lambda Authorizer (Custom RBAC/ABAC logic)</p>
+            <p>You can write your own authorization logic (Node.js Lambda).</p>
+        </section>
+
+        <section>
+            <h2>⭐ 2. Access Control inside AWS Lambda (Node.js)</h2>
+            <p>Example: RBAC in serverless</p>
+            <pre><code>
+const allowRoles = ["admin", "manager"];
+
+exports.handler = async (event) => {
+  const user = event.requestContext.authorizer.jwt.claims;
+
+  if (!allowRoles.includes(user.role)) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ message: "Forbidden" })
+    };
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: "Authorized" })
+  };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⭐ 3. Access Control in MongoDB (ABAC style)</h2>
+            <p>Example: Only owner can update their document</p>
+            <pre><code>
+const contact = await Contact.findOne({
+    _id: contactId,
+    ownerId: user.id,
+});
+    
+if (!contact) {
+    return res.status(403).json({ message: "Not allowed" });
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⭐ 4. IAM Access Control (Backend Permissions)</h2>
+            <p>AWS IAM controls what the Lambda function can access.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Allow Lambda to read from DynamoDB</li>
+                <li>Prevent Lambda from deleting S3 files</li>
+            </ul>
+            <p>IAM is about infrastructure-level access, not user-level access.</p>
+        </section>
+
+        <section>
+            <h2>🔒 Best Practices for Access Control</h2>
+            <p>✔ 1. Use least privilege</p>
+            <p>Give the minimum necessary permissions.</p>
+            <p>✔ 2. Never trust client-side role data</p>
+            <p>Always verify roles in backend.</p>
+            <p>✔ 3. Use tokens (JWT/OAuth)</p>
+            <p>JWT contains:</p>
+            <ul>
+                <li>user id</li>
+                <li>email</li>
+                <li>roles</li>
+                <li>permissions</li>
+            </ul>
+
+            <p>✔ 4. Log every access</p>
+            <p>For security auditing.</p>
+            <p>✔ 5. Use feature flags for sensitive actions</p>
+            <p>e.g. canExportData: true</p>
+        </section>
+
+        <section>
+            <h2>📘 Where Access Control is Used</h2>
+            <p>You apply it in almost every platform:</p>
+            <p>• AWS</p>
+            <p>IAM roles, policies, Cognito, API authorizers</p>
+
+            <p>• React Native</p>
+            <p>Hide UI based on user role</p>
+            <p>(e.g., "Admin Panel" visible only to admins)</p>
+
+            <p>• Databases</p>
+            <p>Restrict fields and documents based on user identity</p>
+
+            <p>• Node.js backend</p>
+            <p>Middleware for RBAC/ABAC</p>
+        </section>
+
+        <section>
+            <h2>🚀 Want a code template?</h2>
+            <p>I can give you:</p>
+            <ul>
+                <li>Complete RBAC middleware for Node.js/Lambda</li>
+                <li>Complete ABAC rules engine</li>
+                <li>API Gateway JWT Authorizer example</li>
+                <li>React Native “hide based on role” example</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

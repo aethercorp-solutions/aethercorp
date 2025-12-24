@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Thread Scheduling</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Thread Scheduling</h1>
+                    <p class="subtitle">
+                        Thread scheduling in computing refers to how an operating system (OS) decides which thread gets to run on the CPU at any moment. Since CPUs can only execute a limited number of tasks simultaneously (usually one per core), the OS needs a strategy to manage many threads efficiently and fairly.
+                    </p>
+                    <p>Below is a clear, developer-friendly explanation:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧵 What Is Thread Scheduling?</h2>
+            <p>Thread scheduling is the process of selecting the next thread to run from a pool of runnable threads.</p>
+            <p>The scheduler aims to maximize CPU utilization, responsiveness, and fairness.</p>
+        </section>
+
+        <section>
+            <h2>⚙️ How Scheduling Works</h2>
+            <p>A CPU core can only execute one thread at a time, so the OS uses a scheduler to:</p>
+            <ol>
+                <li>Decide which thread runs next.</li>
+                <li>Decide how long it runs (its time slice).</li>
+                <li>Handle context switching (saving & restoring thread state).</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 Types of Thread Scheduling</h2>
+            <p>1. Preemptive Scheduling (most modern OSes)</p>
+            <p>The OS can interrupt a running thread at any moment and switch to another thread.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Windows</li>
+                <li>Linux</li>
+                <li>macOS</li>
+                <li>Android/iOS</li>
+            </ul>
+            <p>Good for:</p>
+            <ul>
+                <li>Highly interactive systems</li>
+                <li>Apps with UI</li>
+                <li>Multitasking</li>
+            </ul>
+            <p>Mechanism:</p>
+            <ul>
+                <li>Timer interrupt triggers every few milliseconds</li>
+                <li>CPU switches threads</li>
+            </ul>
+
+            <p>2. Cooperative Scheduling</p>
+            <p>Threads must voluntarily yield control.</p>
+            <p>Used in:</p>
+            <ul>
+                <li>Older systems</li>
+                <li>Embedded devices</li>
+                <li>Some JavaScript environments (before Web Workers)</li>
+            </ul>
+            <p>If one thread doesn’t yield → the entire system stalls.</p>
+        </section>
+
+        <section>
+            <h2>🧩 Common Scheduling Algorithms</h2>
+            <p>✔ Round Robin (RR)</p>
+            <ul>
+                <li>Every thread gets equal time slice.</li>
+                <li>Cycles through them repeatedly.</li>
+                <li>Easy + fair.</li>
+            </ul>
+
+            <p>✔ Priority Scheduling</p>
+            <ul>
+                <li>Each thread has a priority.</li>
+                <li>High-priority threads run first.</li>
+                <li>Can cause starvation (low-priority threads never run).</li>
+            </ul>
+
+            <p>✔ Multi-Level Feedback Queue (MLFQ)</p>
+            <p>Most popular in modern OS kernels, including Linux.</p>
+            <ul>
+                <li>Multiple priority queues.</li>
+                <li>Threads can move up/down based on behavior.</li>
+                <li>Interactive tasks get higher priority.</li>
+            </ul>
+
+            <p>✔ Completely Fair Scheduler (CFS) – Linux</p>
+            <ul>
+                <li>Uses a "virtual runtime" to ensure fairness.</li>
+                <li>Each thread is treated like it has its own “fair share of CPU.”</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔁 Context Switching</h2>
+            <p>Switching from one thread to another requires the OS to save:</p>
+            <ul>
+                <li>CPU registers</li>
+                <li>Stack pointers</li>
+                <li>Program counters</li>
+            </ul>
+            <p>Then load the next thread's state.</p>
+            <p>Context switching is not free — it costs time.</p>
+        </section>
+
+        <section>
+            <h2>🔀 Thread Scheduling in JavaScript (React Native / Web)</h2>
+            <p>Since you are heavily into React Native and mobile dev, here’s the relevant part:</p>
+            <ul>
+                <li>JavaScript is single-threaded.</li>
+                <li>The JS engine uses an event loop, not preemptive scheduling.</li>
+                <li>Tasks run on the JS thread until they finish (no preemption).</li>
+                <li>Heavy tasks block UI → “stutters”.</li>
+            </ul>
+            <p>React Native solves this with:</p>
+            <ul>
+                <li>Native threads</li>
+                <li>JS thread</li>
+                <li>UI thread</li>
+                <li>Background threads via TurboModules, JSC/Hermes, react-native-reanimated, or Worker threads</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 Why Thread Scheduling Matters for Developers</h2>
+            <p>You benefit when thinking about:</p>
+            <p>Performance</p>
+            <ul>
+                <li>Avoid long-blocking tasks</li>
+                <li>Offload heavy work to background threads</li>
+            </ul>
+            <p>Mobile development</p>
+            <ul>
+                <li>In React Native, keep JS thread free</li>
+                <li>Avoid blocking animations or gestures</li>
+            </ul>
+            <p>Serverless & Node.js</p>
+            <ul>
+                <li>Node uses an event loop + worker pool (libuv)</li>
+                <li>Scheduling affects concurrency & throughput</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📝 If you want, I can explain:</h2>
+            <p>✅ Thread scheduling with diagrams</p>
+            <p>✅ Difference between process scheduling vs thread scheduling</p>
+            <p>✅ How JavaScript (React Native) handles the JS thread internally</p>
+            <p>✅ How Linux/Windows perform scheduling at the kernel level</p>
+            <p>✅ How scheduling affects performance in your apps (RN, serverless, Swift)</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Tab Navigation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Tab Navigation</h1>
+                    <p class="subtitle">Below is a deep, practical guide to Tab Navigation—when to use it, real-world use cases, UX rules, and a full React Native implementation. I’ll also relate it to React Navigation, since that’s what you’ve been using recently.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ What is Tab Navigation?</h2>
+            <p>Tab Navigation lets users switch between top-level sections of your app using tabs (usually at the bottom or top).</p>
+            <p>Think of tabs as:</p>
+            <p>“Different rooms in the same house”</p>
+            <p>Each tab represents an independent feature area, not a step in a process.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ When You SHOULD Use Tab Navigation</h2>
+            <p>Use Tab Navigation when:</p>
+            <p>✅ 1. Sections Are Peer-Level (No Hierarchy)</p>
+            <p>All screens are equally important.</p>
+            <p>Examples</p>
+            <ul>
+                <li>Home</li>
+                <li>Search</li>
+                <li>Notifications</li>
+                <li>Profile</li>
+            </ul>
+            <p>None of these depend on each other.</p>
+        </section>
+
+        <section>
+            <h2>✅ 2. Frequent Switching Is Expected</h2>
+            <p>Users move back and forth often.</p>
+            <p>Examples</p>
+            <ul>
+                <li>Messaging apps</li>
+                <li>Social apps</li>
+                <li>Finance dashboards</li>
+                <li>Contact management apps (relevant to TryCastanet)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 3. Each Section Has Its Own Navigation Flow</h2>
+            <p>Each tab can have its own Stack Navigator.</p>
+            <p>Example</p>
+            <ul>
+                <li>Home → Details → Settings</li>
+                <li>Profile → Edit Profile → Change Password</li>
+            </ul>
+            <p>Switching tabs preserves state.</p>
+        </section>
+
+        <section>
+            <h2>✅ 4. App Has 3–5 Core Sections</h2>
+            <p>UX rule of thumb:</p>
+            <ul>
+                <li>Minimum: 2 tabs</li>
+                <li>Maximum: 5 tabs (6+ hurts usability)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ When You SHOULD NOT Use Tab Navigation</h2>
+            <p>❌ Step-by-step flows</p>
+            <ul>
+                <li>Onboarding</li>
+                <li>Checkout</li>
+                <li>
+                    Forms
+                    <p>→ Use Stack Navigation</p>
+                </li>
+            </ul>
+
+            <p>❌ Deep hierarchical content</p>
+            <ul>
+                <li>
+                    Folder → Subfolder → Item
+                    <p>→ Stack or Drawer</p>
+                </li>
+            </ul>
+
+            <p>❌ One-time screens</p>
+            <ul>
+                <li>Login</li>
+                <li>Splash</li>
+                <li>Verification</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Common Real-World Use Cases</h2>
+            <p>📱 Social App</p>
+            <p>Tabs:</p>
+            <ul>
+                <li>Feed</li>
+                <li>Search</li>
+                <li>Create</li>
+                <li>Notifications</li>
+                <li>Profile</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💬 Messaging App</h2>
+            <p>Tabs:</p>
+            <ul>
+                <li>Chats</li>
+                <li>Calls</li>
+                <li>Contacts</li>
+                <li>Settings</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📇 Contact Platform (TryCastanet-style)</h2>
+            <p>Tabs:</p>
+            <ul>
+                <li>Contacts</li>
+                <li>Campaigns</li>
+                <li>Inbox</li>
+                <li>Analytics</li>
+                <li>Account</li>
+            </ul>
+            <p>Each tab contains a Stack Navigator.</p>
+        </section>
+
+        <section>
+            <h2>5️⃣ Types of Tab Navigation</h2>
+            <p>1️⃣ Bottom Tabs (Most Common)</p>
+            <p>Best for:</p>
+            <ul>
+                <li>Mobile apps</li>
+                <li>Primary navigation</li>
+            </ul>
+            <pre><code>
+createBottomTabNavigator()
+            </code></pre>
+
+            <p>Used by:</p>
+            <ul>
+                <li>Instagram</li>
+                <li>Facebook</li>
+                <li>WhatsApp</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Top Tabs</h2>
+            <p>Best for:</p>
+            <ul>
+                <li>Content filtering</li>
+                <li>Categories within a section</li>
+            </ul>
+            <pre><code>
+createMaterialTopTabNavigator()
+            </code></pre>
+            <p>Used by:</p>
+            <ul>
+                <li>Twitter (For You / Following)</li>
+                <li>News apps</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6️⃣ Recommended Architecture (Best Practice)</h2>
+            <pre><code>
+Root Stack
+ ├── Auth Stack
+ └── Main Tabs
+      ├── Home Stack
+      ├── Search Stack
+      ├── Inbox Stack
+      ├── Profile Stack
+            </code></pre>
+
+            <p>Why this works</p>
+            <ul>
+                <li>Clean separation</li>
+                <li>Easy auth handling</li>
+                <li>Preserves tab state</li>
+                <li>Scales well</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7️⃣ Full Implementation (React Navigation v6+)</h2>
+            <p>📦 Install Dependencies</p>
+            <pre><code>
+npm install @react-navigation/native
+npm install @react-navigation/bottom-tabs
+npm install @react-navigation/native-stack
+npm install react-native-screens react-native-safe-area-context
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧭 Create Bottom Tabs</h2>
+            <pre><code>
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+
+const Tab = createBottomTabNavigator()
+
+function MainTabs() {
+  return (
+    &lt;Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: '#007AFF',
+        tabBarInactiveTintColor: '#999',
+      }}
+    >
+        &lt;Tab.Screen name="Home" component={HomeStack} /&gt;
+        &lt;Tab.Screen name="Inbox" component={InboxStack} /&gt;
+        &lt;Tab.Screen name="Contacts" component={ContactsStack} /&gt;
+        &lt;Tab.Screen name="Profile" component={ProfileStack} /&gt;
+    &lt;/Tab.Navigator>
+  )
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧱 Each Tab Has Its Own Stack</h2>
+            <pre><code>
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+
+const Stack = createNativeStackNavigator()
+
+function HomeStack() {
+  return (
+    &lt;Stack.Navigator&gt;
+        &lt;Stack.Screen name="HomeScreen" component={HomeScreen} /&gt;
+        &lt;Stack.Screen name="Details" component={DetailsScreen} /&gt;
+    &lt;/Stack.Navigator&gt;
+  )
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔄 Root Navigator (Auth + Tabs)</h2>
+            <pre><code>
+const RootStack = createNativeStackNavigator()
+
+export default function AppNavigator() {
+  const isLoggedIn = true // from auth state
+
+  return (
+    &lt;NavigationContainer>
+        &lt;RootStack.Navigator screenOptions={{ headerShown: false }}&gt;
+        {isLoggedIn ? (
+            &lt;RootStack.Screen name="MainTabs" component={MainTabs} /&gt;
+        ) : (
+            &lt;RootStack.Screen name="Auth" component={AuthStack} /&gt;
+        )}
+        &lt;/RootStack.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  )
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8️⃣ UX Best Practices for Tabs</h2>
+            <p>✔️ DO</p>
+            <ul>
+                <li>Use icons + labels</li>
+                <li>Keep titles short</li>
+                <li>Preserve navigation state</li>
+                <li>Use badges for notifications</li>
+            </ul>
+
+            <pre><code>
+tabBarBadge: 3
+            </code></pre>
+
+            <p>❌ DON’T</p>
+            <ul>
+                <li>Change tabs programmatically without user intent</li>
+                <li>Use tabs for modals</li>
+                <li>Hide important actions inside tabs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9️⃣ Advanced Patterns</h2>
+            <p>🔁 Reset Stack When Reselecting Tab</p>
+            <pre><code>
+listeners={{
+    tabPress: e => {
+        navigation.popToTop()
+    }
+}}                  
+            </code></pre>
+
+            <p>🔔 Badge Example</p>
+            <pre><code>
+&lt;Tab.Screen
+  name="Inbox"
+  component={InboxStack}
+  options={{
+    tabBarBadge: unreadCount,
+  }}
+/&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔟 Tab vs Stack vs Drawer (Quick Decision Table)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Navigation Type</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Stack</td>
+                        <td>Step-by-step flows</td>
+                    </tr>
+                    <tr>
+                        <td>Tabs</td>
+                        <td>Top-level features</td>
+                    </tr>
+                    <tr>
+                        <td>Drawer</td>
+                        <td>Secondary/global actions</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Final Rule of Thumb 🧠</h2>
+            <p>If users frequently switch between major features → use Tab Navigation</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

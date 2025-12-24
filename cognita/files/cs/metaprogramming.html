@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Metaprogramming</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Metaprogramming</h1>
+                    <p class="subtitle">
+                        Excellent question — metaprogramming is one of the most fascinating and powerful ideas in computer science.
+                        <p>Let’s break it down clearly 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Definition</h2>
+            <p>Metaprogramming is the practice of writing programs that can create, modify, or analyze other programs (including themselves).</p>
+            <p>In short:</p>
+            <p>💬 “Code that writes or manipulates code.”</p>
+            <p>It means your program doesn’t just process data — it also treats code as data.</p>
+        </section>
+
+        <section>
+            <h2>⚙️ Why It’s Called “Meta”</h2>
+            <p>The prefix “meta” means “about itself.”</p>
+            <p>So metaprogramming is programming about programming — your program has knowledge of or control over its own structure or behavior.</p>
+        </section>
+
+        <section>
+            <h2>🔍 Common Examples</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Example</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Macros (C, Lisp, Rust)</td>
+                        <td>Code that generates other code at compile-time.</td>
+                    </tr>
+                    <tr>
+                        <td>Reflection (Java, C#, Python)</td>
+                        <td>Code that inspects its own structure, classes, methods, or variables at runtime.</td>
+                    </tr>
+                    <tr>
+                        <td>Code generation</td>
+                        <td>Automatically creating boilerplate code from templates or metadata.</td>
+                    </tr>
+                    <tr>
+                        <td>Decorators / Annotations</td>
+                        <td>Attaching behavior to functions or classes dynamically.</td>
+                    </tr>
+                    <tr>
+                        <td>Dynamic execution</td>
+                        <td>Using eval() or exec() to generate and run code at runtime.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧩 Simple Examples</h2>
+            <p>🐍 Python — Using type() to Create Classes at Runtime</p>
+            <pre><code>
+# Create a new class dynamically
+MyClass = type("MyClass", (object,), {"greet": lambda self: "Hello from metaprogramming!"})
+
+obj = MyClass()
+print(obj.greet())
+            </code></pre>
+            <p>🧩 Here, type() is used not only to inspect a type but to generate a class dynamically.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Python — Decorator Example</h2>
+            <pre><code>
+def debug(func):
+    def wrapper(*args, **kwargs):
+        print(f"Calling {func.__name__} with {args}")
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} returned {result}")
+        return result
+    return wrapper
+
+@debug
+def add(a, b):
+    return a + b
+
+add(2, 3)
+            </code></pre>
+            <p>This decorator wraps the original function, changing its behavior — classic metaprogramming!</p>
+        </section>
+
+        <section>
+            <h2>🧱 C — Using Macros</h2>
+            <pre><code>
+#define SQUARE(x) ((x) * (x))
+            </code></pre>
+            <p>This macro expands into actual code during compilation — another form of metaprogramming (compile-time code generation).</p>
+        </section>
+
+        <section>
+            <h2>⚡ Real-World Applications</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>How Metaprogramming Helps</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ORMs (e.g., SQLAlchemy, Mongoose)</td>
+                        <td>Generate database models automatically.</td>
+                    </tr>
+                    <tr>
+                        <td>Frameworks (React, Django, Angular)</td>
+                        <td>Use decorators, metadata, and reflection for routing, components, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>Serialization / API clients</td>
+                        <td>Generate methods from JSON schemas or API specs.</td>
+                    </tr>
+                    <tr>
+                        <td>Compilers / AI code generation tools</td>
+                        <td>Create or transform source code.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>💬 In Simple Terms</h2>
+            <p>Imagine you’re baking cookies 🍪:</p>
+            <ul>
+                <li>Normal programming: You bake cookies one by one.</li>
+                <li>Metaprogramming: You write a machine that bakes new cookie machines — which then bake cookies for you.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

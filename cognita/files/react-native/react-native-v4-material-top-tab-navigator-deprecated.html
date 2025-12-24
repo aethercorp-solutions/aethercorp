@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Material Top Tab Navigator</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Material Top Tab Navigator</h1>
+                    <p class="subtitle">
+                        This is a React Navigation v4 pattern that uses a Material Top Tab Navigator in a non-visual way—essentially as a gesture-enabled onboarding/splash flow, not as a visible tab bar.
+                        <p>Let’s break it down line by line, then explain why this pattern exists and when it makes sense.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+
+            <pre><code>
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs'
+import { colours } from '../Styleguide'
+import { SplashScreenOption } from '../types'
+import OnboardingScreen  from '../screens/OnboardingScreen'
+
+const screens = {
+    Splash1: {
+        screen: OnboardingScreen,
+        params: {
+            screen: SplashScreenOption.SplashScreen1,
+        },
+    }
+}
+
+const option = {
+    tabBarComponent: null,
+    style: {
+        backgroundColor: colours.background.default,
+    },
+    swipeEnabled: true,
+}
+
+const SplashNavigator = createMaterialTopTabNavigator(screens, option)
+export default SplashNavigator
+            </code></pre>
+
+            <h2>1. Imports</h2>
+            <pre><code>
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs'
+            </code></pre>
+
+            <ul>
+                <li>This is React Navigation v4 (pre–v5).</li>
+                <li>
+                    createMaterialTopTabNavigator creates a tab-based navigator that:
+                    <ul>
+                        <li>Uses swipe gestures</li>
+                        <li>Renders screens horizontally</li>
+                        <li>Is backed by <b>react-native-gesture-handler</b> and <b>react-native-tab-view</b></li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Even though it’s called “tab”, it’s often used for onboarding / walkthrough screens.</p>
+
+            <pre><code>
+import { colours } from '../Styleguide'
+            </code></pre>
+            <ul>
+                <li>Centralized design system</li>
+                <li>colours.background.default ensures consistent background styling across the app</li>
+            </ul>
+
+            <pre><code>
+import { SplashScreenOption } from '../types'
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+export enum SplashScreenOption {
+    SplashScreen1,
+    SplashScreen2,
+    SplashScreen3,
+}                  
+            </code></pre>
+
+            <pre><code>
+import OnboardingScreen from '../screens/OnboardingScreen'
+            </code></pre>
+
+            <ul>
+                <li>A single reusable screen component</li>
+                <li>The actual UI varies based on the passed params</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Screens Configuration</h2>
+            <pre><code>
+const screens = {
+    Splash1: {
+        screen: OnboardingScreen,
+        params: {
+            screen: SplashScreenOption.SplashScreen1,
+        },
+    }
+}                
+            </code></pre>
+            <p>What’s happening here?</p>
+            <ul>
+                <li>You define one route: Splash1</li>
+                <li>That route renders OnboardingScreen</li>
+                <li>You pass static navigation params to it</li>
+            </ul>
+
+            <p>Why pass params here?</p>
+            <p>Instead of creating multiple files like:</p>
+            <ul>
+                <li>Splash1Screen</li>
+                <li>Splash2Screen</li>
+                <li>Splash3Screen</li>
+            </ul>
+            <p>You reuse one screen and switch behavior using:</p>
+            <pre><code>
+this.props.navigation.getParam('screen')
+            </code></pre>
+
+            <p>Inside OnboardingScreen:</p>
+            <pre><code>
+const screenType = navigation.getParam('screen')
+
+if (screenType === SplashScreenOption.SplashScreen1) {
+  // render first splash
+}
+            </code></pre>
+            <p>✅ Cleaner</p>
+            <p>✅ Less duplication</p>
+            <p>✅ Easier maintenance</p>
+        </section>
+
+        <section>
+            <h2>3. Navigator Options</h2>
+            <pre><code>
+const option = {
+    tabBarComponent: null,
+    style: {
+        backgroundColor: colours.background.default,
+    },
+    swipeEnabled: true,
+}                
+            </code></pre>
+            <p>tabBarComponent: null</p>
+            <ul>
+                <li>Hides the tab bar completely</li>
+                <li>This turns the navigator into a gesture-only container</li>
+            </ul>
+            <p>👉 No tabs visible</p>
+            <p>👉 No labels</p>
+            <p>👉 No indicators</p>
+            <p>This is the key trick.</p>
+
+            <p>style.backgroundColor</p>
+            <ul>
+                <li>Applies background color to the navigator container</li>
+                <li>Prevents white flashes during transitions</li>
+                <li>Matches your app’s theme</li>
+            </ul>
+
+            <p>swipeEnabled: true</p>
+            <ul>
+                <li>Enables left/right swipe gestures</li>
+                <li>This is why MaterialTopTabNavigator is used instead of Stack</li>
+            </ul>
+            <p>Perfect for:</p>
+            <ul>
+                <li>Onboarding</li>
+                <li>Walkthroughs</li>
+                <li>Intro slides</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Creating the Navigator</h2>
+            <pre><code>
+const SplashNavigator = createMaterialTopTabNavigator(screens, option)
+            </code></pre>
+            <p>This produces a navigator component that:</p>
+            <ul>
+                <li>Holds one (or more) onboarding screens</li>
+                <li>Supports swipe gestures</li>
+                <li>Has no visible UI chrome</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Export</h2>
+            <pre><code>
+export default SplashNavigator
+            </code></pre>
+            <p>This is usually used inside a SwitchNavigator or Root Navigator, for example:</p>
+            <pre><code>
+createSwitchNavigator({
+    Splash: SplashNavigator,
+    App: MainNavigator,
+})                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why Use a Top Tab Navigator for Splash / Onboarding?</h2>
+            <p>Advantages over StackNavigator</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>StackNavigator</th>
+                        <th>MaterialTopTabNavigator</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Swipe gestures</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Horizontal paging</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Smooth animations</td>
+                        <td>⚠️</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>No header/tab UI</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Onboarding UX</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Common Real-World Usage Pattern</h2>
+            <p>You likely intended this structure:</p>
+            <pre><code>
+SwitchNavigator
+ ├── SplashNavigator (Top Tabs, hidden)
+ │    ├── Splash1
+ │    ├── Splash2
+ │    └── Splash3
+ └── MainAppNavigator
+            </code></pre>
+            <p>Users:</p>
+            <ol>
+                <li>Open app</li>
+                <li>Swipe through onboarding</li>
+                <li>Finish → navigate to MainApp</li>
+                <li>SplashNavigator is never returned to</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Key Takeaways</h2>
+            <p>This is React Navigation v4</p>
+            <p>Tabs are used only for gestures, not UI</p>
+            <p>tabBarComponent: null hides the tabs</p>
+            <p>One screen component is reused via params</p>
+            <p>Ideal for onboarding, walkthroughs, splash flows</p>
+
+            <p>If you want, I can also:</p>
+            <ul>
+                <li>Convert this to React Navigation v6</li>
+                <li>Show how to programmatically move to the next splash</li>
+                <li>Explain how this integrates with your SwitchNavigator bootstrap</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

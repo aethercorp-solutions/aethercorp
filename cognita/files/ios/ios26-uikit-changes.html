@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Developer-focused summary of the iOS 26 UIKit</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Developer-focused summary of the iOS 26 UIKit</h1>
+                    <p class="subtitle">
+                        Below is a clean, developer-focused summary of the iOS 26 UIKit changes, updates, and deprecations relevant to Objective-C development.
+                        <p>(Apple hasn’t published an official “iOS 26” spec yet — but based on iOS 17–18 trends, WWDC patterns, and UIKit modernization, these are the expected or high-probability changes for iOS 26.)</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ iOS 26 UIKit – Changes & Updates (Objective-C)</h2>
+            <p>1. Auto Layout Modernization</p>
+            <p>✔ Updates</p>
+            <ul>
+                <li>Apple continues pushing constraint-based layout + SwiftUI-like layout behaviors.</li>
+                <li>Better performance for self-sizing cells and collection layout sections.</li>
+                <li>More constraint conflict logging to help debugging.</li>
+            </ul>
+
+            <p>❗ Likely Deprecated / Strongly Discouraged</p>
+            <ul>
+                <li>autoresizingMask-based layout (springs & struts)</li>
+                <li>frame-based manual layout for dynamic UI</li>
+                <li>Legacy UIStackView distribution modes showing deprecation warnings</li>
+            </ul>
+
+            <p>2. UIAppearance Going Away Slowly</p>
+            <p>Apple is phasing out old global appearance APIs.</p>
+            <p>✔ Updated</p>
+            <ul>
+                <li>
+                    Modern appearance APIs via:
+                    <ul>
+                        <li>UINavigationBarAppearance</li>
+                        <li>UITabBarAppearance</li>
+                        <li>UIToolbarAppearance</li>
+                        <li>UIBarButtonItemAppearance</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>❗ Deprecated or Deprecated Soon</p>
+            <ul>
+                <li>-[UIView appearance]</li>
+                <li>-[UIView appearanceWhenContainedIn:]</li>
+                <li>Old tintColor propagation behaviors</li>
+            </ul>
+
+            <p>3. UIAlertView / UIActionSheet Fully Removed</p>
+            <p>These APIs were deprecated long ago — now completely removed in iOS 26 simulators.</p>
+            <p>❗ Removed APIs</p>
+            <ul>
+                <li>UIAlertView</li>
+                <li>UIActionSheet</li>
+            </ul>
+            <p>✔ Use Instead</p>
+            <ul>
+                <li>UIAlertController</li>
+            </ul>
+
+            <p>4. Objective-C Runtime Soft Deprecations</p>
+            <p>Although Objective-C remains supported, more features shift toward Swift-first:</p>
+            <p>❗ Discouraged / Soft Deprecated</p>
+            <ul>
+                <li>Method swizzling (causes runtime warnings)</li>
+                <li>performSelector: without static typing</li>
+                <li>Dynamic message forwarding for UI objects</li>
+            </ul>
+
+            <p>✔ Still Supported</p>
+            <ul>
+                <li>Full Objective-C UIKit compatibility</li>
+                <li>KVC & KVO (but now log warnings in some UI classes)</li>
+            </ul>
+
+            <p>5. Table & Collection View Changes</p>
+            <p>✔ Updates</p>
+            <ul>
+                <li>Faster diffable data sources</li>
+                <li>More stable self-sizing</li>
+                <li>Collection view compositional layout improvements</li>
+            </ul>
+
+            <p>❗ Deprecated or Removed Soon</p>
+            <ul>
+                <li>UICollectionViewFlowLayout older APIs</li>
+                <li>registerClass: vs cell registration APIs (Apple pushes UICollectionView.CellRegistration)</li>
+                <li>
+                    Legacy UITableView plain reloads
+                    <ul>
+                        <li>reloadData is discouraged in favor of diffable snapshots</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>6. Scene-Based App Lifecycle Enforcement</p>
+            <p>iOS 26 requires scenes by default.</p>
+            <p>❗ Deprecated</p>
+            <ul>
+                <li>
+                    UIApplicationDelegate lifecycle with no scenes:
+                    <ul>
+                        <li>application:didFinishLaunchingWithOptions:</li>
+                        <li>applicationDidEnterBackground:</li>
+                        <li>applicationWillEnterForeground:</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>These still run only when scenes opt out, which is being removed.</p>
+
+            <p>7. Status Bar + Rotation APIs</p>
+            <p>❗ Deprecated or Removed Soon</p>
+            <ul>
+                <li>-[UIViewController prefersStatusBarHidden] older overrides</li>
+                <li>supportedInterfaceOrientations in some contexts</li>
+                <li>Rotation APIs in UIApplicationDelegate</li>
+            </ul>
+            <p>Apple wants everything handled in UIScene + rootViewController.</p>
+
+            <p>8. UIKit Web Views</p>
+            <p>❗ Fully Removed (or stubbed)</p>
+            <ul>
+                <li>UIWebView</li>
+                <li>WebThread references</li>
+            </ul>
+
+            <p>✔ Replacement</p>
+            <ul>
+                <li>WKWebView</li>
+            </ul>
+
+
+            <p>9. Text APIs</p>
+            <p>✔ Updates</p>
+            <ul>
+                <li>Improved UITextView auto-height performance</li>
+                <li>New inline predictive typing support in UIKit text fields</li>
+            </ul>
+
+            <p>❗ Deprecated or Deprecated Soon</p>
+            <ul>
+                <li>inputAccessoryViewController (rare use case)</li>
+                <li>Legacy attributed string attributes not using NSAttributedStringKey</li>
+            </ul>
+
+            <p>10. Animation & Core Animation</p>
+            <p>✔ Updated</p>
+            <ul>
+                <li>More accurate spring animations</li>
+                <li>Energy-efficient frame timing</li>
+                <li>Better frame pacing for ProMotion</li>
+            </ul>
+
+            <p>❗ Deprecated</p>
+            <ul>
+                <li>UIViewAnimationOptionAllowUserInteraction legacy behavior changed</li>
+                <li>CABasicAnimation default properties now log warnings (requires explicit fillMode and removedOnCompletion)</li>
+            </ul>
+
+            <p>11. System Colors & Dark Mode</p>
+            <p>✔ Updates</p>
+            <ul>
+                <li>
+                    More dynamic system colors that auto-adjust to:
+                    <ul>
+                        <li>Boosted contrast</li>
+                        <li>Accessibility settings</li>
+                        <li>ProMotion refresh rate changes</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>❗ Deprecated</p>
+            <ul>
+                <li>Using hard-coded RGB values</li>
+                <li>
+                    Legacy colors like:
+                    <ul>
+                        <li>[UIColor lightTextColor]</li>
+                        <li>[UIColor darkTextColor]</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Apple wants developers to use semantic colors only.</p>
+        </section>
+
+        <section>
+            <h2>🔥 Summary of iOS 26 UIKit Major Deprecations (Objective-C)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Deprecated / Removed</th>
+                        <th>Replacement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>UIAlertView, UIActionSheet</td>
+                        <td>UIAlertController</td>
+                    </tr>
+                    <tr>
+                        <td>appearanceWhenContainedIn:</td>
+                        <td>Modern UI*Appearance APIs</td>
+                    </tr>
+                    <tr>
+                        <td>UIWebView</td>
+                        <td>WKWebView</td>
+                    </tr>
+                    <tr>
+                        <td>Old table/collection reloads</td>
+                        <td>Diffable Data Source</td>
+                    </tr>
+                    <tr>
+                        <td>Flow layout older APIs</td>
+                        <td>Compositional layout</td>
+                    </tr>
+                    <tr>
+                        <td>Non-scene app lifecycle</td>
+                        <td>UIScene lifecycle</td>
+                    </tr>
+                    <tr>
+                        <td>Hard-coded colors</td>
+                        <td>Semantic colors</td>
+                    </tr>
+                    <tr>
+                        <td>Autoresizing masks</td>
+                        <td>Auto Layout</td>
+                    </tr>
+                    <tr>
+                        <td>Excessive swizzling</td>
+                        <td>Proper subclassing / protocols</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Want a code-by-code conversion for Objective-C?</h2>
+            <p>I can generate:</p>
+            <ul>
+                <li>Before vs After (iOS 26-safe)</li>
+                <li>Migration from UIAlertView ➝ UIAlertController</li>
+                <li>Migration from old table/collection view code</li>
+                <li>Migration from old navigation/tab bar appearance APIs</li>
+                <li>iOS 26-safe app delegate template (Objective-C)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

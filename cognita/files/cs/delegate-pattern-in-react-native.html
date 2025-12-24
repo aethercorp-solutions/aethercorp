@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Delegate Pattern in React Native</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Delegate Pattern in React Native</h1>
+                    <p class="subtitle">Here’s the Delegate Pattern explained in a React / React Native context, plus how to implement it cleanly.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Delegate Pattern in React Native</h2>
+            <p>React Native does not use delegates the same way as iOS (Objective-C/Swift).</p>
+            <p>But the concept exists, just with different tools:</p>
+            <p>Delegate Pattern = Passing a callback function from parent → child</p>
+            <p>so the child “delegates back” an action or data to the parent.</p>
+            <p>This is also called “inversion of control” in React.</p>
+        </section>
+
+        <section>
+            <h2>✅ Simple Example: Parent delegates a function to child</h2>
+            <p>Parent.js</p>
+            <pre><code>
+const Parent = () => {
+    const onPriceUpdated = (newPrice) => {
+        console.log("Price updated:", newPrice);
+    };
+    
+    return (
+        <Child updatePrice={onPriceUpdated} />
+    );
+};                  
+            </code></pre>
+            <p>Child.js</p>
+            <pre><code>
+const Child = ({ updatePrice }) => {
+    const handlePress = () => {
+        updatePrice(5.50); // Delegate callback to parent
+    };
+    
+    return (
+        <Button title="Set Price" onPress={handlePress} />
+    );
+};                  
+            </code></pre>
+            <p>✔ Child does not store logic</p>
+            <p>✔ Child just calls updatePrice</p>
+            <p>✔ Parent acts like the delegate (like iOS protocol/delegate)</p>
+        </section>
+
+        <section>
+            <h2>🧩 Delegate Pattern With TypeScript (recommended)</h2>
+            <p>If using TypeScript, this mimics iOS delegate protocols:</p>
+            <p>Child.tsx</p>
+            <pre><code>
+export interface ChildDelegate {
+    onSave(price: number): void;
+    onCancel(): void;
+}
+    
+interface Props {
+    delegate: ChildDelegate;
+}
+
+export const Child = ({ delegate }: Props) => {
+    return (
+        &lt;&gt;
+            &lt;Button title="Save" onPress={() => delegate.onSave(4.25)} /&gt;
+            &lt;Button title="Cancel" onPress={delegate.onCancel} /&gt;
+        &lt;/&gt;
+    );
+};                  
+            </code></pre>
+
+            <p>Parent.tsx</p>
+            <pre><code>
+const Parent = () => {
+    const delegate = {
+        onSave: (price) => console.log("Saved:", price),
+        onCancel: () => console.log("Cancelled"),
+    };
+    
+    return <Child delegate={delegate} />;
+};                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📱 Delegate Pattern Between Native Modules (iOS ⇄ React Native)</h2>
+            <p>If you're doing native Objective-C/Swift bridging, you can also implement delegates:</p>
+            <p>Example:</p>
+            <p>iOS Objective-C</p>
+            <pre><code>
+@protocol PriceDelegate <NSObject>
+- (void)didUpdatePrice:(float)price;
+@end                    
+            </code></pre>
+            <p>Then your RN Native Module exposes an event:</p>
+            <pre><code>
+[self sendEventWithName:@"PriceUpdated" body:@{ @"price": @(price) }];
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>React Native Listener</h2>
+            <pre><code>
+import { NativeEventEmitter, NativeModules } from 'react-native';
+
+const emitter = new NativeEventEmitter(NativeModules.PriceModule);
+
+emitter.addListener("PriceUpdated", (event) => {
+  console.log("Delegate event:", event.price);
+});
+            </code></pre>
+            <p>This is essentially the delegate pattern through events.</p>
+        </section>
+
+        <section>
+            <h2>🧠 When should you use a delegate pattern in React Native?</h2>
+            <p>Use this when:</p>
+            <p>✔ A child component must notify parent</p>
+            <p>(e.g., price changed, item selected)</p>
+            <p>✔ A modal or screen needs to return data</p>
+            <p>(“pass back selected file_magic”)</p>
+            <p>✔ A reusable component reports actions</p>
+            <p>(custom dropdown, custom numeric input, etc.)</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

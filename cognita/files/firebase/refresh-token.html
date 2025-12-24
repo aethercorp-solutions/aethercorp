@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Refresh Token</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Refresh Token</h1>
+                    <p class="subtitle">Great question — this is central to how Google Sign-In and Firebase Authentication manage session persistence and reauthentication. Let’s break it down clearly 👇</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔑 What is a Refresh Token?</h2>
+            <p>A refresh token is a long-lived credential issued by Google or Firebase that allows your app (client or backend) to obtain new access tokens without requiring the user to sign in again.</p>
+            <ul>
+                <li>
+                    Access Token → short-lived (usually valid for 1 hour).
+                    <p>Used to make authorized API calls (e.g., Gmail API, Google People API, Firebase APIs).</p>
+                </li>
+                <li>
+                    Refresh Token → long-lived (can last days, weeks, or indefinitely depending on usage).
+                    <p>Used to request new access tokens silently when the current one expires.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ In Google Sign-In (OAuth 2.0)</h2>
+            <p>When a user signs in with Google, they grant your app permission (via OAuth 2.0).</p>
+            <p>If your app requests offline access (with access_type=offline), Google returns both:</p>
+            <ul>
+                <li>access_token: short-lived</li>
+                <li>refresh_token: long-lived</li>
+            </ul>
+            <p>Example response:</p>
+            <pre><code>
+{
+    "access_token": "ya29.a0AR...",
+    "expires_in": 3600,
+    "refresh_token": "1//0gABCDEFG123456...",
+    "scope": "https://www.googleapis.com/auth/userinfo.email",
+    "token_type": "Bearer"
+}                  
+            </code></pre>
+            <p>You use:</p>
+            <pre><code>
+POST https://oauth2.googleapis.com/token
+            </code></pre>
+            <p>with the refresh token to get a new access token:</p>
+            <pre><code>
+{
+    "access_token": "ya29.a0ARnew...",
+    "expires_in": 3600,
+    "token_type": "Bearer"
+}                  
+            </code></pre>
+            <p>This prevents forcing the user to log in again.</p>
+        </section>
+
+        <section>
+            <h2>🔥 In Firebase Authentication</h2>
+            <p>Firebase handles tokens internally a bit differently:</p>
+            <ul>
+                <li>After signing in with Google via Firebase (GoogleAuthProvider), Firebase creates a Firebase ID token (JWT) for your app.</li>
+                <li>This ID token expires every 1 hour.</li>
+                <li>Firebase also stores a Firebase refresh token (managed securely by the SDK).</li>
+                <li>The Firebase SDK automatically uses this refresh token to get a new ID token behind the scenes — so your user session stays valid.</li>
+            </ul>
+            <p>You don’t normally need to handle the refresh token manually in Firebase unless you’re working with custom server verification or external APIs.</p>
+        </section>
+
+        <section>
+            <h2>🧠 How It Works Together</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Issued By</th>
+                        <th>Lifespan</th>
+                        <th>Purpose</th>
+                        <th>Where Used</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Access Token</td>
+                        <td>Google</td>
+                        <td>~1 hour</td>
+                        <td>Call Google APIs</td>
+                        <td>Client / Server</td>
+                    </tr>
+                    <tr>
+                        <td>Refresh Token</td>
+                        <td>Google</td>
+                        <td>Long-term</td>
+                        <td>Get new access tokens</td>
+                        <td>Server</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase ID Token</td>
+                        <td>Firebase</td>
+                        <td>~1 hour</td>
+                        <td>Authenticate Firebase requests</td>
+                        <td>Client / Server</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase Refresh Token</td>
+                        <td>Firebase</td>
+                        <td>Long-term</td>
+                        <td>Get new Firebase ID tokens</td>
+                        <td>Handled by SDK</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧩 Example Use Case in Your App</h2>
+            <p>If you’re:</p>
+            <ul>
+                <li>Using Google Sign-In → Firebase Authentication</li>
+                <li>Then calling Google APIs (e.g., Gmail, People API) from your backend</li>
+            </ul>
+            <p>You’ll typically:</p>
+            <ol>
+                <li>Get the Google refresh token (via OAuth flow) and store it securely (e.g., encrypted in your DB).</li>
+                <li>Use it to generate new access tokens when needed.</li>
+                <li>Optionally, let Firebase manage the Firebase ID tokens automatically for Firebase API calls.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔐 Best Practices</h2>
+            <ul>
+                <li>Never expose refresh tokens to the client app.</li>
+                <li>Encrypt them in storage (e.g., in your backend DB).</li>
+                <li>Revoke tokens if a user logs out or revokes permissions.</li>
+                <li>Rotate tokens periodically for security.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

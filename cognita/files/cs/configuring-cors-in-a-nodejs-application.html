@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Configuring CORS (Cross-Origin Resource Sharing)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Configuring CORS (Cross-Origin Resource Sharing)</h1>
+                    <p class="subtitle">
+                        Configuring CORS (Cross-Origin Resource Sharing) in a Node.js application is straightforward — it lets your backend API accept requests from different origins (like your React Native or web frontend).
+                        <p>Here’s how to do it step-by-step 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 1. Install the CORS middleware</h2>
+            <p>If you’re using Express.js, the easiest way is with the official cors package.</p>
+            <pre><code>
+npm install cors
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ 2. Basic setup in your Node.js app</h2>
+            <p>In your main server file (e.g., app.js, server.js, or your Lambda handler if using serverless-http):</p>
+            <pre><code>
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+
+// Enable CORS for all routes
+app.use(cors());
+
+app.get('/', (req, res) => {
+  res.send('CORS enabled!');
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
+            </code></pre>
+            <p>✅ This allows all origins (*) to access your API — useful for development.</p>
+        </section>
+
+        <section>
+            <h2>🔒 3. Restrict to specific origins (recommended for production)</h2>
+            <p>You can specify which domains are allowed:</p>
+            <pre><code>
+const corsOptions = {
+    origin: ['https://your-frontend-domain.com', 'http://localhost:3000'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+};
+    
+app.use(cors(corsOptions));                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 4. Handling preflight requests (OPTIONS)</h2>
+            <p>CORS automatically handles OPTIONS requests (used for preflight checks) when using the cors package.</p>
+            <p>But if you want to handle it manually:</p>
+            <pre><code>
+app.options('*', cors(corsOptions));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 5. If using AWS Lambda + API Gateway</h2>
+            <p>If you’re not using Express (just pure Lambda), set CORS in your Lambda response:</p>
+            <pre><code>
+return {
+    statusCode: 200,
+    headers: {
+        'Access-Control-Allow-Origin': 'https://your-frontend-domain.com',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    },
+    body: JSON.stringify({ message: 'CORS configured!' }),
+};                  
+            </code></pre>
+            <p>Alternatively, if using Serverless Framework, you can set it in serverless.yml:</p>
+            <pre><code>
+functions:
+  myFunction:
+    handler: handler.main
+    events:
+      - http:
+          path: /api
+          method: get
+          cors: true
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 6. Test CORS</h2>
+            <p>You can test using:</p>
+            <ul>
+                <li>A frontend app (React, React Native, etc.)</li>
+                <li>Or use a tool like Postman or curl with Origin header.</li>
+            </ul>
+            <p>Example with curl:</p>
+            <pre><code>
+curl -H "Origin: http://localhost:3000" --verbose http://localhost:3001/
+            </code></pre>
+        </section>
+
+        <section>
+            <p>When CORS (Cross-Origin Resource Sharing) is enabled on a server, it allows web browsers to make requests to that server from a different origin (domain, protocol, or port) than the one the page was loaded from.</p>
+            <p>Here’s what happens in detail:</p>
+
+            <h2>🟢 1. Browsers allow cross-origin requests</h2>
+            <p>Normally, browsers block web apps from making requests to other domains for security reasons (this is called the Same-Origin Policy).</p>
+            <p>If CORS is enabled, your server tells the browser it’s safe to share data across origins.</p>
+            <p>Example:</p>
+            <pre><code>
+Access-Control-Allow-Origin: https://example.com
+            </code></pre>
+            <p>This means that the website https://example.com can make requests to your API.</p>
+        </section>
+
+        <section>
+            <h2>🟡 2. Preflight requests may occur</h2>
+            <p>For some HTTP methods (like POST, PUT, DELETE) or custom headers, browsers send an OPTIONS request first, called a preflight request.</p>
+            <p>The server must respond with headers such as:</p>
+            <pre><code>
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: Content-Type, Authorization
+            </code></pre>
+            <p>If these are valid, the browser proceeds with the actual request.</p>
+        </section>
+
+        <section>
+            <h2>🟢 3. Your frontend apps can connect more easily</h2>
+            <p>If you have a frontend (React, Angular, React Native web app, etc.) and a backend (Node.js, Flask, etc.) on different domains or ports, enabling CORS lets them communicate.</p>
+            <p>Example:</p>
+            <ul>
+                <li>Frontend: http://localhost:3000</li>
+                <li>
+                    Backend: http://localhost:5000
+                    <p>CORS allows requests between them during local development or deployment.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔴 4. But enabling CORS can be a security risk</h2>
+            <p>If configured too loosely, like this:</p>
+            <pre><code>
+Access-Control-Allow-Origin: *
+            </code></pre>
+            <p>it means any website can access your API, including potentially malicious ones.</p>
+            <p>This can lead to:</p>
+            <ul>
+                <li>Data leaks (unauthorized sites accessing sensitive data)</li>
+                <li>CSRF-like attacks (if your API relies on cookies or session authentication)</li>
+                <li>Resource abuse (public APIs being spammed)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 5. Best practices</h2>
+            <ul>
+                <li>
+                    Allow only trusted origins:
+                    <pre><code>
+Access-Control-Allow-Origin: https://myapp.com
+                    </code></pre>
+                </li>
+                <li>Avoid using * if authentication is involved</li>
+                <li>
+                    Use credentials securely if needed:
+                    <pre><code>
+Access-Control-Allow-Credentials: true
+                    </code></pre>
+                </li>
+                <p>In summary:</p>
+                <p>Enabling CORS allows cross-domain communication — necessary for modern web apps — but it must be configured carefully to avoid exposing your API to unwanted access.</p>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

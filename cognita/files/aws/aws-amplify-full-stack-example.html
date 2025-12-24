@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS Amplify full-stack example</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS Amplify full-stack example</h1>
+                    <p class="subtitle">Great — I’ll build a complete, ready-to-use AWS Amplify full-stack example for a React Native app + REST API Lambda that talks to MongoDB Atlas, including Cognito auth, S3 for file storage, IAM & security guidance, and deployment steps. I’ll give you runnable snippets, file structure, and notes on production hardening. Let’s go! 🚀</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Overview</h2>
+            <p>This example shows a practical architecture you can use immediately:</p>
+            <pre><code>
+React Native App (expo or bare RN)
+  └─ aws-amplify (Cognito + API + Storage)
+AWS Amplify (CLI-managed backend)
+  ├─ Auth (Cognito)
+  ├─ API (API Gateway → Lambda)
+  ├─ Function (Node.js Lambda) → connects to MongoDB Atlas
+  └─ Storage (S3)
+MongoDB Atlas (cluster)
+Secrets stored in AWS Secrets Manager (or Amplify env vars)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>1 — Prereqs</h2>
+            <ul>
+                <li>Node.js (LTS) and npm/yarn</li>
+                <li>Amplify CLI: npm install -g @aws-amplify/cli (already configured with your AWS account)</li>
+                <li>AWS CLI (optional) configured with profile</li>
+                <li>MongoDB Atlas cluster + DB user & connection string</li>
+                <li>React Native environment (Expo or bare RN)</li>
+                <li>Git repo for CI/CD (Amplify Hosting works with Git)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2 — Initialize Amplify in your project</h2>
+            <p>From your React Native project root:</p>
+            <pre><code>
+npm install aws-amplify @react-native-async-storage/async-storage
+# if using Expo, also: expo install @react-native-async-storage/async-storage
+amplify configure          # only first-time (opens AWS console)
+amplify init
+# when prompted, choose JS, React Native, correct AWS profile
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3 — Add Authentication (Cognito)</h2>
+            <pre><code>
+amplify add auth
+# Choose "Default configuration" (or "Default configuration with Social Provider" if you need Google/Apple)
+# If you want social sign-in, choose "Social Provider" and configure client IDs later in AWS Console.
+amplify push
+            </code></pre>
+            <p>This creates Cognito User Pool and Identity Pool and local aws-exports.js config.</p>
+        </section>
+
+        <section>
+            <h2>4 — Add Storage (S3) for file uploads</h2>
+            <pre><code>
+amplify add storage
+# Choose "Content (Images, audio, video, etc.)"
+# Set auth rules: Auth users only (recommended)
+amplify push
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5 — Add REST API + Lambda</h2>
+            <pre><code>
+amplify add api
+# Select REST
+# New Lambda function -> give a name (e.g., trycastanetApi)
+# Choose Node.js runtime (e.g., nodejs18.x)
+# Choose CRUD permissions? choose "No" if you want custom
+amplify push
+            </code></pre>
+            <p>Amplify creates:</p>
+            <ul>
+                <li>API Gateway endpoint name (API name)</li>
+                <li>Lambda function scaffold under amplify/backend/function/<funcName>/src</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 AWS Amplify – Usage & Implementation Guide (2025)</h2>
+            <p>AWS Amplify is a full-stack cloud toolkit for building modern applications with authentication, APIs, storage, hosting, analytics, and more—using simple CLI and library commands.</p>
+            <p>It is ideal for:</p>
+            <ul>
+                <li>React, React Native, Vue, Angular</li>
+                <li>iOS / Android apps</li>
+                <li>Serverless apps with AWS Lambda + AppSync</li>
+                <li>Full-stack prototypes and production apps</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 1. What AWS Amplify Provides</h2>
+            <p>Amplify offers two main things:</p>
+            <p>A. Amplify Backend (Amplify CLI)</p>
+            <p>Helps configure backend services:</p>
+            <ul>
+                <li>Auth (Cognito)</li>
+                <li>API (REST or GraphQL via AppSync)</li>
+                <li>Storage (S3 / DynamoDB)</li>
+                <li>Functions (Lambda)</li>
+                <li>Hosting</li>
+                <li>Data (Amplify DataStore)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>B. Amplify Frontend (Amplify Libraries)</h2>
+            <p>SDKs for web/mobile apps:</p>
+            <ul>
+                <li>Authentication flows</li>
+                <li>Secure API calls</li>
+                <li>File uploads / downloads</li>
+                <li>Real-time sync</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 2. Install Amplify CLI</h2>
+            <pre><code>
+npm install -g @aws-amplify/cli
+            </code></pre>
+
+            <p>Configure:</p>
+            <pre><code>
+amplify configure
+            </code></pre>
+            <p>This connects to your AWS account and creates a new IAM user for Amplify.</p>
+        </section>
+
+        <section>
+            <h2>🏗️ 3. Initialize Amplify in Your Project</h2>
+            <p>Inside your React or React Native app:</p>
+            <pre><code>
+amplify init
+            </code></pre>
+
+            <p>Follow the prompts:</p>
+            <ul>
+                <li>Choose environment (dev)</li>
+                <li>Select editor</li>
+                <li>Select project type (React / React Native / JS)</li>
+                <li>Create backend environment</li>
+            </ul>
+            <p>This generates an /amplify folder storing backend config.</p>
+        </section>
+
+        <section>
+            <h2>🔐 4. Add Authentication (Cognito)</h2>
+            <pre><code>
+amplify add auth
+            </code></pre>
+
+            <p>Select:</p>
+            <ul>
+                <li>Default config (email login)</li>
+                <li>Or social providers (Google, Facebook, Apple)</li>
+            </ul>
+
+            <p>Then deploy:</p>
+            <pre><code>
+amplify push
+            </code></pre>
+
+            <p>🎉 This creates a Cognito User Pool + Identity Pool.</p>
+            <p>Frontend Usage</p>
+            <p>React:</p>
+            <pre><code>
+import { Auth } from 'aws-amplify';
+
+const user = await Auth.signIn(email, password);
+            </code></pre>
+
+            <p>React Native:</p>
+            <pre><code>
+import { signIn } from 'aws-amplify/auth';
+
+await signIn({ username, password });
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 5. Add an API (REST or GraphQL)</h2>
+            <p>REST Example</p>
+            <pre><code>
+amplify add api
+            </code></pre>
+            <p>Choose:</p>
+            <p>✔ REST</p>
+            <p>✔ Node.js Lambda</p>
+            <p>✔ Attach a DynamoDB table (optional)</p>
+
+            <p>Deploy:</p>
+            <pre><code>
+amplify push
+            </code></pre>
+
+            <p>Call API from frontend:</p>
+            <pre><code>
+import { API } from 'aws-amplify';
+
+const response = await API.get('myApiName', '/items');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>GraphQL Example (AppSync)</h2>
+            <pre><code>
+amplify add api
+            </code></pre>
+
+            <p>Choose:</p>
+            <p>✔ GraphQL</p>
+            <p>✔ Single object with fields</p>
+            <p>✔ Amazon DynamoDB table</p>
+
+            <p>After amplify push, Amplify will generate:</p>
+            <ul>
+                <li>GraphQL schema</li>
+                <li>Queries/mutations/subscriptions</li>
+                <li>API client code</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 6. Add Storage (S3)</h2>
+            <pre><code>
+amplify add storage
+            </code></pre>
+
+            <p>Choose:</p>
+            <p>✔ Content (images, audio, video)</p>
+            <p>Use it in app:</p>
+            <pre><code>
+import { Storage } from 'aws-amplify';
+
+await Storage.put('photo.jpg', file);
+
+const url = await Storage.get('photo.jpg');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧰 7. Add Lambda Functions</h2>
+            <pre><code>
+amplify add function
+            </code></pre>
+
+            <p>Select:</p>
+            <p>✔ Node.js</p>
+            <p>✔ Permissions (S3, DynamoDB, SES, etc.)</p>
+            <p>Deploy:</p>
+            <pre><code>
+amplify push
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🌐 8. Hosting Your App</h2>
+            <pre><code>
+amplify add hosting
+            </code></pre>
+            <p>Choose:</p>
+            <ul>
+                <li>Amplify Hosting (recommended)</li>
+                <li>Amazon S3 + CloudFront</li>
+            </ul>
+            <p>Then:</p>
+            <pre><code>
+amplify publish
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ 9. Environment Management (dev/staging/prod)</h2>
+            <p>Create a new environment:</p>
+            <pre><code>
+amplify env add prod
+            </code></pre>
+
+            <p>Switch:</p>
+            <pre><code>
+amplify env checkout prod
+            </code></pre>
+
+            <p>Push updates:</p>
+            <pre><code>
+amplify push
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📊 10. Analytics & Push Notifications (Optional)</h2>
+            <pre><code>
+amplify add analytics
+amplify add notifications
+            </code></pre>
+            <p>Useful for mobile apps (React Native).</p>
+        </section>
+
+        <section>
+            <h2>🔗 11. Amplify in a Serverless Backend Setup (Your Use Case)</h2>
+            <p>Since your stack includes:</p>
+            <ul>
+                <li>AWS Lambda</li>
+                <li>API Gateway</li>
+                <li>MongoDB / DynamoDB</li>
+                <li>Cognito</li>
+                <li>React Native app</li>
+                <li>Google/Azure AD authentication</li>
+                <li>Serverless Framework</li>
+            </ul>
+
+            <p>Amplify can help mostly with:</p>
+            <p>✔ Mobile/Web frontend auth</p>
+            <p>✔ Simplifying API calls</p>
+            <p>✔ Hosting</p>
+            <p>✔ Basic CRUD GraphQL/REST</p>
+
+            <p>But for your advanced backend, Serverless Framework remains better.</p>
+            <p>Recommended workflow:</p>
+            <ul>
+                <li>Use Amplify Auth for React Native → Cognito</li>
+                <li>Use your existing Lambda + API Gateway + MongoDB for backend</li>
+                <li>Use Amplify API client to securely call your endpoints</li>
+                <li>Use Amplify Storage if you need S3 uploads</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 Example Full Integration (React Native + Your Serverless API)</h2>
+            <p>amplify init</p>
+            <p>amplify add auth</p>
+            <p>Then call your custom API:</p>
+            <pre><code>
+import { fetchAuthSession } from 'aws-amplify/auth';
+
+const session = await fetchAuthSession();
+const token = session.tokens?.idToken?.toString();
+
+const response = await fetch("https://your-api.com/protected", {
+  headers: {
+    Authorization: token
+  }
+});
+            </code></pre>
+            <p>Now API Gateway + Lambda can verify the Cognito token.</p>
+        </section>
+
+        <section>
+            <h2>🏁 Summary</h2>
+            <p>AWS Amplify makes it easier to build full-stack apps with:</p>
+            <p>✔ Authentication</p>
+            <p>✔ APIs</p>
+            <p>✔ Storage</p>
+            <p>✔ Hosting</p>
+            <p>✔ Real-time DB</p>
+            <p>✔ Serverless functions</p>
+
+            <p>And integrates well with your existing:</p>
+            <ul>
+                <li>React Native authentication system</li>
+                <li>Node.js + Lambda backend</li>
+                <li>Cognito + Google Sign-In setup</li>
+            </ul>
+
+            <p>If you want, I can generate:</p>
+            <p>✅ Full Amplify project setup guide</p>
+            <p>✅ Amplify Auth + Google Sign-In integration</p>
+            <p>✅ Amplify + React Native boilerplate</p>
+            <p>✅ Amplify + AppSync GraphQL schema</p>
+            <p>✅ Amplify vs Serverless Framework comparison</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

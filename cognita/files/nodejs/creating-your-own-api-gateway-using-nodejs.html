@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Creating your own API Gateway using Node.js</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Creating your own API Gateway using Node.js</h1>
+                    <p class="subtitle">
+                        Creating your own API Gateway using Node.js is a great way to learn how API Gateways like AWS API Gateway, Kong, or Express Gateway work internally — handling routing, authentication, rate limiting, logging, and proxying requests to microservices.
+                        <p>Here’s a step-by-step guide 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 1. Understand What an API Gateway Does</h2>
+            <ul>
+                <li>Routes incoming requests to the correct backend service.</li>
+                <li>Handles authentication/authorization (JWT, OAuth2, etc.).</li>
+                <li>Enforces rate limiting and quotas.</li>
+                <li>Logs requests and responses.</li>
+                <li>Transforms requests/responses if needed.</li>
+                <li>Provides a single public entry point for all microservices.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ 2. Basic Setup (Node.js + Express)</h2>
+            <p>You can start with a minimal structure.</p>
+            <p>Project Structure</p>
+            <pre><code>
+api-gateway/
+├── server.js
+├── routes/
+│   └── gateway.js
+├── middleware/
+│   ├── auth.js
+│   ├── rateLimiter.js
+│   └── logger.js
+└── package.json
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧱 3. Initialize and Install Dependencies</h2>
+            <pre><code>
+mkdir api-gateway && cd api-gateway
+npm init -y
+npm install express http-proxy-middleware morgan express-rate-limit jsonwebtoken dotenv cors
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 4. Create a Simple Gateway Server</h2>
+            <p>server.js</p>
+            <pre><code>
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import morgan from 'morgan';
+import gatewayRouter from './routes/gateway.js';
+
+dotenv.config();
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(morgan('dev'));
+
+app.use('/', gatewayRouter);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 API Gateway running on port ${PORT}`));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔀 5. Implement Routing / Proxy Logic</h2>
+            <p>Use http-proxy-middleware to forward requests to backend services.</p>
+            <p>routes/gateway.js</p>
+            <pre><code>
+import express from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import { verifyToken } from '../middleware/auth.js';
+import rateLimiter from '../middleware/rateLimiter.js';
+
+const router = express.Router();
+
+// Example microservices
+const SERVICES = {
+  users: 'http://localhost:4001',
+  products: 'http://localhost:4002',
+  orders: 'http://localhost:4003'
+};
+
+// Public route (no auth)
+router.use('/users', createProxyMiddleware({
+  target: SERVICES.users,
+  changeOrigin: true,
+  pathRewrite: { '^/users': '' },
+}));
+
+// Protected route (requires auth + rate limit)
+router.use('/products', verifyToken, rateLimiter, createProxyMiddleware({
+  target: SERVICES.products,
+  changeOrigin: true,
+  pathRewrite: { '^/products': '' },
+}));
+
+router.use('/orders', verifyToken, createProxyMiddleware({
+  target: SERVICES.orders,
+  changeOrigin: true,
+  pathRewrite: { '^/orders': '' },
+}));
+
+export default router;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 6. Authentication Middleware (JWT Example)</h2>
+            <p>middleware/auth.js</p>
+            <pre><code>
+import jwt from 'jsonwebtoken';
+
+export const verifyToken = (req, res, next) => {
+  const token = req.headers['authorization']?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'No token provided' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secretkey');
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(403).json({ message: 'Invalid token' });
+  }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⏱ 7. Add Rate Limiting</h2>
+            <p>middleware/rateLimiter.js</p>
+            <pre><code>
+import rateLimit from 'express-rate-limit';
+
+const rateLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 30, // 30 requests per minute per IP
+  message: 'Too many requests, please try again later.'
+});
+
+export default rateLimiter;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧾 8. Optional Logging Middleware</h2>
+            <p>middleware/logger.js</p>
+            <pre><code>
+export const logRequest = (req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+    next();
+};                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🌐 9. Run the Gateway and Microservices</h2>
+            <p>You can simulate backend services like:</p>
+            <p>Users service (port 4001)</p>
+            <pre><code>
+import express from 'express';
+const app = express();
+app.get('/', (req, res) => res.send('Users service running'));
+app.listen(4001);
+            </code></pre>
+
+            <p>Products service (port 4002)</p>
+            <pre><code>
+import express from 'express';
+const app = express();
+app.get('/', (req, res) => res.send('Products service running'));
+app.listen(4002);
+            </code></pre>
+
+            <p>Then run:</p>
+            <pre><code>
+Then run:
+            </code></pre>
+
+            <p>Now try hitting:</p>
+            <pre><code>
+GET http://localhost:3000/users
+GET http://localhost:3000/products
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ 10. Add Enhancements (Optional)</h2>
+            <p>You can evolve this into a full production gateway by adding:</p>
+            <ul>
+                <li>🔒 OAuth2 / OpenID Connect authentication</li>
+                <li>🧭 Dynamic routing from config or database</li>
+                <li>📊 Request tracing (e.g. OpenTelemetry)</li>
+                <li>🧱 Circuit breakers (with opossum or custom logic)</li>
+                <li>🗄️ Caching layer (Redis / memory-cache)</li>
+                <li>🔁 Load balancing among service instances</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Rate limiting</h2>
+            <p>Rate limiting is a technique used to control how many requests a client (like a user, app, or IP address) can make to your API within a specific period of time.</p>
+            <p>It protects your backend services from being overloaded, abused, or attacked (e.g., by bots or DDoS).</p>
+        </section>
+
+        <section>
+            <h2>💡 Example</h2>
+            <p>Let’s say you set:</p>
+            <p>100 requests per minute per IP address</p>
+            <p>That means if someone sends more than 100 API calls within a minute, the gateway will start rejecting extra requests — usually with this HTTP response:</p>
+            <pre><code>
+HTTP 429 Too Many Requests
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ How It Works</h2>
+            <p>Here’s what happens under the hood:</p>
+            <ul>
+                <li>Every incoming request is tracked (by IP, API key, or user ID).</li>
+                <li>A counter is stored in memory or Redis with a timestamp window (e.g., 1 minute).</li>
+                <li>
+                    When the counter exceeds the allowed number of requests:
+                    <ul>
+                        <li>The gateway blocks further requests until the time window resets.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Common Use Cases</h2>
+            <ul>
+                <li>Preventing brute-force attacks on login endpoints.</li>
+                <li>Controlling API quota usage for free vs. paid users.</li>
+                <li>Protecting microservices behind an API Gateway from traffic spikes.</li>
+                <li>Ensuring fair usage among many clients.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛠️ Example in Node.js (using express-rate-limit)</h2>
+            <pre><code>
+import rateLimit from 'express-rate-limit';
+
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10,             // limit each IP to 10 requests per minute
+  message: 'Too many requests, please try again later.'
+});
+
+app.use(limiter);
+            </code></pre>
+            <p>➡️ Now every IP can only make 10 requests per minute to your API.</p>
+        </section>
+
+        <section>
+            <h2>⚡ Advanced Implementations</h2>
+            <p>In production, rate limiting can be done:</p>
+            <ul>
+                <li>Using Redis or DynamoDB (distributed rate limiting).</li>
+                <li>At the API Gateway level (e.g., AWS API Gateway, NGINX, Kong).</li>
+                <li>Per API key, user plan, or endpoint.</li>
+                <li>With leaky bucket or token bucket algorithms for smoother throttling.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

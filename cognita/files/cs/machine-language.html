@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Machine language</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Machine language</h1>
+                    <p class="subtitle">Machine language (also called machine code) is the lowest-level programming language — the only one that a computer’s central processing unit (CPU) can understand directly.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>It consists entirely of binary digits (0s and 1s) that represent instructions and data. Each instruction tells the CPU to perform a very specific operation, such as adding two numbers, moving data from one place to another, or jumping to a different part of the program.</p>
+            <h2>🧠 Example</h2>
+            <p>A very simple example of machine code might look like this:</p>
+            <pre><code>
+10110000 01100001
+            </code></pre>
+            <p>This could mean something like “move the number 97 into register AL” — depending on the CPU’s instruction set (in this case, x86 architecture).</p>
+        </section>
+
+        <section>
+            <h2>⚙️ Relationship with Other Languages</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>Example</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>High-level</td>
+                        <td>Python, C++, Java</td>
+                        <td>Human-readable; compiled/interpreted into lower levels.</td>
+                    </tr>
+                    <tr>
+                        <td>Assembly</td>
+                        <td>MOV AL, 61h</td>
+                        <td>A readable form of machine code using mnemonics.</td>
+                    </tr>
+                    <tr>
+                        <td>Machine language</td>
+                        <td>10110000 01100001</td>
+                        <td>Binary code executed by CPU.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <p>Perfect 👍 Let’s walk through how assembly code is translated into machine language, step by step — using a real example.</p>
+            <h2>🧩 Example: Intel x86 CPU</h2>
+            <p>Let’s start with this simple assembly instruction:</p>
+            <pre><code>
+MOV AL, 61h
+            </code></pre>
+            <p>Step 1: Understand the instruction</p>
+            <ul>
+                <li>MOV → means “move data”</li>
+                <li>AL → a small CPU register (8-bit)</li>
+                <li>61h → hexadecimal number (the value 97 in decimal, or 01100001 in binary)</li>
+            </ul>
+            <p>This tells the CPU:</p>
+            <p>Move the value 97 (0x61) into register AL.</p>
+        </section>
+
+        <section>
+            <h2>Step 2: Convert to Opcode (Machine Instruction)</h2>
+            <p>Every CPU has an instruction set architecture (ISA) — a list of binary codes that represent each instruction.</p>
+            <p>In the x86 instruction set,</p>
+            <p>MOV AL, imm8 (move an 8-bit immediate value into AL)</p>
+            <p>has the opcode B0.</p>
+            <p>So the structure is:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Assembly</th>
+                        <th>Opcode</th>
+                        <th>Operand</th>
+                        <th>Machine Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>MOV AL, 61h</td>
+                        <td>B0</td>
+                        <td>61</td>
+                        <td>B0 61</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Step 3: Convert to Binary</h2>
+            <p>Now we write those hexadecimal values in binary form:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hex</th>
+                        <th>Binary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>B0</td>
+                        <td>10110000</td>
+                    </tr>
+                    <tr>
+                        <td>61</td>
+                        <td>01100001</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>So the final machine language is:</p>
+            <pre><code>
+10110000 01100001
+            </code></pre>
+            <p>✅ This is what the CPU actually executes.</p>
+        </section>
+
+        <section>
+            <h2>Step 4: How it’s done in real compilers</h2>
+            <p>When you write an assembly program and run an assembler (like NASM, MASM, or GAS), the assembler:</p>
+            <ol>
+                <li>Reads the mnemonic (MOV AL, 61h)</li>
+                <li>Looks up the binary opcode (B0)</li>
+                <li>Replaces symbolic operands (61h) with their binary form</li>
+                <li>Produces a machine code file (.obj or .bin)</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 5: Execution</h2>
+            <p>When the CPU reads that binary:</p>
+            <ul>
+                <li>It sees 10110000 → instruction to load AL</li>
+                <li>It reads the next byte 01100001 → the value to store</li>
+                <li>It performs the action instantly — no translation needed.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

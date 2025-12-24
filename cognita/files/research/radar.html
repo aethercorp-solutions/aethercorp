@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Radar (Radio Detection And Ranging)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Radar (Radio Detection And Ranging)</h1>
+                    <p class="subtitle">
+                        Radar (Radio Detection And Ranging) works by sending out radio waves and listening for their echoes when those waves bounce off objects.
+                        <p>Here’s a clear, step-by-step explanation:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Transmit radio waves 📡</h2>
+            <p>A radar system sends a short burst (pulse) of radio waves using a transmitter and antenna.</p>
+            <ul>
+                <li>Radio waves travel at the speed of light (~300,000 km/s).</li>
+                <li>The pulse spreads out in space.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Waves hit an object</h2>
+            <p>When the radio waves encounter an object (airplane, ship, car, rain, terrain):</p>
+            <ul>
+                <li>Some of the energy reflects back toward the radar.</li>
+                <li>This reflected signal is called an echo.</li>
+            </ul>
+            <p>The amount reflected depends on:</p>
+            <ul>
+                <li>Object size</li>
+                <li>Shape</li>
+                <li>Material (metal reflects well)</li>
+                <li>Orientation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Receive the echo</h2>
+            <p>The radar antenna switches to receive mode and captures the returning echo.</p>
+            <p>The system measures:</p>
+            <ul>
+                <li>Time delay between transmission and reception</li>
+                <li>Strength of the returned signal</li>
+                <li>Frequency shift (if the object is moving)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Calculate distance (range)</h2>
+            <p>Distance is computed using the time delay:</p>
+            <pre><code>
+Distance = Speed of light x Time delay
+           ---------------------------
+                        2
+            </code></pre>
+
+            <p>Why divide by 2?</p>
+            <p>Because the signal travels to the object and back.</p>
+        </section>
+
+        <section>
+            <h2>5. Determine direction (bearing)</h2>
+            <p>The antenna:</p>
+            <ul>
+                <li>Rotates (or electronically steers the beam)</li>
+                <li>Knows exactly which direction it was pointing when the echo returned</li>
+            </ul>
+            <p>That gives the angle of the object.</p>
+        </section>
+
+        <section>
+            <h2>6. Measure speed (Doppler effect) 🚗✈️</h2>
+            <p>If the object is moving:</p>
+            <ul>
+                <li>The frequency of the returned signal shifts slightly</li>
+                <li>This is the Doppler effect</li>
+                <li>Higher frequency → object approaching</li>
+                <li>Lower frequency → object moving away</li>
+            </ul>
+            <p>Used heavily in:</p>
+            <ul>
+                <li>Speed guns</li>
+                <li>Weather radar</li>
+                <li>Aircraft tracking</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Display the result</h2>
+            <p>The processed data is shown as:</p>
+            <ul>
+                <li>Dots or blips on a screen</li>
+                <li>Maps (weather radar)</li>
+                <li>Tracked targets (air traffic control, military radar)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple analogy 🎯</h2>
+            <p>Imagine shouting in a canyon:</p>
+            <ul>
+                <li>You shout → sound travels</li>
+                <li>It hits a wall → echoes back</li>
+                <li>The delay tells you how far away the wall is</li>
+            </ul>
+            <p>Radar does the same thing—but with radio waves instead of sound.</p>
+        </section>
+
+        <section>
+            <ul>
+                <li>Pulse radar – sends pulses (most common)</li>
+                <li>Doppler radar – measures speed</li>
+                <li>Phased-array radar – steers beams electronically (no moving parts)</li>
+                <li>Weather radar – tracks rain and storms</li>
+                <li>Military radar – tracks aircraft, missiles, ships</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why radar works in bad weather 🌧️🌫️</h2>
+            <p>Radio waves:</p>
+            <ul>
+                <li>Pass through fog, clouds, and rain better than visible light</li>
+                <li>Work day and night</li>
+            </ul>
+            <p>If you want, I can explain:</p>
+            <ul>
+                <li>Radar vs sonar vs lidar</li>
+                <li>How weather radar detects rain intensity</li>
+                <li>How stealth aircraft reduce radar detection</li>
+                <li>Radar in cars (ADAS, adaptive cruise control)</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here’s a clear, side-by-side comparison of Radar vs Sonar vs LiDAR, from basic idea to real-world use:</p>
+            <h2>1. Core Idea (Big Picture)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Full Name</th>
+                        <th>Uses What?</th>
+                        <th>Works Best In</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Radar</td>
+                        <td>Radio waves, Radio Detection And Ranging</td>
+                        <td>Air, space</td>
+                        <td>Long-range detection, all weather, Air, space, weather</td>
+                    </tr>
+                    <tr>
+                        <td>Sonar</td>
+                        <td>Sound waves, Sound Navigation And Ranging</td>
+                        <td>Water</td>
+                        <td>Underwater detection</td>
+                    </tr>
+                    <tr>
+                        <td>LiDAR</td>
+                        <td>Laser light, Light Detection And Ranging</td>
+                        <td>Air (clear conditions), Laser light</td>
+                        <td>High-resolution mapping, Air & land</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Same principle:</p>
+            <p>Send out a signal → it hits something → comes back → measure time → calculate distance.</p>
+        </section>
+
+        <section>
+            <h2>How each one works</h2>
+            <p>📡 Radar (Radio Detection And Ranging)</p>
+            <ul>
+                <li>Sends radio waves</li>
+                <li>Measures echo time and Doppler shift</li>
+                <li>Works day/night, rain, fog, clouds</li>
+            </ul>
+
+            <p>Strengths</p>
+            <ul>
+                <li>Very long range (km to hundreds of km)</li>
+                <li>Works in bad weather</li>
+                <li>Can detect speed accurately</li>
+            </ul>
+
+            <p>Limitations</p>
+            <ul>
+                <li>Lower image detail</li>
+                <li>Large antennas for high resolution</li>
+            </ul>
+
+            <p>Common uses</p>
+            <ul>
+                <li>Air traffic control</li>
+                <li>Weather radar</li>
+                <li>Military surveillance</li>
+                <li>Automotive adaptive cruise control</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Type of Wave Used</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tech</th>
+                        <th>Wave Type</th>
+                        <th>Speed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Radar</td>
+                        <td>Radio / Microwave</td>
+                        <td>Speed of light</td>
+                    </tr>
+                    <tr>
+                        <td>Sonar</td>
+                        <td>Sound (acoustic)</td>
+                        <td>~1,500 m/s in water</td>
+                    </tr>
+                    <tr>
+                        <td>LiDAR</td>
+                        <td>Laser (light)</td>
+                        <td>Speed of light</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>📌 Key difference:</p>
+            <ul>
+                <li>Sonar is slow but works underwater</li>
+                <li>Radar & LiDAR are extremely fast</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. How Distance Is Calculated</h2>
+            <p>Same formula for all:</p>
+            <pre><code>
+Distance = (Signal Speed x Time) / 2
+            </code></pre>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tech</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Radar</td>
+                        <td>Time for radio wave to bounce off airplane</td>
+                    </tr>
+                    <tr>
+                        <td>Sonar</td>
+                        <td>Time for sound ping to return from submarine</td>
+                    </tr>
+                    <tr>
+                        <td>LiDAR</td>
+                        <td>Time for laser pulse to return from building</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. Environment Where It Works Best</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tech</th>
+                        <th>Works Best In</th>
+                        <th>Struggles In</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Radar</td>
+                        <td>Air, space, clouds, rain</td>
+                        <td>Fine detail</td>
+                    </tr>
+                    <tr>
+                        <td>Sonar</td>
+                        <td>Water (deep or shallow)</td>
+                        <td>Air</td>
+                    </tr>
+                    <tr>
+                        <td>LiDAR</td>
+                        <td>Clear air, daylight or night</td>
+                        <td>Fog, heavy rain</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>5. Accuracy & Resolution</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tech</th>
+                        <th>Range</th>
+                        <th>Resolution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Radar</td>
+                        <td>Very long (100s–1000s km)</td>
+                        <td>Low–Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Sonar</td>
+                        <td>Medium–long (meters–km)</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>LiDAR</td>
+                        <td>Short–medium (meters–km)</td>
+                        <td>Very High</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>🧠 Rule of thumb:</p>
+            <ul>
+                <li>Radar → Detect far</li>
+                <li>Sonar → See underwater</li>
+                <li>LiDAR → See in detail</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Ability to Detect Objects</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Radar</th>
+                        <th>Sonar</th>
+                        <th>LiDAR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Detect position</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Detect speed</td>
+                        <td>✅ (Doppler)</td>
+                        <td>✅</td>
+                        <td>⚠️ Limited</td>
+                    </tr>
+                    <tr>
+                        <td>Shape mapping</td>
+                        <td>⚠️ Rough</td>
+                        <td>⚠️ Medium</td>
+                        <td>✅ Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>See through fog/clouds</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                        <td>❌</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>7. Typical Hardware</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tech</th>
+                        <th>Main Components</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Radar</td>
+                        <td>Transmitter, antenna, receiver</td>
+                    </tr>
+                    <tr>
+                        <td>Sonar</td>
+                        <td>Transducer, hydrophone</td>
+                    </tr>
+                    <tr>
+                        <td>LiDAR</td>
+                        <td>Laser emitter, photodetector, scanner</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>8. Real-World Applications</h2>
+            <p>🛫 Radar</p>
+            <ul>
+                <li>Air traffic control</li>
+                <li>Weather forecasting</li>
+                <li>Military surveillance</li>
+                <li>Speed guns</li>
+                <li>Space tracking</li>
+            </ul>
+
+            <p>🌊 Sonar</p>
+            <ul>
+                <li>Submarine navigation</li>
+                <li>Fish finding</li>
+                <li>Seabed mapping</li>
+                <li>Underwater archaeology</li>
+                <li>Mine detection</li>
+            </ul>
+
+            <p>🚗 LiDAR</p>
+            <ul>
+                <li>Self-driving cars</li>
+                <li>3D mapping</li>
+                <li>Archaeology (hidden ruins)</li>
+                <li>Forestry analysis</li>
+                <li>Robotics & drones</li>
+            </ul>
+        </section>
+        
+        <section>
+            <h2>9. Everyday Example Analogy</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tech</th>
+                        <th>Analogy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Radar</td>
+                        <td>Shouting in a huge valley</td>
+                    </tr>
+                    <tr>
+                        <td>Sonar</td>
+                        <td>Knocking underwater</td>
+                    </tr>
+                    <tr>
+                        <td>LiDAR</td>
+                        <td>Flashing a laser pointer and timing reflection</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>10. Quick Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Radar</th>
+                        <th>Sonar</th>
+                        <th>LiDAR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Signal</td>
+                        <td>Radio</td>
+                        <td>Sound</td>
+                        <td>Light</td>
+                    </tr>
+                    <tr>
+                        <td>Medium</td>
+                        <td>Air/Space</td>
+                        <td>Water</td>
+                        <td>Air</td>
+                    </tr>
+                    <tr>
+                        <td>Speed</td>
+                        <td>Light</td>
+                        <td>Slow</td>
+                        <td>Light</td>
+                    </tr>
+                    <tr>
+                        <td>Range</td>
+                        <td>Very long</td>
+                        <td>Medium</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Detail</td>
+                        <td>Low–Medium</td>
+                        <td>Medium</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Best Use</td>
+                        <td>Detection & tracking</td>
+                        <td>Underwater sensing</td>
+                        <td>High-resolution mapping</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>One-sentence takeaway:</p>
+            <p>Radar finds things far away, Sonar finds things underwater, LiDAR finds things in great detail.</p>
+            <p>If you want, I can also:</p>
+            <ul>
+                <li>Explain Doppler Radar vs LiDAR</li>
+                <li>Compare LiDAR vs Camera for self-driving cars</li>
+                <li>Show simple diagrams for each system</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

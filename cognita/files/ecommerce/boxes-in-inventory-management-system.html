@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Boxes</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Boxes</h1>
+                    <p class="subtitle">
+                        In an inventory or packing management system, the term “boxes” typically refers to containers or groups of items that are being packed, tracked, or shipped together. It’s both a logical grouping in software and a physical unit in real-world inventory operations.
+                        <p>Let’s break this down clearly 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧱 1. Concept of “Boxes”</h2>
+            <p>A box in inventory management represents a collection of line items (products or materials) that are:</p>
+            <ul>
+                <li>Packed together for storage, transfer, or shipment.</li>
+                <li>Associated with a packing list, invoice, or shipment ID.</li>
+                <li>Tracked as one unit in warehouse or logistics systems.</li>
+            </ul>
+            <p>For example:</p>
+            <pre><code>
+Box #1 → Contains:
+  - 5 rolls of fabric A
+  - 10 rolls of fabric B
+
+Box #2 → Contains:
+  - 8 rolls of fabric C
+            </code></pre>
+            <p>In software, each “box” is typically a dictionary or object holding items grouped by category or identifier.</p>
+        </section>
+
+        <section>
+            <h2>🧩 2. How It Appears in Code (Objective-C Example)</h2>
+            <p>In your codebase, you often see something like:</p>
+            <pre><code>
+self.boxes[current_box][f_m][indexPath.row];
+            </code></pre>
+
+            <p>That means:</p>
+            <ul>
+                <li>self.boxes → an array or dictionary of all boxes.</li>
+                <li>current_box → the currently active box index (e.g. the one being packed or edited).</li>
+                <li>f_m (maybe “filemagic” or “fpmagic”) → a key grouping line items within that box.</li>
+                <li>[indexPath.row] → refers to a specific line item inside that group.</li>
+            </ul>
+            <p>So boxes could be structured like this:</p>
+            <pre><code>
+boxes = {
+    0 = {
+        "NPSID123" = (
+        { InvNu = "ANJO03"; rollnum = 7; rollqty = 100; },
+        { InvNu = "ANJO03"; rollnum = 8; rollqty = 200; }
+        ),
+        "NPSID124" = (
+        { InvNu = "ANJO04"; rollnum = 5; rollqty = 150; }
+        )
+    },
+    1 = {
+        "NPSID200" = (
+        { InvNu = "BATA01"; rollnum = 1; rollqty = 50; }
+        )
+    }
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 3. Purpose in Packing Workflow</h2>
+            <p>Boxes play a key role in managing how inventory moves:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Picking</td>
+                        <td>Items are selected from inventory (line items).</td>
+                    </tr>
+                    <tr>
+                        <td>Packing</td>
+                        <td>Items are grouped into boxes for shipment.</td>
+                    </tr>
+                    <tr>
+                        <td>Labeling</td>
+                        <td>Each box gets a barcode or unique identifier.</td>
+                    </tr>
+                    <tr>
+                        <td>Tracking</td>
+                        <td>Boxes are scanned in/out of locations (warehouse, truck, delivery).</td>
+                    </tr>
+                    <tr>
+                        <td>Inspection / Auditing</td>
+                        <td>You can re-open or verify a specific box’s contents.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧮 4. Database or Data Model</h2>
+            <p>A simplified table representation might look like:</p>
+            <p>Boxes Table</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>BoxID</th>
+                        <th>ShipmentID</th>
+                        <th>CreatedBy</th>
+                        <th>CreatedAt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>BOX001</td>
+                        <td>SHP123</td>
+                        <td>user1</td>
+                        <td>2025-11-09</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>BoxItems Table</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>BoxID</th>
+                        <th>ItemID</th>
+                        <th>Quantity</th>
+                        <th>Lot</th>
+                        <th>RollNum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>BOX001</td>
+                        <td>ITEM001</td>
+                        <td>10</td>
+                        <td>L001</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>BOX002</td>
+                        <td>ITEM002</td>
+                        <td>20</td>
+                        <td>L002</td>
+                        <td>6</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>💡 5. In Systems Without Sales Orders</h2>
+            <p>Even without a sales order, “boxes” are still used for:</p>
+            <ul>
+                <li>Organizing tagged or scanned inventory items.</li>
+                <li>Creating temporary groupings for shipment or inspection.</li>
+                <li>Saving “packing drafts” that can be resumed later.</li>
+            </ul>
+            <p>So when you see something like:</p>
+            <pre><code>
+[self.boxes[current_box][f_m] addObject:item];
+            </code></pre>
+            <p>it means your system is adding a scanned or tagged item into a box, grouping it under that box’s context.</p>
+        </section>
+
+        <section>
+            <p>Would you like me to show you a diagram or JSON model of how boxes, line items, and tagged items are related in your packing system?</p>
+            <p>Perfect 👍 — here’s a clear, visual + JSON-style model showing how boxes, line items, and tagged items fit together in a packing inventory system — especially one without sales orders (like your setup).</p>
+            <h2>🧭 Conceptual Diagram</h2>
+            <pre><code>
+📦 BOXES
+│
+├── Box #0
+│   ├── NPSID_101  ← (Line Item Group)
+│   │    ├── Tagged Item #1  → rollnum: 7, qty: 100
+│   │    ├── Tagged Item #2  → rollnum: 8, qty: 200
+│   │    └── Tagged Item #3  → rollnum: 9, qty: 50
+│   │
+│   └── NPSID_102  ← (Another Line Item Group)
+│        ├── Tagged Item #1  → rollnum: 3, qty: 120
+│        └── Tagged Item #2  → rollnum: 4, qty: 80
+│
+└── Box #1
+    ├── NPSID_201
+    │    ├── Tagged Item #1  → rollnum: 1, qty: 60
+    │    └── Tagged Item #2  → rollnum: 2, qty: 40
+    │
+    └── NPSID_202
+         └── Tagged Item #1  → rollnum: 10, qty: 90
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 JSON Representation</h2>
+            <pre><code>
+{
+    "boxes": {
+        "0": {
+        "NPSID_101": [
+            {
+            "InvNu": "ANJO03",
+            "InvType": 64,
+            "rollnum": 7,
+            "rollqty": 100,
+            "clientmagic": 227,
+            "filemagic": 5439,
+            "fpmagic": 92757
+            },
+            {
+            "InvNu": "ANJO03",
+            "InvType": 64,
+            "rollnum": 8,
+            "rollqty": 200
+            },
+            {
+            "InvNu": "ANJO03",
+            "InvType": 64,
+            "rollnum": 9,
+            "rollqty": 50
+            }
+        ],
+        "NPSID_102": [
+            {
+            "InvNu": "ANJO04",
+            "InvType": 64,
+            "rollnum": 3,
+            "rollqty": 120
+            },
+            {
+            "InvNu": "ANJO04",
+            "InvType": 64,
+            "rollnum": 4,
+            "rollqty": 80
+            }
+        ]
+        },
+        "1": {
+        "NPSID_201": [
+            {
+            "InvNu": "BATA01",
+            "InvType": 64,
+            "rollnum": 1,
+            "rollqty": 60
+            },
+            {
+            "InvNu": "BATA01",
+            "InvType": 64,
+            "rollnum": 2,
+            "rollqty": 40
+            }
+        ],
+        "NPSID_202": [
+            {
+            "InvNu": "BATA02",
+            "InvType": 64,
+            "rollnum": 10,
+            "rollqty": 90
+            }
+        ]
+        }
+    }
+}           
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Relationships</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>Entity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1️⃣ Boxes</td>
+                        <td>Physical or logical containers (e.g., crates, cartons, or pallets)</td>
+                    </tr>
+                    <tr>
+                        <td>2️⃣ Line Items (NPSID)</td>
+                        <td>Groups of items belonging to the same product, lot, or job order</td>
+                    </tr>
+                    <tr>
+                        <td>3️⃣ Tagged Items</td>
+                        <td>Individual scanned or serialized items (like rolls, pieces, or barcodes)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>⚙️ In Objective-C Code Terms</h2>
+            <p>You’d typically have:</p>
+            <pre><code>
+NSMutableDictionary *boxes;           // all boxes
+NSInteger current_box;                // active box
+NSDictionary *lineItemIdx;            // maps section index to NPSID
+
+NSMutableDictionary* getItemForIndexPath:(NSIndexPath*)indexPath {
+    NSString *f_m = self.lineItemIdx[indexPath.section];
+    return self.boxes[current_box][f_m][indexPath.row];
+}
+            </code></pre>
+            <p>So boxes[current_box][f_m][indexPath.row] = one tagged item inside a line item group inside a box.</p>
+        </section>
+
+        <section>
+            <h2>🧾 Real-World Analogy</h2>
+            <p>Imagine you’re packing rolls of fabric:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Box</th>
+                        <th>Fabric Code</th>
+                        <th>Roll #</th>
+                        <th>Qty</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Box #0</td>
+                        <td>ANJO03</td>
+                        <td>7</td>
+                        <td>100</td>
+                        <td>Packed</td>
+                    </tr>
+                    <tr>
+                        <td>Box #0</td>
+                        <td>ANJO03</td>
+                        <td>8</td>
+                        <td>200</td>
+                        <td>Packed</td>
+                    </tr>
+                    <tr>
+                        <td>Box #0</td>
+                        <td>ANJO04</td>
+                        <td>3</td>
+                        <td>120</td>
+                        <td>Packed</td>
+                    </tr>
+                    <tr>
+                        <td>Box #1</td>
+                        <td>BATA01</td>
+                        <td>1</td>
+                        <td>60</td>
+                        <td>Packed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

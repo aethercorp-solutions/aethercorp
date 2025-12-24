@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>The difference between Process and Application</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">The difference between Process and Application</h1>
+                    <p class="subtitle">The terms process and application are related but not the same. The key difference is conceptual vs runtime.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Application (Program / App)</h2>
+            <p>What it is</p>
+            <p>An application is a static set of files:</p>
+            <ul>
+                <li>Executable binary (.exe, .app, ELF, APK)</li>
+                <li>Libraries</li>
+                <li>Assets (images, configs, resources)</li>
+            </ul>
+            <p>It does nothing by itself until it is launched.</p>
+        </section>
+
+        <section>
+            <h2>Characteristics</h2>
+            <ul>
+                <li>Stored on disk</li>
+                <li>Passive (not executing)</li>
+                <li>One application can be launched multiple times</li>
+                <li>Platform-specific packaging</li>
+            </ul>
+            <p>Examples</p>
+            <ul>
+                <li>Chrome.app</li>
+                <li>Photoshop.exe</li>
+                <li>MyApp.apk</li>
+                <li>node index.js (the script itself)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Process</h2>
+            <p>What it is</p>
+            <p>A process is a running instance of an application.</p>
+            <p>Once the OS loads the application into memory and starts executing it, it becomes a process.</p>
+            <p>Characteristics</p>
+            <ul>
+                <li>Lives in memory (RAM)</li>
+                <li>Active (executing instructions)</li>
+                <li>
+                    Has:
+                    <ul>
+                        <li>Process ID (PID)</li>
+                        <li>Own virtual memory space</li>
+                        <li>Open file descriptors</li>
+                        <li>Environment variables</li>
+                        <li>At least one thread (main thread)</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>Examples</p>
+            <ul>
+                <li>Running Chrome → chrome.exe process</li>
+                <li>Running node index.js → Node.js process</li>
+                <li>Background system services</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. One-to-Many Relationship</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Application</th>
+                        <th>Process</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>App installed but not running</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>App launched once</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>App launched twice</td>
+                        <td>1</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>Browser with multiple tabs</td>
+                        <td>1</td>
+                        <td>Multiple processes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. Real-World Analogy</h2>
+            <p>Application = Blueprint</p>
+            <p>Process = Actual building constructed from the blueprint</p>
+            <p>You can build:</p>
+            <ul>
+                <li>One building from one blueprint</li>
+                <li>Multiple buildings from the same blueprint</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. In Modern Systems (Important Distinction)</h2>
+            <p>Desktop (Windows / macOS / Linux)</p>
+            <ul>
+                <li>One application → multiple processes</li>
+                <li>
+                    Example: Chrome
+                    <ul>
+                        <li>Browser process</li>
+                        <li>Renderer processes</li>
+                        <li>GPU process</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Mobile (iOS / Android)</p>
+            <ul>
+                <li>
+                    Typically:
+                    <ul>
+                        <li>One app = one main process</li>
+                        <li>System may kill and restart process</li>
+                    </ul>
+                </li>
+                <li>
+                    Android allows:
+                    <ul>
+                        <li>Multiple processes per app (android:process)</li>
+                    </ul>
+                </li>
+                <li>iOS is stricter (sandboxed, usually single process)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Process vs Application vs Thread (Quick Context)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Application</td>
+                        <td>Program on disk</td>
+                    </tr>
+                    <tr>
+                        <td>Process</td>
+                        <td>Running instance of program</td>
+                    </tr>
+                    <tr>
+                        <td>Thread</td>
+                        <td>Execution path inside a process</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>A process must have at least one thread.</p>
+        </section>
+
+        <section>
+            <h2>7. Why This Matters (for you as a developer)</h2>
+            <p>Given your background in React Native, iOS, Android, AWS Lambda:</p>
+            <ul>
+                <li>iOS/Android: OS kills the process, not the app</li>
+                <li>AWS Lambda: Each invocation runs in a process/container</li>
+                <li>Node.js: One app → one process → event loop thread</li>
+                <li>Crash handling: App exists, process died</li>
+                <li>Memory leaks: Live inside a process, not the app</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>One-sentence summary</h2>
+            <p>An application is a program on disk, while a process is a running instance of that application in memory.</p>
+            <p>If you want, I can also explain:</p>
+            <ul>
+                <li>Application vs Service vs Daemon</li>
+                <li>App lifecycle on iOS vs Android</li>
+                <li>How React Native maps JS → process → threads</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

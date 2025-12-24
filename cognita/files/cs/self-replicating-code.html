@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Self-replicating code</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Self-replicating code</h1>
+                    <p class="subtitle">
+                        Self-replicating code is a program or piece of code that can create a copy of itself — either exactly or with slight variations — without human intervention. 
+                        <p>In simple terms:</p>
+                        <p>🧬 It’s code that can reproduce itself, like a digital organism.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔍 Examples & Types</h2>
+            <ol>
+                <li>
+                    Quines
+                    <ul>
+                        <li>A quine is a harmless, theoretical example of self-replicating code.</li>
+                        <li>It’s a program that prints its own source code when executed.</li>
+                        <li>
+                            Example (in Python):
+                            <pre><code>
+s = 's = %r\nprint(s %% s)'
+print(s % s)
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Computer Viruses & Worms
+                    <ul>
+                        <li>These are malicious forms of self-replicating code.</li>
+                        <li>They copy themselves into other programs or systems, spreading automatically.</li>
+                        <li>Example: The ILOVEYOU worm (2000) replicated itself via email attachments.</li>
+                    </ul>
+                </li>
+                <li>
+                    Bootstrapping Programs / Compilers
+                    <ul>
+                        <li>Some compilers can compile themselves — another controlled form of self-replication.</li>
+                        <li>Example: A C compiler written in C.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚙️ How It Works</h2>
+            <p>A self-replicating program usually:</p>
+            <ol>
+                <li>Reads its own source code or binary.</li>
+                <li>Copies that code (or part of it) into a new location or file.</li>
+                <li>Optionally executes or transmits the copy.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 Why It Matters</h2>
+            <ul>
+                <li>In security: Helps understand how malware spreads.</li>
+                <li>In computer science: Used for studying recursion, automata, and self-reference.</li>
+                <li>In AI/research: Conceptually related to systems that can autonomously generate or evolve code.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Nice — self-replicating code is a fun brain-teaser and an important concept in computing. Below is a compact, practical guide: what it is, safe examples (quines), why they work, and a short note about malicious variants.</p>
+            <h2>What "self-replicating code" means</h2>
+            <ol>
+                <li>Benign/educational: A quine — a program that prints its own source code, without reading its own file.</li>
+                <li>Malicious/real-world: viruses/worms — programs that copy themselves to other files/systems and often perform harmful actions. (Don’t write those; they’re illegal and unethical.)</li>
+                <li>Theoretical: fixed-point / recursion ideas (e.g., the Y combinator in lambda calculus) let functions reproduce their behavior.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>A simple Python quine (and breakdown)</h2>
+            <p>You showed this earlier; here it is again and explained:</p>
+            <pre><code>
+s = 's = %r\nprint(s %% s)'
+print(s % s)
+            </code></pre>
+            <p>Breakdown:</p>
+            <ol>
+                <li>s is a string that contains a format placeholder %r (which prints a Python representation including quotes).</li>
+                <li>s %% s inside the string is written as %% so that when the outer string is formatted, a single % goes to the inner formatting of print.</li>
+                <li>print(s % s) replaces %r with the representation of s, producing the complete source.</li>
+            </ol>
+            <p>Step-by-step:</p>
+            <ol>
+                <li>s contains the template of the whole program (including print(s %% s)).</li>
+                <li>s % s substitutes the representation of s into the template.</li>
+                <li>The result is exactly the two lines of source, which print outputs.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Self-replicating code</h2>
+            <p>
+                Nice — fun topic. Below I’ll explain what “self-replicating code” means, safe/ethical uses, risks, and show concrete, harmless examples you can run locally (Python, JavaScript, Bash). I’ll also explain how each quine/replicator works step-by-step and give tips for testing and defenses. I will not provide instructions for making worms/malware or spreading code across other systems or networks.
+            </p>
+        </section>
+
+        <section>
+            <h2>What “self-replicating code” means</h2>
+            <ul>
+                <li>Quine — a program that prints its own source code exactly, without reading its source file. Purely an intellectual/programming puzzle.</li>
+                <li>Self-copying program — a program that reads or writes its own source to create another file (e.g., creates a backup of itself). This is harmless if done locally and intentionally.</li>
+                <li>Self-replicating malware (worm/backdoor) — code that spreads across systems/networks without consent. I won’t help create these.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Safe, legitimate uses</h2>
+            <ul>
+                <li>Teaching / puzzles (understanding language features).</li>
+                <li>Bootstrapping compilers/interpreters.</li>
+                <li>Automated backups (a program saving its own source for audit).</li>
+                <li>Code generators and templating.</li>
+                <li>Research into formal language theory or code obfuscation (ethically constrained).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. Classic Python quine (safe)</h2>
+            <p>Copy–paste and run locally. It prints exactly its own source.</p>
+            <pre><code>
+# quine.py
+s = 's = %r\nprint(s %% s)'
+print(s % s)
+            </code></pre>
+            <p>How it works (step-by-step)</p>
+            <ol>
+                <li>s is a string that literally contains a format placeholder %r that will be replaced by the representation of s itself.</li>
+                <li>print(s % s) substitutes s into itself, producing the full source text, then prints it.</li>
+                <li>The trick: the string includes the code necessary to recreate itself.</li>
+            </ol>
+            <p>Test</p>
+            <p>python quine.py → output identical to the file contents.</p>
+        </section>
+
+        <section>
+            <h2>2. Slightly more explicit Python quine with comments</h2>
+            <pre><code>
+# quine2.py
+def main():
+    part1 = "def main():\n    part1 = %r\n    part2 = %r\n    print(part1 %% part1 %% part2)"
+    part2 = ""
+    print(part1 % part1 % part2)
+
+if __name__ == "__main__":
+    main()
+            </code></pre>
+            <p>(This variant demonstrates formatting and function structure; many equivalent patterns exist.)</p>
+        </section>
+
+        <section>
+            <h2>3. JavaScript quine (node)</h2>
+            <pre><code>
+// quine.js
+const s = "const s = %c%s%c\nconsole.log(s, '\"', s, '\"')";
+console.log(s, '"', s, '"');
+            </code></pre>
+            <p>A more typical JS quine:</p>
+            <pre><code>
+// simpler quine
+let s = "let s = %o; console.log(s, s)";
+console.log(s, s);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Simple safe self-copying program (Python) — makes a timestamped backup of itself</h2>
+            <p>This is not a quine (it reads its file) but is a benign self-copyer useful for auditing.</p>
+            <pre><code>
+# backup_self.py
+import shutil, datetime, pathlib
+
+src = pathlib.Path(__file__)
+ts = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+dst = src.with_name(f"{src.stem}_backup_{ts}{src.suffix}")
+
+shutil.copyfile(src, dst)
+print(f"Backed up {src} -> {dst}")
+            </code></pre>
+            <p>Notes</p>
+            <ul>
+                <li>This reads the file and writes a new copy in the same directory. It does not propagate across machines.</li>
+                <li>Good for automated versioned backups; combine with logging.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Bash quine</h2>
+            <pre><code>
+#!/bin/bash
+s='s=%c%s%c\nprintf "$s" 39 "$s" 39'
+printf "$s" 39 "$s" 39
+            </code></pre>
+            <p>Run: bash quine.sh — it prints its own source.</p>
+        </section>
+
+        <section>
+            <h2>Implementation tips & debugging</h2>
+            <ul>
+                <li>For quines, avoid reading files (that would be cheating for the pure puzzle).</li>
+                <li>Use the language’s string quoting and formatting carefully — inside/outside quotes matter.</li>
+                <li>
+                    To verify correctness: compare program output to exact file contents (byte-for-byte).
+                    <ul>
+                        <li>Example (Unix): python quine.py > out.txt && cmp quine.py out.txt</li>
+                    </ul>
+                </li>
+                <li>If output differs, inspect escaping and whitespace — quines are sensitive.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Uses I can help you build (safe)</h2>
+            <ul>
+                <li>Compose a quine in a specific language (Go, Rust, C, Ruby, etc.).</li>
+                <li>Make a program that creates local backups of its own source with metadata.</li>
+                <li>Create a unit test that verifies a file is a quine (compare bytes).</li>
+                <li>Build a teaching notebook that steps through quines in multiple languages.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Security, ethics, and legal warning (important)</h2>
+            <ul>
+                <li>Do not create or distribute code designed to self-propagate across systems or networks without explicit consent — that is malware in many jurisdictions.</li>
+                <li>I won’t provide instructions on building worms, trojans, or evasion techniques.</li>
+                <li>If your goal is to experiment, do so on an isolated machine or VM with no network access and with permission.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Detection & mitigation (for defensive folks)</h2>
+            <ul>
+                <li>Monitor filesystem activity (unexpected file writes).</li>
+                <li>Use process execution policies / endpoint protection to prevent unknown binaries from creating copies.</li>
+                <li>Detect patterns like a binary writing files with its own filename or unexpected copies in other directories.</li>
+                <li>Network: block unauthorized file-sharing ports and outbound connections.</li>
+            </ul>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Generate a quine in a particular language you care about (C, Rust, Go, etc.).</li>
+                <li>Build a test harness that verifies a program is a quine automatically.</li>
+                <li>Walk through how to make the backup script write to a configurable safe directory and log audits.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

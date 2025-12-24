@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>StackNavigator in React Native</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">StackNavigator in React Native</h1>
+                    <p class="subtitle">
+                        Below is a complete, practical explanation of StackNavigator in React Native, focused on React Navigation v3 / v4, which matches the legacy code you’re reviewing.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is StackNavigator?</h2>
+            <p>A StackNavigator manages screens using a stack data structure (Last-In, First-Out).</p>
+            <p>Think of it like:</p>
+            <pre><code>
+push → push → pop
+            </code></pre>
+            <p>or a web browser history.</p>
+        </section>
+
+        <section>
+            <h2>2. When to Use StackNavigator</h2>
+            <p>Use it for:</p>
+            <ul>
+                <li>Page-to-page navigation</li>
+                <li>Detail screens</li>
+                <li>Forms</li>
+                <li>Settings</li>
+                <li>Any flow that needs a Back button</li>
+            </ul>
+            <p>❌ Do NOT use it for:</p>
+            <ul>
+                <li>Authentication switching</li>
+                <li>Splash/onboarding decision logic</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Basic Setup (v4)</h2>
+            <p>Install required packages</p>
+            <pre><code>
+yarn add react-navigation react-navigation-stack
+            </code></pre>
+
+            <p>Create a StackNavigator</p>
+            <pre><code>
+import { createStackNavigator } from 'react-navigation-stack';
+import { createAppContainer } from 'react-navigation';
+
+import HomeScreen from './HomeScreen';
+import DetailsScreen from './DetailsScreen';
+
+const AppStack = createStackNavigator(
+  {
+    Home: HomeScreen,
+    Details: DetailsScreen,
+  },
+  {
+    initialRouteName: 'Home',
+  }
+);
+
+export default createAppContainer(AppStack);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Navigating Between Screens</h2>
+            <p>Navigate forward</p>
+            <pre><code>
+this.props.navigation.navigate('Details');
+            </code></pre>
+
+            <p>Go back</p>
+            <pre><code>
+this.props.navigation.goBack();
+            </code></pre>
+
+            <p>Push the same screen again</p>
+            <pre><code>
+this.props.navigation.push('Details');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Navigation Stack Behavior</h2>
+            <pre><code>
+Home
+ ↓
+Details
+ ↓
+Profile
+            </code></pre>
+
+            <p>Press back:</p>
+            <pre><code>
+Profile → Details → Home
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Headers & Back Button</h2>
+            <p>StackNavigator automatically provides:</p>
+            <ul>
+                <li>Header bar</li>
+                <li>Back button</li>
+                <li>Title handling</li>
+            </ul>
+
+            <p>Set screen title</p>
+            <pre><code>
+static navigationOptions = {
+    title: 'Home',
+};                  
+            </code></pre>
+
+            <p>Dynamic title</p>
+            <pre><code>
+static navigationOptions = ({ navigation }) => ({
+    title: navigation.getParam('name', 'Details'),
+});                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Passing Parameters</h2>
+            <pre><code>
+this.props.navigation.navigate('Details', {
+    userId: 123,
+});                  
+            </code></pre>
+            <p>Retrieve:</p>
+            <pre><code>
+this.props.navigation.getParam('userId');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Screen Lifecycle (Important)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>When it fires</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>componentDidMount</td>
+                        <td>First mount</td>
+                    </tr>
+                    <tr>
+                        <td>didFocus</td>
+                        <td>Screen becomes active</td>
+                    </tr>
+                    <tr>
+                        <td>willBlur</td>
+                        <td>Screen loses focus</td>
+                    </tr>
+                    <tr>
+                        <td>componentWillUnmount</td>
+                        <td>Screen popped</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <pre><code>
+this.focusListener = this.props.navigation.addListener(
+    'didFocus',
+  () => { /* refresh data */ }
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Common Stack Options</h2>
+            <p>Disable header</p>
+            <pre><code>
+navigationOptions: {
+    headerShown: false,
+}                  
+            </code></pre>
+            <p>Disable back button</p>
+            <pre><code>
+headerLeft: null
+            </code></pre>
+
+            <p>Disable swipe back (iOS)</p>
+            <pre><code>
+gesturesEnabled: false
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Nested StackNavigators</h2>
+            <p>Example: Stack inside SwitchNavigator</p>
+            <pre><code>
+const AuthStack = createStackNavigator({
+    Login: LoginScreen,
+    Register: RegisterScreen,
+});
+    
+const RootSwitch = createSwitchNavigator({
+    Splash: SplashScreen,
+    Auth: AuthStack,
+    App: AppStack,
+});                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>11. Resetting Stack (Common Auth Use Case)</h2>
+            <pre><code>
+import { StackActions, NavigationActions } from 'react-navigation';
+
+this.props.navigation.dispatch(
+  StackActions.reset({
+    index: 0,
+    actions: [
+      NavigationActions.navigate({ routeName: 'Home' }),
+    ],
+  })
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>12. Typical Folder Structure</h2>
+            <pre><code>
+navigation/
+ ├── AppStack.js
+ ├── AuthStack.js
+ └── RootSwitch.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. Common Mistakes</h2>
+            <p>❌ Using StackNavigator for app-level switching</p>
+            <p>❌ Nesting too deeply</p>
+            <p>❌ Forgetting to reset after login</p>
+        </section>
+
+        <section>
+            <h2>14. Performance Notes</h2>
+            <ul>
+                <li>Screens stay in memory until popped</li>
+                <li>Heavy screens should clean up listeners</li>
+                <li>Avoid very deep stacks</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>15. Modern Equivalent (v6+)</h2>
+            <pre><code>
+const Stack = createNativeStackNavigator();
+
+&lt;Stack.Navigator&gt;
+    &lt;Stack.Screen name="Home" component={Home} /&gt;
+&lt;/Stack.Navigator&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>16. Final Summary</h2>
+            <ul>
+                <li>StackNavigator = screen-to-screen navigation</li>
+                <li>Maintains history</li>
+                <li>Handles headers & back navigation</li>
+                <li>Essential for main app UX</li>
+            </ul>
+            <p>If you want, I can:</p>
+            <ul>
+                <li>🔁 Convert your v4 StackNavigator → v6</li>
+                <li>🧭 Explain nested navigation edge cases</li>
+                <li>🛠 Review your current stack configuration</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

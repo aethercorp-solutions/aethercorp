@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Normalization</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Normalization</h1>
+                    <p class="subtitle">
+                        In databases, normalization is the process of organizing data to reduce redundancy and improve data integrity. It uses a series of “normal forms” (NF), each with stricter rules.
+                        <p>Here’s the simplest, fastest explanation:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ What is Normalization?</h2>
+            <p>Normalization is restructuring a database into tables and relationships so that:</p>
+            <ul>
+                <li>No redundant (duplicate) data</li>
+                <li>No update anomalies</li>
+                <li>No inconsistent data</li>
+                <li>Tables represent a single concept</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📌 Main Normal Forms (Practical Summary)</h2>
+            <p>1️⃣ First Normal Form (1NF)</p>
+            <p>A table is in 1NF if:</p>
+            <ul>
+                <li>No repeating groups / arrays</li>
+                <li>Each column has atomic (indivisible) values</li>
+                <li>Each row is unique</li>
+            </ul>
+            <p>Example (Bad):</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>user_id</th>
+                        <th>phone_numbers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>0917-111-1111, 0918…</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Fixed (1NF):</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>user_id</th>
+                        <th>phone_number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>0917-111-1111</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0918-222-2222</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>2️⃣ Second Normal Form (2NF)</h2>
+            <p>A table is in 2NF if:</p>
+            <ul>
+                <li>It’s already in 1NF</li>
+                <li>No partial dependency on part of a composite key</li>
+            </ul>
+            <p>Example (Bad):</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>order_id</th>
+                        <th>product_id</th>
+                        <th>product_name</th>
+                        <th>price</th>
+                    </tr>
+                </thead>
+            </table>
+            <p>product_name depends only on product_id, not on the whole composite key → violates 2NF.</p>
+            <p>Fixed: Move product info to a separate table.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Third Normal Form (3NF)</h2>
+            <p>A table is in 3NF if:</p>
+            <ul>
+                <li>It’s in 2NF</li>
+                <li>No transitive dependencies (column depends on another non-key column)</li>
+            </ul>
+            <p>Example (Bad):</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>user_id</th>
+                        <th>city_id</th>
+                        <th>city_name</th>
+                    </tr>
+                </thead>
+            </table>
+            <p>city_name depends on city_id, not user_id → violates 3NF.</p>
+            <p>Fixed: Move city info to a “cities” table.</p>
+        </section>
+
+        <section>
+            <h2>🏆 Why Normalize?</h2>
+            <ul>
+                <li>Avoid duplicate data</li>
+                <li>Smaller, cleaner tables</li>
+                <li>Faster updates and inserts</li>
+                <li>Data integrity (consistent data everywhere)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ When NOT to Normalize?</h2>
+            <p>In high-scale systems, sometimes you DENORMALIZE to improve read performance (caching, analytics, joins too expensive).</p>
+            <p>But for most apps (especially CRUD + serverless + MongoDB or MySQL/Postgres), normalization is recommended.</p>
+        </section>
+
+        <section>
+            <h2>🧩 Want an Example Based on YOUR Use Case?</h2>
+            <p>I can show:</p>
+            <ul>
+                <li>A normalized schema for TryCastanet contacts</li>
+                <li>A normalized schema for inventory management (mod2)</li>
+                <li>Normalization for your AWS serverless + MongoDB or SQL database</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

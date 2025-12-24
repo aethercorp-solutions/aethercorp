@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Why Meta started developing React Native</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Why Meta started developing React Native</h1>
+                    <p class="subtitle">React Native was not created in isolation—it came out of very real, practical problems Facebook (now Meta) faced while scaling its products. Here’s a clear, detailed, chronological explanation of how and why Meta started developing React Native.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. The Problem Facebook Faced (2012–2013)</h2>
+            <p>Facebook’s Mobile Reality</p>
+            <p>By 2012, Facebook had:</p>
+            <ul>
+                <li>A massive web engineering team</li>
+                <li>Separate native iOS and Android teams</li>
+                <li>A fast-growing mobile user base</li>
+            </ul>
+            <p>Facebook initially bet heavily on HTML5 mobile apps (wrapped in native containers).</p>
+
+            <p>What Went Wrong</p>
+            <ul>
+                <li>Poor performance (slow scrolling, janky UI)</li>
+                <li>Limited access to native APIs</li>
+                <li>Inconsistent behavior across platforms</li>
+            </ul>
+            <p>Mark Zuckerberg publicly admitted:</p>
+            <p>“The biggest mistake we made as a company was betting too much on HTML5.”</p>
+
+            <p>Facebook needed:</p>
+            <ul>
+                <li>Native performance</li>
+                <li>Shared logic across platforms</li>
+                <li>Fast iteration like the web</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. The Problem Facebook Was Trying to Solve (2012–2013)</h2>
+            <p>1.1 “HTML5 was a mistake” moment</p>
+            <p>Around 2012, Facebook bet heavily on HTML5 to build mobile apps:</p>
+            <ul>
+                <li>Single codebase</li>
+                <li>Faster iteration</li>
+                <li>No App Store resubmissions for UI changes</li>
+            </ul>
+            <p>But reality hit hard:</p>
+            <ul>
+                <li>Poor scrolling performance</li>
+                <li>Laggy animations</li>
+                <li>Inconsistent behavior across iOS devices</li>
+                <li>Bad user experience for a high-traffic app</li>
+            </ul>
+            <p>Mark Zuckerberg publicly admitted:</p>
+            <p>“The biggest mistake we made as a company was betting too much on HTML5.”</p>
+            <p>So Facebook rewrote the app natively (Objective-C on iOS).</p>
+        </section>
+
+        <section>
+            <h2>2. The Birth of React (2013)</h2>
+            <p>React Solved the Web Side First</p>
+            <p>In 2013, Facebook introduced React for web:</p>
+            <ul>
+                <li>Declarative UI</li>
+                <li>Virtual DOM</li>
+                <li>One-way data flow</li>
+            </ul>
+
+            <p>React drastically improved:</p>
+            <ul>
+                <li>UI consistency</li>
+                <li>Developer productivity</li>
+                <li>Performance predictability</li>
+            </ul>
+
+            <p>This success sparked an idea:</p>
+            <p>“What if we could use React’s model to build native apps?”</p>
+        </section>
+
+        <section>
+            <h2>3. The Internal Hackathon Spark (2014)</h2>
+            <p>The Key Insight</p>
+            <p>At an internal Facebook hackathon in early 2014:</p>
+            <ul>
+                <li>Engineers Jordan Walke, Tom Occhino, and others</li>
+                <li>Experimented with rendering native UI using JavaScript</li>
+            </ul>
+
+            <p>JS → HTML → CSS → WebView</p>
+            <p>They tried:</p>
+            <p>JS → Bridge → Native Views</p>
+
+            <p>Breakthrough Idea</p>
+            <p>JavaScript would control logic, but UI would be 100% native.</p>
+            <p>This was the core innovation behind React Native.</p>
+        </section>
+
+        <section>
+            <h2>4. React Native’s Core Architecture (Original Design)</h2>
+            <p>How It Worked</p>
+            <ul>
+                <li>
+                    JavaScript thread
+                    <ul>
+                        <li>Runs React code</li>
+                        <li>Computes UI updates</li>
+                    </ul>
+                </li>
+                <li>
+                    Native UI thread
+                    <ul>
+                        <li>Renders real UIKit / Android Views</li>
+                    </ul>
+                </li>
+                <li>
+                    Bridge
+                    <ul>
+                        <li>Asynchronous JSON messages between JS and native</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Key Design Principles</p>
+            <ul>
+                <li>Learn once, write anywhere</li>
+                <li>Reuse business logic, not UI widgets</li>
+                <li>No WebView</li>
+                <li>Native look and feel</li>
+            </ul>
+            <p>This was revolutionary at the time.</p>
+        </section>
+
+        <section>
+            <h2>1.2 New pain after going native</h2>
+            <p>Native solved performance, but introduced new problems:</p>
+            <ul>
+                <li>Two separate teams: iOS (Objective-C) and Android (Java)</li>
+                <li>Features had to be implemented twice</li>
+                <li>UI logic drifted between platforms</li>
+                <li>Slower iteration speed compared to web</li>
+            </ul>
+            <p>Facebook wanted:</p>
+            <ul>
+                <li>Native performance</li>
+                <li>Single developer mental model</li>
+                <li>Fast iteration like the web</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. The Internal Hackathon That Started It (2013)</h2>
+            <p>2.1 The bold idea</p>
+            <p>During a Facebook internal hackathon, engineer Jordan Walke proposed:</p>
+            <p>“What if we could use React to describe mobile UIs, but render them using native UI components instead of HTML?”</p>
+        
+            <p>At the time:</p>
+            <ul>
+                <li>React already existed internally for Facebook Web</li>
+                <li>
+                    React had:
+                    <ul>
+                        <li>Declarative UI</li>
+                        <li>Component model</li>
+                        <li>Virtual DOM</li>
+                        <li>One-way data flow</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>2.2 The experiment</p>
+            <p>The hackathon prototype proved:</p>
+            <ul>
+                <li>JavaScript could describe UI</li>
+                <li>Native components could be created dynamically</li>
+                <li>Performance was acceptable</li>
+            </ul>
+            <p>This was not WebView-based.</p>
+            <p>This was real native UI.</p>
+            <p>That was the birth of React Native.</p>
+        </section>
+
+        <section>
+            <h2>3. Core Design Principles React Native Was Built On</h2>
+            <p>3.1 “Learn once, write anywhere” (not write once)</p>
+            <p>Facebook explicitly rejected “write once, run anywhere”.</p>
+            <p>Instead:</p>
+            <ul>
+                <li>Share business logic</li>
+                <li>Platform-specific UI where needed</li>
+                <li>Native look & feel on each OS</li>
+            </ul>
+            <p>This is why:</p>
+            <ul>
+                <li><View> maps to UIView on iOS</li>
+                <li><View> maps to android.view.View on Android</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3.2 JavaScript controls the UI, but doesn’t draw it</h2>
+            <p>Key rule:</p>
+            <p>JavaScript never directly draws pixels</p>
+            <p>Instead:</p>
+            <ul>
+                <li>JS describes what the UI should look like</li>
+                <li>Native code decides how to render it</li>
+            </ul>
+            <p>This preserves:</p>
+            <ul>
+                <li>Accessibility</li>
+                <li>Native scrolling</li>
+                <li>Native gestures</li>
+                <li>Platform optimizations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. The Original React Native Architecture (2014–2022)</h2>
+            <p>4.1 Three-thread model</p>
+            <p>React Native originally ran on three main threads:</p>
+            <p>1️⃣ JS Thread</p>
+            <ul>
+                <li>Runs JavaScript (initially via JavaScriptCore)</li>
+                <li>Executes React logic</li>
+                <li>Diffing (Virtual DOM)</li>
+                <li>State updates</li>
+            </ul>
+            <p>2️⃣ Native UI Thread (Main Thread)</p>
+            <ul>
+                <li>Renders native views</li>
+                <li>Handles gestures</li>
+                <li>Performs layout & animations</li>
+            </ul>
+            <p>3️⃣ Shadow Thread</p>
+            <ul>
+                <li>Calculates layout using Yoga</li>
+                <li>Converts Flexbox styles into native layout metrics</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4.2 The Bridge (most controversial part)</h2>
+            <p>The Bridge was the communication layer between JS and Native:</p>
+            <ul>
+                <li>Async</li>
+                <li>JSON-serialized messages</li>
+                <li>Batched calls</li>
+                <li>No shared memory</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+setState({ count: 1 })
+            </code></pre>
+
+            <p>Flow:</p>
+            <ol>
+                <li>JS computes new UI tree</li>
+                <li>Diff is calculated</li>
+                <li>JSON instructions sent over the bridge</li>
+                <li>Native creates/updates views</li>
+            </ol>
+
+            <p>Problems with the Bridge:</p>
+            <ul>
+                <li>Serialization overhead</li>
+                <li>Large UI updates could block</li>
+                <li>Debugging complexity</li>
+                <li>Limited synchronous calls</li>
+            </ul>
+
+            <p>But at the time:</p>
+            <ul>
+                <li>It allowed full isolation</li>
+                <li>Prevented JS crashes from killing the app</li>
+                <li>Enabled hot reload</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. How Native Components Were Exposed to JS</h2>
+            <p>5.1 Native Modules</p>
+            <p>Native functionality (Camera, Storage, Sensors):</p>
+            <pre><code>
+RCT_EXPORT_MODULE();
+
+RCT_EXPORT_METHOD(getBatteryLevel:(RCTPromiseResolveBlock)resolve)
+            </code></pre>
+
+            <p>Used in JS as:</p>
+            <pre><code>
+NativeModules.DeviceInfo.getBatteryLevel()
+            </code></pre>
+
+            <p>5.2 Native UI Components</p>
+            <p>Native views registered with a ViewManager:</p>
+            <ul>
+                <li>RCTViewManager (iOS)</li>
+                <li>ViewManager (Android)</li>
+            </ul>
+            <p>Mapped to JS:</p>
+            <pre><code>
+requireNativeComponent("RCTText")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Yoga: The Layout Engine Facebook Built</h2>
+            <p>6.1 Why Facebook created Yoga</p>
+            <p>iOS uses Auto Layout.</p>
+            <p>Android uses XML layout.</p>
+
+            <p>Facebook wanted:</p>
+            <ul>
+                <li>A single layout system</li>
+                <li>Cross-platform</li>
+                <li>Fast</li>
+                <li>Flexbox-compatible</li>
+            </ul>
+            <p>So they built Yoga, a C++ layout engine.</p>
+
+            <p>6.2 Why C++?</p>
+            <ul>
+                <li>Shared between iOS & Android</li>
+                <li>Deterministic layout</li>
+                <li>Extremely fast</li>
+                <li>Used outside React Native later</li>
+            </ul>
+            <p>Yoga is one of React Native’s most important inventions.</p>
+        </section>
+
+        <section>
+            <h2>7. Open-Sourcing React Native (2015)</h2>
+            <p>Facebook open-sourced React Native in March 2015.</p>
+            <p>Immediate impact:</p>
+            <ul>
+                <li>Massive community adoption</li>
+                <li>Airbnb, Uber, Shopify experiments</li>
+                <li>Rapid ecosystem growth</li>
+            </ul>
+
+            <p>Facebook used React Native internally for:</p>
+            <ul>
+                <li>Ads Manager</li>
+                <li>Groups</li>
+                <li>Marketplace</li>
+                <li>Parts of the Facebook app</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Where the Original Architecture Failed</h2>
+            <p>As apps scaled (including Facebook’s own), issues appeared:</p>
+            <ul>
+                <li>JS thread blocking caused frame drops</li>
+                <li>Bridge overhead limited animation performance</li>
+                <li>Complex gesture handling was hard</li>
+                <li>Synchronous native APIs were impossible</li>
+            </ul>
+            <p>This directly led to React Native Re-architecture.</p>
+        </section>
+
+        <section>
+            <h2>9. The New Architecture (Fabric + TurboModules)</h2>
+            <p>9.1 Fabric (New Renderer)</p>
+            <p>Replaces the old UI manager.</p>
+            <p>Key improvements:</p>
+            <ul>
+                <li>Synchronous rendering when needed</li>
+                <li>Priority-based updates</li>
+                <li>Concurrent rendering (React 18)</li>
+                <li>Better memory management</li>
+            </ul>
+
+            <p>9.2 TurboModules</p>
+            <p>Replace old NativeModules.</p>
+            <p>Benefits:</p>
+            <ul>
+                <li>Lazy loading</li>
+                <li>Faster startup</li>
+                <li>Type-safe bindings</li>
+                <li>Direct JSI access</li>
+            </ul>
+
+            <p>9.3 JSI (JavaScript Interface)</p>
+            <p>JSI allows:</p>
+            <ul>
+                <li>Direct C++ ↔ JS calls</li>
+                <li>No JSON serialization</li>
+                <li>Shared memory</li>
+                <li>Much faster execution</li>
+            </ul>
+            <p>This removed the Bridge bottleneck.</p>
+        </section>
+
+        <section>
+            <h2>10. Why Meta Still Invests in React Native</h2>
+            <p>Meta continues React Native because:</p>
+            <ul>
+                <li>Huge internal usage</li>
+                <li>Developer productivity</li>
+                <li>Shared infra with React Web</li>
+                <li>Works well for large teams</li>
+                <li>Excellent for feature velocity</li>
+            </ul>
+            <p>React Native is now:</p>
+            <ul>
+                <li>Used at Meta scale</li>
+                <li>Stable for production</li>
+                <li>Actively evolving</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>11. Summary Timeline</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Milestone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2012</td>
+                        <td>HTML5 mobile app fails</td>
+                    </tr>
+                    <tr>
+                        <td>2013</td>
+                        <td>Hackathon prototype</td>
+                    </tr>
+                    <tr>
+                        <td>2014</td>
+                        <td>Internal adoption</td>
+                    </tr>
+                    <tr>
+                        <td>2015</td>
+                        <td>Open-sourced</td>
+                    </tr>
+                    <tr>
+                        <td>2016–2020</td>
+                        <td>Bridge-era scaling</td>
+                    </tr>
+                    <tr>
+                        <td>2021–2023</td>
+                        <td>New Architecture rollout</td>
+                    </tr>
+                    <tr>
+                        <td>Today</td>
+                        <td>Fabric + TurboModules + React 18</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>12. Why This Matters for You (As a Senior RN Dev)</h2>
+            <p>Given your background in:</p>
+            <ul>
+                <li>React Native</li>
+                <li>AWS serverless</li>
+                <li>Native iOS/Android</li>
+            </ul>
+            <p>Understanding this history explains:</p>
+            <ul>
+                <li>Why RN APIs look the way they do</li>
+                <li>Why Fabric migration matters</li>
+                <li>Why JSI-based libraries (Reanimated, Skia) are faster</li>
+                <li>Why “pure JS UI” was never the goal</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

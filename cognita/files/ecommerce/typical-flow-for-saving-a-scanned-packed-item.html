@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Typical Flow for Saving a Scanned Packed Item</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Typical Flow for Saving a Scanned Packed Item</h1>
+                    <p class="subtitle">Below is a clean, real-world pattern for saving scanned packed items in an Objective-C inventory system, similar to MOD2-style workflows with File Magic, SKU, Quantity, Warehouse, etc.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Typical Flow for Saving a Scanned Packed Item</h2>
+            <ol>
+                <li>Scan barcode / QR</li>
+                <li>Parse item code (SKU, File_Magic, etc.)</li>
+                <li>Look up item in local inventory dictionary / DB</li>
+                <li>Update qty or add entry</li>
+                <li>Persist to storage (local file, Core Data, SQLite, API call)</li>
+            </ol>
+            <p>Below is a simple implementation using an NSMutableDictionary + file persistence.</p>
+        </section>
+
+        <section>
+            <h2>📌 1. Define your inventory store</h2>
+            <p>Use a mutable dictionary keyed by File Magic or SKU.</p>
+            <pre><code>
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSMutableDictionary *> *packedItems;
+            </code></pre>
+            <p>Initialize:</p>
+            <pre><code>
+- (void)setupStorage {
+    self.packedItems = [NSMutableDictionary dictionary];
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📌 2. Method to save a scanned item</h2>
+            <p>This method:</p>
+            <ul>
+                <li>Accepts a scanned code</li>
+                <li>Looks up existing entry</li>
+                <li>Increments quantity</li>
+                <li>Saves back to dictionary</li>
+                <li>Persists to disk</li>
+            </ul>
+            <pre><code>
+- (void)saveScannedItem:(NSString *)scannedCode quantity:(NSInteger)qty {
+    if (!scannedCode || scannedCode.length == 0) {
+        NSLog(@"Invalid scanned code");
+        return;
+    }
+
+    NSMutableDictionary *existing = self.packedItems[scannedCode];
+
+    if (existing) {
+        // Increase quantity
+        NSInteger existingQty = [existing[@"qty"] integerValue];
+        existing[@"qty"] = @(existingQty + qty);
+    } else {
+        // Create new entry
+        self.packedItems[scannedCode] = [@{
+            @"sku": scannedCode,
+            @"qty": @(qty),
+            @"timestamp": [NSDate date]
+        } mutableCopy];
+    }
+    
+    [self persistPackedItems];
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📌 3. Persist items to disk (JSON file)</h2>
+            <p>This avoids Core Data complexity unless needed.</p>
+            <pre><code>
+- (void)persistPackedItems {
+    NSString *path = [self packedItemsFilePath];
+    NSError *error = nil;
+
+    NSData *json = [NSJSONSerialization dataWithJSONObject:self.packedItems
+                                                    options:NSJSONWritingPrettyPrinted
+                                                        error:&error];
+
+    if (error) {
+        NSLog(@"Error serializing packed items: %@", error);
+        return;
+    }
+
+    BOOL success = [json writeToFile:path atomically:YES];
+    NSLog(success ? @"Saved packed items" : @"Failed saving packed items");
+}
+
+- (NSString *)packedItemsFilePath {
+    NSString *docs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+    return [docs stringByAppendingPathComponent:@"packed_items.json"];
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📌 4. Load the saved items on app start</h2>
+            <pre><code>
+- (void)loadPackedItems {
+    NSString *path = [self packedItemsFilePath];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+
+    if (!data) return;
+
+    NSError *error = nil;
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+
+    if (!error && json) {
+        self.packedItems = [json mutableCopy];
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📌 5. Example usage</h2>
+            <p>When barcode scanner returns result:</p>
+            <pre><code>
+- (void)didScanBarcode:(NSString *)barcode {
+    [self saveScannedItem:barcode quantity:1];
+    NSLog(@"Packed items: %@", self.packedItems);
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📌 Optional: Save with File Magic + Lot + Size etc.</h2>
+            <p>If your scanned code has multiple parts:</p>
+            <pre><code>
+- (void)saveScannedData:(NSString *)fileMagic
+    size:(NSString *)size
+    lot:(NSString *)lot
+        quantity:(NSInteger)qty {
+
+        NSString *key = [NSString stringWithFormat:@"%@-%@-%@", fileMagic, size, lot];
+
+        NSMutableDictionary *entry = self.packedItems[key] ?: [NSMutableDictionary dictionary];
+
+        entry[@"fileMagic"] = fileMagic;
+        entry[@"size"] = size;
+        entry[@"lot"] = lot;
+        entry[@"qty"] = @([entry[@"qty"] integerValue] + qty);
+        entry[@"updatedAt"] = [NSDate date];
+
+        self.packedItems[key] = entry;
+        [self persistPackedItems];
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Want me to tailor it to MOD2-style Objective-C?</h2>
+            <p>I can adjust to:</p>
+            <p>✔ File_Magic</p>
+            <p>✔ Size run (XS–XL)</p>
+            <p>✔ Color</p>
+            <p>✔ SKU</p>
+            <p>✔ Warehouse</p>
+            <p>✔ Packed quantity per carton</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

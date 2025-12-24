@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>StoreKit</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">StoreKit</h1>
+                    <p class="subtitle">
+                        StoreKit is Apple’s official framework for In-App Purchases (IAP) and subscriptions on iOS, iPadOS, macOS, watchOS, and tvOS.
+                        <p>It lets your app display products, handle purchases, manage subscriptions, and restore transactions — all securely through Apple.</p>
+                        <p>Below is a practical, developer-focused explanation with usage and implementation (StoreKit 2, the modern API).</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ What StoreKit Does (in simple terms)</h2>
+            <p>StoreKit lets your app:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Capability</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Fetch products</td>
+                        <td>Get prices, titles, descriptions from App Store</td>
+                    </tr>
+                    <tr>
+                        <td>Sell items</td>
+                        <td>Consumables, non-consumables, subscriptions</td>
+                    </tr>
+                    <tr>
+                        <td>Handle payments</td>
+                        <td>Apple-hosted payment UI</td>
+                    </tr>
+                    <tr>
+                        <td>Verify purchases</td>
+                        <td>Cryptographically verify transactions</td>
+                    </tr>
+                    <tr>
+                        <td>Manage subscriptions</td>
+                        <td>Renewal, expiration, upgrades</td>
+                    </tr>
+                    <tr>
+                        <td>Restore purchases</td>
+                        <td>Re-download owned items</td>
+                    </tr>
+                    <tr>
+                        <td>Test purchases</td>
+                        <td>Via StoreKit Test (no real money)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>2️⃣ StoreKit 1 vs StoreKit 2</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>StoreKit 1 (Old)</th>
+                        <th>StoreKit 2 (Modern)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>API style</td>
+                        <td>Delegates</td>
+                        <td>async/await</td>
+                    </tr>
+                    <tr>
+                        <td>Language</td>
+                        <td>Obj-C / Swift</td>
+                        <td>Swift-only</td>
+                    </tr>
+                    <tr>
+                        <td>Receipt handling</td>
+                        <td>Manual parsing</td>
+                        <td>Automatic verification</td>
+                    </tr>
+                    <tr>
+                        <td>Testing</td>
+                        <td>Sandbox only</td>
+                        <td>StoreKit Test + Sandbox</td>
+                    </tr>
+                    <tr>
+                        <td>Recommended</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 Use StoreKit 2 for all new apps (iOS 15+)</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Types of In-App Purchases</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Consumable</td>
+                        <td>Coins, hints</td>
+                    </tr>
+                    <tr>
+                        <td>Non-consumable</td>
+                        <td>Remove ads, Pro unlock</td>
+                    </tr>
+                    <tr>
+                        <td>Auto-renewable subscription</td>
+                        <td>Monthly premium</td>
+                    </tr>
+                    <tr>
+                        <td>Non-renewing subscription</td>
+                        <td>1-year access</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>1. What StoreKit Is Used For</h2>
+            <p>You use StoreKit when your app sells digital content such as:</p>
+            <p>✅ Supported Purchases</p>
+            <ul>
+                <li>Subscriptions (monthly / yearly)</li>
+                <li>Premium features (unlock app features)</li>
+                <li>Consumables (coins, credits)</li>
+                <li>Non-consumables (remove ads, lifetime access)</li>
+            </ul>
+
+            <p>❌ Not Allowed</p>
+            <ul>
+                <li>Physical goods</li>
+                <li>Services used outside the app (e.g., ride booking)</li>
+                <li>External payment methods (must use Apple IAP)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Core StoreKit Concepts</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Product</td>
+                        <td>Item defined in App Store Connect</td>
+                    </tr>
+                    <tr>
+                        <td>Product ID</td>
+                        <td>Unique string identifier</td>
+                    </tr>
+                    <tr>
+                        <td>Transaction</td>
+                        <td>Purchase record</td>
+                    </tr>
+                    <tr>
+                        <td>Receipt</td>
+                        <td>Proof of purchase</td>
+                    </tr>
+                    <tr>
+                        <td>Restore</td>
+                        <td>Re-download past purchases</td>
+                    </tr>
+                    <tr>
+                        <td>Subscription Group</td>
+                        <td>Related subscription tiers</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>3. StoreKit 1 vs StoreKit 2</h2>
+            <p>StoreKit 1 (Legacy)</p>
+            <ul>
+                <li>Introduced iOS 3.0</li>
+                <li>Callback-based (SKProductsRequest, SKPaymentQueue)</li>
+                <li>Requires receipt validation logic</li>
+                <li>Still widely used in React Native libraries</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>StoreKit 2 (Modern)</h2>
+            <ul>
+                <li>Introduced iOS 15+</li>
+                <li>Uses Swift + async/await</li>
+                <li>Built-in transaction verification</li>
+                <li>Much safer and simpler</li>
+                <li>Recommended for new native iOS apps</li>
+            </ul>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>StoreKit 1</th>
+                        <th>StoreKit 2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>API Style</td>
+                        <td>Delegates</td>
+                        <td>async/await</td>
+                    </tr>
+                    <tr>
+                        <td>Receipt Handling</td>
+                        <td>Manual</td>
+                        <td>Automatic</td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td>Medium</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>React Native Support</td>
+                        <td>✅ Yes</td>
+                        <td>⚠️ Limited</td>
+                    </tr>
+                    <tr>
+                        <td>iOS Requirement</td>
+                        <td>iOS 3+</td>
+                        <td>iOS 15+</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. StoreKit Usage Flow (High Level)</h2>
+            <pre><code>
+1. Define products in App Store Connect
+2. Fetch products in app
+3. User initiates purchase
+4. App processes transaction
+5. Unlock content
+6. Store purchase state
+7. Restore purchases if needed
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. StoreKit 1 Implementation (Native iOS)</h2>
+            <p>Fetch Products</p>
+            <pre><code>
+let request = SKProductsRequest(productIdentifiers: ["com.app.premium"])
+request.delegate = self
+request.start()
+            </code></pre>
+
+            <p>Purchase Product</p>
+            <pre><code>
+let payment = SKPayment(product: product)
+SKPaymentQueue.default().add(payment)
+            </code></pre>
+
+            <p>Observe Transactions</p>
+            <pre><code>
+func paymentQueue(_ queue: SKPaymentQueue,
+                  updatedTransactions transactions: [SKPaymentTransaction]) {
+    for transaction in transactions {
+        switch transaction.transactionState {
+        case .purchased:
+            unlockPremium()
+            SKPaymentQueue.default().finishTransaction(transaction)
+        default:
+            break
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. StoreKit 2 Implementation (Modern Swift)</h2>
+            <p>Fetch Products</p>
+            <pre><code>
+let products = try await Product.products(for: ["com.app.premium"])
+            </code></pre>
+
+            <p>Purchase</p>
+            <pre><code>
+let result = try await product.purchase()
+            </code></pre>
+
+            <p>Handle Transactions</p>
+            <pre><code>
+for await verificationResult in Transaction.updates {
+    let transaction = try checkVerified(verificationResult)
+    unlockPremium()
+    await transaction.finish()
+}                
+            </code></pre>
+
+            <p>✅ No delegates</p>
+            <p>✅ Automatic verification</p>
+            <p>✅ Much less code</p>
+        </section>
+
+        <section>
+            <h2>7. StoreKit in React Native</h2>
+            <p>Common Library</p>
+            <pre><code>
+npm install react-native-iap
+            </code></pre>
+
+            <p>Basic Usage</p>
+            <pre><code>
+import { getProducts, requestPurchase } from 'react-native-iap';
+
+await getProducts({ skus: ['com.app.premium'] });
+await requestPurchase({ sku: 'com.app.premium' });
+            </code></pre>
+
+            <p>Important Notes</p>
+            <ul>
+                <li>React Native still uses StoreKit 1 internally</li>
+                <li>StoreKit 2 support is experimental and limited</li>
+                <li>Receipt validation should be done on a backend (Node.js, AWS Lambda, etc.)</li>
+            </ul>
+            <p>This matters especially for you since you're already using AWS serverless + React Native</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Secure an AWS-hosted Node.js app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Secure an AWS-hosted Node.js app</h1>
+                    <p class="subtitle">
+                        Nice — let’s lock that down. Below is a pragmatic, industry-standard checklist and hands-on steps to secure an AWS-hosted Node.js app (covers identity, network, data, runtime, supply-chain, monitoring, CI/CD and serverless specifics). I’ve included short code/config examples you can paste and use right away. I’ll also mark the most important references so you can dig deeper.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Quick overview (pillars)</h2>
+            <ol>
+                <li>Identity & least privilege (IAM roles, avoid long-lived creds).</li>
+                <li>Protect secrets & keys (Secrets Manager/SSM + KMS).</li>
+                <li>Harden Node runtime & dependencies (OWASP/Node best practices + supply-chain scanning).</li>
+                <li>Network & segmentation (VPC, private subnets, security groups, NACLs).</li>
+                <li>Observability & auditing (CloudTrail, CloudWatch, GuardDuty, Security Hub).</li>
+                <li>Automate & codify (IaC, CI/CD with policy checks, auto dependency updates).</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step-by-step secure setup</h2>
+            <p>1) Identity & access (foundational)</p>
+            <ul>
+                <li>Use IAM roles, not static access keys. For EC2/ECS/Lambda attach an IAM role to the instance/task/function. Require MFA for console users. Enforce password & rotation policy.</li>
+                <li>Principle of least privilege: craft narrowly scoped policies and use permission boundaries for teams. Start with deny-by-default and grant only needed actions.</li>
+                <li>Use AWS SSO or an identity provider (OIDC/SAML) for human access; centralize user management.</li>
+            </ul>
+
+            <p>Example: minimal Lambda role (JSON policy fragment)</p>
+            <pre><code>
+{
+    "Version":"2012-10-17",
+    "Statement":[
+        {
+            "Effect":"Allow",
+            "Action":[ "secretsmanager:GetSecretValue" ],
+            "Resource":[ "arn:aws:secretsmanager:us-east-1:123456789012:secret/my-app/*" ]
+        },
+        {
+            "Effect":"Allow",
+            "Action":[ "logs:CreateLogStream","logs:PutLogEvents" ],
+            "Resource":[ "arn:aws:logs:*:*:log-group:/aws/lambda/my-app:*" ]
+        }
+    ]
+}                  
+            </code></pre>
+
+            <p>2) Secrets & keys</p>
+            <ul>
+                <li>Store secrets in AWS Secrets Manager or SSM Parameter Store (SecureString). Do not keep secrets in code or env files. Use KMS-encrypted secrets. Secrets Manager gives automatic rotation.</li>
+                <li>Access secrets using the instance/Lambda role (no keys in code).</li>
+                <li>Rotate keys (database credentials, API keys) regularly and automate rotation where possible.</li>
+            </ul>
+            <p>Node.js snippet to read Secret (AWS SDK v3 example)</p>
+            <pre><code>
+import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
+const client = new SecretsManagerClient({ region: "us-east-1" });
+
+export async function getSecret(name){
+  const cmd = new GetSecretValueCommand({ SecretId: name });
+  const res = await client.send(cmd);
+  return JSON.parse(res.SecretString || '{}');
+}
+            </code></pre>
+
+            <p>3) Network & perimeter</p>
+            <ul>
+                <li>Place backends in private subnets (no public IPs). Use NAT gateway for outbound access.</li>
+                <li>Security Groups: restrict to only needed ports and sources (no 0.0.0.0/0 for admin ports). NACLs for extra protection.</li>
+                <li>Use ALB + WAF for web traffic to block OWASP top-10 patterns and rate limit malicious traffic. Consider AWS Shield for DDoS mitigation.</li>
+                <li>Use VPC endpoints for S3/SecretsManager/SSM so traffic never leaves AWS.</li>
+            </ul>
+
+            <p>4) Node.js app hardening (runtime)</p>
+            <ul>
+                <li>Run latest LTS Node and keep it patched. Follow Node.js security best practices.</li>
+                <li>Express (or similar): use helmet() for secure headers, express-rate-limit to rate-limit, and hpp to prevent HTTP parameter pollution. Validate input with joi or zod.</li>
+                <li>Disable unsafe features: avoid eval()/new Function(), avoid child_process unless necessary. Sanitize user input before use.</li>
+                <li>Cookies & sessions: set HttpOnly, Secure, SameSite=strict and use short lifetimes. Store sessions in server-side store (Redis) encrypted.</li>
+                <li>File uploads: scan and validate file type/size, store in S3 with restricted ACLs, never execute uploaded files.</li>
+            </ul>
+
+            <p>Example Express middleware setup</p>
+            <pre><code>
+import express from "express";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+
+const app = express();
+app.use(helmet());
+app.use(express.json());
+app.use(rateLimit({ windowMs: 60_000, max: 100 }));
+// use input validation on every endpoint
+            </code></pre>
+
+            <p>5) Dependency & supply-chain security</p>
+            <ul>
+                <li>Lockfiles: commit package-lock.json or yarn.lock. Enforce deterministic dependency installs.</li>
+                <li>Automated scanning: run npm audit in CI, integrate Snyk/Dependabot or GitHub Advanced Security to auto-scan and create PRs. </li>
+                <li>Artifact repository / proxy (e.g., Nexus/Artifactory) or private npm proxy to avoid supply chain poisoning.</li>
+                <li>Reject packages with low maintainer activity or suspicious install scripts.</li>
+            </ul>
+            <p>Commands:</p>
+            <pre><code>
+# quick local checks
+npm audit --production
+npx snyk test
+# or enable Dependabot in GitHub to auto-update deps
+            </code></pre>
+
+            <p>6) Logging, monitoring & incident detection</p>
+            <ul>
+                <li>Enable CloudTrail (multi-region) and CloudTrail log file validation. Ship logs to CloudWatch Logs and S3 (with lifecycle rules).</li>
+                <li>Enable GuardDuty + Security Hub + Config for continuous monitoring and CSPM checks (CIS AWS Foundations).</li>
+                <li>Set alerts: failed login spikes, IAM changes, suspicious API calls. Integrate with PagerDuty/Slack.</li>
+                <li>Protect logs: encrypt at rest (KMS) and use IAM to restrict who can read logs.</li>
+            </ul>
+
+            <p>7) Infrastructure as Code (automate & enforce)</p>
+            <ul>
+                <li>Use IaC (CloudFormation / CDK / Terraform) for reproducible infra. Keep templates in Git.</li>
+                <li>Policy as code: use AWS Config rules, Terraform Sentinel or Open Policy Agent in CI to block insecure changes. Automate security checks in PR builds.</li>
+            </ul>
+
+            <p>8) CI/CD & build-time security</p>
+            <ul>
+                <li>Scan code and containers in CI (SAST like CodeQL, Snyk, Trivy). Fail builds for critical vulnerabilities.</li>
+                <li>Do not store secrets in pipeline variables unencrypted — use OIDC + short-lived tokens or Secrets Manager integration with CodeBuild.</li>
+                <li>Artifact signing & provenance for deployables.</li>
+            </ul>
+
+            <p>9) Serverless (Lambda) specifics</p>
+            <ul>
+                <li>Single responsibility Lambdas (small surface area). Use per-function IAM roles (least privilege).</li>
+                <li>Keep deployment package small (use Lambda Layers for shared libs), and avoid bundling secrets.</li>
+                <li>VPC cold-start tradeoffs: placing Lambda in VPC can add cold start; use AWS's ENI improvements or Lambda VPC-scoped configurations carefully.</li>
+                <li>Connection pooling: if connecting to RDS, use RDS Proxy to avoid exhausting connections from many Lambda instances.</li>
+            </ul>
+
+            <p>10) CIS / Well-Architected baseline & continuous compliance</p>
+            <ul>
+                <li>Run CIS AWS Foundations benchmark checks (AWS Security Hub supports this) and address findings.</li>
+                <li>Perform regular Well-Architected reviews and threat modeling.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Short checklist you can run now</h2>
+            <ul>
+                <li>Create IAM roles for services; remove root access; enable MFA for console.</li>
+                <li>Move secrets to Secrets Manager / SSM + KMS.</li>
+                <li>Harden Express (helmet, rate limiting, validation).</li>
+                <li>Lock and scan dependencies: npm audit, Snyk, Dependabot.</li>
+                <li>Enable CloudTrail, GuardDuty, Security Hub, Config.</li>
+                <li>Place compute in private subnets; tighten security groups.</li>
+                <li>Use IaC + CI security gates (SAST, dependency scanning, policy as code).</li>
+                <li>Run CIS AWS benchmark scan and fix top findings.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Helpful commands & snippets</h2>
+            <ul>
+                <li>Enable CloudTrail & multi-region: (AWS Console or CloudFormation; recommended to do via IaC)</li>
+                <li>
+                    Quick npm checks:
+                    <pre><code>
+npm install
+npm audit --json > audit.json
+npx snyk test
+                    </code></pre>
+                </li>
+                <li>
+                    Add helmet & rate limiter:
+                    <pre><code>
+npm i helmet express-rate-limit joi
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>References (read these first)</h2>
+            <ul>
+                <li>AWS Well-Architected — Security pillar.</li>
+                <li>IAM best practices — AWS docs.</li>
+                <li>Node.js security best practices — Node.js foundation.</li>
+                <li>Snyk — Node.js security & dependency guidance.</li>
+                <li>CIS AWS Foundations & Security Hub checks.</li>
+            </ul>
+
+            <p>If you want, I can immediately (pick one):</p>
+            <ul>
+                <li>generate a secure Terraform/CloudFormation starter template for a Node.js API with Lambda, API Gateway, Secrets Manager and minimal IAM role;</li>
+                <li>or produce a concrete Express.js template with helmet, rate-limiting, validation, and Secrets Manager integration;</li>
+                <li>or run through a prioritized remediation plan (top 10 fixes) for an existing AWS account (you’d paste configs/snippets).</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

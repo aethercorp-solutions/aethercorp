@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Testing code for correctness</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Testing code for correctness</h1>
+                    <p class="subtitle">Testing code for correctness means verifying that it behaves as expected under all relevant conditions. Here’s a structured guide — from simple manual methods to professional-grade automated testing — depending on how deep you want to go 👇</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 1. Understand “Correctness”</h2>
+            <p>A program is correct if its behavior matches the requirements or intended logic.</p>
+            <p>To confirm that:</p>
+            <ul>
+                <li>Define expected inputs and outputs clearly.</li>
+                <li>Think about edge cases, invalid inputs, and boundary values.</li>
+            </ul>
+            <p>Example:</p>
+            <p>If you wrote a function to add two numbers:</p>
+            <pre><code>
+function add(a, b) {
+    return a + b;
+}                  
+            </code></pre>
+            <p>You test it against:</p>
+            <ul>
+                <li>Normal: add(2, 3) → 5</li>
+                <li>Edge: add(0, 0) → 0</li>
+                <li>Invalid: add('2', 3) → (should it throw an error or coerce?)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 2. Manual Testing (Quick Verification)</h2>
+            <p>For small scripts or UI features:</p>
+            <ul>
+                <li>Run your code with different inputs.</li>
+                <li>Print or log intermediate results (console.log, print, NSLog, etc.).</li>
+                <li>Verify the output manually.</li>
+            </ul>
+            <p>Example (Objective-C):</p>
+            <pre><code>
+NSLog(@"Price for item: %@", item[@"Price"]);
+            </code></pre>
+            <p>Useful when you’re debugging logic before automation.</p>
+        </section>
+
+        <section>
+            <h2>⚙️ 3. Unit Testing (Automated Verification)</h2>
+            <p>Write unit tests for each function, class, or module.</p>
+            <p>These tests run automatically and confirm correctness every time you change code.</p>
+            <p>✅ Example (JavaScript – Jest)</p>
+            <pre><code>
+test('adds two numbers correctly', () => {
+    expect(add(2, 3)).toBe(5);
+});                  
+            </code></pre>
+            <p>✅ Example (Objective-C – XCTest)</p>
+            <pre><code>
+- (void)testAddition {
+    NSInteger result = [MathHelper add:2 b:3];
+    XCTAssertEqual(result, 5, @"Addition should return 5");
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧱 4. Integration Testing</h2>
+            <p>Once units are correct, test how they work together.</p>
+            <p>Example:</p>
+            <ul>
+                <li>If your backend API updates a price,</li>
+                <li>Ensure your frontend receives the updated price and displays it correctly.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 5. Boundary & Edge Case Testing</h2>
+            <p>Check the edges of your logic:</p>
+            <ul>
+                <li>Empty lists or null values.</li>
+                <li>Large numbers or long strings.</li>
+                <li>Invalid user input.</li>
+                <li>Concurrent operations (e.g., two users saving at once).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧍‍♂️ 6. User Acceptance Testing (UAT)</h2>
+            <p>Ask: “Does this behave correctly for a real user?”</p>
+            <ul>
+                <li>Run your app through realistic scenarios.</li>
+                <li>Combine data, UI interactions, and backend responses.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧰 7. Use Static Analysis Tools</h2>
+            <p>These tools catch logical and syntax errors before you run tests:</p>
+            <ul>
+                <li>JavaScript/TypeScript: ESLint, TypeScript compiler.</li>
+                <li>Objective-C: Clang Analyzer.</li>
+                <li>Python: pylint, mypy.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📈 8. Code Review & Logging</h2>
+            <ul>
+                <li>Have another developer review your logic.</li>
+                <li>Add logs or assertions to confirm assumptions at runtime.</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+console.assert(price >= 0, "Price should never be negative");
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚦 Summary Checklist</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Method</th>
+                        <th>Goal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Manual Testing</td>
+                        <td>Quick correctness check</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Unit Tests</td>
+                        <td>Verify small code blocks</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Integration Tests</td>
+                        <td>Verify modules work together</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Edge Case Tests</td>
+                        <td>Catch rare logical errors</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>UAT</td>
+                        <td>Validate real-world correctness</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Static Analysis</td>
+                        <td>Catch mistakes early</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

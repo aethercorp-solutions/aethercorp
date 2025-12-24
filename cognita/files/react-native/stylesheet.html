@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>StyleSheet</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">StyleSheet</h1>
+                    <p class="subtitle">
+                        In React Native, StyleSheet is used to define styles for components in a structured and performant way. It’s similar to CSS but optimized for mobile. Here’s a comprehensive guide:
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Basic Usage</h2>
+            <pre><code>
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Text style={styles.title}>Hello, React Native!&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,                  // fills the screen
+    justifyContent: 'center', // vertically center
+    alignItems: 'center',     // horizontally center
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Key Points About StyleSheet</h2>
+            <ol>
+                <li>
+                    Performance:
+                    <p>Using StyleSheet.create() ensures styles are immutable and sent only once over the bridge to native code, improving performance.</p>
+                </li>
+                <li>
+                    Flexbox Layout:
+                    <p>React Native uses Flexbox by default for layout.</p>
+                    <pre><code>
+container: {
+    flex: 1,
+    flexDirection: 'row', // column (default) or row
+    justifyContent: 'space-between',
+    alignItems: 'center',
+}                          
+                    </code></pre>
+                </li>
+                <li>
+                    Units:
+                    <p>There are no px, em, or % units. All values are in density-independent pixels (dp).</p>
+                </li>
+                <li>
+                    Colors:
+                    <p>Accepts color names ('red'), hex codes ('#ff0000'), rgba ('rgba(255,0,0,0.5)').</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>3. Conditional / Dynamic Styles</h2>
+            <p>You can combine or dynamically apply styles:</p>
+            <pre><code>
+&lt;Text style={[styles.text, isActive && styles.activeText]}&gt;
+    Dynamic Style
+&lt;/Text&gt;
+    
+    const styles = StyleSheet.create({
+    text: { fontSize: 16, color: 'gray' },
+    activeText: { color: 'blue', fontWeight: 'bold' },
+});                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. In-line Styles</h2>
+            <p>For very simple or dynamic styles, you can write them inline:</p>
+            <pre><code>
+&lt;View style={{ padding: 10, backgroundColor: isActive ? 'blue' : 'gray' }}&gt;
+    &lt;Text&gt;Hello&lt;/Text&gt;
+&lt;/View>  &gt;               
+            </code></pre>
+            <p>But for complex apps, StyleSheet.create is preferred for maintainability.</p>
+        </section>
+
+        <section>
+            <h2>5. Platform-Specific Styles</h2>
+            <p>React Native supports Platform-specific styles:</p>
+            <pre><code>
+import { Platform, StyleSheet } from 'react-native';
+
+const styles = StyleSheet.create({
+  container: {
+    padding: Platform.OS === 'ios' ? 20 : 10,
+  },
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Responsive / Percentage-Based Layouts</h2>
+            <pre><code>
+container: {
+    width: '80%',  // percentage works
+    height: '50%',
+}                  
+            </code></pre>
+            <p>For full responsiveness, you may combine with Dimensions:</p>
+            <pre><code>
+import { Dimensions } from 'react-native';
+const { width, height } = Dimensions.get('window');
+
+container: {
+  width: width * 0.8,
+  height: height * 0.5,
+}
+            </code></pre>
+
+            <p>✅ Best Practices</p>
+            <ol>
+                <li>Use StyleSheet.create() for all static styles.</li>
+                <li>Keep styles in a separate file for larger projects.</li>
+                <li>Use Flexbox instead of absolute positioning whenever possible.</li>
+                <li>Use arrays for conditional styles.</li>
+                <li>Avoid inline styles for performance-critical components.</li>
+            </ol>
+
+            <p>If you want, I can make a ready-to-use responsive style template for a React Native app that includes header, button, text, and card styles. It’s very handy for projects.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

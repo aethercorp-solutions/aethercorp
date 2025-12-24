@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Stack Navigation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Stack Navigation</h1>
+                    <p class="subtitle">
+                        In React Native (React Navigation), Stack Navigation is best used when your app follows a hierarchical, drill-down flow—where users move forward to see more detail and can go back to where they came from.
+                        <p>Below is a clear mental model + real-world use cases, with details that map directly to production apps (like the kind you’re building).</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What Stack Navigation Is (Mental Model)</h2>
+            <p>Think of screens stacked on top of each other:</p>
+            <pre><code>
+Home
+ └── Contact List
+      └── Contact Details
+           └── Edit Contact
+            </code></pre>
+            <ul>
+                <li>Each new screen is pushed onto the stack</li>
+                <li>Pressing back pops the current screen</li>
+                <li>The previous screen’s state is preserved</li>
+            </ul>
+            <p>📱 This mirrors native iOS UINavigationController and Android back stack</p>
+        </section>
+
+        <section>
+            <h2>When You SHOULD Use Stack Navigation</h2>
+            <p>1. Drill-Down / Detail Flow (Most Common Use Case)</p>
+            <p>Use case:</p>
+            <p>User selects an item → sees details → edits it.</p>
+            <p>Example (Contacts App – very relevant to TryCastanet):</p>
+            <pre><code>
+ContactsScreen
+ → ContactDetailsScreen
+   → EditContactScreen
+            </code></pre>
+            <p>Why Stack Works Best</p>
+            <ul>
+                <li>Natural back behavior</li>
+                <li>Keeps scroll position and state</li>
+                <li>Matches user expectations on iOS & Android</li>
+            </ul>
+            <pre><code>
+navigation.navigate('ContactDetails', { contactId })
+navigation.navigate('EditContact')
+navigation.goBack()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Authentication Flows</h2>
+            <p>Use case:</p>
+            <pre><code>
+Login
+ → OTP Verification
+ → Create Profile
+ → App Home
+            </code></pre>
+            <p>Why Stack</p>
+            <ul>
+                <li>Step-by-step progression</li>
+                <li>User can’t jump randomly</li>
+                <li>Easy to reset stack after login</li>
+            </ul>
+            <pre><code>
+navigation.reset({
+    index: 0,
+    routes: [{ name: 'Home' }],
+})                  
+            </code></pre>
+            <p>✔ Prevents user from going back to Login after auth</p>
+        </section>
+
+        <section>
+            <h2>3. Modal-Like Screens (iOS Style)</h2>
+            <p>Use case:</p>
+            <ul>
+                <li>Add Contact</li>
+                <li>Create Message</li>
+                <li>Filter / Settings sub-screen</li>
+            </ul>
+            <pre><code>
+Home
+ → AddContact (modal)
+            </code></pre>
+
+            <pre><code>
+&lt;Stack.Screen
+  name="AddContact"
+  component={AddContact}
+  options={{ presentation: 'modal' }}
+/&gt;
+            </code></pre>
+            <p>Why Stack</p>
+            <ul>
+                <li>Supports modal, fullScreenModal</li>
+                <li>Native swipe-down dismissal on iOS</li>
+                <li>Controlled transitions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Form & Multi-Step Wizards</h2>
+            <p>Use case:</p>
+            <pre><code>
+Schedule Message
+ → Select Contacts
+ → Select Date
+ → Confirm
+            </code></pre>
+
+            <p>Why Stack</p>
+            <ul>
+                <li>Clear step order</li>
+                <li>Can disable back or validate before next</li>
+                <li>Each step is a screen</li>
+            </ul>
+            <pre><code>
+navigation.navigate('SelectDate')
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Nested Navigation (Advanced but Realistic)</h2>
+            <p>Stack navigators are often nested inside tabs or drawers.</p>
+            <p>Example:</p>
+            <pre><code>
+Bottom Tabs
+ ├── Contacts (Stack)
+ │    ├── ContactsList
+ │    └── ContactDetails
+ ├── Messages (Stack)
+ │    ├── MessagesList
+ │    └── MessageDetails
+            </code></pre>
+
+            <p>Why Stack</p>
+            <ul>
+                <li>Each tab maintains its own history</li>
+                <li>Back button behaves correctly per tab</li>
+            </ul>
+            <p>This is how WhatsApp, Messenger, Telegram work.</p>
+        </section>
+
+        <section>
+            <h2>When NOT to Use Stack Navigation</h2>
+            <p>❌ Primary App Sections</p>
+            <p>Use Tab or Drawer, not Stack.</p>
+
+            <p>❌ Quick global switches</p>
+            <p>Stack is linear, not lateral.</p>
+
+            <p>❌ Complex state jumps</p>
+            <p>If screens don’t have a parent-child relationship, stack may confuse users.</p>
+        </section>
+
+        <section>
+            <h2>Stack vs Other Navigators (Quick Comparison)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Navigator</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Stack</td>
+                        <td>Drill-down, auth, forms, details</td>
+                    </tr>
+                    <tr>
+                        <td>Tab</td>
+                        <td>Top-level sections</td>
+                    </tr>
+                    <tr>
+                        <td>Drawer</td>
+                        <td>App-wide navigation</td>
+                    </tr>
+                    <tr>
+                        <td>Modal Stack</td>
+                        <td>Temporary tasks</td>
+                    </tr>
+                    <tr>
+                        <td>Native Stack</td>
+                        <td>High performance, iOS-like UX</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Native Stack vs JS Stack (Important)</h2>
+            <p>Since you’re performance-focused, prefer:</p>
+            <pre><code>
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+            </code></pre>
+
+            <p>Use Native Stack when:</p>
+            <ul>
+                <li>Heavy screens</li>
+                <li>iOS polish matters</li>
+                <li>You want UIKit-level animations</li>
+            </ul>
+            <p>Use JS Stack when:</p>
+            <ul>
+                <li>You need fully custom animations</li>
+                <li>Gesture control beyond native limits</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Real Production Example (Clean Pattern)</h2>
+            <pre><code>
+const Stack = createNativeStackNavigator()
+
+function ContactsStack() {
+  return (
+    &lt;Stack.Navigator&gt;
+        &lt;Stack.Screen name="Contacts" component={ContactsScreen} /&gt;
+        &lt;Stack.Screen name="Details" component={ContactDetailsScreen} /&gt;
+        &lt;Stack.Screen name="Edit" component={EditContactScreen} /&gt;
+    &lt;/Stack.Navigator&gt;
+  )
+}
+            </code></pre>
+
+            <section>
+                <h2>Rule of Thumb (Easy to Remember)</h2>
+                <p>If the user expects a Back button → use Stack Navigation</p>
+            </section>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

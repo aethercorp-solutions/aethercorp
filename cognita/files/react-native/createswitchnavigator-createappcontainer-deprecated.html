@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Title </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Title </h1>
+                    <p class="subtitle">
+                        createSwitchNavigator and createAppContainer come from React Navigation v3 / v4. They were commonly used to control high-level app flow (auth, splash, onboarding) where screens do not go back to each other.
+                        <p>Since you’re reviewing older navigation code (like your SwitchNavigator example earlier), here’s a deep, structured explanation of usage, internals, and when to use it.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What createSwitchNavigator Is</h2>
+            <p>createSwitchNavigator creates a navigator that:</p>
+            <ul>
+                <li>Shows only one screen at a time</li>
+                <li>Does NOT keep navigation history</li>
+                <li>Does NOT allow back navigation</li>
+                <li>Immediately switches between routes</li>
+            </ul>
+            <p>Think of it as a state machine, not a stack.</p>
+            <p>Common use cases</p>
+            <ul>
+                <li>Splash screen</li>
+                <li>Authentication flow</li>
+                <li>Walkthrough / onboarding</li>
+                <li>Deciding between logged-in vs logged-out UI</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. What createAppContainer Is</h2>
+            <p>createAppContainer:</p>
+            <ul>
+                <li>Wraps the root navigator</li>
+                <li>Manages navigation state</li>
+                <li>Connects navigation to the React root</li>
+                <li>Handles deep linking, state persistence, back button handling (Android)</li>
+            </ul>
+            <p>In v3/v4, every app must have exactly one AppContainer.</p>
+        </section>
+
+        <section>
+            <h2>3. Basic Usage Example</h2>
+            <pre><code>
+import { createSwitchNavigator, createAppContainer } from 'react-navigation';
+import AuthScreen from './AuthScreen';
+import AppScreen from './AppScreen';
+import SplashScreen from './SplashScreen';
+
+const RootNavigator = createSwitchNavigator(
+  {
+    Splash: SplashScreen,
+    Auth: AuthScreen,
+    App: AppScreen,
+  },
+  {
+    initialRouteName: 'Splash',
+  }
+);
+
+export default createAppContainer(RootNavigator);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. How the Navigation Flow Works</h2>
+            <p>Step-by-step flow</p>
+            <ol>
+                <li>App launches</li>
+                <li>AppContainer mounts</li>
+                <li>SwitchNavigator shows initialRouteName</li>
+                <li>Inside SplashScreen, you decide where to go</li>
+                <li>You navigate once and cannot go back</li>
+            </ol>
+            <p>Example inside SplashScreen:</p>
+            <pre><code>
+componentDidMount() {
+    const isLoggedIn = checkAuth();
+    
+    this.props.navigation.navigate(
+        isLoggedIn ? 'App' : 'Auth'
+    );
+}                  
+            </code></pre>
+            <p>⚠️ No back button returns to Splash.</p>
+        </section>
+
+        <section>
+            <h2>5. Typical Real-World Architecture</h2>
+            <p>High-level structure (very common)</p>
+            <pre><code>
+AppContainer
+ └── SwitchNavigator
+      ├── SplashNavigator
+      ├── WalkthroughNavigator
+      └── MainAppNavigator
+            </code></pre>
+
+            <p>Code example</p>
+            <pre><code>
+const RootNavigator = createSwitchNavigator({
+    Splash: SplashNavigator,
+    Walkthrough: WalkthroughNavigator,
+    Main: MainAppNavigator,
+    });
+    
+export default createAppContainer(RootNavigator);                  
+            </code></pre>
+            <p>Each route can itself be a StackNavigator, TabNavigator, etc.</p>
+        </section>
+
+        <section>
+            <h2>6. Why SwitchNavigator Has No Back Button</h2>
+            <p>Design reason</p>
+            <ul>
+                <li>
+                    Prevent users from navigating back to:
+                    <ul>
+                        <li>Login after login</li>
+                        <li>Splash after app load</li>
+                        <li>Onboarding after completion</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Internally</p>
+            <p>SwitchNavigator:</p>
+            <ul>
+                <li>Replaces the entire route state</li>
+                <li>Does not push routes onto a stack</li>
+                <li>Clears previous routes on navigation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Navigation Methods Available</h2>
+            <p>Even though it behaves differently, it still uses:</p>
+            <pre><code>
+this.props.navigation.navigate('RouteName');
+            </code></pre>
+            <p>But not recommended:</p>
+            <pre><code>
+goBack()
+pop()
+push()
+            </code></pre>
+            <p>Because there is no stack.</p>
+        </section>
+
+        <section>
+            <h2>8. Your Provided Example Explained</h2>
+            <p>Your code:</p>
+            <pre><code>
+const screens = {
+    Root: SplashNavigator,
+    Home: MenuNavigator,
+    Splash: SplashNavigator,
+    Walkthrough: WalkthroughNavigator,
+};
+    
+const RootNavigation = createSwitchNavigator(screens);
+export default createAppContainer(RootNavigation);                  
+            </code></pre>
+
+            <p>What’s happening</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Route</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Root</td>
+                        <td>Entry point (Splash)</td>
+                    </tr>
+                    <tr>
+                        <td>Home</td>
+                        <td>Main app UI</td>
+                    </tr>
+                    <tr>
+                        <td>Splash</td>
+                        <td>Initial loading</td>
+                    </tr>
+                    <tr>
+                        <td>Walkthrough</td>
+                        <td>Onboarding</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Improvement suggestion</p>
+            <p>You normally want:</p>
+            <pre><code>
+createSwitchNavigator(
+  screens,
+  { initialRouteName: 'Root' }
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Internal Conceptual Model</h2>
+            <p>StackNavigator</p>
+            <pre><code>
+A → B → C
+⬅️ back allowed
+            </code></pre>
+            <p>SwitchNavigator</p>
+            <pre><code>
+Splash → Auth → App
+❌ no back
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Common Mistakes</h2>
+            <p>❌ Using SwitchNavigator for normal screens</p>
+            <p>Bad for:</p>
+            <ul>
+                <li>Forms</li>
+                <li>Detail pages</li>
+                <li>Settings</li>
+            </ul>
+
+            <p>❌ Expecting header/back behavior</p>
+            <p>SwitchNavigator:</p>
+            <ul>
+                <li>Has no header</li>
+                <li>Has no gestures</li>
+                <li>Has no history</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>11. Why It Was Removed in React Navigation v5+</h2>
+            <p>React Navigation v5+ replaced it with:</p>
+            <pre><code>
+&lt;NavigationContainer&gt;
+    {isLoggedIn ? &lt;AppStack /&gt; : &lt;AuthStack /&gt;}
+&lt;/NavigationContainer&gt;                  
+            </code></pre>
+
+            <p>This:</p>
+            <ul>
+                <li>Uses React state</li>
+                <li>Is more declarative</li>
+                <li>Easier to reason about</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>12. When You SHOULD Use It (v4 Apps)</h2>
+            <p>Use createSwitchNavigator if:</p>
+            <ul>
+                <li>You maintain a legacy v4 app</li>
+                <li>You need hard route separation</li>
+                <li>You want no back navigation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>13. Quick Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>SwitchNavigator</th>
+                        <th>StackNavigator</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Back navigation</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>History</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Headers</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Auth flow</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>14. Final Summary</h2>
+            <ul>
+                <li>createSwitchNavigator controls app-level flow</li>
+                <li>createAppContainer bootstraps navigation</li>
+                <li>No back navigation by design</li>
+                <li>Ideal for splash/auth/onboarding</li>
+                <li>Deprecated but still valid for v4 apps</li>
+            </ul>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>🔁 Migrate this to React Navigation v6</li>
+                <li>🧩 Diagram your exact app flow</li>
+                <li>🔍 Review your existing navigators and simplify them</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>System-level explanation of process vs thread</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">System-level explanation of process vs thread</h1>
+                    <p class="subtitle">Below is a practical, system-level explanation of process vs thread, followed by how to create and use both on major platforms (Linux/macOS, Windows, Android, iOS). I’ll focus on what actually happens under the hood and show real implementation examples, not just theory.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Process vs Thread — Core Difference</h2>
+            <p>Process</p>
+            <p>A process is an isolated execution environment.</p>
+            <p>Characteristics</p>
+            <ul>
+                <li>Own virtual memory space</li>
+                <li>Own heap, stack, file descriptors</li>
+                <li>Heavyweight</li>
+                <li>One process crash does not affect others</li>
+                <li>Communication requires IPC (pipes, sockets, shared memory)</li>
+            </ul>
+
+            <p>Examples</p>
+            <ul>
+                <li>Chrome browser</li>
+                <li>Node.js server</li>
+                <li>iOS app</li>
+                <li>Android app</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Thread</h2>
+            <p>A thread is a lightweight execution unit inside a process.</p>
+            <p>Characteristics</p>
+            <ul>
+                <li>Shares memory, heap, open files with other threads</li>
+                <li>Has its own stack & registers</li>
+                <li>Lightweight</li>
+                <li>One thread crash can crash entire process</li>
+                <li>Faster communication (shared memory)</li>
+            </ul>
+
+            <p>Examples</p>
+            <ul>
+                <li>UI thread</li>
+                <li>Network thread</li>
+                <li>Worker thread</li>
+                <li>React Native JS thread</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Comparison Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Process</th>
+                        <th>Thread</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Memory</td>
+                        <td>Separate</td>
+                        <td>Shared</td>
+                    </tr>
+                    <tr>
+                        <td>Creation cost</td>
+                        <td>High</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Communication</td>
+                        <td>IPC</td>
+                        <td>Shared memory</td>
+                    </tr>
+                    <tr>
+                        <td>Crash impact</td>
+                        <td>Isolated</td>
+                        <td>Whole process</td>
+                    </tr>
+                    <tr>
+                        <td>Context switch</td>
+                        <td>Slow</td>
+                        <td>Fast</td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td>Strong</td>
+                        <td>Weak</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>2. Linux / macOS (POSIX systems)</h2>
+            <p>Create a Process — fork()</p>
+            <pre><code>
+#include &lt;unistd.h&gt;
+#include &lt;stdio.h&gt;
+
+int main() {
+    pid_t pid = fork();
+
+    if (pid == 0) {
+        // Child process
+        printf("Child PID: %d\n", getpid());
+    } else {
+        // Parent process
+        printf("Parent PID: %d\n", getpid());
+    }
+
+    return 0;
+}                    
+            </code></pre>
+
+            <p>What happens</p>
+            <ul>
+                <li>OS clones the parent process</li>
+                <li>Uses Copy-on-Write (COW) memory</li>
+                <li>Child gets a new PID</li>
+            </ul>
+
+            <p>Usage</p>
+            <ul>
+                <li>Servers</li>
+                <li>Daemons</li>
+                <li>Isolated workloads</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Create a Thread — pthread</h2>
+            <pre><code>
+#include &lt;pthread.h&gt;
+#include &lt;stdio.h&gt;
+
+void* task(void* arg) {
+    printf("Thread running\n");
+    return NULL;
+}
+
+int main() {
+    pthread_t thread;
+    pthread_create(&thread, NULL, task, NULL);
+    pthread_join(thread, NULL);
+    return 0;
+}                    
+            </code></pre>
+
+            <p>What happens</p>
+            <ul>
+                <li>Thread shares memory with parent</li>
+                <li>Faster creation than process</li>
+            </ul>
+
+            <p>Usage</p>
+            <ul>
+                <li>I/O handling</li>
+                <li>Background tasks</li>
+                <li>Parallel computation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Windows</h2>
+            <p>Create a Process — CreateProcess</p>
+            <pre><code>
+#include &lt;windows.h&gt;
+#include &lt;stdio.h&gt;
+
+int main() {
+    STARTUPINFO si = { sizeof(si) };
+    PROCESS_INFORMATION pi;
+
+    CreateProcess(
+        NULL,
+        "notepad.exe",
+        NULL,
+        NULL,
+        FALSE,
+        0,
+        NULL,
+        NULL,
+        &si,
+        &pi
+    );
+
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    return 0;
+}                    
+            </code></pre>
+
+            <p>Windows process model</p>
+            <ul>
+                <li>Strong isolation</li>
+                <li>Explicit handle management</li>
+                <li>Heavy security boundaries</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Create a Thread — CreateThread</h2>
+            <pre><code>
+#include &lt;windows.h&gt;
+
+DWORD WINAPI ThreadFunc(LPVOID lpParam) {
+    return 0;
+}
+
+int main() {
+    HANDLE thread = CreateThread(
+        NULL,
+        0,
+        ThreadFunc,
+        NULL,
+        0,
+        NULL
+    );
+
+    WaitForSingleObject(thread, INFINITE);
+    return 0;
+}                    
+            </code></pre>
+            <p>Note</p>
+            <ul>
+                <li>Windows also supports thread pools (recommended)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Android (Linux-based, Java/Kotlin)</h2>
+            <p>Process (Android App)</p>
+            <ul>
+                <li>Each app runs in its own Linux process</li>
+                <li>Managed by Zygote</li>
+            </ul>
+            <p>You don’t manually fork processes in normal apps.</p>
+        </section>
+
+        <section>
+            <h2>Thread — Java/Kotlin</h2>
+            <pre><code>
+Thread {
+    println("Background thread")
+}.start()                
+            </code></pre>
+
+            <p>Better: Executor / Coroutines</p>
+            <pre><code>
+GlobalScope.launch(Dispatchers.IO) {
+    println("Running in IO thread")
+}                
+            </code></pre>
+
+            <p>Android rules</p>
+            <ul>
+                <li>UI must run on Main Thread</li>
+                <li>Heavy work → background threads</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. iOS / macOS (Objective-C / Swift)</h2>
+            <p>Process</p>
+            <ul>
+                <li>One app = one process</li>
+                <li>No manual process creation (sandboxed)</li>
+            </ul>
+
+            <p>Thread — NSThread (low-level)</p>
+            <pre><code>
+[NSThread detachNewThreadWithBlock:^{
+    NSLog(@"Background thread");
+}];                
+            </code></pre>
+
+            <p>Preferred — GCD (Grand Central Dispatch)</p>
+            <pre><code>
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    NSLog(@"Background task");
+});                
+            </code></pre>
+
+            <pre><code>
+DispatchQueue.global().async {
+    print("Background work")
+}                
+            </code></pre>
+
+            <p>Why GCD</p>
+            <ul>
+                <li>Thread pooling</li>
+                <li>Automatic scheduling</li>
+                <li>Less bugs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Node.js (Special Case)</h2>
+            <p>Process</p>
+            <pre><code>
+const { fork } = require('child_process');
+fork('worker.js');
+            </code></pre>
+
+            <p>Thread (Worker Threads)</p>
+            <pre><code>
+const { Worker } = require('worker_threads');
+
+new Worker(`
+    console.log("Worker thread");
+`, { eval: true });
+            </code></pre>
+
+            <p>Node model</p>
+            <ul>
+                <li>One main event loop</li>
+                <li>Threads only for CPU-heavy work</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Real-World Usage Patterns</h2>
+            <p>When to use a Process</p>
+            <ul>
+                <li>Security isolation</li>
+                <li>Crash protection</li>
+                <li>Independent services</li>
+                <li>Microservices</li>
+                <li>CLI tools</li>
+            </ul>
+
+            <p>When to use Threads</p>
+            <ul>
+                <li>Shared data</li>
+                <li>Performance</li>
+                <li>Parallel tasks</li>
+                <li>UI responsiveness</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Performance & Safety Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Best Choice</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>UI app</td>
+                        <td>Threads</td>
+                    </tr>
+                    <tr>
+                        <td>Server workers</td>
+                        <td>Processes</td>
+                    </tr>
+                    <tr>
+                        <td>CPU-heavy math</td>
+                        <td>Threads</td>
+                    </tr>
+                    <tr>
+                        <td>Untrusted code</td>
+                        <td>Process</td>
+                    </tr>
+                    <tr>
+                        <td>Shared cache</td>
+                        <td>Threads</td>
+                    </tr>
+                    <tr>
+                        <td>High availability</td>
+                        <td>Processes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>9. Common Mistakes</h2>
+            <p>❌ Too many threads → context switching overhead</p>
+            <p>❌ Sharing mutable data without locks</p>
+            <p>❌ Blocking UI thread</p>
+            <p>❌ Forking processes unnecessarily on mobile</p>
+        </section>
+
+        <section>
+            <h2>10. Mental Model (Easy to Remember)</h2>
+            <ul>
+                <li>Process = House</li>
+                <li>Thread = People inside the house</li>
+                <li>People share the kitchen (memory)</li>
+                <li>Fire in one house doesn’t burn others</li>
+                <li>Fight inside → whole house affected</li>
+            </ul>
+
+            <p>If you want, I can also:</p>
+            <ul>
+                <li>Compare threads vs async/event-loop</li>
+                <li>Explain React Native threads (JS, UI, Native)</li>
+                <li>Show AWS Lambda process/thread model</li>
+                <li>Explain gRPC & threading</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

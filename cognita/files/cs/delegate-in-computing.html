@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Delegate</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Delegate</h1>
+                    <p class="subtitle">
+                        In computing, a delegate is a construct that represents a reference to a method (or function). It’s like a type-safe function pointer — meaning you can store a method inside a variable, pass it around, and invoke it later — but with strict type checking.
+                        <p>Let’s break it down by usage, implementation, and examples.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Concept</h2>
+            <p>A delegate allows:</p>
+            <ul>
+                <li>Encapsulation of a method (or multiple methods).</li>
+                <li>Dynamic invocation of methods at runtime.</li>
+                <li>Flexible event handling or callback mechanisms.</li>
+                <li>Decoupling between components (the caller doesn’t need to know which method is being called).</li>
+            </ul>
+            <p>In short:</p>
+            <p>A delegate is an object that can call methods indirectly.</p>
+        </section>
+
+        <section>
+            <h2>🧩 Usage</h2>
+            <ol>
+                <li>
+                    Callbacks
+                    <p>Delegates are often used for callback functions, where one piece of code signals or notifies another after a task is completed.</p>
+                    <p>Example:</p>
+                    <p>When a file download completes, a delegate can call a user-defined method like OnDownloadComplete().</p>
+                </li>
+                <li>
+                    Event Handling
+                    <p>Delegates are heavily used in event-driven programming, such as GUI frameworks or asynchronous operations.</p>
+                    <p>Example: In C#, buttons use delegates to trigger events:</p>
+                    <pre><code>
+button.Click += OnButtonClick;
+                    </code></pre>
+                    <p>Here, OnButtonClick is a method assigned to the delegate that executes when the event occurs.</p>
+                </li>
+                <li>
+                    Functional Programming
+                    <p>Delegates are the foundation for lambda expressions and anonymous functions — used to pass behavior as parameters.</p>
+                    <p>Example:</p>
+                    <pre><code>
+List&lt;int&gt; numbers = new List&lt;int&gt; {1, 2, 3, 4};
+    numbers.ForEach(x => Console.WriteLine(x));                            
+                    </code></pre>
+                    <p>Here, the lambda x => Console.WriteLine(x) is a delegate.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚙️ Implementation</h2>
+            <p>🖥 In C#</p>
+            <p>C# has built-in delegate types and custom delegate declarations.</p>
+            <p>Custom delegate</p>
+            <pre><code>
+public delegate int MathOperation(int a, int b);
+            </code></pre>
+            <p>Assign and invoke</p>
+            <pre><code>
+static int Add(int a, int b) => a + b;
+
+static void Main()
+{
+    MathOperation operation = Add;   // Assign method to delegate
+    int result = operation(5, 3);    // Invoke delegate
+    Console.WriteLine(result);       // Output: 8
+}
+            </code></pre>
+            <p>With anonymous methods or lambdas</p>
+            <pre><code>
+MathOperation multiply = (a, b) => a * b;
+Console.WriteLine(multiply(4, 2)); // Output: 8
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>💡 In Swift</h2>
+            <p>Delegates are implemented as protocols — often used in UIKit for communication between objects (like ViewControllers and UI elements).</p>
+            <p>Example:</p>
+            <pre><code>
+protocol DownloadDelegate {
+    func didFinishDownloading(data: Data)
+}
+
+class Downloader {
+    var delegate: DownloadDelegate?
+    
+    func startDownload() {
+        // ... download logic
+        delegate?.didFinishDownloading(data: Data())
+    }
+}
+
+class ViewController: DownloadDelegate {
+    func didFinishDownloading(data: Data) {
+        print("Download complete!")
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>💬 In JavaScript</h2>
+            <p>While JavaScript doesn’t have “delegates” by name, function references and callbacks serve the same purpose.</p>
+            <p>Example:</p>
+            <pre><code>
+function greet(name) {
+    console.log(`Hello, ${name}!`);
+}
+    
+function callDelegate(delegate, value) {
+    delegate(value);
+}
+    
+callDelegate(greet, "Paul"); // Output: Hello, Paul!                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧱 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Purpose</th>
+                        <th>Example Language</th>
+                        <th>Equivalent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Delegate</td>
+                        <td>Method reference or callback</td>
+                        <td>C#</td>
+                        <td>Function pointer</td>
+                    </tr>
+                    <tr>
+                        <td>Protocol Delegate Pattern</td>
+                        <td>Event/callback pattern</td>
+                        <td>Swift</td>
+                        <td>Interface</td>
+                    </tr>
+                    <tr>
+                        <td>Callback Function</td>
+                        <td>Function passed as argument</td>
+                        <td>JavaScript</td>
+                        <td>Function pointer</td>
+                    </tr>
+                    <tr>
+                        <td>Function Object / Functor</td>
+                        <td>Encapsulated callable</td>
+                        <td>C++</td>
+                        <td>std::function</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

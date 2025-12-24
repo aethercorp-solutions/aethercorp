@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Random Simulations</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Random Simulations</h1>
+                    <p class="subtitle">
+                        <p>Random simulations (also called rollouts) are a key part of Monte Carlo Search. They mean:</p>
+                        <p>✅ Playing out the rest of the game using random (or mostly random) moves</p>
+                        <p>from the current position to estimate whether the move leads to a win, loss, or draw.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔍 Simple Explanation</h2>
+            <p>Imagine you're at a chess position and you want to know if Move A is good.</p>
+            <p>You do this:</p>
+            <ol>
+                <li>Make Move A.</li>
+                <li>Then let both sides play random moves until the game ends.</li>
+                <li>See who wins.</li>
+                <li>Repeat this maybe 1,000 times.</li>
+                <li>
+                    Count results:
+                    <ul>
+                        <li>If Move A wins a lot → probably good</li>
+                        <li>If Move A loses a lot → probably bad</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>Each of these play-outs is a simulation.</p>
+        </section>
+
+        <section>
+            <h2>🍀 Why “random”?</h2>
+            <p>Not pure random like throwing the king away.</p>
+            <p>But moves chosen without deep calculation, sometimes with slight guidance like:</p>
+            <ul>
+                <li>Prefer captures</li>
+                <li>Avoid losing pieces immediately</li>
+                <li>Prefer developing moves</li>
+            </ul>
+            <p>This keeps it fast.</p>
+            <p>Randomness is needed because:</p>
+            <ul>
+                <li>Trying all possible moves is impossible (too many)</li>
+                <li>Random sampling gives a statistical estimate</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>♟️ Example (Chess)</h2>
+            <p>Position: White to move.</p>
+            <p>Candidate Move: Qh5</p>
+            <p>MCTS will:</p>
+            <p>Sim 1</p>
+            <ul>
+                <li>Qh5, …Nf6, Bc4, …g6, Qf3, …Bg7, …game continues randomly → White wins</li>
+            </ul>
+            <p>Sim 2</p>
+            <ul>
+                <li>Qh5, …Nc6, Qf3, …Nd4 → Black wins</li>
+            </ul>
+            <p>Sim 3</p>
+            <ul>
+                <li>Qh5, …g6, Qf3 → Draw</li>
+            </ul>
+            <p>After 1000 random rollouts:</p>
+            <ul>
+                <li>White wins: 540</li>
+                <li>Draws: 250</li>
+                <li>Black wins: 210</li>
+            </ul>
+            <p>Win probability = 54% → Move looks promising.</p>
+        </section>
+
+        <section>
+            <h2>🧠 What does randomness achieve?</h2>
+            <p>Random rollouts give:</p>
+            <ul>
+                <li>Exploration of many possible futures</li>
+                <li>Statistical averaging of outcomes</li>
+                <li>Unbiased sampling without calculating everything</li>
+            </ul>
+            <p>It’s like asking:</p>
+            <p>“If I try this move in 1,000 different possible games, what usually happens?”</p>
+        </section>
+
+        <section>
+            <h2>🧨 How accurate is it?</h2>
+            <p>Random simulations work extremely well in games like Go (huge branching).</p>
+            <p>In chess:</p>
+            <ul>
+                <li>Pure random rollouts are bad (too many traps)</li>
+                <li>
+                    Modern engines combine neural networks + MCTS, not pure randomness
+                    <ul>
+                        <li>Neural network predicts good moves</li>
+                        <li>MCTS explores the tree</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>So randomness is guided.</p>
+        </section>
+
+        <section>
+            <h2>🎯 You can ask next:</h2>
+            <ul>
+                <li>How many random simulations do engines do?</li>
+                <li>Why random simulations work better in Go than in chess?</li>
+                <li>Fixing randomness with heuristics?</li>
+                <li>How AlphaZero changed random simulations?</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

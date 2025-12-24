@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Programming language design</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Programming language design</h1>
+                    <p class="subtitle">
+                        Programming language design is the art and science of creating a language that allows humans to effectively communicate instructions to computers. It sits at the intersection of computer science, linguistics, and software engineering, involving decisions about syntax, semantics, implementation, and usability.
+                        <p>Let’s break it down clearly 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 1. Core Goals of Language Design</h2>
+            <p>A good programming language balances power, simplicity, and safety. The design typically aims to:</p>
+            <ul>
+                <li>Express ideas clearly — code should be readable and writable.</li>
+                <li>Prevent errors — with strong type systems or controlled side effects.</li>
+                <li>Enable abstraction — so programmers can build reusable and modular systems.</li>
+                <li>Perform efficiently — both in compilation and runtime.</li>
+                <li>Be portable and maintainable — across platforms and time.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ 2. Main Aspects of Design</h2>
+            <p>a. Syntax (What the code looks like)</p>
+            <ul>
+                <li>Defines the grammar and structure of valid programs.</li>
+                <li>
+                    Example:
+                    <pre><code>
+for i in range(10):
+    print(i)
+                    </code></pre>
+                </li>
+            </ul>
+            <p>Python favors minimal punctuation and indentation-based structure.</p>
+            <p>Compare with C:</p>
+            <pre><code>
+for (int i = 0; i < 10; i++) {
+    printf("%d\n", i);
+}                
+            </code></pre>
+
+            <p>b. Semantics (What the code means)</p>
+            <ul>
+                <li>Defines how code behaves — what each expression or statement does.</li>
+                <li>
+                    Can be:
+                    <ul>
+                        <li>Static semantics — checked before running (e.g., type correctness).</li>
+                        <li>Dynamic semantics — rules for runtime behavior.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>c. Type System</p>
+            <ul>
+                <li>Dictates how variables, expressions, and functions are classified and validated.</li>
+                <li>
+                    Examples:
+                    <ul>
+                        <li>Static typing (Java, Rust): types checked before running.</li>
+                        <li>Dynamic typing (Python, JavaScript): types resolved at runtime.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>d. Paradigms</p>
+            <p>A language can support one or several paradigms:</p>
+            <ul>
+                <li>Imperative – explicit control flow (C, Python)</li>
+                <li>Functional – focus on immutability and functions as values (Haskell, Lisp)</li>
+                <li>Object-Oriented – organizing code around objects (Java, C++)</li>
+                <li>Logic-based – rule-based reasoning (Prolog)</li>
+                <li>Declarative – describe what to do, not how (SQL, HTML)</li>
+            </ul>
+
+            <p>e. Memory Management</p>
+            <ul>
+                <li>Manual: programmer handles memory (C)</li>
+                <li>Automatic (GC): garbage collector handles it (Java, Go)</li>
+                <li>Ownership systems: compile-time guarantees (Rust)</li>
+            </ul>
+
+            <p>f. Concurrency Model</p>
+            <ul>
+                <li>Threads, async/await, actors, coroutines, message passing, etc.</li>
+                <li>The design determines how the language scales across cores and networks.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 3. Implementation Layers</h2>
+            <p>A programming language typically includes:</p>
+            <ul>
+                <li>Lexer & Parser — turn source code into syntax trees.</li>
+                <li>Compiler / Interpreter — executes or translates code.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 4. Language Design Tradeoffs</h2>
+            <p>Every design choice has tradeoffs:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Tradeoff Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Readability</td>
+                        <td>May reduce performance (Python vs C)</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>May reduce safety (C vs Rust)</td>
+                    </tr>
+                    <tr>
+                        <td>Flexibility</td>
+                        <td>May reduce predictability (dynamic typing vs static)</td>
+                    </tr>
+                    <tr>
+                        <td>Abstraction</td>
+                        <td>May hide useful low-level control</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>💡 5. Designing Your Own Language</h2>
+            <p>If you’re creating one, typical steps are:</p>
+            <ol>
+                <li>Define purpose (e.g., scripting, data processing, embedded systems)</li>
+                <li>Choose paradigms (imperative, functional, etc.)</li>
+                <li>Design syntax (human-friendly or machine-oriented)</li>
+                <li>Define semantics (types, evaluation order, scoping rules)</li>
+                <li>Build a parser (using tools like ANTLR or yacc)</li>
+                <li>Write an interpreter or compiler</li>
+                <li>Create a standard library</li>
+                <li>Iterate — refine through feedback and testing</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔥 Examples of Influential Design Philosophies</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Language</th>
+                        <th>Design Focus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>C</td>
+                        <td>Minimalism, control, performance</td>
+                    </tr>
+                    <tr>
+                        <td>Python</td>
+                        <td>Readability, simplicity, batteries included</td>
+                    </tr>
+                    <tr>
+                        <td>Rust</td>
+                        <td>Safety, concurrency, zero-cost abstractions</td>
+                    </tr>
+                    <tr>
+                        <td>Lisp</td>
+                        <td>Homoiconicity, metaprogramming</td>
+                    </tr>
+                    <tr>
+                        <td>Go</td>
+                        <td>Simplicity, concurrency, fast compilation</td>
+                    </tr>
+                    <tr>
+                        <td>Swift</td>
+                        <td>Safety, expressiveness, modern syntax</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

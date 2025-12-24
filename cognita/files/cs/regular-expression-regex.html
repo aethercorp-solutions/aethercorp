@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Regular Expression</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Regular Expression</h1>
+                    <p class="subtitle">A regular expression (regex) is a pattern-matching language used to search, extract, and manipulate text. </p>
+                        <p>You can use regex in many languages (JavaScript, Python, Objective-C, etc.) to match complex string structures like emails, phone numbers, or custom tokens.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 2. Common Regex Use Cases</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Example Pattern</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Validate email</td>
+                        <td>^[\w.-]+@[\w.-]+\.\w+$</td>
+                        <td>Checks email format</td>
+                    </tr>
+                    <tr>
+                        <td>Extract numbers</td>
+                        <td>\d+</td>
+                        <td>Finds all digits</td>
+                    </tr>
+                    <tr>
+                        <td>Validate phone number</td>
+                        <td>^\+?\d{10,15}$</td>
+                        <td>Matches international phone numbers</td>
+                    </tr>
+                    <tr>
+                        <td>Remove extra spaces</td>
+                        <td>\s+</td>
+                        <td>Detects one or more whitespace characters</td>
+                    </tr>
+                    <tr>
+                        <td>Detect HTML tags</td>
+                        <td>&lt;[^>]+&gt;</td>
+                        <td>Matches tags like &lt;div&gt; or &lt;p&gt;&lt;/p&gt;</td>
+                    </tr>
+                    <tr>
+                        <td>Match words</td>
+                        <td>\b[A-Za-z]+\b</td>
+                        <td>Captures individual words</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>⚙️ 3. Regex in Practice (Examples)</h2>
+            <p>In JavaScript</p>
+            <pre><code>
+// Find all email addresses
+const text = "Contact me at test@example.com or admin@mail.org";
+const emails = text.match(/[\w.-]+@[\w.-]+\.\w+/g);
+console.log(emails); // ["test@example.com", "admin@mail.org"]
+
+// Replace numbers with #
+const masked = text.replace(/\d+/g, '#');
+            </code></pre>
+
+            <p>In Python</p>
+            <pre><code>
+import re
+
+text = "My phone is +639171234567"
+match = re.search(r"\+?\d{10,15}", text)
+if match:
+    print("Phone:", match.group())
+
+emails = re.findall(r"[\w.-]+@[\w.-]+\.\w+", "email1@test.com and email2@test.org")
+print(emails)
+            </code></pre>
+
+            <p>In Objective-C</p>
+            <pre><code>
+NSString *pattern = @"\\d+"; // find numbers
+NSError *error = nil;
+NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:&error];
+
+NSString *input = @"Order 1234 and 5678";
+NSArray *matches = [regex matchesInString:input options:0 range:NSMakeRange(0, [input length])];
+
+for (NSTextCheckingResult *match in matches) {
+    NSString *number = [input substringWithRange:[match range]];
+    NSLog(@"%@", number);
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧰 4. Custom Regex Implementation (Manual Pattern Matching)</h2>
+            <p>If you want to build your own simplified regex engine (for learning or special use cases), you can manually parse and match patterns.</p>
+            <p>Here’s a conceptual example in JavaScript for a mini “regex-like” engine that supports * (zero or more) and . (any character):</p>
+            <pre><code>
+function matchPattern(str, pattern) {
+    if (pattern.length === 0) return str.length === 0;
+    
+    // Check if first character matches
+    const firstMatch = str.length > 0 && (pattern[0] === str[0] || pattern[0] === '.');
+    
+    // Handle '*'
+    if (pattern.length >= 2 && pattern[1] === '*') {
+        return (
+        matchPattern(str, pattern.slice(2)) || // skip '*'
+        (firstMatch && matchPattern(str.slice(1), pattern)) // consume one char
+        );
+    } else {
+        return firstMatch && matchPattern(str.slice(1), pattern.slice(1));
+    }
+}
+    
+console.log(matchPattern("aab", "c*a*b")); // true (similar to real regex)                  
+            </code></pre>
+            <p>This recursive function mimics how regex engines handle patterns with wildcards and repetition.</p>
+        </section>
+
+        <section>
+            <h2>🧩 5. Best Practices</h2>
+            <ul>
+                <li>Always escape special characters (. * + ? ^ $ { } ( ) [ ] \ |) when matching literal text.</li>
+                <li>Use non-greedy quantifiers (*?, +?) when you don’t want overmatching.</li>
+                <li>Use capturing groups () to extract subpatterns.</li>
+                <li>Precompile regex for repeated use to boost performance.</li>
+                <li>Test patterns using online tools like regex101.com.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Perfect — you want to create your own regex engine from scratch, without using any regex libraries.</p>
+            <p>Let’s do this step-by-step so you can understand how regex actually works internally.</p>
+            <h2>🎯 Goal</h2>
+            <p>We’ll build a mini regex engine that supports:</p>
+            <ul>
+                <li>. → matches any single character</li>
+                <li>* → matches zero or more of the previous character</li>
+                <li>Exact characters (e.g., abc)</li>
+                <li>Full string matching</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Example behavior:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pattern</th>
+                        <th>String</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>a*b</td>
+                        <td>aaab</td>
+                        <td>✅ true</td>
+                    </tr>
+                    <tr>
+                        <td>.*</td>
+                        <td>anything</td>
+                        <td>✅ true</td>
+                    </tr>
+                    <tr>
+                        <td>ab*c</td>
+                        <td>ac</td>
+                        <td>✅ true</td>
+                    </tr>
+                    <tr>
+                        <td>ab*c</td>
+                        <td>abbc</td>
+                        <td>✅ true</td>
+                    </tr>
+                    <tr>
+                        <td>ab*c</td>
+                        <td>abdc</td>
+                        <td>❌ false</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>⚙️ Implementation (No Libraries)</h2>
+            <p>Here’s a pure custom JavaScript implementation — works the same in Node.js or browser:</p>
+            <pre>
+                <code>
+/**
+ * Custom Regex Matcher
+ * Supports:
+ *   - '.' : matches any single character
+ *   - '*' : matches zero or more of the previous character
+ *   - exact literal matching
+ */
+function matchRegex(str, pattern) {
+  return matchHelper(str, pattern, 0, 0);
+}
+
+function matchHelper(str, pattern, i, j) {
+  // If we reached end of pattern
+  if (j === pattern.length) return i === str.length;
+
+  // Check if first characters match
+  const firstMatch =
+    i &lt; str.length &&
+    (pattern[j] === str[i] || pattern[j] === '.');
+
+  // If next character is '*', handle repetition
+  if (j + 1 &lt; pattern.length && pattern[j + 1] === '*') {
+    // Two choices:
+    // 1. Skip the '*' (zero occurrence)
+    // 2. Consume one matching character and continue
+    return (
+      matchHelper(str, pattern, i, j + 2) ||
+      (firstMatch && matchHelper(str, pattern, i + 1, j))
+    );
+  } else {
+    // No '*', move one character forward if matched
+    return firstMatch && matchHelper(str, pattern, i + 1, j + 1);
+  }
+}
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h2>🧪 Example Usage</h2>
+            <pre><code>
+console.log(matchRegex("aaab", "a*b"));   // true
+console.log(matchRegex("abc", "a.c"));    // true
+console.log(matchRegex("abbbbc", "ab*c")); // true
+console.log(matchRegex("abdc", "ab*c"));   // false
+console.log(matchRegex("hello", ".*"));    // true
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 How It Works Internally</h2>
+            <ol>
+                <li>
+                    Recursive Matching
+                    <p>The engine checks one character at a time.</p>
+                </li>
+                <li>
+                    Wildcard Handling (.)
+                    <p>A . matches any single character.</p>
+                </li>
+                <li>
+                    Repetition Handling (*)
+                    <p>When * is seen, it can either:</p>
+                    <ul>
+                        <li>Skip the pattern (0 occurrences), or</li>
+                        <li>Consume one matching character and try again (1 or more).</li>
+                    </ul>
+                </li>
+                <li>
+                    Backtracking
+                    <p>The recursion explores all possible paths until a match succeeds or fails.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧩 Optional Enhancements</h2>
+            <p>You can extend it to support:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Example</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>?</td>
+                        <td>a?b</td>
+                        <td>Zero or one occurrence</td>
+                    </tr>
+                    <tr>
+                        <td>+</td>
+                        <td>a+b</td>
+                        <td>One or more occurrences</td>
+                    </tr>
+                    <tr>
+                        <td>Character sets</td>
+                        <td>[abc]</td>
+                        <td>Matches one of a, b, or c</td>
+                    </tr>
+                    <tr>
+                        <td>Anchors</td>
+                        <td>^a, b$</td>
+                        <td>Match beginning or end</td>
+                    </tr>
+                    <tr>
+                        <td>Escaping</td>
+                        <td>\.</td>
+                        <td>Match literal dot</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Each can be implemented by extending the parsing logic before recursion.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

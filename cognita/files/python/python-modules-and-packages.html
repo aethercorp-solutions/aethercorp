@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Python Modules and Packages</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Python Modules and Packages</h1>
+                    <p class="subtitle">Let’s break down Python Modules and Packages clearly and practically 👇</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 1. Python Modules</h2>
+            <p>A module is simply a Python file (.py) that contains code — functions, classes, or variables — that you can import and reuse in other files.</p>
+            <p>✅ Example</p>
+            <p>math_utils.py</p>
+            <pre><code>
+def add(a, b):
+    return a + b
+
+def subtract(a, b):
+    return a - b
+            </code></pre>
+
+            <p>main.py</p>
+            <pre><code>
+import math_utils
+
+print(math_utils.add(5, 3))      # Output: 8
+print(math_utils.subtract(10, 4)) # Output: 6
+
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>💡 Variations of Import</h2>
+            <p>You can import in several ways:</p>
+            <pre><code>
+# Import specific functions
+from math_utils import add
+
+print(add(2, 3))
+
+# Import and rename
+import math_utils as mu
+print(mu.add(1, 2))
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 2. Python Packages</h2>
+            <p>A package is a collection of modules organized in folders.</p>
+            <p>A folder becomes a package when it contains a special file:</p>
+            <pre><code>
+__init__.py
+            </code>
+        </section>
+
+        <section>
+            <h2>✅ Example Structure</h2>
+            <pre><code>
+my_package/
+│
+├── __init__.py
+├── math_utils.py
+└── string_utils.py
+            </code></pre>
+
+            <p>math_utils.py</p>
+            <pre><code>
+def multiply(a, b):
+    return a * b
+            </code></pre>
+
+            <p>string_utils.py</p>
+            <pre><code>
+def capitalize_name(name):
+    return name.capitalize()
+            </code></pre>
+
+            <p>main.py</p>
+            <pre><code>
+from my_package import math_utils, string_utils
+
+print(math_utils.multiply(4, 5))        # Output: 20
+print(string_utils.capitalize_name("paul"))  # Output: Paul
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 3. The __init__.py File</h2>
+            <p>This file can be:</p>
+            <ul>
+                <li>Empty, to mark the folder as a package.</li>
+                <li>Or used to initialize or simplify imports.</li>
+            </ul>
+            <p>Example __init__.py:</p>
+            <pre><code>
+from .math_utils import multiply
+from .string_utils import capitalize_name
+            </code></pre>
+            <p>Now you can import directly:</p>
+            <pre><code>
+from my_package import multiply, capitalize_name
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🗂️ 4. Importing from Subpackages</h2>
+            <p>You can have nested packages:</p>
+            <pre><code>
+my_package/
+│
+├── __init__.py
+├── math/
+│   ├── __init__.py
+│   └── algebra.py
+└── string/
+    ├── __init__.py
+    └── formatters.py
+            </code></pre>
+
+            <p>Usage:</p>
+            <pre><code>
+from my_package.math.algebra import solve_equation
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

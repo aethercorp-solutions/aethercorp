@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Core Xcode Debugging Tools</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Core Xcode Debugging Tools</h1>
+                    <p class="subtitle">Xcode provides powerful debugging tools that make tracking down crashes, memory leaks, layout issues, and logic bugs much easier. Here’s a clean, practical breakdown of the tools you’ll actually use day-to-day.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Core Xcode Debugging Tools</h2>
+            <p>1. Breakpoints</p>
+            <p>Breakpoints pause your app at specific lines so you can inspect variables.</p>
+            <p>Types:</p>
+            <ul>
+                <li>Line Breakpoint — click the gutter.</li>
+                <li>Symbolic Breakpoint — pause on a method name (e.g., -[UIView setFrame:]).</li>
+                <li>Exception Breakpoint — pauses on all Objective-C/Swift exceptions (must-have).</li>
+                <li>Conditional Breakpoint — run until a condition is met.</li>
+                <li>Log Breakpoint — prints a message instead of stopping execution.</li>
+            </ul>
+            <p>Enable an exception breakpoint:</p>
+            <p>Breakpoint navigator → + bottom left → Exception breakpoint.</p>
+        </section>
+
+        <section>
+            <h2>2. LLDB (Debugger Console)</h2>
+            <p>Lets you inspect and modify at runtime.</p>
+            <p>Common commands:</p>
+            <pre><code>
+po variable          // print object
+p variable           // print primitive
+bt                   // backtrace (call stack)
+frame variable       // list local vars
+expr var = newValue  // change variable value at runtime
+            </code></pre>
+            <p>Examples:</p>
+            <pre><code>
+po self.view
+po myArray[0]
+p (int)[myString intValue]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. View Debugger (UI Debugging)</h2>
+            <p>Visualizes your UI hierarchy in 3D.</p>
+            <p>Helps with:</p>
+            <ul>
+                <li>Autolayout issues</li>
+                <li>Invisible views intercepting touches</li>
+                <li>Views clipped or offscreen</li>
+                <li>Debugging constraints</li>
+            </ul>
+            <p>Click Debug View Hierarchy (3D cube icon).</p>
+        </section>
+
+        <section>
+            <h2>4. Memory Graph Debugger</h2>
+            <p>Identifies retain cycles & leaks.</p>
+            <p>Use when:</p>
+            <ul>
+                <li>Something never deallocs</li>
+                <li>Memory increases over time</li>
+                <li>Views/controllers "stick" in memory</li>
+            </ul>
+            <p>Open via:</p>
+            <p>➡️ Product → Debug → View Memory Graph</p>
+        </section>
+
+        <section>
+            <h2>5. Instruments (Advanced Debugging)</h2>
+            <p>Launched from Xcode using Product → Profile.</p>
+            <p>Useful instruments:</p>
+            <ul>
+                <li>Time Profiler — find slow functions.</li>
+                <li>Allocations — track memory usage.</li>
+                <li>Leaks — automatic leak detection.</li>
+                <li>Zombies — find use-after-free crashes.</li>
+                <li>Network — monitor network calls.</li>
+                <li>Core Animation — fix slow/laggy UI.</li>
+                <li>Energy Log — battery, CPU, wakeups.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Console + System Logs</h2>
+            <p>Real-time logs and crash messages.</p>
+            <p>You can filter logs by:</p>
+            <pre><code>
+subsystem:
+category:
+process:
+            </code></pre>
+            <p>Use for debugging extensions, background tasks, crashes, etc.</p>
+        </section>
+
+        <section>
+            <h2>7. Address Sanitizers (Runtime Debugging)</h2>
+            <p>Great for catching:</p>
+            <ul>
+                <li>Out-of-bounds array access</li>
+                <li>Use after free</li>
+                <li>Thread data races</li>
+            </ul>
+            <p>Enable in:</p>
+            <p>Scheme → Diagnostics</p>
+            <ul>
+                <li>Address Sanitizer</li>
+                <li>Thread Sanitizer</li>
+                <li>Undefined Behavior Sanitizer</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Network Debugging</h2>
+            <p>Tools:</p>
+            <ul>
+                <li>Xcode Network Debugger (from View > Debug Area > Network)</li>
+                <li>Instruments → Network</li>
+                <li>Debug Options in iOS 15+ show network logs directly in Console</li>
+            </ul>
+            <p>Shows timing, size, headers, failures, redirects.</p>
+        </section>
+
+        <section>
+            <h2>9. Swift / Objective-C Memory Debugging</h2>
+            <p>Use runtime tools:</p>
+            <ul>
+                <li>allocations instrument</li>
+                <li>po [object retainCount] (not always accurate)</li>
+                <li>Zombies instrument</li>
+                <li>Memory Graph for retain cycles</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 Developer Workflow Tips</h2>
+            <p>✔ Always enable Exception Breakpoint</p>
+            <p>It catches bugs exactly where they happen.</p>
+            <p>✔ Use Zombie Objects for crash hunting</p>
+            <p>Prevents bad memory access from silently corrupting memory.</p>
+            <p>✔ Profile early with Instruments</p>
+            <p>Avoid surprises in QA.</p>
+            <p>✔ Use LLDB heavily</p>
+            <p>You can inspect almost everything without print statements.</p>
+
+            <p>If you want, I can also help you with:</p>
+            <ul>
+                <li>Setting symbolic breakpoints for UIKit, SwiftUI, or your own classes</li>
+                <li>Debugging memory leaks in Objective-C</li>
+                <li>Debugging table view crashes</li>
+                <li>LLDB cheat sheet customized for your use case</li>
+                <li>Finding logic bugs in your actual code snippet</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Great — here’s a custom LLDB cheat sheet designed for your actual use case (Objective-C, UIKit, table view debugging, string/number parsing, memory issues, and debugging your serverless iOS app interactions).</p>
+            <p>This is NOT a generic list — this is tuned for the issues you repeatedly debug (Objective-C crashes, table view reload bugs, layout, parsing, and nil/retain problems).</p>
+            <h2>🧩 LLDB Cheat Sheet</h2>
+            <p>(Objective-C, UIKit, TableView, Parsing, Memory, Crash Debugging)</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

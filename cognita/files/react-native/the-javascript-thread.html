@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>The JavaScript Thread</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">The JavaScript Thread</h1>
+                    <p class="subtitle">
+                        <p>It is a separate dedicated thread where all your JavaScript code runs — including:</p>
+                        <ul>
+                            <li>React rendering</li>
+                            <li>State updates</li>
+                            <li>Business logic</li>
+                            <li>Timers (setTimeout, setInterval)</li>
+                            <li>Bridge communication with native</li>
+                        </ul>
+                    </p>
+                    <p>It does NOT run on the main UI thread (the native thread that draws the screen).</p>
+                    <p>This separation makes animations and UI interactions smoother.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>📌 How it Works (Simplified)</h2>
+            <p>React Native has three major threads:</p>
+            <p>1. UI Thread (Main Thread)</p>
+            <ul>
+                <li>Renders views</li>
+                <li>Handles touches & gestures</li>
+                <li>Runs native UI code</li>
+            </ul>
+
+            <p>2. JavaScript Thread</p>
+            <ul>
+                <li>Runs your JS bundle</li>
+                <li>Executes React code</li>
+                <li>Calculates layout (via Yoga)</li>
+                <li>Sends commands to native</li>
+            </ul>
+
+            <p>3. Shadow Thread (Layout)</p>
+            <ul>
+                <li>Runs Yoga layout engine</li>
+                <li>Calculates view positions & sizes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🛰️ JS ↔ Native Communication</h2>
+            <p>The JS thread communicates with native code using a bridge:</p>
+            <ul>
+                <li>JS thread sends messages to the native side (async)</li>
+                <li>Native sends messages back to JS (async)</li>
+                <li>Works like a queue-based messaging system</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+JS thread -> Bridge -> Native Modules (Objective-C/Swift/Java/Kotlin)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚠️ Why it Matters</h2>
+            <p>If the JS thread is blocked, your app lags:</p>
+            <ul>
+                <li>Buttons don’t respond</li>
+                <li>Animations freeze</li>
+                <li>Screens feel stuck</li>
+                <li>setTimeout may delay</li>
+            </ul>
+            <p>Example blocking code:</p>
+            <pre><code>
+for (let i = 0; i &lt; 1e9; i++) {}
+            </code></pre>
+            <p>This blocks React rendering & causes UI freeze.</p>
+        </section>
+
+        <section>
+            <h2>🔥 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Thread</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>UI Thread</td>
+                        <td>Draws UI + touch events</td>
+                    </tr>
+                    <tr>
+                        <td>JS Thread</td>
+                        <td>Runs all your JS/React logic</td>
+                    </tr>
+                    <tr>
+                        <td>Shadow Thread</td>
+                        <td>Layout calculations</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>The JavaScript thread is where your entire JavaScript application executes, separate from the native UI thread.</p>
+        </section>
+
+        <section>
+            <p>If you want, I can also explain:</p>
+            <p>✅ how JS thread scheduling works</p>
+            <p>✅ how JSI replaces the old bridge</p>
+            <p>✅ why Hermes improves JS thread performance</p>
+            <p>✅ how to prevent JS thread blocking</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

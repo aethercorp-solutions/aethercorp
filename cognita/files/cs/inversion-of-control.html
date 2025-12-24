@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Inversion of Control (IoC)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Inversion of Control (IoC)</h1>
+                    <p class="subtitle">Inversion of Control (IoC) is a software design principle where the control of creating objects or managing the flow of a program is inverted — moved away from your code and handled externally.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🚀 Simple Explanation</h2>
+            <p>Normally, your code calls functions, creates objects, and controls the sequencing.</p>
+            <p>With IoC, your code does NOT control everything anymore. Instead, a framework or external component controls when your code runs and what objects it receives.</p>
+            <p>👍 Why It Matters</p>
+            <p>IoC helps make code:</p>
+            <ul>
+                <li>More modular</li>
+                <li>Easier to test</li>
+                <li>More reusable</li>
+                <li>Less dependent on concrete implementations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔧 Example Without IoC</h2>
+            <pre><code>
+// You control object creation
+const service = new EmailService();
+const controller = new UserController(service);
+
+controller.registerUser();
+            </code></pre>
+            <p>Here, UserController decides what implementation of EmailService to use.</p>
+        </section>
+
+        <section>
+            <h2>🔄 Example With IoC (Dependency Injection)</h2>
+            <pre><code>
+class UserController {
+    constructor(emailService) {
+        this.emailService = emailService;
+    }
+}
+    
+const controller = new UserController(new EmailService());                  
+            </code></pre>
+            <p>But with full IoC (using a container):</p>
+            <pre><code>
+const controller = IoCContainer.resolve("UserController");
+            </code></pre>
+            <p>Here, the IoC container decides:</p>
+            <ul>
+                <li>how to create UserController</li>
+                <li>
+                    what EmailService instance to inject
+                    <p>Your code simply receives ready-to-use objects.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 IoC in Context of React Native or Node.js</h2>
+            <p>React Native</p>
+            <ul>
+                <li>Hooks provide inversion of control: the framework calls your code at the right time.</li>
+                <li>Navigation libraries (e.g., React Navigation) decide screen flow; you only provide components.</li>
+                <li>Event listeners: the framework triggers your callback, not you.</li>
+            </ul>
+
+            <p>Node.js</p>
+            <ul>
+                <li>Express routes: the framework calls your handler when a request arrives.</li>
+                <li>Serverless/Lambda: AWS controls execution; you only provide the handler function.</li>
+                <li>
+                    Dependency injection libs like:
+                    <ul>
+                        <li>awilix</li>
+                        <li>inversify</li>
+                        <li>tsyringe</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 Ultra-Simple Analogy</h2>
+            <p>Without IoC:</p>
+            <p>You drive the car.</p>
+            <p>With IoC:</p>
+            <p>You sit in the car, but someone else decides when you drive and where you go.</p>
+
+            <p>If you want, I can show:</p>
+            <p>✅ IoC in React Native with a real example</p>
+            <p>✅ IoC in AWS Lambda (very common in serverless)</p>
+            <p>✅ IoC vs Delegate Pattern (related to your previous RN question)</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

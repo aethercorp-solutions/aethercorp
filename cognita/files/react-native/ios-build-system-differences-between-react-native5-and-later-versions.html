@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>iOS build system differences</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">iOS build system differences</h1>
+                    <p class="subtitle">Here’s a clear breakdown of iOS build system differences between React Native 0.5x and later versions, specifically focusing on CocoaPods support:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🚧 React Native 0.5x (2017-era) – iOS Build System</h2>
+            <p>❌ No CocoaPods support</p>
+            <p>React Native 0.5 (and early 0.x versions) did NOT use CocoaPods for iOS dependency management.</p>
+            <p>What that means:</p>
+            <ul>
+                <li>All native modules required manual linking.</li>
+                <li>
+                    You had to edit:
+                    <ul>
+                        <li>Libraries/ folder (drag the Xcode project of the native module)</li>
+                        <li>Link Binary with Libraries</li>
+                        <li>Header Search Paths</li>
+                        <li>Sometimes add .m and .h files manually.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>Example: Importing RNFirebase or react-native-maps</p>
+            <p>You had to:</p>
+            <ol>
+                <li>Download the native .xcworkspace or .xcodeproj</li>
+                <li>Drag it into your iOS project</li>
+                <li>Manually link binaries</li>
+                <li>Add frameworks manually</li>
+                <li>Add Obj-C bridging code manually (when needed)</li>
+            </ol>
+            <p>Build System Used:</p>
+            <ul>
+                <li>Legacy Xcode build system</li>
+                <li>No automatic dependency resolution</li>
+                <li>No Podfile</li>
+                <li>No “pod install”</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 React Native 0.60+ – iOS Build System</h2>
+            <p>✅ Full CocoaPods support</p>
+            <p>Starting RN 0.60, iOS uses CocoaPods by default.</p>
+            <p>What that means:</p>
+            <ul>
+                <li>Autolinking (RN CLI auto-detects native modules)</li>
+                <li>
+                    All dependencies installed via:
+                    <pre><code>
+cd ios
+pod install
+                    </code></pre>
+                </li>
+                <li>Libraries provide .podspec files</li>
+                <li>Linking via Xcode is no longer needed</li>
+            </ul>
+            <p>Build System Used:</p>
+            <ul>
+                <li>Modern Xcode build system</li>
+                <li>Uses .xcworkspace instead of .xcodeproj</li>
+                <li>Autolinking via react-native.config.js</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📌 Key Differences Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>React Native 0.5x</th>
+                        <th>React Native ≥ 0.60</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CocoaPods support</td>
+                        <td>❌ None</td>
+                        <td>✅ Full</td>
+                    </tr>
+                    <tr>
+                        <td>Linking</td>
+                        <td>Manual linking in Xcode</td>
+                        <td>Autolinking (automatic)</td>
+                    </tr>
+                    <tr>
+                        <td>Podfile</td>
+                        <td>Not used</td>
+                        <td>Required</td>
+                    </tr>
+                    <tr>
+                        <td>iOS dependency mgmt</td>
+                        <td>Manual drag-and-drop</td>
+                        <td>pod install</td>
+                    </tr>
+                    <tr>
+                        <td>Build system</td>
+                        <td>Legacy Xcode system</td>
+                        <td>Modern Xcode + Pods</td>
+                    </tr>
+                    <tr>
+                        <td>Hermes support</td>
+                        <td>❌ None</td>
+                        <td>Optional (now default)</td>
+                    </tr>
+                    <tr>
+                        <td>Architecture</td>
+                        <td>Old RN Bridge</td>
+                        <td>Supports New Architecture (Fabric + TurboModules)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>💡 Why It Matters</h2>
+            <p>If you're trying to:</p>
+            <p>✔️ Run old RN 0.5 code</p>
+            <p>✔️ Migrate RN 0.5 → RN 0.71+</p>
+            <p>✔️ Fix old Objective-C native modules</p>
+            <p>…you need to understand the major jump.</p>
+            <p>RN 0.5 → 0.60+ is basically a rebuild, especially for iOS.</p>
+        </section>
+
+        <section>
+            <h2>If you want, I can also give you:</h2>
+            <p>✅ Migration guide RN 0.5 → latest</p>
+            <p>✅ How to update iOS build system and Podfile</p>
+            <p>✅ How to fix old third-party libraries for Pods</p>
+            <p>✅ How to rebuild manual links into Podspecs</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

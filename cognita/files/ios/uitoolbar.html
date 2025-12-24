@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>UIToolbar</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">UIToolbar</h1>
+                    <p class="subtitle">
+                        An iOS UIToolbar is a standard UIKit component used to display a row of action buttons (and other controls) that let users perform tasks related to the current screen.
+                        <p>Think of it as a horizontal action bar that usually appears at the top or bottom of the screen.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What UIToolbar is used for</h2>
+            <p>A UIToolbar typically contains:</p>
+            <ul>
+                <li>Buttons (UIBarButtonItem)</li>
+                <li>Flexible / fixed spaces</li>
+                <li>System items (Done, Cancel, Add, Edit, etc.)</li>
+                <li>Custom views (like UIButton, UISegmentedControl, or UITextField)</li>
+            </ul>
+
+            <p>Common use cases:</p>
+            <ul>
+                <li>Editing actions (Save, Delete, Share)</li>
+                <li>Navigation-related actions</li>
+                <li>Keyboard accessory toolbars (e.g., “Done” button above the keyboard)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Where it appears</h2>
+            <ul>
+                <li>Bottom of the screen (most common)</li>
+                <li>Top of the screen (less common)</li>
+                <li>Above the keyboard as an inputAccessoryView</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key characteristics</h2>
+            <ul>
+                <li>Holds UIBarButtonItem, not UIButton directly</li>
+                <li>
+                    Automatically adapts to:
+                    <ul>
+                        <li>Light / Dark Mode</li>
+                        <li>Device size (iPhone / iPad)</li>
+                        <li>Rotation</li>
+                    </ul>
+                </li>
+                <li>Supports system icons and text styles</li>
+                <li>Can be translucent or opaque</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Basic example (Objective-C)</h2>
+            <pre><code>
+UIToolbar *toolbar = [[UIToolbar alloc] init];
+toolbar.frame = CGRectMake(0, 0, self.view.frame.size.width, 44);
+
+UIBarButtonItem *done =
+    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                   target:self
+                                                   action:@selector(doneTapped)];
+
+UIBarButtonItem *flex =
+    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                   target:nil
+                                                   action:nil];
+
+toolbar.items = @[flex, done];
+
+[self.view addSubview:toolbar];
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Toolbar vs Navigation Bar</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>UIToolbar</th>
+                        <th>UINavigationBar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Purpose</td>
+                        <td>Actions</td>
+                        <td>Navigation</td>
+                    </tr>
+                    <tr>
+                        <td>Location</td>
+                        <td>Top or bottom</td>
+                        <td>Top only</td>
+                    </tr>
+                    <tr>
+                        <td>Items</td>
+                        <td>UIBarButtonItem</td>
+                        <td>Back button, title</td>
+                    </tr>
+                    <tr>
+                        <td>Stack-based</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Common properties</h2>
+            <pre><code>
+toolbar.hidden = YES;           // hide/show
+toolbar.translucent = YES;      // blur effect
+toolbar.barTintColor = UIColor.blackColor;
+toolbar.tintColor = UIColor.whiteColor;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Important notes</h2>
+            <ul>
+                <li>Hiding a button’s custom view does NOT hide the UIBarButtonItem itself</li>
+                <li>
+                    To hide toolbar content, you usually:
+                    <ul>
+                        <li>Hide the toolbar</li>
+                        <li>Remove or replace its items</li>
+                    </ul>
+                </li>
+                <li>
+                    On modern iOS (iOS 15+), appearance is controlled via:
+                    <ul>
+                        <li>UIToolbarAppearance</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>When to use UIToolbar</h2>
+            <p>Use it when:</p>
+            <ul>
+                <li>You need contextual actions</li>
+                <li>Navigation is NOT the main purpose</li>
+                <li>Actions should be easily accessible</li>
+            </ul>
+            <p>Avoid it when:</p>
+            <ul>
+                <li>You only need navigation (use UINavigationBar)</li>
+                <li>Actions are better placed inline in the UI</li>
+            </ul>
+
+            <p>If you want, I can also explain:</p>
+            <ul>
+                <li>How UIToolbar works with keyboard accessory views</li>
+                <li>How to hide/show toolbar items properly</li>
+                <li>Differences between UIToolbar vs tab bar</li>
+                <li>iOS 26 / iOS 17 appearance behavior</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CORS (Cross-Origin Resource Sharing)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">CORS (Cross-Origin Resource Sharing)</h1>
+                    <p class="subtitle">Here’s a complete guide to setting up CORS (Cross-Origin Resource Sharing) in a Node.js backend — both basic and advanced configurations (including for AWS Lambda / Express APIs).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 1. Basic Express CORS Setup</h2>
+            <p>If you’re using Express.js, the easiest way is to use the cors npm package:</p>
+            <p>Install:</p>
+            <pre><code>
+npm install cors
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example setup:</h2>
+            <pre><code>
+// server.js
+import express from 'express';
+import cors from 'cors';
+
+const app = express();
+
+// ✅ Basic setup — allows all origins (for dev)
+app.use(cors());
+
+// OR fine-tuned setup:
+app.use(cors({
+  origin: 'https://your-frontend-domain.com', // allowed origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],  // allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // allowed headers
+  credentials: true, // if you use cookies or Authorization headers
+}));
+
+app.get('/', (req, res) => {
+  res.json({ message: 'CORS is working!' });
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ 2. Manual CORS Middleware (if not using cors)</h2>
+            <p>You can add headers manually:</p>
+            <pre><code>
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://your-frontend-domain.com');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(204);
+    }
+    
+    next();
+});                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 3. AWS Lambda + API Gateway (Serverless)</h2>
+            <p>When using AWS Lambda with API Gateway, you can handle CORS via the API Gateway console or programmatically in your handler.</p>
+            <p>Example (Node.js handler):</p>
+            <pre><code>
+export const handler = async (event) => {
+    return {
+        statusCode: 200,
+        headers: {
+        'Access-Control-Allow-Origin': '*', // or specific domain
+        'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        },
+        body: JSON.stringify({ message: 'CORS enabled for Lambda!' }),
+    };
+};                  
+            </code></pre>
+            <p>For preflight (OPTIONS request):</p>
+            <p>You can add:</p>
+            <pre><code>
+if (event.httpMethod === 'OPTIONS') {
+    return {
+        statusCode: 204,
+        headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        },
+    };
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 4. CORS with Credentials (Cookies, Auth Headers)</h2>
+            <p>When you need cookies or tokens sent in requests, you must:</p>
+            <p>Frontend:</p>
+            <pre><code>
+fetch('https://api.yourserver.com/data', {
+    method: 'GET',
+    credentials: 'include', // send cookies
+});                  
+            </code></pre>
+
+            <p>Backend:</p>
+            <pre><code>
+app.use(cors({
+    origin: 'https://yourfrontend.com',
+    credentials: true,
+}));  
+            </code></pre>
+
+            <p>And the response must include:</p>
+            <pre><code>
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Origin: https://yourfrontend.com
+            </code></pre>
+
+            <p>(Note: * cannot be used for origin when credentials are true.)</p>
+        </section>
+
+        <section>
+            <h2>💡 5. Common Issues</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Problem</th>
+                        <th>Fix</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CORS error: No Access-Control-Allow-Origin header</td>
+                        <td>Add correct headers in server response</td>
+                    </tr>
+                    <tr>
+                        <td>Preflight (OPTIONS) blocked</td>
+                        <td>Ensure your backend handles OPTIONS requests</td>
+                    </tr>
+                    <tr>
+                        <td>Cookies not sent</td>
+                        <td>Set credentials: true and use an exact origin (not *)</td>
+                    </tr>
+                    <tr>
+                        <td>Multiple frontends</td>
+                        <td>Use an array or dynamic origin check</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Example:</p>
+            <pre><code>
+const allowedOrigins = ['https://app1.com', 'https://app2.com'];
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+}));
+            </code></pre>
+        </section>
+
+        <section>
+            <p>Perfect 👍 — since your stack uses AWS Lambda + API Gateway + MongoDB + Cognito, let’s go over the correct CORS setup for your serverless Node.js backend in a clean, production-ready way.</p>
+            <p>We’ll cover both:</p>
+            <ol>
+                <li>API Gateway settings (the AWS-side config)</li>
+                <li>Lambda handler code (the Node.js-side config)</li>
+            </ol>
+
+            <h2>⚙️ 1. API Gateway — Enable CORS per endpoint</h2>
+            <p>Option A: via Serverless Framework (recommended)</p>
+            <p>If you deploy using serverless.yml, just add:</p>
+            <pre><code>
+functions:
+  yourFunction:
+    handler: src/handlers/yourFunction.handler
+    events:
+      - http:
+          path: your-endpoint
+          method: get
+          cors:
+            origin: 'https://yourfrontend.com'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+            </code></pre>
+
+            <p>✅ This automatically adds proper headers to the API Gateway responses (including preflight OPTIONS).</p>
+
+            <p>Option B: via AWS Console</p>
+            <p>If you’re configuring directly in API Gateway:</p>
+            <ol>
+                <li>Go to your API → Resource → Method (GET/POST)./li>
+                <li>Click “Enable CORS”.</li>
+                <li>
+                    Set:
+                    <ul>
+                        <li>Access-Control-Allow-Origin: https://yourfrontend.com (or * for dev)</li>
+                        <li>Access-Control-Allow-Headers: Content-Type,Authorization</li>
+                        <li>Access-Control-Allow-Methods: GET,POST,OPTIONS</li>
+                        <li>Access-Control-Allow-Credentials: true (if using Cognito tokens or cookies)</li>
+                    </ul>
+                </li>
+                <li>Deploy the API again.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 2. Lambda Function — Add headers in the response</h2>
+            <p>Even if API Gateway has CORS enabled, you should still add headers inside your Lambda responses to be safe and consistent.</p>
+            <p>Example handler:</p>
+            <pre><code>
+export const handler = async (event) => {
+    // Handle preflight request
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 204,
+            headers: {
+                'Access-Control-Allow-Origin': 'https://yourfrontend.com',
+                'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+                'Access-Control-Allow-Credentials': 'true',
+            },
+        };
+    }
+    
+    // Your API logic here
+    const data = { message: 'Hello from Lambda!' };
+    
+    return {
+        statusCode: 200,
+        headers: {
+            'Access-Control-Allow-Origin': 'https://yourfrontend.com',
+            'Access-Control-Allow-Credentials': 'true',
+        },
+        body: JSON.stringify(data),
+    };
+};                  
+            </code></pre>
+            <p>✅ Note:</p>
+            <p>If you use Cognito or Firebase tokens (Authorization header), always allow that header explicitly.</p>
+        </section>
+
+        <section>
+            <h2>🔒 3. Handling Multiple Environments</h2>
+            <p>You can dynamically set Access-Control-Allow-Origin depending on environment variables:</p>
+            <pre><code>
+const allowedOrigins = [
+  'https://trycastanet.com',      // production
+  'https://staging.trycastanet.com', // staging
+  'http://localhost:3000',        // local dev
+];
+
+const origin = event.headers.origin;
+const allowOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+
+export const handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 204,
+      headers: {
+        'Access-Control-Allow-Origin': allowOrigin,
+        'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Credentials': 'true',
+      },
+    };
+  }
+
+  return {
+    statusCode: 200,
+    headers: {
+      'Access-Control-Allow-Origin': allowOrigin,
+      'Access-Control-Allow-Credentials': 'true',
+    },
+    body: JSON.stringify({ success: true }),
+  };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧰 4. Frontend (React Native / Web) Example</h2>
+            <p>When calling your AWS API:</p>
+            <pre><code>
+fetch('https://api.trycastanet.com/v1/contacts', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${userToken}`,
+    },
+    body: JSON.stringify({ name: 'John' }),
+});                  
+            </code></pre>
+
+            <p>For web apps with credentials/cookies:</p>
+            <pre><code>
+fetch('https://api.trycastanet.com/v1/user', {
+    credentials: 'include', // sends cookies
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 5. Debugging Tips</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Symptom</th>
+                        <th>Fix</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CORS policy: No 'Access-Control-Allow-Origin' header</td>
+                        <td>Add the header to all Lambda responses</td>
+                    </tr>
+                    <tr>
+                        <td>Preflight response invalid (missing methods)</td>
+                        <td>Ensure OPTIONS returns 204 with proper headers</td>
+                    </tr>
+                    <tr>
+                        <td>Credentials flag true but origin '*'</td>
+                        <td>Replace * with actual frontend domain</td>
+                    </tr>
+                    <tr>
+                        <td>CloudFront caching wrong headers</td>
+                        <td>Add Access-Control-Allow-Origin to cache whitelist</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <p>Excellent 👌 — here’s a production-ready CORS setup for your AWS Serverless Framework + Node.js + MongoDB + Cognito stack.</p>
+            <p>It includes:</p>
+            <p>✅ serverless.yml with CORS per function</p>
+            <p>✅ Example handler.js with dynamic origin and preflight handling</p>
+            <p>✅ Environment setup for multiple environments (dev/staging/prod)</p>
+
+            <p>🧩 serverless.yml</p>
+            <pre><code>
+service: trycastanet-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    NODE_ENV: ${self:provider.stage}
+    MONGO_URI: ${env:MONGO_URI}
+    ALLOWED_ORIGINS: "https://trycastanet.com,https://staging.trycastanet.com,http://localhost:3000"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:*
+        - logs:*
+      Resource: "*"
+
+functions:
+  getContacts:
+    handler: src/handlers/getContacts.handler
+    events:
+      - http:
+          path: contacts
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+
+  addContact:
+    handler: src/handlers/addContact.handler
+    events:
+      - http:
+          path: contacts
+          method: post
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-offline
+            </code></pre>
+
+            <p>✅ Notes:</p>
+            <ul>
+                <li>Uses serverless-dotenv-plugin for .env support</li>
+                <li>Each function has cors configured (you can also define cors: true globally)</li>
+                <li>ALLOWED_ORIGINS lets you dynamically control allowed domains from environment variables</li>
+                <li>Works seamlessly with Cognito JWT headers (Authorization)</li>
+            </ul>
+
+            <p>🧠 src/handlers/getContacts.js</p>
+            <pre><code>
+import mongoose from 'mongoose';
+import Contact from '../models/Contact.js'; // your Mongoose model
+
+const connectToDB = async () => {
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+  }
+};
+
+const getAllowedOrigin = (event) => {
+  const allowed = process.env.ALLOWED_ORIGINS.split(',');
+  const origin = event.headers.origin;
+  return allowed.includes(origin) ? origin : allowed[0];
+};
+
+export const handler = async (event) => {
+  const origin = getAllowedOrigin(event);
+
+  // Handle preflight OPTIONS
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 204,
+      headers: {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Credentials': 'true',
+      },
+    };
+  }
+
+  try {
+    await connectToDB();
+
+    const contacts = await Contact.find({});
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Credentials': 'true',
+      },
+      body: JSON.stringify(contacts),
+    };
+  } catch (err) {
+    console.error('Error fetching contacts:', err);
+    return {
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': origin,
+      },
+      body: JSON.stringify({ error: 'Internal Server Error' }),
+    };
+  }
+};
+            </code></pre>
+
+            <p>🧩 src/handlers/addContact.js</p>
+            <pre><code>
+import mongoose from 'mongoose';
+import Contact from '../models/Contact.js';
+
+const connectToDB = async () => {
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(process.env.MONGO_URI);
+  }
+};
+
+const getAllowedOrigin = (event) => {
+  const allowed = process.env.ALLOWED_ORIGINS.split(',');
+  const origin = event.headers.origin;
+  return allowed.includes(origin) ? origin : allowed[0];
+};
+
+export const handler = async (event) => {
+  const origin = getAllowedOrigin(event);
+
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 204,
+      headers: {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Credentials': 'true',
+      },
+    };
+  }
+
+  try {
+    await connectToDB();
+
+    const data = JSON.parse(event.body);
+    const contact = await Contact.create(data);
+
+    return {
+      statusCode: 201,
+      headers: {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Credentials': 'true',
+      },
+      body: JSON.stringify(contact),
+    };
+  } catch (err) {
+    console.error('Error adding contact:', err);
+    return {
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': origin,
+      },
+      body: JSON.stringify({ error: 'Failed to add contact' }),
+    };
+  }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>serverless.yml</td>
+                        <td>Configures AWS Lambda routes, CORS, and permissions</td>
+                    </tr>
+                    <tr>
+                        <td>handler.js</td>
+                        <td>Returns correct CORS headers and handles preflight</td>
+                    </tr>
+                    <tr>
+                        <td>ALLOWED_ORIGINS</td>
+                        <td>Prevents unauthorized cross-domain requests</td>
+                    </tr>
+                    <tr>
+                        <td>OPTIONS handler</td>
+                        <td>Enables browser preflight success</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

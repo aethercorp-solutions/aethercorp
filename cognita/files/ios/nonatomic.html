@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>nonatomic</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">nonatomic</h1>
+                    <p class="subtitle">In Objective-C, nonatomic is a property attribute that controls how the getter/setter are generated.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Quick Definition</h2>
+            <p>nonatomic means:</p>
+            <p>The property’s getter and setter are not thread-safe. No locking is used.</p>
+            <p>This makes access faster.</p>
+        </section>
+
+        <section>
+            <h2>🔍 Full Explanation</h2>
+            <p>When you declare a property like:</p>
+            <pre><code>
+@property (nonatomic, strong) NSString *name;
+            </code></pre>
+
+            <p>You're telling the compiler:</p>
+            <ul>
+                <li>Do NOT add atomic locks around getter/setter</li>
+                <li>This makes access faster</li>
+                <li>But not safe when multiple threads read/write at the same time</li>
+            </ul>
+
+            <p>If you DO NOT specify nonatomic, the default is atomic:</p>
+            <pre><code>
+@property (atomic, strong) NSString *name;   // default
+            </code></pre>
+
+            <p>atomic adds locking to ensure:</p>
+            <ul>
+                <li>A full, valid value is always returned</li>
+                <li>But it's slower, and still does NOT guarantee thread safety at the app level</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 Example</h2>
+            <p>atomic (default)</p>
+            <pre><code>
+@property (atomic, strong) NSString *title;
+            </code></pre>
+
+            <p>Getter is like:</p>
+            <pre><code>
+- (NSString *)title {
+    @synchronized(self) {
+        return _title;
+    }
+}                
+            </code></pre>
+
+            <p>nonatomic (common)</p>
+            <pre><code>
+@property (nonatomic, strong) NSString *title;
+            </code></pre>
+
+            <p>Getter is basically:</p>
+            <pre><code>
+- (NSString *)title {
+    return _title;
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 Why 99% of iOS Developers Use nonatomic</h2>
+            <p>Because:</p>
+            <ul>
+                <li>UIKit is not thread-safe</li>
+                <li>Properties are usually accessed on main thread only</li>
+                <li>nonatomic is faster and avoids unnecessary locking</li>
+            </ul>
+            <p>Apple even recommends using nonatomic for almost all UI-related properties.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Important Note</h2>
+            <p>atomic does not guarantee full thread safety—it only ensures a fully formed object is returned.</p>
+            <p>Your code can still break in multithreaded use.</p>
+        </section>
+
+        <section>
+            <h2>✔️ Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Attribute</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>nonatomic</td>
+                        <td>Fast, not thread-safe (no locking)</td>
+                    </tr>
+                    <tr>
+                        <td>atomic</td>
+                        <td>Thread-safe property accessor, slower</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>If you want, I can also explain:</p>
+            <ul>
+                <li>strong vs weak</li>
+                <li>copy vs strong</li>
+                <li>When to use atomic</li>
+                <li>Real multithread-safe property patterns</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

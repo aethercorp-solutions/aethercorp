@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Probabilistic Language Modeling</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Probabilistic Language Modeling</h1>
+                    <p class="subtitle">ChatGPT selects the next word using a process called probabilistic language modeling, specifically through a large neural network (a Transformer). Here's the simplest clear explanation:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 How ChatGPT Picks the Next Word (Step-by-Step)</h2>
+            <p>1. You give a prompt</p>
+            <p>Example:</p>
+            <p>"How chatgpt select the next"</p>
+
+            <p>2. Model converts words → tokens</p>
+            <p>Words are broken into tokens (small pieces of text, not whole words).</p>
+            <p>Example tokens: "How", "chat", "gt", "select", "the", "next"</p>
+        </section>
+
+        <section>
+            <h2>🧮 3. Model looks at all tokens so far</h2>
+            <p>Using the Transformer architecture (self-attention), the model analyzes:</p>
+            <ul>
+                <li>Grammar</li>
+                <li>Semantics</li>
+                <li>Context</li>
+                <li>What logically or commonly comes next</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📊 4. It generates a probability distribution for all possible next tokens</h2>
+            <p>Example (illustrative numbers):</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Meaning</th>
+                        <th>Probability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>"word"</td>
+                        <td>fits perfectly</td>
+                        <td>0.42</td>
+                    </tr>
+                    <tr>
+                        <td>"step"</td>
+                        <td>maybe</td>
+                        <td>0.12</td>
+                    </tr>
+                    <tr>
+                        <td>"one"</td>
+                        <td>maybe</td>
+                        <td>0.09</td>
+                    </tr>
+                    <tr>
+                        <td>"?"</td>
+                        <td>also possible</td>
+                        <td>0.06</td>
+                    </tr>
+                    <tr>
+                        <td>"process"</td>
+                        <td>possible</td>
+                        <td>0.04</td>
+                    </tr>
+                    <tr>
+                        <td>"process"</td>
+                        <td>possible</td>
+                        <td>0.04</td>
+                    </tr>
+                    <tr>
+                        <td>...</td>
+                        <td>thousands more</td>
+                        <td>remaining %</td>
+                    </tr>
+                </tbody>
+                <p>The model ALWAYS works with numbers like this internally.</p>
+            </table>
+        </section>
+
+        <section>
+            <h2>🎯 5. A sampling method picks the next token</h2>
+            <p>Depending on settings:</p>
+            <p>Greedy decoding</p>
+            <p>Pick the highest probability token always.</p>
+            <p>→ predictable, sometimes boring.</p>
+
+            <p>Top-k / Top-p (nucleus) sampling</p>
+            <p>Pick randomly from the top most likely tokens, introducing creativity.</p>
+            <p>→ less repetitive, more human-like.</p>
+
+            <p>Temperature</p>
+            <p>Controls randomness:</p>
+            <ul>
+                <li>0.0 → deterministic</li>
+                <li>1.0 → normal</li>
+                <li>>1 → more creative but possibly chaotic</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 6. Append token and repeat</h2>
+            <p>The chosen token gets added to the sequence, and the model repeats:</p>
+            <ol>
+                <li>Look at all tokens</li>
+                <li>Compute probabilities</li>
+                <li>Pick one</li>
+                <li>Output</li>
+                <li>Loop</li>
+            </ol>
+            <p>This happens 20–200+ times per answer, extremely fast.</p>
+        </section>
+
+        <section>
+            <h2>📌 Simple analogy</h2>
+            <p>ChatGPT doesn’t think.</p>
+            <p>It does something like:</p>
+            <p>“Given the entire sentence so far, what token is mathematically most likely to come next?”</p>
+            <p>…based on patterns learned from trillions of text examples.</p>
+
+            <p>If you want, I can also explain:</p>
+            <p>✅ a visual diagram</p>
+            <p>✅ the math (softmax, logits)</p>
+            <p>✅ how training shapes probabilities</p>
+            <p>✅ how Transformers "pay attention" to words</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

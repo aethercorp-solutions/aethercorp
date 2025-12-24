@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How a control system works in Objective-C</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How a control system works in Objective-C</h1>
+                    <p class="subtitle">Here’s a simple, clear explanation of how a control system works in Objective-C—assuming you mean a software control system (state control, flow control, or simple controller logic), not a mechanical engineering PID controller (but I can explain that too if needed).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ 1. Flow Control (Basic Control Structures)</h2>
+            <p>These are the building blocks of any “control system” in Objective-C:</p>
+            <p>if / else</p>
+            <pre><code>
+int speed = 50;
+
+if (speed > 80) {
+    NSLog(@"Overspeed!");
+} else {
+    NSLog(@"Normal speed");
+}
+            </code></pre>
+
+            <p>switch</p>
+            <pre><code>
+switch (mode) {
+    case 0:
+        NSLog(@"OFF");
+        break;
+    case 1:
+        NSLog(@"ON");
+        break;
+    default:
+        NSLog(@"Unknown");
+}                
+            </code></pre>
+
+            <p>Loops</p>
+            <pre><code>
+for (int i = 0; i &lt; 5; i++) {
+    NSLog(@"Count %d", i);
+}
+
+while (temperature &lt; 100) {
+    temperature++;
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 2. Control System Using Classes (MVC style)</h2>
+            <p>A “control system” often means state + controller logic.</p>
+            <p>Example: a Temperature Controller.</p>
+            <p>Model (state)</p>
+            <pre><code>
+@interface TemperatureModel : NSObject
+@property (nonatomic) float temp;
+@end
+
+@implementation TemperatureModel
+@end
+            </code></pre>
+
+            <p>Controller</p>
+            <pre><code>
+@interface TempController : NSObject
+- (void)adjust:(TemperatureModel *)model;
+@end
+
+@implementation TempController
+
+- (void)adjust:(TemperatureModel *)model {
+    if (model.temp > 40) {
+        NSLog(@"Cooling system ON");
+    } else if (model.temp &lt; 20) {
+        NSLog(@"Heating system ON");
+    } else {
+        NSLog(@"System stable");
+    }
+}
+
+@end
+            </code></pre>
+
+            <p>Using it</p>
+            <pre><code>
+TemperatureModel *m = [TemperatureModel new];
+m.temp = 45;
+
+TempController *c = [TempController new];
+[c adjust:m];
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 3. Event-based Control System (Target/Action or Delegates)</h2>
+            <p>Control via Delegates (common in Cocoa Touch)</p>
+            <p>Example: Monitoring a value and notifying when it changes.</p>
+            <pre><code>
+@protocol SpeedDelegate <NSObject>
+    - (void)speedDidChange:(int)newSpeed;
+@end
+    
+@interface SpeedController : NSObject
+@property (nonatomic, weak) id<SpeedDelegate> delegate;
+@property (nonatomic) int speed;
+@end
+
+@implementation SpeedController
+
+- (void)setSpeed:(int)speed {
+    _speed = speed;
+    [self.delegate speedDidChange:speed];
+}
+
+@end                    
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 4. Timer-Based Control System</h2>
+            <p>Use NSTimer to check or adjust something regularly.</p>
+            <pre><code>
+self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                target:self
+                            selector:@selector(checkTemperature)
+                            userInfo:nil
+                                repeats:YES];
+
+- (void)checkTemperature {
+    if (self.temp > 50) {
+        NSLog(@"Emergency Cooling!");
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 5. If you meant a REAL engineering control system (PID controller)</h2>
+            <p>Objective-C can implement PID logic:</p>
+            <pre><code>
+@interface PID : NSObject
+@property float Kp, Ki, Kd;
+@property float prevError;
+@property float integral;
+
+- (float)compute:(float)setpoint actual:(float)actual dt:(float)dt;
+@end
+
+
+@implementation PID
+
+- (float)compute:(float)setpoint actual:(float)actual dt:(float)dt {
+
+    float error = setpoint - actual;
+    
+    self.integral += error * dt;
+    float derivative = (error - self.prevError) / dt;
+
+    float output = self.Kp * error + self.Ki * self.integral + self.Kd * derivative;
+
+    self.prevError = error;
+    return output;
+}
+@end
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🎯 Tell me your exact context?</h2>
+            <p>Do you mean:</p>
+            <ol>
+                <li>A general control flow explanation?</li>
+                <li>Application MVC controller logic?</li>
+                <li>Real-time system control (like PID)?</li>
+                <li>Controlling hardware through Objective-C (iOS sensors, motors, etc.)?</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

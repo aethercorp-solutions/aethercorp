@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Native 0.5</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Native 0.5</h1>
+                    <p class="subtitle">
+                        React Native 0.5 is extremely old (released around 2015), while anything from 0.60+ up to 0.74+ is modern.
+                    </p>
+                    <p>Because of that, the differences are huge across architecture, APIs, performance, build tools, and ecosystem support.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Major Differences Between React Native 0.5 vs Later Versions</h2>
+            <p>1️⃣ Core Architecture</p>
+            <p>React Native 0.5</p>
+            <ul>
+                <li>
+                    Used the old architecture built around:
+                    <ul>
+                        <li>Legacy bridge (JSON-based)</li>
+                        <li>Slow asynchronous communication</li>
+                    </ul>
+                </li>
+                <li>Limited TurboModules & Fabric concepts (not even introduced yet)</li>
+            </ul>
+            
+            <p>Modern RN (0.69 – 0.74+)</p>
+            <ul>
+                <li>
+                    New Architecture:
+                    <ul>
+                        <li>Fabric Renderer – faster UI updates</li>
+                        <li>TurboModules – faster native module calls</li>
+                        <li>JSI (JavaScript Interface) – eliminates JSON bridge</li>
+                    </ul>
+                </li>
+                <li>Drastically better performance and lower latency UI.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ JavaScript Engine</h2>
+            <p>RN 0.5</p>
+            <ul>
+                <li>Only supported JavaScriptCore (JSC) (older, slower version)</li>
+            </ul>
+            <p>Modern RN</p>
+            <ul>
+                <li>
+                    Supports:
+                    <ul>
+                        <li>Hermes (default) → faster startup, lower memory usage</li>
+                        <li>Latest JSC</li>
+                    </ul>
+                </li>
+                <li>Better debugging, profiling, and bundling.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Android & iOS Build Systems</h2>
+            <p>RN 0.5</p>
+            <ul>
+                <li>Android: Gradle 2.x era</li>
+                <li>iOS: No CocoaPods support (manual linking)</li>
+            </ul>
+            <p>Modern RN</p>
+            <ul>
+                <li>
+                    Android:
+                    <ul>
+                        <li>Uses Gradle 8+</li>
+                        <li>Supports Kotlin</li>
+                        <li>Autolinking native modules</li>
+                    </ul>
+                </li>
+                <li>
+                    iOS:
+                    <ul>
+                        <li>CocoaPods support built-in</li>
+                        <li>Autolinking</li>
+                        <li>Apple Silicon support</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Native Module Linking</h2>
+            <p>RN 0.5</p>
+            <ul>
+                <li>Must manually edit Xcode & Android files</li>
+                <li>No autolinking</li>
+                <li>Very error-prone</li>
+            </ul>
+            <p>Modern RN</p>
+            <ul>
+                <li>Autolinking for native modules</li>
+                <li>npx pod-install for iOS</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5️⃣ Navigation, Gesture, UI Ecosystem</h2>
+            <p>RN 0.5</p>
+            <ul>
+                <li>Very few stable libraries existed</li>
+                <li>Navigator (deprecated now) was common</li>
+                <li>No gesture-handler, no reanimated, no safe-area-context</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Modern RN</h2>
+            <ul>
+                <li>
+                    Massive ecosystem:
+                    <ul>
+                        <li>React Navigation</li>
+                        <li>Reanimated 2/3</li>
+                        <li>Gesture Handler</li>
+                        <li>Safe Area Context</li>
+                        <li>FlashList, RNGH, RN Screens</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Modern dev experience is much smoother.</p>
+        </section>
+
+        <section>
+            <h2>6️⃣ TypeScript Support</h2>
+            <p>RN 0.5</p>
+            <ul>
+                <li>TypeScript not supported</li>
+                <li>Types barely existed</li>
+            </ul>
+            <p>Modern RN</p>
+            <ul>
+                <li>Full TypeScript support</li>
+                <li>
+                    Template built-in:
+                    <pre><code>
+npx react-native init MyApp --template react-native-template-typescript
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7️⃣ Metro Bundler</h2>
+            <p>RN 0.5</p>
+            <ul>
+                <li>Early version of packager</li>
+                <li>Very slow reload and bundling</li>
+                <li>No Fast Refresh</li>
+            </ul>
+            <p>Modern RN</p>
+            <ul>
+                <li>Improved Metro</li>
+                <li>Fast Refresh</li>
+                <li>Inline requires</li>
+                <li>Hermes bytecode</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8️⃣ Developer Experience</h2>
+            <p>RN 0.5</p>
+            <ul>
+                <li>Slow reload</li>
+                <li>Unstable debugging</li>
+                <li>Limited error messages</li>
+            </ul>
+            <p>Modern RN</p>
+            <ul>
+                <li>Better error overlays</li>
+                <li>Better logs</li>
+                <li>Chrome DevTools</li>
+                <li>Flipper debugging integration</li>
+                <li>Performance profiling tools</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9️⃣ Supported OS Versions</h2>
+            <p>RN 0.5</p>
+            <ul>
+                <li>iOS 8 / Android 4.1</li>
+                <li>Cannot run on modern OS</li>
+            </ul>
+            <p>RN 0.74+</p>
+            <ul>
+                <li>iOS 13+ / Android 6+</li>
+                <li>Modern Xcode & Android Studio support</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔟 Community & Maintenance</h2>
+            <p>RN 0.5</p>
+            <ul>
+                <li>Completely outdated</li>
+                <li>Most libraries incompatible</li>
+                <li>No security updates</li>
+            </ul>
+            <p>RN 0.60+</p>
+            <ul>
+                <li>Vibrant ecosystem</li>
+                <li>Active maintenance</li>
+                <li>Hundreds of stable libraries</li>
+                <li>Long-term support for architecture changes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⭐ Quick Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>RN 0.5</th>
+                        <th>RN Modern (0.70+)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Architecture</td>
+                        <td>Old Bridge</td>
+                        <td>Fabric + TurboModules</td>
+                    </tr>
+                    <tr>
+                        <td>JS Engine</td>
+                        <td>Old JSC</td>
+                        <td>Hermes / New JSC</td>
+                    </tr>
+                    <tr>
+                        <td>iOS Linking</td>
+                        <td>Manual</td>
+                        <td>CocoaPods Autolinking</td>
+                    </tr>
+                    <tr>
+                        <td>Android</td>
+                        <td>Old Gradle</td>
+                        <td>Gradle 8 / Kotlin</td>
+                    </tr>
+                    <tr>
+                        <td>Hot Reload</td>
+                        <td>Old & buggy</td>
+                        <td>Fast Refresh</td>
+                    </tr>
+                    <tr>
+                        <td>Navigation</td>
+                        <td>Navigator</td>
+                        <td>React Navigation</td>
+                    </tr>
+                    <tr>
+                        <td>TypeScript</td>
+                        <td>No</td>
+                        <td>Full support</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>Low</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Compatibility</td>
+                        <td>Very limited</td>
+                        <td>Full ecosystem</td>
+                    </tr>
+                    <tr>
+                        <td>Debugging</td>
+                        <td>Weak</td>
+                        <td>Flipper, DevTools</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>If you want, I can also give:</h2>
+            <p>✅ migration tips</p>
+            <p>✅ which RN version to choose today</p>
+            <p>✅ compatibility notes for your React Native app</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

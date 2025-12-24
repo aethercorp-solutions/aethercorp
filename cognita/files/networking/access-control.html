@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Access control</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Access control</h1>
+                    <p class="subtitle">
+                        Access control is a security concept that determines who is allowed to access what resources in a system, and under what conditions. It’s a fundamental part of cybersecurity and IT management. Essentially, it’s about controlling permissions to ensure that only authorized users or systems can perform specific actions on data, applications, or devices.
+                        <p>Here’s a breakdown:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Purpose</h2>
+            <ul>
+                <li>Protects sensitive information and systems from unauthorized use.</li>
+                <li>Prevents accidental or malicious damage.</li>
+                <li>Helps enforce security policies in organizations.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Key Components</h2>
+            <ul>
+                <li>Subjects: The entities requesting access (users, applications, devices).</li>
+                <li>Objects: The resources being accessed (files, databases, servers).</li>
+                <li>Policies: Rules that define what access is allowed.</li>
+                <li>Access Rights/Permissions: Actions a subject can perform on an object (read, write, execute, delete).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Types of Access Control</h2>
+            <ol>
+                <li>
+                    Discretionary Access Control (DAC)
+                    <ul>
+                        <li>The resource owner decides who can access it.</li>
+                        <li>Example: File permissions on your personal computer.</li>
+                    </ul>
+                </li>
+                <li>
+                    Mandatory Access Control (MAC)
+                    <ul>
+                        <li>Access is based on security labels and policies, often in government or military systems.</li>
+                        <li>Users cannot change permissions themselves.</li>
+                    </ul>
+                </li>
+                <li>
+                    Role-Based Access Control (RBAC)
+                    <ul>
+                        <li>Access is assigned based on roles (e.g., admin, manager, employee).</li>
+                        <li>Simplifies management in large organizations.</li>
+                    </ul>
+                </li>
+                <li>
+                    Attribute-Based Access Control (ABAC)
+                    <ul>
+                        <li>Access decisions are based on attributes like time, location, device, or user characteristics.</li>
+                        <li>Example: Allowing access to an app only from company devices during work hours.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>4. How It’s Enforced</h2>
+            <ul>
+                <li>Authentication: Verifying identity (username/password, biometrics, tokens).</li>
+                <li>Authorization: Checking permissions for actions on resources.</li>
+                <li>Auditing/Logging: Tracking access for compliance and investigation.</li>
+            </ul>
+
+            <p>In short, access control is about ensuring that the right people can do the right things with the right resources—and nobody else.</p>
+        </section>
+
+        <section>
+            <p>Here’s a simple AWS-friendly beginner explanation of access control, designed like a tutorial you would see when starting with AWS:</p>
+            <h2>🌩️ Access Control in AWS — Beginner Tutorial</h2>
+            <p>Access control in AWS means deciding who can access your AWS resources, and what they are allowed to do.</p>
+            <p>In AWS, this is managed mainly through IAM (Identity and Access Management).</p>
+        </section>
+
+        <section>
+            <h2>✅ 1. What Access Control Means in AWS</h2>
+            <p>Access control in AWS answers questions like:</p>
+            <ul>
+                <li>Who can log in to AWS? (users, roles, apps)</li>
+                <li>What can they do? (read data, start EC2, modify S3)</li>
+                <li>Where can they do it from? (IP, region)</li>
+                <li>How are they allowed? (temporary keys, long-term keys, MFA)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 2. AWS Tools for Access Control</h2>
+            <p>1️⃣ IAM Users</p>
+            <p>Human accounts (e.g., you or your team).</p>
+            <p>Example: "paul-dev" user can read S3 buckets.</p>
+
+            <p>2️⃣ IAM Roles</p>
+            <p>Permissions for applications, Lambda functions, EC2, or cross-account access.</p>
+            <p>Example: Lambda role with permission to access MongoDB Atlas or DynamoDB.</p>
+
+            <p>3️⃣ IAM Policies</p>
+            <p>JSON documents that say what actions are allowed or denied.</p>
+            <p>Example policy snippet:</p>
+            <pre><code>
+{
+    "Effect": "Allow",
+    "Action": ["s3:ListBucket"],
+    "Resource": ["arn:aws:s3:::my-bucket"]
+}                  
+            </code></pre>
+
+            <p>4️⃣ IAM Groups</p>
+            <p>Used to assign the same permissions to multiple users.</p>
+
+            <p>5️⃣ Resource-Based Policies</p>
+            <p>Policies attached directly to AWS resources.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>S3 bucket policy</li>
+                <li>Lambda permission</li>
+                <li>API Gateway resource policy</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🎯 3. AWS Access Control Basics</h2>
+            <p>A. Authentication (prove who you are)</p>
+            <ul>
+                <li>Email/password</li>
+                <li>MFA</li>
+                <li>AWS access key + secret key (programmatic access)</li>
+            </ul>
+
+            <p>B. Authorization (what you’re allowed to do)</p>
+            <ul>
+                <li>IAM policies decide: Allow or Deny</li>
+                <li>Explicit Deny always wins</li>
+            </ul>
+
+            <p>C. Least Privilege Principle</p>
+            <p>Give only the permissions required, nothing more.</p>
+        </section>
+
+        <section>
+            <h2>📦 4. Beginner Example: Restricting S3 Access</h2>
+            <p>Let’s say you want a Lambda function to read from S3 but not write.</p>
+            <p>You attach a policy like:</p>
+            <pre><code>
+{
+    "Effect": "Allow",
+    "Action": ["s3:GetObject"],
+    "Resource": "arn:aws:s3:::my-app-bucket/*"
+}                  
+            </code></pre>
+
+            <p>This is access control:</p>
+            <ul>
+                <li>Lambda = subject</li>
+                <li>S3 bucket = object</li>
+                <li>IAM policy = access rule</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 5. Common AWS Access Control Scenarios</h2>
+            <p>✔ React Native app → API Gateway → Lambda</p>
+            <p>Use:</p>
+            <ul>
+                <li>Cognito for user authentication</li>
+                <li>IAM policies for Lambda permissions</li>
+                <li>API Gateway authorizers for route-level security</li>
+            </ul>
+
+            <p>✔ Lambda accessing DynamoDB</p>
+            <p>Attach IAM role with DynamoDB permissions.</p>
+            <p>✔ S3 bucket accessible only from IAM role</p>
+            <p>Use a bucket policy that denies requests from anywhere else.</p>
+        </section>
+
+        <section>
+            <h2>🏁 6. Mental Model (Super Simple)</h2>
+            <p>Think of every AWS service as a locked room.</p>
+            <p>IAM users/roles = people with keys</p>
+            <p>Policies = rules on the key</p>
+            <p>Example:</p>
+            <p>You have a key that can only unlock the door halfway, not open the whole room.</p>
+
+            <p>If you want, I can give you a step-by-step beginner lab such as:</p>
+            <ul>
+                <li>Create an IAM user</li>
+                <li>Create a role</li>
+                <li>Attach a policy</li>
+                <li>Test S3 permissions</li>
+                <li>View Access Advisor</li>
+            </ul>
+            <p>Just tell me: Do you want a hands-on AWS access control tutorial (yes/no)?</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

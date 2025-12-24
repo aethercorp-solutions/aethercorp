@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Thread programming</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Thread programming</h1>
+                    <p class="subtitle">
+                        Thread programming is about running multiple sequences of execution concurrently within a single process so tasks can happen in parallel or without blocking each other.
+                        <p>Below is a practical, developer-focused explanation, with concepts that apply across platforms (iOS, Android, Node.js, React Native).</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is a Thread?</h2>
+            <ul>
+                <li>A thread is the smallest unit of execution inside a process</li>
+                <li>
+                    <ul>
+                        <li>Stack</li>
+                        <li>Program counter</li>
+                        <li>Registers</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Process</p>
+            <pre><code>
+App
+ ├─ Thread 1 (Main/UI)
+ ├─ Thread 2 (Background)
+ └─ Thread 3 (Network)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Why Use Threads?</h2>
+            <p>You use threads to:</p>
+            <ul>
+                <li>Keep the UI responsive</li>
+                <li>Run long or blocking tasks in the background</li>
+                <li>Use multiple CPU cores</li>
+            </ul>
+
+            <p>Examples</p>
+            <ul>
+                <li>Network requests</li>
+                <li>Database operations</li>
+                <li>File I/O</li>
+                <li>Image processing</li>
+                <li>Encryption / compression</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Common Threading Models</h2>
+            <p>1️⃣ Single-threaded (Event Loop)</p>
+            <p>Example: JavaScript / Node.js</p>
+            <pre><code>
+console.log("A");
+setTimeout(() => console.log("B"), 0);
+console.log("C");
+            </code></pre>
+
+            <p>Output:</p>
+            <pre><code>
+A
+C
+B
+            </code></pre>
+            <ul>
+                <li>One main thread</li>
+                <li>Async work handled via event loop + callbacks</li>
+                <li>No shared-memory race conditions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Multi-threaded (Shared Memory)</h2>
+            <p>Examples:</p>
+            <ul>
+                <li>C / C++</li>
+                <li>Java</li>
+                <li>Swift / Objective-C</li>
+                <li>Kotlin</li>
+            </ul>
+
+            <pre><code>
+Thread t = new Thread(() -> {
+    doWork();
+});
+t.start();                
+            </code></pre>
+
+            <ul>
+                <li>Threads run in parallel</li>
+                <li>Must handle synchronization manually</li>
+            </ul>
+
+            <p>3️⃣ Thread Pool</p>
+            <p>Instead of creating threads repeatedly, reuse them.</p>
+            <pre><code>
+ExecutorService pool = Executors.newFixedThreadPool(4);
+pool.execute(() -> doWork());
+            </code></pre>
+
+            <p>Benefits:</p>
+            <ul>
+                <li>Better performance</li>
+                <li>Prevents excessive thread creation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Synchronization Problems</h2>
+            <p>🔴 Race Condition</p>
+            <p>Two threads modify shared data at the same time.</p>
+            <pre><code>
+count++; // NOT thread-safe
+            </code></pre>
+
+            <p>✅ Fix with Lock / Mutex</p>
+            <pre><code>
+synchronized(this) {
+    count++;
+}                
+            </code></pre>
+
+            <p>🔴 Deadlock</p>
+            <p>Two threads waiting on each other forever.</p>
+            <pre><code>
+Thread A holds Lock 1 → waits for Lock 2
+Thread B holds Lock 2 → waits for Lock 1
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Thread Safety Tools</h2>
+            <p>Common Primitives</p>
+            <ul>
+                <li>Mutex / Lock</li>
+                <li>Semaphore</li>
+                <li>Atomic variables</li>
+                <li>Condition variables</li>
+            </ul>
+
+            <p>Examples</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Language</th>
+                        <th>Tool</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Java</td>
+                        <td>synchronized, ReentrantLock</td>
+                    </tr>
+                    <tr>
+                        <td>Swift</td>
+                        <td>DispatchQueue, NSLock</td>
+                    </tr>
+                    <tr>
+                        <td>C++</td>
+                        <td>std::mutex</td>
+                    </tr>
+                    <tr>
+                        <td>JS</td>
+                        <td>Message passing (no shared memory)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>6. Thread Programming on iOS (Relevant to You)</h2>
+            <p>Main Thread (UI)</p>
+            <pre><code>
+DispatchQueue.main.async {
+    self.label.text = "Updated"
+}                
+            </code></pre>
+            
+            <p>Background Thread</p>
+            <pre><code>
+DispatchQueue.global(qos: .background).async {
+    heavyWork()
+}                
+            </code></pre>
+            <p>🚫 Never block the main thread — causes UI freezes & watchdog kills.</p>
+        </section>
+
+        <section>
+            <h2>7. Thread Programming in React Native</h2>
+            <p>Key Facts</p>
+            <ul>
+                <li>JS thread → business logic</li>
+                <li>UI thread → native rendering</li>
+                <li>Native modules → run on their own threads</li>
+            </ul>
+
+            <pre><code>
+JS Thread
+   ↓ bridge
+Native Thread(s)
+   ↓
+UI Thread
+            </code></pre>
+            <p>If JS thread is blocked:</p>
+            <ul>
+                <li>Animations lag</li>
+                <li>Touch events delayed</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Best Practices</h2>
+            <p>✅ Prefer async / promises over manual threads</p>
+            <p>✅ Use thread pools, not raw threads</p>
+            <p>✅ Keep shared state minimal</p>
+            <p>✅ Never do heavy work on UI thread</p>
+            <p>✅ Design for message passing when possible</p>
+        </section>
+
+        <section>
+            <h2>9. When NOT to Use Threads</h2>
+            <ul>
+                <li>Simple tasks</li>
+                <li>CPU-bound logic in JS (use native modules instead)</li>
+                <li>When async APIs already exist</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Mental Model (Simple)</h2>
+            <p>Threads are powerful but dangerous</p>
+            <p>Async is safer but limited</p>
+            <p>Message passing scales best</p>
+
+            <p>If you want, I can explain:</p>
+            <ul>
+                <li>Thread programming specifically for iOS</li>
+                <li>JS thread vs native thread in React Native</li>
+                <li>Deadlocks & race conditions with real bugs</li>
+                <li>How Meta handles threading internally in React Native</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

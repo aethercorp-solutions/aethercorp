@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Natural Language Processing (NLP)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Natural Language Processing (NLP)</h1>
+                    <p class="subtitle">
+                        In Natural Language Processing (NLP), patterns of words refer to structured relationships, arrangements, or sequences of words that help extract meaning, identify entities, or understand grammar and semantics. Detecting these patterns is central to many NLP techniques.
+                        <p>Here’s a breakdown of key word pattern techniques used in NLP:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔤 1. Lexical Patterns (Word-Level)</h2>
+            <p>These deal with the surface form of words themselves.</p>
+            <p>Techniques:</p>
+            <ul>
+                <li>
+                    Regular Expressions (Regex):
+                    <p>For pattern matching in text (emails, phone numbers, dates, etc.)</p>
+                    <pre><code>
+\b\d{4}-\d{2}-\d{2}\b   # matches YYYY-MM-DD format
+                    </code></pre>
+                </li>
+                <li>
+                    Tokenization:
+                    <p>Breaking text into words, punctuation, or symbols.</p>
+                    <p>→ Example: "I love NLP!" → ["I", "love", "NLP", "!"]</p>
+                </li>
+                <li>
+                    N-grams:
+                    <p>Sequences of n words used to detect collocations or common phrases.</p>
+                    <p>→ Example: “machine learning,” “New York City”</p>
+                </li>
+            </ul>
+            <p>Used for: keyword extraction, spam filtering, and phrase detection.</p>
+        </section>
+
+        <section>
+            <h2>🧩 2. Morphological Patterns</h2>
+            <p>These focus on word forms — prefixes, suffixes, stems, and parts of speech.</p>
+            <p>Techniques:</p>
+            <ul>
+                <li>
+                    Stemming & Lemmatization:
+                    <p>Normalize words to their root or base form.</p>
+                    <p>→ running → run, better → good</p>
+                </li>
+                <li>
+                    POS Tagging (Part-of-Speech Tagging):
+                    <p>Identifies grammatical categories like nouns, verbs, adjectives.</p>
+                    <p>→ “Dogs bark loudly.” → [Dogs/NNS, bark/VBP, loudly/RB]</p>
+                </li>
+                <li>
+                    Affix Analysis:
+                    <p>Detects patterns like “un-”, “-ness”, “-tion” for meaning clues.</p>
+                    <p>→ unhappy, happiness, action</p>
+                </li>
+            </ul>
+            <p>Used for: grammar analysis, sentiment polarity, and intent detection.</p>
+        </section>
+
+        <section>
+            <h2>🧠 3. Syntactic Patterns</h2>
+            <p>Focus on the structure of sentences and relationships between words.</p>
+            <p>Techniques:</p>
+            <ul>
+                <li>
+                    Dependency Parsing:
+                    <p>Maps grammatical relationships (subject → verb → object).</p>
+                    <p>→ “The cat sat on the mat.” → cat → sat, sat → mat</p>
+                </li>
+                <li>
+                    Constituency Parsing:
+                    <p>Breaks text into nested phrases (NP = noun phrase, VP = verb phrase).</p>
+                </li>
+                <li>
+                    Chunking (Shallow Parsing):
+                    <p>Groups tokens by patterns (like [Noun Phrase] [Verb Phrase]).</p>
+                </li>
+            </ul>
+            <p>Used for: question answering, information extraction, and summarization.</p>
+        </section>
+
+        <section>
+            <h2>🧬 4. Semantic Patterns</h2>
+            <p>Capture meaning-based relationships between words.</p>
+            <p>Techniques:</p>
+            <ul>
+                <li>
+                    Word Embeddings (e.g., Word2Vec, GloVe):
+                    <p>Represent words as vectors; similar words are close in space.</p>
+                    <p>→ king – man + woman ≈ queen</p>
+                </li>
+                <li>
+                    Contextual Embeddings (e.g., BERT, GPT):
+                    <p>Word meaning depends on context.</p>
+                    <p>→ bank (river) ≠ bank (finance)</p>
+                </li>
+                <li>
+                    Named Entity Recognition (NER):
+                    <p>Finds entities like people, locations, organizations.</p>
+                    <p>→ “Barack Obama was born in Hawaii.” → PERSON, LOCATION</p>
+                </li>
+                <li>
+                    Semantic Role Labeling (SRL):
+                    <p>Detects who did what to whom.</p>
+                    <p>→ “John gave Mary a gift.” → Agent: John, Recipient: Mary, Object: gift</p>
+                </li>
+            </ul>
+            <p>Used for: semantic search, chatbots, and AI assistants.</p>
+        </section>
+
+        <section>
+            <h2>🔍 5. Pattern Mining & Sequence Modeling</h2>
+            <p>These techniques detect recurrent patterns in text sequences.</p>
+            <p>Techniques:</p>
+            <ul>
+                <li>
+                    Association Rule Mining:
+                    <p>Finds co-occurrence patterns like “if word A → likely word B”.</p>
+                </li>
+                <li>
+                    Hidden Markov Models (HMM):
+                    <p>Model sequential patterns (like POS tagging).</p>
+                </li>
+                <li>
+                    Recurrent Neural Networks (RNN, LSTM, GRU):
+                    <p>Learn long-term dependencies in sentences.</p>
+                </li>
+                <li>
+                    Transformers (BERT, GPT):
+                    <p>Capture bidirectional word patterns and attention across the text.</p>
+                </li>
+            </ul>
+            <p>Used for: language modeling, prediction, and translation.</p>
+        </section>
+
+        <section>
+            <h2>💬 Example in Action</h2>
+            <p>Suppose you want to detect emotion patterns:</p>
+            <p>“I feel so happy today!” → Emotion: Joy</p>
+            <p>“I’m tired of everything.” → Emotion: Sadness</p>
+
+            <p>You could use:</p>
+            <ul>
+                <li>Lexical patterns: Look for words like happy, tired</li>
+                <li>POS patterns: “I feel [adj]” → emotion phrase</li>
+                <li>Semantic patterns: Use embeddings to detect emotional similarity.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Would you like me to show how to implement some of these (e.g., regex, POS, or dependency patterns) using Python (spaCy or NLTK)?</p>
+            <p>Perfect 👍 — let’s implement word pattern detection using Regular Expressions (regex) in NLP with Python.</p>
+            <p>Below are examples ranging from simple to more advanced word pattern recognition.</p>
+            <h2>🧩 1. Basic Setup</h2>
+            <pre><code>
+import re
+            </code></pre>
+            <p>The re module is Python’s built-in library for working with regular expressions.</p>
+        </section>
+
+        <section>
+            <h2>🔤 2. Simple Word Pattern Matching</h2>
+            <p>Example: detect words like “love”, “like”, “enjoy” in text.</p>
+            <pre><code>
+text = "I love NLP and I really enjoy learning about language patterns."
+
+pattern = r"\b(love|like|enjoy)\b"
+matches = re.findall(pattern, text, flags=re.IGNORECASE)
+
+print(matches)
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+['love', 'enjoy']
+            </code></pre>
+
+            <p>✅ \b ensures we match whole words</p>
+            <p>✅ | means “or”</p>
+            <p>✅ re.IGNORECASE makes it case-insensitive</p>
+        </section>
+
+        <section>
+            <h2>📅 3. Detect Structured Patterns (e.g., Dates, Emails, URLs)</h2>
+            <p>🗓 Match Dates</p>
+            <pre><code>
+text = "Today's date is 2025-11-10, yesterday was 2025/11/09."
+pattern = r"\b\d{4}[-/]\d{2}[-/]\d{2}\b"
+print(re.findall(pattern, text))
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+['2025-11-10', '2025/11/09']
+            </code></pre>
+
+            <p>📧 Match Email Addresses</p>
+            <pre><code>
+text = "Contact us at info@trycastanet.com or support@castanet.ai"
+pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+print(re.findall(pattern, text))
+            </code></pre>
+
+            <p>Output:</p>
+            <pre><code>
+['info@trycastanet.com', 'support@castanet.ai']
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 4. Extract Named-Like Patterns (e.g., “John Doe”)</h2>
+            <p>Useful for entity extraction before running a full NLP model.</p>
+            <pre><code>
+text = "Paul Dionisio met Anna Maria in Manila last week."
+pattern = r"\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)+\b"
+print(re.findall(pattern, text))
+            </code></pre>
+
+            <p>Output:</p>
+            <pre><code>
+['Paul Dionisio', 'Anna Maria']
+            </code></pre>
+
+            <p>✅ Pattern explanation:</p>
+            <ul>
+                <li>[A-Z][a-z]+ → Capitalized word</li>
+                <li>(?:\s[A-Z][a-z]+)+ → One or more additional capitalized words</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💬 5. NLP Use Case Example — Detect Emotion Patterns</h2>
+            <p>Let’s find emotional expressions like “I feel happy” or “I am sad”:</p>
+            <pre><code>
+text = "I feel happy today. I am so tired. I feel excited about the project!"
+pattern = r"\bI\s(?:feel|am)\s(\w+)"
+print(re.findall(pattern, text))
+            </code></pre>
+
+            <p>Output:</p>
+            <pre><code>
+['happy', 'tired', 'excited']
+            </code></pre>
+
+            <p>✅ Captures adjectives that describe emotions</p>
+            <p>✅ You can feed these results into a sentiment classifier later</p>
+        </section>
+
+        <section>
+            <h2>🧹 6. Clean or Normalize Text with Regex</h2>
+            <p>Example: remove punctuation and extra spaces before tokenization.</p>
+            <pre><code>
+text = "Hello!!!   How are you???"
+cleaned = re.sub(r"[^\w\s]", "", text)   # remove punctuation
+cleaned = re.sub(r"\s+", " ", cleaned)   # normalize spaces
+print(cleaned.strip())
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+Hello How are you
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ Combine with NLP Libraries (e.g., spaCy)</h2>
+            <p>You can use regex alongside NLP libraries for hybrid rule-based extraction:</p>
+            <pre><code>
+import spacy, re
+nlp = spacy.load("en_core_web_sm")
+
+text = "John gave $200 to Mary on 2025-11-10."
+pattern_money = r"\$\d+"
+pattern_date = r"\b\d{4}-\d{2}-\d{2}\b"
+
+matches = {
+    "money": re.findall(pattern_money, text),
+    "date": re.findall(pattern_date, text)
+}
+
+print(matches)
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+{'money': ['$200'], 'date': ['2025-11-10']}
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

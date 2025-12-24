@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Python’s file system usage and implementation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Python’s file system usage and implementation</h1>
+                    <p class="subtitle">Great question 👍 — let's go through Python’s file system usage and implementation, step by step.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🗂️ 1. Overview</h2>
+            <p>Python provides a set of built-in modules for interacting with the file system:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>os</td>
+                        <td>Low-level file and directory operations</td>
+                    </tr>
+                    <tr>
+                        <td>shutil</td>
+                        <td>High-level file operations (copy, move, delete, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>pathlib</td>
+                        <td>Modern, object-oriented file system paths</td>
+                    </tr>
+                    <tr>
+                        <td>glob</td>
+                        <td>Pattern matching for filenames</td>
+                    </tr>
+                    <tr>
+                        <td>os.path</td>
+                        <td>Older path manipulation utilities</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧩 2. Common File System Operations</h2>
+            <p>✅ Check for existence</p>
+            <pre><code>
+import os
+
+path = "example.txt"
+if os.path.exists(path):
+    print("File exists!")
+else:
+    print("File not found.")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📂 Create, rename, or delete files/directories</h2>
+            <pre><code>
+import os
+
+# Create directory
+os.mkdir("my_folder")
+
+# Rename directory
+os.rename("my_folder", "renamed_folder")
+
+# Delete directory
+os.rmdir("renamed_folder")
+
+# Delete file
+os.remove("example.txt")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📁 List files and directories</h2>
+            <pre><code>
+import os
+
+for item in os.listdir("."):
+    print(item)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🪄 3. Using pathlib (Recommended Modern Way)</h2>
+            <p>pathlib is cleaner and object-oriented.</p>
+            <pre><code>
+from pathlib import Path
+
+# Create a Path object
+p = Path("example.txt")
+
+# Check if file exists
+print(p.exists())
+
+# Get file name and extension
+print(p.name, p.suffix)
+
+# List files in a folder
+for file in Path(".").iterdir():
+    print(file)
+
+# Create directory
+Path("data").mkdir(exist_ok=True)
+
+# Read and write text files easily
+p.write_text("Hello World!")
+print(p.read_text())
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 4. Copy, Move, and Delete Files (shutil)</h2>
+            <pre><code>
+import shutil
+
+# Copy file
+shutil.copy("source.txt", "backup.txt")
+
+# Move file
+shutil.move("backup.txt", "folder/backup.txt")
+
+# Remove directory with all contents
+shutil.rmtree("folder")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔍 5. Searching Files (glob)</h2>
+            <pre><code>
+import glob
+
+# Find all .txt files
+for file in glob.glob("*.txt"):
+    print(file)
+
+# Recursive search
+for file in glob.glob("**/*.py", recursive=True):
+    print(file)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 6. Example: Practical Script</h2>
+            <p>Here’s an example of scanning and organizing files by type:</p>
+            <pre><code>
+from pathlib import Path
+import shutil
+
+downloads = Path("/Users/paul/Downloads")
+organized = downloads / "organized"
+
+for file in downloads.iterdir():
+    if file.is_file():
+        ext = file.suffix[1:] or "others"
+        folder = organized / ext
+        folder.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(file), str(folder / file.name))
+
+print("Files organized successfully!")
+            </code></pre>
+
+            <p>This script:</p>
+            <ul>
+                <li>Creates folders by file type (e.g., pdf, jpg, others)</li>
+                <li>Moves files from your Downloads folder into those folders automatically.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧰 7. Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Module</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Check if file exists</td>
+                        <td>os, pathlib</td>
+                        <td>Path("a.txt").exists()</td>
+                    </tr>
+                    <tr>
+                        <td>Create folder</td>
+                        <td>os, pathlib</td>
+                        <td>Path("folder").mkdir()</td>
+                    </tr>
+                    <tr>
+                        <td>Copy file</td>
+                        <td>shutil</td>
+                        <td>shutil.copy(src, dest)</td>
+                    </tr>
+                    <tr>
+                        <td>List files</td>
+                        <td>os, pathlib, glob</td>
+                        <td>os.listdir('.')</td>
+                    </tr>
+                    <tr>
+                        <td>Delete file</td>
+                        <td>os</td>
+                        <td>os.remove("file.txt")</td>
+                    </tr>
+                    <tr>
+                        <td>Move/Rename file</td>
+                        <td>os, shutil</td>
+                        <td>shutil.move(src, dest)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

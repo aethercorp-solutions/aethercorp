@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Step-by-Step AWS Amplify example project</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Step-by-Step AWS Amplify example project</h1>
+                    <p class="subtitle">Below is a beginner-friendly, step-by-step AWS Amplify example project, with a clear explanation of every AWS service involved, including how the pieces connect.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ AWS Amplify Beginner Example Project</h2>
+            <p>We’ll build a simple full-stack app called “Notes App” where users can:</p>
+            <ul>
+                <li>Sign up / Sign in (Authentication)</li>
+                <li>Create / List / Delete notes (API + Database)</li>
+                <li>Upload optional images (Storage)</li>
+            </ul>
+            <p>This example mirrors how real-world Amplify full-stack apps work and is perfect for React, React Native, or Vue beginners.</p>
+        </section>
+
+        <section>
+            <h2>🔧 AWS Services Used (Explained Clearly)</h2>
+            <p>AWS Amplify itself is a framework—under the hood it automatically creates and manages multiple AWS services:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>AWS Service</th>
+                        <th>Purpose</th>
+                        <th>Why It's Used in the Notes App</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Amazon Cognito</td>
+                        <td>Authentication (signup, signin, MFA, social login)</td>
+                        <td>Securely manage users. Avoid building custom auth.</td>
+                    </tr>
+                    <tr>
+                        <td>AppSync (GraphQL API)</td>
+                        <td>Serverless API layer that auto-connects to DynamoDB</td>
+                        <td>Fast, real-time API without managing servers.</td>
+                    </tr>
+                    <tr>
+                        <td>DynamoDB</td>
+                        <td>NoSQL database</td>
+                        <td>Stores notes with instant scalability.</td>
+                    </tr>
+                    <tr>
+                        <td>S3 (Simple Storage Service)</td>
+                        <td>File storage (images, uploads)</td>
+                        <td>Store note attachments or user files.</td>
+                    </tr>
+                    <tr>
+                        <td>IAM (Identity and Access Management)</td>
+                        <td>Permissions and roles</td>
+                        <td>Secure access between services. Amplify auto-configures roles.</td>
+                    </tr>
+                    <tr>
+                        <td>Amplify Hosting / Amplify Console</td>
+                        <td>Static web hosting & CI/CD</td>
+                        <td>Deploy React or Next.js app globally.</td>
+                    </tr>
+                    <tr>
+                        <td>Amplify CLI & Libraries</td>
+                        <td>Developer tools</td>
+                        <td>Generates backend resources and client code.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>You rarely touch these services directly—Amplify configures them for you.</p>
+        </section>
+
+        <section>
+            <h2>🏗️ Step 1 — Create a new project</h2>
+            <p>Works with React or React Native.</p>
+            <p>Web (React):</p>
+            <pre><code>
+npx create-react-app amplify-notes
+cd amplify-notes
+            </code></pre>
+
+            <p>Mobile (React Native):</p>
+            <pre><code>
+npx react-native init AmplifyNotes
+cd AmplifyNotes
+            </code></pre>
+        </section>
+
+        <section>
+            <p>Amplify CLI installs a backend environment.</p>
+            <pre><code>
+amplify init
+            </code></pre>
+
+            <p>You will answer:</p>
+            <ul>
+                <li>Environment name? → dev</li>
+                <li>Default editor? → your choice</li>
+                <li>Frontend framework? → React / React Native</li>
+                <li>Use AWS profile? → Yes</li>
+            </ul>
+
+            <p>🔍 What AWS creates here:</p>
+            <ul>
+                <li>S3 bucket for project artifacts</li>
+                <li>IAM roles for Amplify</li>
+                <li>A backend "container" for future services</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 Step 3 — Add Authentication (Amazon Cognito)</h2>
+            <pre><code>
+amplify add auth
+            </code></pre>
+
+            <p>Choose:</p>
+            <ul>
+                <li>Default configuration</li>
+                <li>Email only signup</li>
+            </ul>
+
+            <p>Then deploy:</p>
+            <pre><code>
+amplify push
+            </code></pre>
+
+            <p>🔍 AWS Services created:</p>
+            <ul>
+                <li>Cognito User Pool (users)</li>
+                <li>Cognito Identity Pool (roles/permissions)</li>
+                <li>IAM roles for authenticated / unauthenticated users</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📡 Step 4 — Add API (AppSync + DynamoDB)</h2>
+            <pre><code>
+amplify add api
+            </code></pre>
+
+            <p>Select:</p>
+            <ul>
+                <li>GraphQL</li>
+                <li>Default settings</li>
+                <li>"Single object with fields" template</li>
+            </ul>
+
+            <p>Amplify generates a GraphQL schema:</p>
+            <pre><code>
+type Note @model {
+    id: ID!
+    name: String!
+    description: String
+}                  
+            </code></pre>
+
+            <p>Then deploy:</p>
+            <pre><code>
+amplify push
+            </code></pre>
+
+            <p>🔍 AWS Services created:</p>
+            <ul>
+                <li>AppSync GraphQL API</li>
+                <li>DynamoDB table: Note-xxxx</li>
+                <li>Resolvers for CRUD</li>
+                <li>IAM policies connecting AppSync → DynamoDB</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Step 5 — Add Storage (S3)</h2>
+            <pre><code>
+amplify add storage
+            </code></pre>
+
+            <p>Choose:</p>
+            <ul>
+                <li>Content (images, files)</li>
+                <li>Auth users only</li>
+            </ul>
+
+            <p>Then:</p>
+            <pre><code>
+amplify push
+            </code></pre>
+
+            <p>🔍 AWS Services created:</p>
+            <ul>
+                <li>S3 bucket (private file storage)</li>
+                <li>IAM roles giving users upload/download rights</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💻 Step 6 — Use the backend in your code</h2>
+            <p>Install Amplify libraries:</p>
+            <p>React:</p>
+            <pre><code>
+npm install aws-amplify @aws-amplify/ui-react
+            </code></pre>
+
+            <p>React Native:</p>
+            <pre><code>
+npm install aws-amplify
+npx pod-install
+            </code></pre>
+
+            <p>Add config:</p>
+            <pre><code>
+import Amplify from 'aws-amplify';
+import awsExports from './src/aws-exports';
+Amplify.configure(awsExports);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📝 Example: Create a Note</h2>
+            <pre><code>
+import { API, graphqlOperation } from 'aws-amplify';
+import { createNote } from './graphql/mutations';
+
+async function addNote() {
+  await API.graphql(graphqlOperation(createNote, {
+    input: {
+      name: "My first note",
+      description: "Hello Amplify!"
+    }
+  }));
+}
+            </code></pre>
+
+            <p>📷 Example: Upload File to S3</p>
+            <pre><code>
+import { Storage } from 'aws-amplify';
+
+async function upload(file) {
+  await Storage.put(file.name, file, {
+    contentType: file.type
+  });
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🌍 Step 7 — Deploy Hosting (Amplify Hosting)</h2>
+            <pre><code>
+amplify add hosting
+amplify publish
+            </code></pre>
+
+            <p>🔍 AWS Services created:</p>
+            <ul>
+                <li>Amplify Hosting</li>
+                <li>CDN</li>
+                <li>HTTPS certificate</li>
+            </ul>
+            <p>Your app now has a live URL!</p>
+        </section>
+
+        <section>
+            <h2>🎉 Final Architecture Diagram (Simple View)</h2>
+            <pre><code>
+Frontend App (React / React Native)
+        |
+        | uses Amplify Libraries
+        |
+-------------------------------------
+| AWS Amplify Backend               |
+|                                   |
+|  Cognito &lt;--- Authentication ---- |
+|  AppSync &lt;---- GraphQL API -----  |
+|  DynamoDB &lt;---- Database -------  |
+|  S3 &lt;-------- File Storage -----  |
+|  IAM &lt;------- Permissions ------- |
+-------------------------------------
+        |
+        | deployed to
+        |
+  Amplify Hosting (Web)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⭐ Why Amplify Is Great for Beginners</h2>
+            <ul>
+                <li>No need to manually configure AWS services</li>
+                <li>Automatically generates APIs, database schema, and auth flows</li>
+                <li>Secure by default</li>
+                <li>Works for Web and Mobile</li>
+                <li>Allows incremental building (add what you need)</li>
+            </ul>
+        </section>
+
+        <section>
+            
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

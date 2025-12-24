@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Splash Screen</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Splash Screen</h1>
+                    <p class="subtitle">
+                        Do you mean splash screen for a mobile app? If yes, which platform are you working on?
+                        <p>Here are the common cases—tell me which one fits and I’ll give you exact steps/code:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ React Native (most common)</h2>
+            <ul>
+                <li>Android: XML-based launch screen (styles + drawable)</li>
+                <li>iOS: LaunchScreen.storyboard</li>
+                <li>
+                    Tools:
+                    <ul>
+                        <li>react-native-splash-screen (classic, manual)</li>
+                        <li>expo-splash-screen (Expo)</li>
+                        <li>react-native-bootsplash ✅ (recommended, modern & fast)</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ iOS (Native – Objective-C / Swift)</h2>
+            <ul>
+                <li>Uses Launch Screen Storyboard</li>
+                <li>No code execution allowed (static only)</li>
+                <li>Auto-dismisses when app finishes loading</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Android (Native)</h2>
+            <ul>
+                <li>Uses launch theme</li>
+                <li>Android 12+ uses SplashScreen API</li>
+                <li>Older versions rely on window background</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Web App</h2>
+            <ul>
+                <li>HTML/CSS loader</li>
+                <li>Optional JS-based preloader</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5️⃣ Design / UX</h2>
+            <ul>
+                <li>Best practices (duration, logo size, fade-out)</li>
+                <li>Prevent white flash / blank screen</li>
+                <li>Handle async loading (auth, API, fonts)</li>
+            </ul>
+            <p>👉 Quick question:</p>
+            <p>Are you implementing a splash screen for React Native, iOS, Android, or Web?</p>
+            <p>If React Native, are you using Expo or CLI?</p>
+        </section>
+
+        <section>
+            <h2>✅ iOS Splash Screen = Launch Screen</h2>
+            <p>iOS does NOT allow code execution on the splash screen.</p>
+            <p>It must be static and defined in a Storyboard.</p>
+
+            <p>1️⃣ Create / Open Launch Screen Storyboard</p>
+            <p>Xcode steps</p>
+            <ol>
+                <li>Open your project in Xcode</li>
+                <li>Select your App target</li>
+                <li>Go to General → App Icons & Launch Images</li>
+                <li>Under Launch Screen File, set:</li>
+            </ol>
+            <pre><code>
+LaunchScreen
+            </code></pre>
+            <p>(If missing, create LaunchScreen.storyboard)</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Design the Splash Screen (Storyboard)</h2>
+            <p>Open LaunchScreen.storyboard</p>
+            <p>Typical layout</p>
+            <ul>
+                <li>Background color</li>
+                <li>Centered logo</li>
+                <li>Optional bottom text</li>
+            </ul>
+
+            <p>Recommended setup</p>
+            <ul>
+                <li>Add a UIView</li>
+                <li>Set background color (match app theme)</li>
+                <li>Add UIImageView (logo)</li>
+                <li>Add Auto Layout constraints</li>
+            </ul>
+
+            <p>Center logo constraints</p>
+            <ul>
+                <li>Horizontally centered</li>
+                <li>Vertically centered</li>
+                <li>Fixed width/height OR aspect ratio</li>
+            </ul>
+
+            <p>3️⃣ Add Logo Image (Best Practice)</p>
+            <p>Image requirements</p>
+            <ul>
+                <li>Use PDF (vector) or @2x / @3x PNG</li>
+                <li>Transparent background</li>
+                <li>Add to Assets.xcassets</li>
+            </ul>
+
+            <p>UIImageView</p>
+            <ul>
+                <li>Content Mode: Aspect Fit</li>
+                <li>No animations ❌</li>
+                <li>No custom fonts ❌</li>
+            </ul>
+
+            <p>4️⃣ Info.plist Check (Very Important)</p>
+            <p>Ensure this key exists:</p>
+            <pre><code>
+&lt;key&gt;UILaunchStoryboardName&lt;/key&gt;
+&lt;string&gt;LaunchScreen&lt;/string&gt;
+            </code></pre>
+
+            <h2>5️⃣ iOS Rules (Must Follow)</h2>
+            <p>Apple will reject apps if:</p>
+            <ul>
+                <li>You animate the launch screen</li>
+                <li>You show loading indicators</li>
+                <li>You display dynamic text</li>
+                <li>You use custom fonts</li>   
+            </ul>
+            <p>✅ Keep it visually identical to your first screen.</p>
+
+            <p>6️⃣ After Splash Screen (Fake Delay Pattern)</p>
+            <p>If you need loading logic, do it after launch:</p>
+            <p>Objective-C</p>
+            <pre><code>
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    // start auth, API calls, etc.
+}                
+            </code></pre>
+
+            <p>Swift</p>
+            <pre><code>
+override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    // load data here
+}                
+            </code></pre>
+
+            <p>7️⃣ Avoid White Flash (Common Bug)</p>
+            <p>Make sure:</p>
+            <ul>
+                <li>Launch screen background color == First screen background</li>
+                <li>Root ViewController loads fast</li>
+                <li>No heavy work in AppDelegate</li>
+            </ul>
+
+            <p>8️⃣ iOS 13+ (Dark Mode Tip)</p>
+            <p>Set colors using Assets Color Set:</p>
+            <ul>
+                <li>Light</li>
+                <li>Dark</li>
+            </ul>
+            <p>So splash adapts automatically.</p>
+
+            <p>9️⃣ If This Is React Native on iOS</p>
+            <p>Tell me and I’ll give you:</p>
+            <ul>
+                <li>LaunchScreen.storyboard config</li>
+                <li>Auto-hide fix</li>
+                <li>White screen prevention</li>
+                <li>RN-specific setup</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here’s a clean, modern guide for Android splash screen, including Android 12+ and older versions. This is the correct production approach Google recommends.</p>
+            <h2>✅ Android Splash Screen (Modern Approach)</h2>
+            <p>Android 12+ → SplashScreen API</p>
+            <p>Android 11 and below → Launch Theme fallback</p>
+            <p>We’ll support ALL versions.</p>
+
+            <p>1️⃣ Create Splash Theme (Required)</p>
+            <p>res/values/themes.xml</p>
+
+<pre><code>
+    &lt;style name=&quot;Theme.MyApp.Splash&quot; parent=&quot;Theme.SplashScreen&quot;&gt;
+        &lt;!-- Background color --&gt;
+        &lt;item name=&quot;windowSplashScreenBackground&quot;&gt;@color/splash_background&lt;/item&gt;
+    
+        &lt;!-- App logo --&gt;
+        &lt;item name=&quot;windowSplashScreenAnimatedIcon&quot;&gt;@drawable/ic_splash_logo&lt;/item&gt;
+    
+        &lt;!-- App theme after splash --&gt;
+        &lt;item name=&quot;postSplashScreenTheme&quot;&gt;@style/Theme.MyApp&lt;/item&gt;
+    &lt;/style&gt;
+</code></pre>
+
+        <p>2️⃣ Colors</p>
+        <pre><code>
+&lt;color name="splash_background"&gt;#000000&lt;/color&gt;
+        </code></pre>
+
+        <p>3️⃣ Splash Logo Drawable</p>
+        <p>Best practice (vector)</p>
+        <p>res/drawable/ic_splash_logo.xml</p>
+        <pre><code>
+&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108"&gt;
+    <!-- Your path data here -->
+&lt;/vector&gt;
+        </code></pre>
+
+        <p>Or PNG:</p>
+        <pre><code>
+drawable-mdpi / hdpi / xhdpi / xxhdpi / xxxhdpi
+        </code></pre>
+
+        <p>✔ Transparent background</p>
+        <p>✔ Centered automatically</p>
+        <p>❌ No text</p>
+
+        <p>4️⃣ Apply Splash Theme to Launcher Activity</p>
+        <p>AndroidManifest.xml</p>
+<pre><code>
+    &lt;activity
+        android:name=&quot;.MainActivity&quot;
+        android:theme=&quot;@style/Theme.MyApp.Splash&quot;
+        android:exported=&quot;true&quot;&gt;
+        &lt;intent-filter&gt;
+            &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;
+            &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;
+        &lt;/intent-filter&gt;
+    &lt;/activity&gt;
+</code></pre>
+
+        <p>5️⃣ Enable SplashScreen API (Android 12+)</p>
+        <p>MainActivity.kt</p>
+        <pre><code>
+import android.os.Bundle
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen() // MUST be first
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+    }
+}
+        </code></pre>
+
+        <p>✔ Automatically dismissed</p>
+        <p>✔ Smooth fade</p>
+        <p>✔ Handles rotation</p>
+
+        <p>6️⃣ Android 11 and Below (Fallback)</p>
+        <p>Handled automatically via:</p>
+        <pre><code>
+&lt;item name="windowBackground"&gt;@color/splash_background&lt;/item&gt;
+        </code></pre>
+        <p>No extra code required.</p>
+
+        <p>7️⃣ Prevent White Screen Flash (VERY IMPORTANT)</p>
+        <p>✔ Splash background color == app root background</p>
+        <p>✔ Avoid heavy work in onCreate()</p>
+        <p>✔ Load data after first frame</p>
+
+        <p>8️⃣ Optional: Control Splash Duration (Advanced)</p>
+        <pre><code>
+installSplashScreen().setKeepOnScreenCondition {
+    viewModel.isLoading.value
+}            
+        </code></pre>
+
+        <p>❗ Use sparingly — Google discourages long splash screens.</p>
+
+        <p>9️⃣ React Native (Android) Note</p>
+        <p>Since you’re a React Native dev:</p>
+        <ul>
+            <li>This works perfectly with RN</li>
+            <li>Replace MainActivity only</li>
+            <li>No libraries needed (Android 12+)</li>
+        </ul>
+        <p>If you want pre-Android 12 animation, use:</p>
+        <p>👉 react-native-bootsplash (best RN option)</p>
+
+        <p>🚫 Common Mistakes (App Rejection / UX issues)</p>
+        <p>❌ Separate Splash Activity</p>
+        <p>❌ Loading spinners</p>
+        <p>❌ Text on splash</p>
+        <p>❌ Delays longer than needed</p>
+        </section>
+
+        <section>
+            <p>Here’s a clean, professional splash screen for the web, with HTML + CSS + JS, optimized for performance, UX, and SEO-safe behavior.</p>
+            <h2>✅ What a Web Splash Screen Should Do</h2>
+            <p>✔ Show immediately</p>
+            <p>✔ Hide when app/content is ready</p>
+            <p>✔ No blocking SEO</p>
+            <p>✔ No long artificial delays</p>
+            <p>✔ Responsive + accessible</p>
+
+            <p>1️⃣ Basic HTML Structure</p>
+<pre><code>
+&lt;body&gt;
+    &lt;!-- Splash Screen --&gt;
+    &lt;div id=&quot;splash&quot;&gt;
+    &lt;img src=&quot;logo.svg&quot; alt=&quot;App Logo&quot; /&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Main App --&gt;
+    &lt;div id=&quot;app&quot; hidden&gt;
+    &lt;!-- Your app content --&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&quot;splash.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+</code></pre>
+        
+        <p>2️⃣ CSS (Fullscreen, Centered)</p>
+        <pre><code>
+/* Splash container */
+#splash {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.4s ease;
+}
+
+/* Logo */
+#splash img {
+  width: 120px;
+  height: auto;
+}
+
+/* Fade-out */
+#splash.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+        </code></pre>
+
+        <p>3️⃣ JavaScript (Safe Dismiss)</p>
+        <pre><code>
+window.addEventListener('load', () => {
+    const splash = document.getElementById('splash');
+    const app = document.getElementById('app');
+    
+    splash.classList.add('hide');
+    
+    setTimeout(() => {
+        splash.remove();
+        app.hidden = false;
+    }, 400);
+});              
+        </code></pre>
+
+        <p>✔ Waits for assets</p>
+        <p>✔ No race condition</p>
+        <p>✔ Smooth fade</p>
+
+        <p>4️⃣ SPA (React / Vue / Angular) Pattern</p>
+        <p>React Example</p>
+        <pre><code>
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  setTimeout(() => setLoading(false), 500); // replace with real loading
+}, []);
+
+return loading ? <Splash /> : <App />;
+        </code></pre>
+
+        <p>5️⃣ Prevent Flash of White Screen (FOUC)</p>
+        <pre><code>
+&lt;style&gt;
+    body {
+        margin: 0;
+        background: #000;
+    }
+&lt;/style&gt;              
+        </code></pre>
+
+        <p>✔ Background matches splash</p>
+        <p>✔ No white flash</p>
+
+        <p>6️⃣ PWA (Installable App) Splash</p>
+        <p>Use manifest.json:</p>
+        <pre><code>
+{
+    "name": "My App",
+    "short_name": "MyApp",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "icons": [
+        {
+        "src": "/icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+        }
+    ]
+}              
+        </code></pre>
+        <p>✔ Used during app launch</p>
+        <p>✔ Controlled by browser</p>
+        <p>✔ No JS needed</p>
+
+        <p>7️⃣ Accessibility (Important)</p>
+        <pre><code>
+&lt;div id="splash" aria-busy="true" role="status"&gt;
+        </code></pre>
+
+        <p>✔ Screen-reader friendly</p>
+        <p>✔ Doesn’t trap focus</p>
+
+        <p>8️⃣ What NOT To Do 🚫</p>
+        <p>❌ Block rendering with JS</p>
+        <p>❌ Long timers</p>
+        <p>❌ Disable scrolling unnecessarily</p>
+        <p>❌ Hide content from crawlers</p>
+        <p>❌ Use heavy videos</p>
+
+        <p>9️⃣ Best UX Duration</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Static site</td>
+                    <td>0–300ms</td>
+                </tr>
+                <tr>
+                    <td>SPA</td>
+                    <td>Until app ready</td>
+                </tr>
+                <tr>
+                    <td>PWA</td>
+                    <td>Browser-managed</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>🔍 Want this adapted for:</p>
+        <ul>
+            <li>React / Next.js</li>
+            <li>Vue</li>
+            <li>Angular</li>
+            <li>Pure CSS (no JS)</li>
+            <li>Loader animation</li>
+        </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

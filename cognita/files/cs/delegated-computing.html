@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Delegated Computing</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Delegated Computing</h1>
+                    <p class="subtitle">
+                        Here’s a clean, practical explanation of delegated computing, including what it is, why it’s used, and how it’s implemented—with examples relevant to distributed systems, mobile apps, serverless, and AI.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ What Is Delegated Computing?</h2>
+            <p>Delegated computing is the practice of offloading a task from one system (client, server, device, algorithm) to another system that is better suited to handle that task.</p>
+            <p>In simple terms:</p>
+            <p>A device or service “delegates” work to another device/service that has more resources, lower latency, or specialized capabilities.</p>
+            <p>It is commonly used in:</p>
+            <ul>
+                <li>Cloud computing</li>
+                <li>Mobile applications</li>
+                <li>IoT and edge computing</li>
+                <li>Distributed systems</li>
+                <li>AI/ML workloads</li>
+                <li>Blockchain and decentralized networks</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⭐ Why Delegated Computing Matters</h2>
+            <ol>
+                <li>
+                    Reduce load on the main system
+                    <p>Clients (mobile/web) offload heavy tasks to backend servers.</p>
+                </li>
+                <li>
+                    Increase speed and efficiency
+                    <p>Tasks run on machines optimized for that workload (GPU, high memory, etc.).</p>
+                </li>
+                <li>
+                    Reduce battery and compute usage on mobile devices
+                </li>
+                <li>
+                    Parallelization
+                    <p>Tasks can be split and delegated to multiple worker nodes.</p>
+                </li>
+                <li>
+                    Specialized processing
+                    <p>Example: delegate image processing to GPU servers, delegate auth to OAuth provider.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📌 Common Real-World Examples</h2>
+            <ol>
+                <li>
+                    Serverless (AWS Lambda) delegation
+                    <p>A mobile app offloads:</p>
+                    <ul>
+                        <li>image resizing</li>
+                        <li>authentication validation</li>
+                        <li>
+                            database operations
+                            <p>to AWS Lambda functions.</p>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    React Native → Backend delegation
+                    <p>Your app might delegate:</p>
+                    <ul>
+                        <li>contact syncing</li>
+                        <li>deduplication</li>
+                        <li>sorting and filtering large lists</li>
+                        <li>
+                            AI suggestions
+                            <p>to your backend server instead of doing it on-device.</p>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    gRPC microservices
+                    <p>One service delegates:</p>
+                    <ul>
+                        <li>payment processing</li>
+                        <li>AI scoring</li>
+                        <li>
+                            search
+                            <p>to another microservice through gRPC.</p>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    OAuth / Google Sign-in
+                    <p>Delegates authentication to Google or Azure:</p>
+                    <ul>
+                        <li>The app does not verify passwords</li>
+                        <li>Google handles the identity verification</li>
+                        <li>Your backend receives tokens</li>
+                    </ul>
+                </li>
+                <li>
+                    Edge computing
+                    <p>An IoT device offloads ML inference to an edge server</p>
+                    <p>(because the device has low compute power).</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🛠️ How to Implement Delegated Computing</h2>
+            <p>Below are patterns + code-level concepts.</p>
+            <p>1. Client → Server Delegation (Mobile Offload)</p>
+            <p>Example: React Native delegating heavy filtering to backend</p>
+            <p>Client sends request:</p>
+            <pre><code>
+await fetch(`${API}/filter-contacts`, {
+    method: "POST",
+    body: JSON.stringify({ contacts }),
+});                  
+            </code></pre>
+            <p>Server (Node.js / Lambda) does the heavy work:</p>
+            <pre><code>
+exports.handler = async (event) => {
+    const contacts = JSON.parse(event.body);
+    
+    const filtered = contacts.filter(c => c.phoneNumbers.length > 0);
+    
+    return {
+        statusCode: 200,
+        body: JSON.stringify(filtered)
+    };
+};                  
+            </code></pre>
+
+            <p>2. Server → Worker Delegation (Queue/Async Tasks)</p>
+            <p>Use:</p>
+            <ul>
+                <li>AWS SQS</li>
+                <li>AWS Lambda async</li>
+                <li>Google Pub/Sub</li>
+                <li>RabbitMQ</li>
+                <li>Kafka</li>
+            </ul>
+            <p>Architecture:</p>
+            <p>Frontend → API Gateway → Lambda → SQS → Worker Lambda</p>
+            <p>Example tasks delegated:</p>
+            <ul>
+                <li>PDF generation</li>
+                <li>AI processing</li>
+                <li>Email sending</li>
+                <li>Background sync</li>
+            </ul>
+            <p>Lambda delegating work to SQS:</p>
+            <pre><code>
+import { SQS } from 'aws-sdk';
+const sqs = new SQS();
+
+await sqs.sendMessage({
+  QueueUrl: process.env.QUEUE_URL,
+  MessageBody: JSON.stringify({ type: "GENERATE_REPORT", userId })
+}).promise();
+            </code></pre>
+            <p>Service → Microservice Delegation (gRPC)</p>
+            <p>You are already working on gRPC—this is a core delegated computing pattern.</p>
+            <p>Example:</p>
+            <p>API server delegates AI scoring to an ML microservice.</p>
+            <pre><code>
+service AIService {
+    rpc Score(UserData) returns (ScoreResult);
+}                  
+            </code></pre>
+            <p>API server code:</p>
+            <pre><code>
+const response = await aiClient.score({ userId });
+            </code></pre>
+
+            <p>4. Edge → Cloud Delegation</p>
+            <p>Example: IoT camera delegates:</p>
+            <ul>
+                <li>face recognition</li>
+                <li>motion detection</li>
+                <li>storage</li>
+                <li>
+                    analytics
+                    <p>to a cloud AI service.</p>
+                </li>
+            </ul>
+
+            <p>Delegated Authentication (OAuth2, OpenID Connect)</p>
+            <p>Your system delegates identity verification to:</p>
+            <ul>
+                <li>Google Sign-In</li>
+                <li>Azure AD</li>
+                <li>Firebase</li>
+                <li>Cognito</li>
+            </ul>
+            <p>You simply validate the tokens.</p>
+        </section>
+
+        <section>
+            <h2>Delegated Computing in Blockchain / Web3</h2>
+            <p>Examples:</p>
+            <ul>
+                <li>Smart contracts delegate computation to off-chain workers (using oracles).</li>
+                <li>L2 networks delegate settlement to L1.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Patterns for Delegated Computing</h2>
+            <p>Pattern 1: Request/Response Delegation</p>
+            <p>Client → Server</p>
+            <p>Server → Worker</p>
+            <p>Pattern 2: Event Delegation</p>
+            <p>System emits events → background processors handle tasks.</p>
+            <p>Pattern 3: Resource-Based Delegation</p>
+            <p>Tasks go to specialized compute units:</p>
+            <ul>
+                <li>GPU node</li>
+                <li>FPGA</li>
+                <li>AI accelerator</li>
+            </ul>
+            <p>Pattern 4: Distributed Parallel Delegation</p>
+            <p>Split a big job to workers (MapReduce style).</p>
+        </section>
+
+        <section>
+            <h2>🚀 How to Add Delegated Computing to Your Project</h2>
+            <p>Since you are building:</p>
+            <ul>
+                <li>AWS serverless backend</li>
+                <li>React Native apps</li>
+                <li>gRPC microservices</li>
+                <li>Contact management processing</li>
+                <li>Authentication flows</li>
+            </ul>
+            <p>Here’s where you can apply delegation:</p>
+
+            <ol>
+                <li>
+                    Heavy contact processing → Lambda workers
+                    <p>Sort, dedupe, merge contacts in backend.</p>
+                </li>
+                <li>
+                    Authentication delegation
+                    <p>Use Google / Azure / Cognito to handle sign-in.</p>
+                </li>
+                <li>
+                    AI-powered suggestions
+                    <p>Delegate ML tasks to an AI microservice (gRPC).</p>
+                </li>
+                <li>
+                    Media processing
+                    <p>Resize images → Lambda</p>
+                    <p>Generate PDFs → SQS → Worker Lambda</p>
+                </li>
+                <li>
+                    Subscription validation
+                    <p>Delegate receipt validation to a backend worker.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Want example code for your specific architecture?</h2>
+            <p>I can provide:</p>
+            <p>✅ AWS Lambda implementation</p>
+            <p>✅ React Native client delegation pattern</p>
+            <p>✅ gRPC service delegation architecture</p>
+            <p>✅ Serverless Framework YAML setup</p>
+            <p>✅ MongoDB worker delegation patterns</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Diffing</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Diffing</h1>
+                    <p class="subtitle">
+                        Diffing (short for difference checking) is the process of comparing two versions of data to figure out what changed.
+                        <p>It’s commonly used in UI frameworks, version control, and data synchronization to update only what’s necessary instead of redoing everything.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Core idea (simple)</h2>
+            <p>Instead of:</p>
+            <p>“Throw everything away and rebuild”</p>
+            <p>Diffing does:</p>
+            <p>“What changed? Update only that.”</p>
+        </section>
+
+        <section>
+            <h2>1. Diffing in UI frameworks (most common meaning)</h2>
+            <p>In modern UI frameworks (React, SwiftUI, Jetpack Compose, Flutter):</p>
+            <p>Example</p>
+            <p>Old UI state:</p>
+            <pre><code>
+[Apple, Banana, Orange]
+            </code></pre>
+            <p>New UI state:</p>
+            <pre><code>
+[Apple, Banana, Mango]
+            </code></pre>
+
+            <p>Diffing detects:</p>
+            <ul>
+                <li>❌ Remove Orange</li>
+                <li>✅ Add Mango</li>
+            </ul>
+            <p>Only that row is updated, not the whole list.</p>
+            <p>Why it matters</p>
+            <ul>
+                <li>Faster UI updates</li>
+                <li>Less memory usage</li>
+                <li>Smoother animations</li>
+                <li>Better battery life (important on mobile)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. Diffing in UI frameworks (most common meaning)</h2>
+            <p>In modern UI frameworks (React, SwiftUI, Jetpack Compose, Flutter):</p>
+            <p>Example</p>
+            <p>Old UI state:</p>
+            <pre><code>
+[Apple, Banana, Orange]
+            </code></pre>
+            <p>New UI state:</p>
+            <pre><code>
+[Apple, Banana, Mango]
+            </code></pre>
+
+            <p>Diffing detects:</p>
+            <ul>
+                <li>❌ Remove Orange</li>
+                <li>✅ Add Mango</li>
+            </ul>
+
+            <p>Only that row is updated, not the whole list.</p>
+            <p>Why it matters</p>
+            <ul>
+                <li>Faster UI updates</li>
+                <li>Less memory usage</li>
+                <li>Smoother animations</li>
+                <li>Better battery life (important on mobile)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Diffing in React (Virtual DOM)</h2>
+            <p>React keeps a Virtual DOM (a lightweight copy of the UI tree).</p>
+            <p>Steps:</p>
+            <ol>
+                <li>Render new Virtual DOM</li>
+                <li>Diff it against the previous one</li>
+                <li>Apply the minimum changes to the real DOM</li>
+            </ol>
+            <p>Example:</p>
+            <pre><code>
+&lt;p&gt;Hello&lt;/p&gt;
+            </code></pre>
+
+            <p>→</p>
+            <pre><code>
+&lt;p&gt;Hello, Paul&lt;/p&gt;
+            </code></pre>
+
+            <p>Diff result:</p>
+            <ul>
+                <li>Text node changed</li>
+                <li>No need to recreate the &lt;p&gt; element</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Diffing in Swift / iOS (UITableView & UICollectionView)</h2>
+            <p>iOS uses diffing heavily:</p>
+            <p>Diffable Data Source</p>
+            <pre><code>
+UICollectionViewDiffableDataSource&lt;Section, Item&gt;
+            </code></pre>
+            <p>You provide:</p>
+            <ul>
+                <li>Old snapshot</li>
+                <li>New snapshot</li>
+            </ul>
+            <p>UIKit:</p>
+            <ul>
+                <li>Computes differences</li>
+                <li>Animates inserts, deletes, moves</li>
+            </ul>
+            <p>This is why items must conform to Hashable — UIKit needs stable identity to diff correctly.</p>
+            <p>👉 This connects directly to your earlier question about Hashable.</p>
+        </section>
+
+        <section>
+            <h2>4. Diffing in version control (Git)</h2>
+            <p>When you run:</p>
+            <pre><code>
+git diff
+            </code></pre>
+            <p>Git:</p>
+            <ul>
+                <li>Compares two file versions</li>
+                <li>Shows added, removed, or changed lines</li>
+            </ul>
+
+            <p>Example:</p>
+            <pre><code>
+- let age = 20
++ let age = 21
+            </code></pre>
+            <p>Same idea — find what changed.</p>
+        </section>
+
+        <section>
+            <h2>5. Diffing vs Re-rendering everything</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Approach</th>
+                        <th>What happens</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>No diffing</td>
+                        <td>Rebuild entire UI</td>
+                        <td>Slow, wasteful</td>
+                    </tr>
+                    <tr>
+                        <td>Diffing</td>
+                        <td>Update only changes</td>
+                        <td>Fast, efficient</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>6. Key concepts behind diffing</h2>
+            <p>Identity</p>
+            <ul>
+                <li>How do we know two items are “the same”?</li>
+                <li>id, key, UUID, Hashable</li>
+            </ul>
+
+            <p>Equality</p>
+            <ul>
+                <li>Did the content change?</li>
+                <li>== comparison</li>
+            </ul>
+
+            <p>Minimal updates</p>
+            <ul>
+                <li>Insert</li>
+                <li>Delete</li>
+                <li>Move</li>
+                <li>Update</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>One-sentence definition</h2>
+            <p>Diffing is the process of comparing old and new data to determine the minimal set of changes needed to update something efficiently.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

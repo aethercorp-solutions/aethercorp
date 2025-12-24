@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Navigation v4 (and earlier)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Navigation v4 (and earlier)</h1>
+                    <p class="subtitle">
+                        That import is from React Navigation v4 (and earlier). If you’re seeing errors, it’s almost certainly because your project is using React Navigation v5+ or v6, where createSwitchNavigator and createAppContainer were removed.
+                        <p>Below is how to understand and fix it depending on your setup.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>If you are using React Navigation v4 (legacy) ✅</h2>
+            <p>This import is correct only if you have these packages installed:</p>
+            <pre><code>
+npm install react-navigation@4 react-navigation-stack react-navigation-tabs react-navigation-drawer
+            </code></pre>
+
+            <p>Usage example (v4):</p>
+            <pre><code>
+import { createSwitchNavigator, createAppContainer } from 'react-navigation';
+
+const AppSwitch = createSwitchNavigator({
+  Auth: AuthStack,
+  App: AppStack,
+});
+
+export default createAppContainer(AppSwitch);
+            </code></pre>
+            <p>⚠️ v4 is deprecated and no longer recommended.</p>
+        </section>
+
+        <section>
+            <h2>If you are using React Navigation v5 / v6 (recommended) ❌</h2>
+            <p>createSwitchNavigator and createAppContainer do not exist anymore.</p>
+            <p>What replaced them?</p>
+            <ul>
+                <li><b>NavigationContainer</b> replaces createAppContainer</li>
+                <li><b>Conditional rendering</b> replaces createSwitchNavigator</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Modern Replacement (v6 – Recommended Way)</h2>
+            <p>Install</p>
+            <pre><code>
+npm install @react-navigation/native @react-navigation/native-stack
+            </code></pre>
+            <pre><code>
+npm install react-native-screens react-native-safe-area-context
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example: Switch Navigator replacement (Auth vs App)</h2>
+            <pre><code>
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+const Stack = createNativeStackNavigator();
+
+function AppNavigator({ isLoggedIn }) {
+    return (
+    &lt;Stack.Navigator screenOptions={{ headerShown: false }}&gt;
+        {isLoggedIn ? (
+        &lt;Stack.Screen name="App" component={AppStack} /&gt;
+        ) : (
+        &lt;Stack.Screen name="Auth" component={AuthStack} /&gt;
+        )}
+    &lt;/Stack.Navigator&gt;
+    );
+}
+
+export default function App() {
+    const isLoggedIn = true; // from auth state
+
+    return (
+    &lt;NavigationContainer&gt;
+        &lt;AppNavigator isLoggedIn={isLoggedIn} /&gt;
+    &lt;/NavigationContainer&gt;
+    );
+}
+                </code></pre>
+                <p>This behaves exactly like createSwitchNavigator, but cleaner and more flexible.</p>                
+        </section>
+
+        <section>
+            <h2>Quick Decision Guide</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Situation</th>
+                        <th>What to do</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Existing old app</td>
+                        <td>Keep v4 (short-term)</td>
+                    </tr>
+                    <tr>
+                        <td>New app</td>
+                        <td>Use v6</td>
+                    </tr>
+                    <tr>
+                        <td>Error: createSwitchNavigator undefined</td>
+                        <td>You’re on v5+</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase / Cognito auth flow</td>
+                        <td>Use conditional navigation</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>🔁 Convert your entire v4 navigation to v6</li>
+                <li>🔐 Show a Firebase / Cognito auth switch (relevant to your AWS + RN setup)</li>
+                <li>🧭 Explain why SwitchNavigator was removed in detail</li>
+            </ul>
+        </section>
+
+        <section>
+            <pre><code>
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs'
+            </code></pre>
+
+            <h2>✅ If you are using React Navigation v4 (legacy)</h2>
+            <p>This import is correct, but only if all required v4 packages are installed.</p>
+            <p>Required packages (v4)</p>
+            <pre><code>
+npm install react-navigation@4
+npm install react-navigation-tabs@2
+            </code></pre>
+
+            <p>Usage example (v4)</p>
+            <pre><code>
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
+import { createAppContainer } from 'react-navigation';
+
+const Tabs = createMaterialTopTabNavigator(
+  {
+    Home: HomeScreen,
+    Profile: ProfileScreen,
+  },
+  {
+    tabBarOptions: {
+      style: { backgroundColor: '#000' },
+      indicatorStyle: { backgroundColor: '#fff' },
+    },
+  }
+);
+
+export default createAppContainer(Tabs);
+            </code></pre>
+
+            <p>⚠️ All navigators must be v4 if you go this route:</p>
+            <ul>
+                <li>react-navigation</li>
+                <li>react-navigation-tabs</li>
+                <li>react-navigation-stack</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>❌ If you are using React Navigation v5 or v6</h2>
+            <p>react-navigation-tabs does not exist anymore.</p>
+            <p>✅ Correct replacement (v6)</p>
+            <pre><code>
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+            </code></pre>
+
+            <p>Install</p>
+            <pre><code>
+npm install @react-navigation/material-top-tabs
+npm install react-native-tab-view react-native-pager-view
+            </code></pre>
+
+            <p>Usage example (v6 – Recommended)</p>
+            <pre><code>
+import { NavigationContainer } from &#39;@react-navigation/native&#39;;
+import { createMaterialTopTabNavigator } from &#39;@react-navigation/material-top-tabs&#39;;
+
+const Tab = createMaterialTopTabNavigator();
+
+function MyTabs() {
+    return (
+    &lt;Tab.Navigator
+        screenOptions={{
+        tabBarIndicatorStyle: { backgroundColor: &#39;#fff&#39; },
+        tabBarStyle: { backgroundColor: &#39;#000&#39; },
+        }}
+    &gt;
+        &lt;Tab.Screen name=&quot;Home&quot; component={HomeScreen} /&gt;
+        &lt;Tab.Screen name=&quot;Profile&quot; component={ProfileScreen} /&gt;
+    &lt;/Tab.Navigator&gt;
+    );
+}
+
+export default function App() {
+    return (
+    &lt;NavigationContainer&gt;
+        &lt;MyTabs /&gt;
+    &lt;/NavigationContainer&gt;
+    );
+}
+                </code></pre>
+                <p>If you want, I can also:</p>
+                <ul>
+                    <li>Add syntax highlighting (Prism.js / Highlight.js)</li>
+                    <li>Convert this to Markdown instead</li>
+                    <li>Wrap it for WordPress / CMS usage</li>
+                </ul>                
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

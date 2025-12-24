@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Migrating from React Native 0.5</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Migrating from React Native 0.5</h1>
+                    <p class="subtitle">Migrating from React Native 0.5 (ancient!) to the latest (0.7x+) is a major leap—almost a full rewrite in some places—because the ecosystem, build system, and APIs have changed drastically. Here’s a step-by-step migration guide tailored for iOS and Android.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ Plan Your Migration</h2>
+            <ul>
+                <li>RN 0.5 → RN 0.59 → RN 0.63 → RN 0.70+ is a safer incremental approach.</li>
+                <li>Backup everything: source code, Xcode project, Android project, node_modules, etc.</li>
+                <li>
+                    Check third-party modules:
+                    <ul>
+                        <li>Most old 0.5 modules will not support autolinking or Pods.</li>
+                        <li>You may need replacements or patches.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Upgrade React Native Version Incrementally</h2>
+            <p>Option 1: Use react-native upgrade</p>
+            <pre><code>
+npm install -g react-native-cli
+react-native upgrade
+            </code></pre>
+            <ul>
+                <li>RN Upgrade helper: <a href="https://react-native-community.github.io/upgrade-helper/">https://react-native-community.github.io/upgrade-helper/</a></li>
+                <li>Compare App.js, package.json, index.js, android/, ios/ templates carefully.</li>
+            </ul>
+            <p>Option 2: Manual upgrade</p>
+            <ul>
+                <li>
+                    Update package.json:
+                    <pre><code>
+"react-native": "0.71.8"   // or latest
+                    </code></pre>
+                </li>
+                <li>Remove node_modules & yarn.lock / package-lock.json</li>
+                <li>
+                    Run:
+                    <pre><code>
+npm install
+cd ios && pod install && cd ..
+                    </code></pre>
+                    <p>⚠️ Direct jump from 0.5 → 0.71 is very risky; intermediate versions reduce breaking changes.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ iOS Migration Steps</h2>
+            <p>a. Switch from manual linking → CocoaPods</p>
+            <ul>
+                <li>
+                    Create ios/Podfile (if none exists):
+                    <pre><code>
+platform :ios, '12.0'
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+target 'YourApp' do
+  config = use_native_modules!
+  use_react_native!(:path => config["reactNativePath"])
+end
+                    </code></pre>
+                </li>
+                <li>
+                    Install pods:
+                    <pre><code>
+cd ios
+pod install
+                    </code></pre>
+                </li>
+                <li>
+                    b. Open .xcworkspace instead of .xcodeproj
+                    <ul>
+                        <li>RN 0.5: YourApp.xcodeproj</li>
+                        <li>RN 0.70+: YourApp.xcworkspace (CocoaPods)</li>
+                    </ul>
+                </li>
+                <li>
+                    c. Update Build Settings
+                    <ul>
+                        <li>Header Search Paths → handled automatically by Pods</li>
+                        <li>Remove manually linked libraries</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Android Migration</h2>
+            <ul>
+                <li>
+                    Update Gradle and Android SDK:
+                    <ul>
+                        <li>Gradle wrapper ≥ 7.6</li>
+                        <li>Android Gradle Plugin ≥ 8.0</li>
+                        <li>MinSdkVersion ≥ 21</li>
+                    </ul>
+                </li>
+                <li>
+                    Migrate old MainActivity & MainApplication:
+                    <ul>
+                        <li>ReactNativeHost setup has changed</li>
+                        <li>New autolinking replaces PackageList.java</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5️⃣ Code Updates</h2>
+            <p>a. Imports and APIs</p>
+            <ul>
+                <li>Navigator → react-navigation</li>
+                <li>ListView → FlatList / SectionList</li>
+                <li>RCTDeviceEventEmitter → NativeEventEmitter</li>
+                <li>ViewPagerAndroid → react-native-pager-view</li>
+                <li>Remove old lifecycle methods (componentWillMount, etc.) → componentDidMount / hooks</li>
+            </ul>
+            <p>b. ES6+ and Hooks</p>
+            <ul>
+                <li>Convert React.createClass → ES6 classes or functional components</li>
+                <li>Optionally migrate to Hooks for state management</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6️⃣ Third-Party Libraries</h2>
+            <ul>
+                <li>
+                    Check compatibility:
+                    <ul>
+                        <li>Many old RN 0.5 libraries are obsolete</li>
+                        <li>Replace with actively maintained libraries (e.g., Firebase, Maps, Push Notifications)</li>
+                    </ul>
+                </li>
+                <li>Ensure they have a Podspec for iOS</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7️⃣ Test Thoroughly</h2>
+            <ul>
+                <li>Run on iOS Simulator and Android Emulator</li>
+                <li>
+                    Check:
+                    <ul>
+                        <li>Navigation</li>
+                        <li>Push notifications</li>
+                        <li>Camera / Location / Permissions</li>
+                        <li>Offline storage</li>
+                    </ul>
+                </li>
+                <li>Fix runtime crashes (common due to breaking changes in native modules)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8️⃣ Optional Improvements</h2>
+            <ul>
+                <li>Enable Hermes on iOS and Android (faster JS engine)</li>
+                <li>Enable TurboModules and Fabric if targeting latest RN architecture</li>
+                <li>Migrate from react-native link → fully autolinked modules</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9️⃣ Useful Resources</h2>
+            <ul>
+                <li><a href="https://react-native-community.github.io/upgrade-helper/">RN Upgrade Helper</a></li>
+                <li><a href="https://reactnative.dev/blog">RN 0.70+ Changelog</a></li>
+                <li><a href="https://reactnative.dev/docs/integration-with-existing-apps">CocoaPods + React Native</a></li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Key Advice</h2>
+            <ul>
+                <li>Don’t try to jump straight from 0.5 → 0.71 in one step.</li>
+                <li>Do iOS and Android builds incrementally.</li>
+                <li>Replace old, unmaintained modules.</li>
+                <li>Use Upgrade Helper to see what changed between versions.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

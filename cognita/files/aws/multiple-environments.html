@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS Multiple Environments</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS Multiple Environments</h1>
+                    <p class="subtitle">
+                        That’s a great question — setting up multiple environments (e.g. dev, uat, staging, and production) for your AWS Lambda and API Gateway setup is an essential part of managing a real-world serverless app.
+                        <p>Here’s a complete breakdown of how to structure, configure, and deploy multiple environments correctly.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧩 1. Common Environment Strategies</h2>
+            <p>There are three standard ways to handle environments in AWS Lambda + API Gateway setups:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Description</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Separate AWS Accounts</td>
+                        <td>Each environment has its own AWS account.</td>
+                        <td>Enterprises or high isolation</td>
+                    </tr>
+                    <tr>
+                        <td>Separate Stacks (Same Account)</td>
+                        <td>Each environment is a separate CloudFormation stack (e.g. my-api-dev, my-api-prod).</td>
+                        <td>Most common for startups/small teams</td>
+                    </tr>
+                    <tr>
+                        <td>API Gateway Stages Only</td>
+                        <td>Single API with multiple stages (/dev, /prod).</td>
+                        <td>Simple testing setups, but not ideal for different resources</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>✅ Recommended: Use separate stacks (or services) in the same AWS account, each with its own environment configuration.</p>
+        </section>
+
+        <section>
+            <h2>⚙️ 2. Serverless Framework Example</h2>
+            <p>If you’re using the Serverless Framework, it’s very straightforward.</p>
+            <p>serverless.yml</p>
+            <pre><code>
+service: my-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-1
+  stage: ${opt:stage, 'dev'}  # default stage
+  environment:
+    MONGO_URI: ${ssm:/my-api/${self:provider.stage}/MONGO_URI~true}
+    JWT_SECRET: ${ssm:/my-api/${self:provider.stage}/JWT_SECRET~true}
+
+functions:
+  getUser:
+    handler: src/handlers/getUser.handler
+    events:
+      - http:
+          path: users/{id}
+          method: get
+            </code></pre>
+        </section>
+
+        <section>
+            <p>🚀 Deploy to each environment</p>
+        <pre><code>
+sls deploy --stage dev
+sls deploy --stage uat
+sls deploy --stage staging
+sls deploy --stage prod
+        </code></pre>
+
+        <p>This will automatically:</p>
+        <ul>
+            <li>Create distinct Lambda functions per stage (my-api-dev-getUser, etc.)</li>
+            <li>Create unique API Gateway URLs per stage</li>
+            <li>Load environment-specific variables from SSM Parameter Store</li>
+        </ul>
+        </section>
+
+        <section>
+            <h2>🧱 3. Environment-Specific Variables</h2>
+            <p>Use AWS SSM Parameter Store or Secrets Manager to isolate secrets per environment.</p>
+            <p>Example:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter Key</th>
+                        <th>Environment</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>/my-api/dev/MONGO_URI</td>
+                        <td>dev</td>
+                        <td>mongodb://localhost/dev</td>
+                    </tr>
+                    <tr>
+                        <td>mongodb://localhost/dev</td>
+                        <td>uat</td>
+                        <td>mongodb://cluster/uat</td>
+                    </tr>
+                    <tr>
+                        <td>/my-api/prod/MONGO_URI</td>
+                        <td>prod</td>
+                        <td>mongodb://cluster/prod</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Then your Lambda gets the right environment variable based on stage.</p>
+        </section>
+
+        <section>
+            <h2>🌐 4. API Gateway Stage Configuration</h2>
+            <p>If you want to reuse the same API Gateway with stages (/dev, /uat, /prod), you can configure it like this:</p>
+            <ul>
+                <li>
+                    Create an API Gateway stage for each environment:
+                    <ul>
+                        <li>https://api-id.execute-api.ap-southeast-1.amazonaws.com/dev</li>
+                        <li>https://api-id.execute-api.ap-southeast-1.amazonaws.com/uat</li>
+                        <li>https://api-id.execute-api.ap-southeast-1.amazonaws.com/prod</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Each stage can have:</p>
+            <ul>
+                <li>Its own Lambda alias (e.g., myLambda:dev)</li>
+                <li>Its own stage variables (used to set env values)</li>
+            </ul>
+            <p>But this approach gives less isolation and can make rollbacks riskier.</p>
+        </section>
+
+        <section>
+            <h2>🪄 5. Lambda Aliases and Versions</h2>
+            <p>Each environment can map to a Lambda alias that points to a specific version of the function:</p>
+            <pre><code>
+aws lambda publish-version --function-name myFunction
+aws lambda create-alias --function-name myFunction --name uat --function-version 3
+aws lambda create-alias --function-name myFunction --name prod --function-version 5
+            </code></pre>
+            <p>Then, API Gateway can invoke your Lambda via alias, not $LATEST.</p>
+        </section>
+
+        <section>
+            <h2>🧠 6. Example Directory Structure</h2>
+            <pre><code>
+my-api/
+├── src/
+│   ├── handlers/
+│   ├── utils/
+│   └── db/
+├── config/
+│   ├── dev.env.json
+│   ├── uat.env.json
+│   └── prod.env.json
+├── serverless.yml
+└── package.json
+            </code></pre>
+
+            <p>Or if you prefer pure AWS CDK:</p>
+            <pre><code>
+my-api/
+├── lib/
+│   ├── dev-stack.ts
+│   ├── uat-stack.ts
+│   ├── prod-stack.ts
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 7. Quick Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Recommendation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Environment Variable Storage</td>
+                        <td>SSM Parameter Store or Secrets Manager</td>
+                    </tr>
+                    <tr>
+                        <td>Environment Isolation</td>
+                        <td>Separate stacks per stage</td>
+                    </tr>
+                    <tr>
+                        <td>Deployment Tool</td>
+                        <td>Serverless Framework or AWS CDK</td>
+                    </tr>
+                    <tr>
+                        <td>API Gateway Stages</td>
+                        <td>Optional, for simple routing or testing</td>
+                    </tr>
+                    <tr>
+                        <td>Version Control</td>
+                        <td>Use git branches or CI/CD pipelines to deploy each environment</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
