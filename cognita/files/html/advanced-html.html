@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>advanced HTML</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">advanced HTML</h1>
+                    <p class="subtitle">Sure! Let’s dive into advanced HTML, its detailed explanation, usage, and implementation, beyond the basics. I’ll break it down carefully so it’s thorough and practical.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Advanced HTML Concepts</h2>
+            <p>While basic HTML covers tags like &lt;p&gt;, &lt;div&gt;, &lt;a&gt;, advanced HTML involves:</p>
+            <ul>
+                <li>Semantic HTML</li>
+                <li>Forms and Input Types</li>
+                <li>Media Elements</li>
+                <li>APIs Integration</li>
+                <li>Web Components</li>
+                <li>Accessibility</li>
+                <li>SEO Optimization</li>
+                <li>Microdata and Metadata</li>
+                <li>Custom Elements & Shadow DOM</li>
+            </ul>
+
+            <p>1.1 Semantic HTML</p>
+            <p>Definition: Semantic HTML uses elements that convey meaning, rather than just presentation.</p>
+            <p>Examples: &lt;header&gt;, &lt;footer&gt;, &lt;article&gt;, &lt;section&gt;, &lt;aside&gt;, &lt;nav&gt;.</p>
+            <p>Usage & Implementation:</p>
+            <pre><code>
+&lt;header&gt;
+    &lt;h1&gt;My Website&lt;/h1&gt;
+    &lt;nav&gt;
+        &lt;ul&gt;
+        &lt;li&gt;&lt;a href=&quot;#home&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#about&quot;&gt;About&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/nav&gt;
+&lt;/header&gt;
+
+&lt;main&gt;
+    &lt;article&gt;
+        &lt;h2&gt;Article Title&lt;/h2&gt;
+        &lt;p&gt;Content of the article.&lt;/p&gt;
+    &lt;/article&gt;
+&lt;/main&gt;
+
+&lt;footer&gt;
+    &lt;p&gt;&amp;copy; 2025 My Website&lt;/p&gt;
+&lt;/footer&gt;
+            </code></pre>
+            
+            <p>Benefits:</p>
+            <ul>
+                <li>Improves accessibility (screen readers)</li>
+                <li>Better SEO (search engines understand content)</li>
+                <li>Cleaner, maintainable code</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1.2 Advanced Forms and Input Types</h2>
+            <p>HTML5 introduced many new input types and attributes:</p>
+            <ul>
+                <li>email, tel, url, number, date, datetime-local, color, range</li>
+                <li>Validation attributes: required, pattern, min, max, step</li>
+            </ul>
+            <pre><code>
+&lt;form&gt;
+    &lt;label for=&quot;username&quot;&gt;Username:&lt;/label&gt;
+    &lt;input type=&quot;text&quot; id=&quot;username&quot; name=&quot;username&quot; required minlength=&quot;3&quot;&gt;
+    
+    &lt;label for=&quot;email&quot;&gt;Email:&lt;/label&gt;
+    &lt;input type=&quot;email&quot; id=&quot;email&quot; name=&quot;email&quot; required&gt;
+    
+    &lt;label for=&quot;birthdate&quot;&gt;Birth Date:&lt;/label&gt;
+    &lt;input type=&quot;date&quot; id=&quot;birthdate&quot; name=&quot;birthdate&quot;&gt;
+    
+    &lt;label for=&quot;color&quot;&gt;Favorite Color:&lt;/label&gt;
+    &lt;input type=&quot;color&quot; id=&quot;color&quot; name=&quot;color&quot;&gt;
+    
+    &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;
+&lt;/form&gt;
+            </code></pre>
+            <p>Usage: Advanced forms allow data validation directly in the browser and improve UX.</p>              
+        </section>
+
+        <section>
+            <h2>1.3 Media Elements</h2>
+            <p>Modern HTML allows embedding audio, video, and interactive media:</p>
+            <pre><code>
+&lt;video controls width=&quot;600&quot;&gt;
+    &lt;source src=&quot;video.mp4&quot; type=&quot;video/mp4&quot;&gt;
+    Your browser does not support the video tag.
+&lt;/video&gt;
+    
+&lt;audio controls&gt;
+    &lt;source src=&quot;audio.mp3&quot; type=&quot;audio/mpeg&quot;&gt;
+    Your browser does not support the audio element.
+&lt;/audio&gt;
+            </code></pre>
+            
+            <p>Usage:</p>
+            <ul>
+                <li>Streamlined multimedia integration without external plugins (like Flash)</li>
+                <li>Supports multiple sources for fallback</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1.4 APIs and Advanced Features</h2>
+            <p>HTML5 APIs allow you to interact with browser capabilities:</p>
+            <ul>
+                <li>Canvas API – for graphics & games</li>
+                <li>Web Storage API – localStorage and sessionStorage</li>
+                <li>Geolocation API – access device location</li>
+                <li>Drag & Drop API – draggable elements</li>
+                <li>Web Workers – background threads</li>
+            </ul>
+            <p>Example – Canvas Drawing:</p>
+            <pre><code>
+&lt;canvas id=&quot;myCanvas&quot; width=&quot;200&quot; height=&quot;100&quot; style=&quot;border:1px solid #000000;&quot;&gt;&lt;/canvas&gt;
+&lt;script&gt;
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'green';
+        ctx.fillRect(10, 10, 150, 50);
+&lt;/script&gt;
+            </code></pre>
+            <p>Usage: Create dynamic graphics, animations, and games in the browser.</p>
+        </section>
+
+        <section>
+            <h2>1.5 Web Components & Custom Elements</h2>
+            <p>Definition: Web components allow creating reusable custom HTML tags with encapsulated functionality.</p>
+            <p>Example:</p>
+            <pre><code>
+&lt;script&gt;
+    class MyButton extends HTMLElement {
+        constructor() {
+            super();
+            const shadow = this.attachShadow({ mode: 'open' });
+            const button = document.createElement('button');
+            button.textContent = 'Click Me';
+            shadow.appendChild(button);
+        }
+    }
+    
+    customElements.define('my-button', MyButton);
+&lt;/script&gt;
+    
+&lt;my-button&gt;&lt;/my-button&gt;                  
+            </code></pre>
+            <p>Usage:</p>
+            <ul>
+                <li>Encapsulation of styles and logic</li>
+                <li>Reusability across multiple projects</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1.6 Accessibility (A11y)</h2>
+            <p>Key Points:</p>
+            <ul>
+                <li>Use semantic HTML elements</li>
+                <li>Use aria-* attributes for dynamic content</li>
+                <li>Proper labeling of form controls</li>
+            </ul>
+            <pre><code>
+&lt;label for="email"&gt;Email:&lt;/label&gt;
+&lt;input type="email" id="email" aria-required="true"&gt;
+            </code></pre>
+
+            <p>Benefits: Makes your website usable for everyone, including people with disabilities.</p>
+        </section>
+
+        <section>
+            <h2>1.7 SEO & Metadata</h2>
+            <p>Advanced HTML includes metadata and structured data:</p>
+            <pre><code>
+&lt;meta name=&quot;description&quot; content=&quot;A detailed guide on advanced HTML&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    
+&lt;script type=&quot;application/ld+json&quot;&gt;
+    {
+        &quot;@context&quot;: &quot;https://schema.org&quot;,
+        &quot;@type&quot;: &quot;Article&quot;,
+        &quot;headline&quot;: &quot;Advanced HTML Guide&quot;,
+        &quot;author&quot;: &quot;Paul Dionisio&quot;,
+        &quot;datePublished&quot;: &quot;2025-12-25&quot;
+    }
+&lt;/script&gt;
+            </code></pre>
+            <p>Usage:</p>
+            <ul>
+                <li>Improves search engine rankings</li>
+                <li>Provides structured data for rich results</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1.8 Microdata & Semantic Attributes</h2>
+            <p>Use HTML attributes to embed machine-readable data:</p>
+            <pre><code>
+&lt;div itemscope itemtype="https://schema.org/Person"&gt;
+    &lt;span itemprop="name"&gt;John Doe&lt;/span&gt;
+    &lt;span itemprop="jobTitle"&gt;Web Developer&lt;/span&gt;
+&lt;/div&gt;                  
+            </code></pre>
+            <p>Usage: Helps search engines and other applications understand content contextually.</p>
+        </section>
+
+        <section>
+            <h2>2. Advanced HTML Usage</h2>
+            <ol>
+                <li>Web Apps & SPA: Combined with JS frameworks like React, Angular, or Vue.</li>
+                <li>Multimedia Sites: Using &lt;audio&gt; and &lt;video&gt; with APIs.</li>
+                <li>Interactive Games: With &lt;canvas&gt; and WebGL.</li>
+                <li>PWA (Progressive Web Apps): Service workers, manifest, offline HTML caching.</li>
+                <li>Enterprise & SEO Sites: Using semantic HTML, structured data, and accessibility features.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>3. Best Practices in Advanced HTML</h2>
+            <ul>
+                <li>Always use semantic HTML.</li>
+                <li>Keep your HTML accessible (ARIA attributes, alt texts, labels).</li>
+                <li>Use HTML5 APIs instead of plugins (Flash, Java applets).</li>
+                <li>Combine with CSS and JavaScript for interactivity.</li>
+                <li>Validate HTML via W3C Validator.</li>
+            </ul>
+            <p>If you want, I can also create a full “advanced HTML template” that combines semantic layout, forms, media, canvas, custom elements, SEO, and accessibility, all in one working file. It would be like a master template for modern websites.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

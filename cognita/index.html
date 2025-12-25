@@ -6,6 +6,24 @@
   <title>Aether Cognita</title>
   <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
   <link rel="stylesheet" href="cognita.css" />
+  <style>
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 5px;
+    }
+
+    .pagination button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .pagination button.active {
+      font-weight: bold;
+      background-color: #ddd;
+    }
+  </style>
 </head>
 
 <body>
@@ -24,20 +42,21 @@
 
     <main>
       <ul id="page-list"></ul>
+      <div id="pagination" class="pagination"></div>
     </main>
   </div>
 
   <script>
-    // Dynamically get base path (e.g., '/cognita/' or '/' for localhost)
     const pathParts = window.location.pathname.split('/');
     const repoName = pathParts[1] || '';
     const isGitHubPages = window.location.hostname.includes('github.io');
     const basePath = isGitHubPages ? `/${repoName}/cognita/` : './';
 
-    // Files relative to basePath
     const htmlFiles = [
     "files/aether-intranet/react-native-intranet-portal-app.html",
-    "files/aether-ios/aether-intranet-portal-authentication.html",
+    "files/aether-intranet/aether-intranet-portal-authentication.html",
+    "files/aether-intranet/enterprise-level-comparison-of-ldap-vs-oauth-vs-saml.html",
+    "files/aether-ios/aether-ios-intranet-portal-authentication.html",
     "files/aether-ios/company-intranet-portal.html",
     "files/automation/automating-forms.html",
     "files/automation/botpress-conversational-ai-platform.html",
@@ -194,7 +213,9 @@
     "files/google/google-people-api-in-a-react-native-app.html",
     "files/google/google-people-api-in-both-react-native-and-nodejs.html",
     "files/google/google-signin-with-firebase-authentication-in-a-react-web-app.html",
+    "files/html/advanced-html.html",
     "files/html/end-to-end-explanation-of-html.html",
+    "files/html/modern-explanation-of-html.html",
     "files/intelligence/study-of-intelligence.html",
     "files/intelligence/what-is-thinking.html",
     "files/ios/add-a-profile-picture-and-profile-name-at-the-top-of-your-menulistcontroller.html",
@@ -258,6 +279,7 @@
     "files/ios/xcode-module.html",
     "files/js/javascript-dom-document-object-model.html",
     "files/machine-learning/probabilistic-language-modeling.html",
+    "files/machine-learning/end-to-end-explanation-of-how-to-create-an-ai-model.html",
     "files/mathematics/abstract-mathematics.html",
     "files/mathematics/core-mathematical-concepts-and-techniques.html",
     "files/mathematics/counting-systems.html",
@@ -420,6 +442,11 @@
     const searchInput = document.getElementById('search');
     const groupToggle = document.getElementById('groupToggle');
     const listElement = document.getElementById('page-list');
+    const paginationElement = document.getElementById('pagination');
+
+    const itemsPerPage = 20; // You can change the number of items per page
+    let currentPage = 1;
+    let currentFiles = [...htmlFilesWithBase];
 
     function getDisplayName(filename) {
       const cleanName = filename.replace('.html', '');
@@ -434,18 +461,21 @@
       const grouped = {};
       files.forEach(file => {
         const parts = file.replace(basePath, '').split('/');
-        const folder = parts[1]; // e.g., 'aws', 'ios', 'deployment', 'react-native', etc.
+        const folder = parts[1];
         if (!grouped[folder]) grouped[folder] = [];
         grouped[folder].push(file);
       });
       return grouped;
     }
 
-    function displayList(files, grouped) {
+    function displayList(files, grouped, page = 1) {
       listElement.innerHTML = '';
+      const startIndex = (page - 1) * itemsPerPage;
+      const endIndex = page * itemsPerPage;
+      const pageFiles = files.slice(startIndex, endIndex);
 
       if (grouped) {
-        const groupedFiles = groupFiles(files);
+        const groupedFiles = groupFiles(pageFiles);
         for (const [folder, fileList] of Object.entries(groupedFiles)) {
           const section = document.createElement('section');
           const heading = document.createElement('h2');
@@ -466,7 +496,7 @@
           listElement.appendChild(section);
         }
       } else {
-        files.forEach(file => {
+        pageFiles.forEach(file => {
           const li = document.createElement('li');
           const link = document.createElement('a');
           link.href = file;
@@ -479,31 +509,49 @@
       if (files.length === 0) {
         listElement.innerHTML = '<li>No results found.</li>';
       }
+
+      renderPagination(files);
     }
 
-    // Initial render
-    displayList(htmlFilesWithBase, groupToggle.checked);
+    function renderPagination(files) {
+      paginationElement.innerHTML = '';
+      const pageCount = Math.ceil(files.length / itemsPerPage);
 
-    searchInput.addEventListener('input', () => {
+      for (let i = 1; i <= pageCount; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        if (i === currentPage) btn.classList.add('active');
+        btn.addEventListener('click', () => {
+          currentPage = i;
+          displayList(currentFiles, groupToggle.checked, currentPage);
+        });
+        paginationElement.appendChild(btn);
+      }
+    }
+
+    function filterFiles() {
       const query = searchInput.value.trim().toLowerCase();
       const keywords = query.split(/\s+/).filter(Boolean);
       const regex = new RegExp(keywords.map(k => `(?=.*${k})`).join(''), 'i');
 
-      const filtered = htmlFilesWithBase.filter(file => {
+      currentFiles = htmlFilesWithBase.filter(file => {
         const fileName = file.split('/').pop().replace('.html', '').toLowerCase();
         return regex.test(fileName);
       });
 
-    displayList(filtered, groupToggle.checked);
-    });
+      currentPage = 1;
+      displayList(currentFiles, groupToggle.checked, currentPage);
+    }
 
+    searchInput.addEventListener('input', filterFiles);
 
-    // Group toggle event
     groupToggle.addEventListener('change', () => {
-      const query = searchInput.value.toLowerCase();
-      const filtered = htmlFilesWithBase.filter(file => file.toLowerCase().includes(query));
-      displayList(filtered, groupToggle.checked);
+      currentPage = 1;
+      displayList(currentFiles, groupToggle.checked, currentPage);
     });
+
+    // Initial render
+    displayList(currentFiles, groupToggle.checked, currentPage);
   </script>
 </body>
 

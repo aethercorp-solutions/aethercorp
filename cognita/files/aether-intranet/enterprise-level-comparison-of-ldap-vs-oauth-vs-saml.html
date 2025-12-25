@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>enterprise-level comparison of LDAP vs OAuth vs SAML</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">enterprise-level comparison of LDAP vs OAuth vs SAML</h1>
+                    <p class="subtitle">
+                        Below is a clear, side-by-side, enterprise-level comparison of LDAP vs OAuth vs SAML, explained from concept → usage → architecture → when to choose, with real-world examples and implementation implications.
+                        <p>This is written for system designers, backend engineers, and architects (which fits your Aether intranet / enterprise portal context).</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. High-Level Comparison (Quick View)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>LDAP</th>
+                        <th>OAuth 2.0</th>
+                        <th>SAML</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Primary purpose</td>
+                        <td>Directory authentication</td>
+                        <td>Authorization + modern login</td>
+                        <td>Enterprise SSO</td>
+                    </tr>
+                    <tr>
+                        <td>Age / Era</td>
+                        <td>Old (1990s)</td>
+                        <td>Modern (2010s)</td>
+                        <td>Older enterprise standard</td>
+                    </tr>
+                    <tr>
+                        <td>Works over</td>
+                        <td>TCP</td>
+                        <td>HTTP / REST</td>
+                        <td>XML over HTTP</td>
+                    </tr>
+                    <tr>
+                        <td>Web-friendly</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>⚠️</td>
+                    </tr>
+                    <tr>
+                        <td>Mobile-friendly</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud-native</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>⚠️</td>
+                    </tr>
+                    <tr>
+                        <td>Token-based</td>
+                        <td>❌</td>
+                        <td>✅ (JWT)</td>
+                        <td>⚠️ (XML assertions)</td>
+                    </tr>
+                    <tr>
+                        <td>Human-readable</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Best for</td>
+                        <td>Internal networks</td>
+                        <td>Apps, APIs, mobile</td>
+                        <td>Legacy enterprise SSO</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>2. LDAP (Lightweight Directory Access Protocol)</h2>
+            <p>2.1 What LDAP Is</p>
+            <p>LDAP is a directory protocol, not just authentication.</p>
+            <p>It stores:</p>
+            <ul>
+                <li>Users</li>
+                <li>Passwords</li>
+                <li>Groups</li>
+                <li>Organizational structure</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+cn=John Doe,ou=HR,dc=company,dc=com
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2.2 How LDAP Authentication Works</h2>
+            <pre><code>
+User → App → LDAP Server
+            └─ Bind (username + password)
+            </code></pre>
+            <p>If credentials are valid → success</p>
+        </section>
+
+        <section>
+            <h2>2.3 Typical LDAP Stack</h2>
+            <pre><code>
+Aether Portal
+    |
+    v
+Active Directory / OpenLDAP
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2.4 Strengths</h2>
+            <p>✔ Centralized user management</p>
+            <p>✔ Mature and battle-tested</p>
+            <p>✔ Works well in internal networks</p>
+            <p>✔ Deep integration with Windows AD</p>
+        </section>
+
+        <section>
+            <h2>2.5 Weaknesses</h2>
+            <p>❌ Not web-native</p>
+            <p>❌ Poor mobile support</p>
+            <p>❌ No tokens</p>
+            <p>❌ Hard to scale across cloud</p>
+            <p>❌ Requires network access to directory</p>
+        </section>
+
+        <section>
+            <h2>2.6 Best Use Cases</h2>
+            <ul>
+                <li>On-premise intranet portals</li>
+                <li>Windows-based enterprises</li>
+                <li>Legacy systems</li>
+                <li>Internal VPN-only apps</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2.7 Example LDAP Auth (Node.js)</h2>
+            <pre><code>
+ldapClient.bind(userDN, password, (err) => {
+    if (err) reject('Invalid credentials');
+    resolve(user);
+});                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. OAuth 2.0 (with OpenID Connect)</h2>
+            <p>3.1 What OAuth Really Is</p>
+            <p>OAuth is authorization, not authentication.</p>
+            <p>👉 OpenID Connect (OIDC) adds authentication on top.</p>
+            <p>Together:</p>
+            <ul>
+                <li>OAuth → access</li>
+                <li>OIDC → identity</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3.2 OAuth / OIDC Flow (Authorization Code)</h2>
+            <pre><code>
+User → App → Identity Provider
+        ← Authorization Code
+        → Token Endpoint
+        ← Access Token (JWT)
+            </code></pre>
+
+            <p>3.3 Typical OAuth Stack</p>
+            <pre><code>
+Aether Portal
+    |
+    v
+Azure AD / Google / Okta
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3.4 Strengths</h2>
+            <p>✔ Web-native</p>
+            <p>✔ Mobile-friendly</p>
+            <p>✔ Token-based (JWT)</p>
+            <p>✔ Works across cloud</p>
+            <p>✔ Easy API security</p>
+            <p>✔ MFA & Conditional Access</p>
+        </section>
+
+        <section>
+            <h2>3.5 Weaknesses</h2>
+            <p>❌ More complex to implement</p>
+            <p>❌ Requires IdP configuration</p>
+            <p>❌ Token lifecycle management</p>
+        </section>
+
+        <section>
+            <h2>3.6 Best Use Cases</h2>
+            <ul>
+                <li>Modern intranet portals</li>
+                <li>Mobile apps</li>
+                <li>Microservices</li>
+                <li>Cloud-native systems</li>
+                <li>Zero-Trust architecture</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3.7 OAuth Token Example (JWT)</h2>
+            <pre><code>
+{
+    "sub": "user123",
+    "email": "user@company.com",
+    "roles": ["ADMIN"],
+    "exp": 1735689600
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. SAML (Security Assertion Markup Language)</h2>
+            <p>4.1 What SAML Is</p>
+            <p>SAML is an XML-based SSO protocol designed for enterprises.</p>
+            <p>It uses assertions instead of tokens.</p>
+        </section>
+
+        <section>
+            <h2>4.4 Strengths</h2>
+            <p>✔ Very secure</p>
+            <p>✔ Widely adopted in enterprises</p>
+            <p>✔ Mature compliance support</p>
+            <p>✔ Strong federation model</p>
+        </section>
+
+        <section>
+            <h2>4.5 Weaknesses</h2>
+            <p>❌ XML is heavy</p>
+            <p>❌ Hard to debug</p>
+            <p>❌ Not mobile-friendly</p>
+            <p>❌ Slow compared to OAuth</p>
+            <p>❌ Legacy feel</p>
+        </section>
+
+        <section>
+            <h2>4.6 Best Use Cases</h2>
+            <ul>
+                <li>Legacy enterprise portals</li>
+                <li>Government systems</li>
+                <li>Large corporations</li>
+                <li>Existing SAML infrastructure</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4.7 Example SAML Assertion (Simplified)</h2>
+            <pre><code>
+&lt;saml:Assertion&gt;
+    &lt;saml:Subject>user@company.com&lt;/saml:Subject&gt;
+    &lt;saml:Attribute>HR&lt;/saml:Attribute&gt;
+&lt;/saml:Assertion&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Security Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Security Feature</th>
+                        <th>LDAP</th>
+                        <th>OAuth</th>
+                        <th>SAML</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>MFA support</td>
+                        <td>⚠️</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Token expiration</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>⚠️</td>
+                    </tr>
+                    <tr>
+                        <td>Revocation</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>⚠️</td>
+                    </tr>
+                    <tr>
+                        <td>Zero-Trust ready</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>⚠️</td>
+                    </tr>
+                    <tr>
+                        <td>API security</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>6. Performance Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>LDAP</th>
+                        <th>OAuth</th>
+                        <th>SAML</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Login speed</td>
+                        <td>Fast (LAN)</td>
+                        <td>Fast</td>
+                        <td>Slower</td>
+                    </tr>
+                    <tr>
+                        <td>Payload size</td>
+                        <td>Small</td>
+                        <td>Small</td>
+                        <td>Large</td>
+                    </tr>
+                    <tr>
+                        <td>Mobile latency</td>
+                        <td>Poor</td>
+                        <td>Excellent</td>
+                        <td>Poor</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>7. Modern Enterprise Recommendation</h2>
+            <p>Best Practice (2025)</p>
+            <pre><code>
+LDAP / AD
+   ↓
+Identity Provider (Azure AD / Okta)
+   ↓
+OAuth 2.0 + OIDC
+   ↓
+Aether Portal + APIs
+            </code></pre>
+
+            <p>✔ Keep LDAP as user store</p>
+            <p>✔ OAuth as access protocol</p>
+            <p>✔ SAML only if required for legacy systems</p>
+        </section>
+
+        <section>
+            <h2>8. Decision Guide</h2>
+            <p>Choose LDAP if:</p>
+            <p>✔ Fully on-prem</p>
+            <p>✔ No mobile apps</p>
+            <p>✔ Legacy systems</p>
+        </section>
+
+        <section>
+            <h2>Choose OAuth (OIDC) if:</h2>
+            <p>✔ Modern web & mobile apps</p>
+            <p>✔ Cloud & APIs</p>
+            <p>✔ Zero-Trust</p>
+            <p>✔ Scalable security</p>
+        </section>
+
+        <section>
+            <h2>Choose SAML if:</h2>
+            <p>✔ Existing enterprise SSO</p>
+            <p>✔ Government / regulated systems</p>
+            <p>✔ Legacy app compatibility</p>
+        </section>
+
+        <section>
+            <h2>9. One-Sentence Summary</h2>
+            <ul>
+                <li>LDAP = user database</li>
+                <li>OAuth = modern access tokens</li>
+                <li>SAML = legacy enterprise SSO</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Final Recommendation for Aether Portal</h2>
+            <p>For a modern Aether Intranet Portal:</p>
+            <p>🥇 OAuth 2.0 + OpenID Connect</p>
+            <p>🥈 LDAP as backend directory</p>
+            <p>🥉 SAML only for legacy integration</p>
+
+            <p>If you want next:</p>
+            <ul>
+                <li>OAuth vs OIDC deep dive</li>
+                <li>Migration path from LDAP/SAML → OAuth</li>
+                <li>Aether authentication architecture diagram</li>
+                <li>Security hardening checklist</li>
+                <li>AWS / Azure implementation</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
