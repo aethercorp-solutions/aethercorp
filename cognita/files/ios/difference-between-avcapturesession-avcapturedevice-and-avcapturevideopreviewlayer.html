@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Difference between AVCaptureSession, AVCaptureDevice, and AVCaptureVideoPreviewLayer</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Difference between AVCaptureSession, AVCaptureDevice, and AVCaptureVideoPreviewLayer</h1>
+                    <p class="subtitle">In AVFoundation, these three classes sit at different layers of the capture pipeline. Think of them as hardware → pipeline → UI.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. AVCaptureDevice — The physical capture hardware</h2>
+            <p>What it is</p>
+            <ul>
+                <li>Represents a real hardware device</li>
+                <li>
+                    Examples:
+                    <ul>
+                        <li>Built-in wide camera</li>
+                        <li>Front camera</li>
+                        <li>Microphone</li>
+                        <li>External USB camera</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Responsibilities</p>
+            <ul>
+                <li>Exposes hardware capabilities</li>
+                <li>
+                    You configure:
+                    <ul>
+                        <li>Focus, exposure, white balance</li>
+                        <li>Torch / flash</li>
+                        <li>Frame rate</li>
+                        <li>Zoom</li>
+                        <li>Formats (YUV, BGRA, resolution, FPS)</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Important point</p>
+            <ul>
+                <li>AVCaptureDevice does nothing by itself</li>
+                <li>It does not capture or output data</li>
+                <li>It must be connected to a session</li>
+            </ul>
+            <p>Example</p>
+            <pre><code>
+AVCaptureDevice *camera =
+    [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+            </code></pre>
+
+            <p>📌 Mental model:</p>
+            <p>“This is the camera sensor and its hardware knobs.”</p>
+        </section>
+
+        <section>
+            <h2>2. AVCaptureSession — The capture pipeline / traffic controller</h2>
+            <p>What it is</p>
+            <ul>
+                <li>The central coordinator</li>
+                <li>
+                    Connects:
+                    <ul>
+                        <li>Devices → Inputs → Outputs</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Responsibilities</p>
+            <ul>
+                <li>Manages the flow of data</li>
+                <li>
+                    Controls:
+                    <ul>
+                        <li>Start / stop capture</li>
+                        <li>Session presets (720p, 1080p, photo, high)</li>
+                        <li>Synchronization between audio & video</li>
+                    </ul>
+                </li>
+                <li>Runs the capture graph internally on private system threads</li>
+            </ul>
+            <p>What goes into a session</p>
+            <ul>
+                <li>
+                    Inputs
+                    <ul>
+                        <li>AVCaptureDeviceInput (wraps AVCaptureDevice)</li>
+                    </ul>
+                </li>
+                <li>
+                    Outputs
+                    <ul>
+                        <li>AVCaptureVideoDataOutput</li>
+                        <li>AVCaptureAudioDataOutput</li>
+                        <li>AVCaptureMetadataOutput</li>
+                        <li>AVCapturePhotoOutput</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Example</p>
+            <pre><code>
+AVCaptureSession *session = [[AVCaptureSession alloc] init];
+session.sessionPreset = AVCaptureSessionPresetHigh;
+            </code></pre>
+
+            <p>📌 Mental model:</p>
+            <p>“This is the pipeline that moves bytes from hardware to consumers.”</p>
+        </section>
+
+        <section>
+            <h2>3. AVCaptureVideoPreviewLayer — The onscreen live view</h2>
+            <p>What it is</p>
+            <ul>
+                <li>A Core Animation layer (CALayer subclass)</li>
+                <li>Displays real-time video frames</li>
+                <li>Connected to a session</li>
+            </ul>
+            <p>Responsibilities</p>
+            <ul>
+                <li>Renders the camera feed on screen</li>
+                <li>
+                    Handles:
+                    <ul>
+                        <li>Aspect fill / fit</li>
+                        <li>Orientation</li>
+                        <li>Mirroring (front camera)</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>What it is NOT</p>
+            <ul>
+                <li>Does not process frames</li>
+                <li>Does not access hardware</li>
+                <li>Does not give you pixel buffers</li>
+            </ul>
+
+            <p>Example</p>
+            <pre><code>
+AVCaptureVideoPreviewLayer *preview =
+    [AVCaptureVideoPreviewLayer layerWithSession:session];
+preview.videoGravity = AVLayerVideoGravityResizeAspectFill;
+            </code></pre>
+
+            <p>📌 Mental model:</p>
+            <p>“This is just a TV screen showing the session’s video.”</p>
+        </section>
+
+        <section>
+            <h2>How they work together (flow)</h2>
+            <pre><code>
+[ AVCaptureDevice ]
+        ↓
+[ AVCaptureDeviceInput ]
+        ↓
+[ AVCaptureSession ]
+        ↓
+   ┌───────────────┬────────────────┐
+   ↓               ↓                ↓
+PreviewLayer   VideoDataOutput   MetadataOutput
+ (UI)           (pixels)         (barcodes)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Key differences at a glance</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th>Layer</th>
+                        <th>Purpose</th>
+                        <th>Touches Hardware</th>
+                        <th>UI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AVCaptureDevice</td>
+                        <td>Hardware</td>
+                        <td>Camera / mic configuration</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>AVCaptureSession</td>
+                        <td>Pipeline</td>
+                        <td>Routes capture data</td>
+                        <td>✅ (indirect)</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>AVCaptureVideoPreviewLayer</td>
+                        <td>UI</td>
+                        <td>Displays live video</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Common beginner mistake ❌</h2>
+            <p>“Why can’t I get frames from AVCaptureVideoPreviewLayer?”</p>
+            <p>Because:</p>
+            <ul>
+                <li>PreviewLayer is output-only for display</li>
+                <li>
+                    Use AVCaptureVideoDataOutput if you need:
+                    <ul>
+                        <li>CVPixelBuffer</li>
+                        <li>OpenCV</li>
+                        <li>ML</li>
+                        <li>Barcode detection</li>
+                        <li>Frame processing</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Real-world analogy</h2>
+            <p>🎥 Film production</p>
+            <ul>
+                <li>AVCaptureDevice → the camera</li>
+                <li>AVCaptureSession → the cables & switchboard</li>
+                <li>AVCaptureVideoPreviewLayer → the monitor on set</li>
+            </ul>
+
+            <p>If you want, I can also:</p>
+            <ul>
+                <li>Explain threading & performance</li>
+                <li>Compare PreviewLayer vs VideoDataOutput</li>
+                <li>Show barcode scanning architecture</li>
+                <li>Explain why PreviewLayer is zero-copy and fast</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

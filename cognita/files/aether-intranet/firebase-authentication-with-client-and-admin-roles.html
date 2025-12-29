@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Firebase Authentication with Client & Admin roles</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Firebase Authentication with Client & Admin roles</h1>
+                    <p class="subtitle">
+                        Below is a complete, enterprise-grade explanation and implementation guide for Firebase Authentication with Client & Admin roles for an Aether Corporate Portal iOS app, tailored to a corporate intranet / enterprise portal use case.
+                        <p>I’ll structure this the way architects and senior iOS engineers expect it.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Aether Corporate Portal</h2>
+            <p>Firebase iOS Authentication with Client & Admin Roles</p>
+        </section>
+
+        <section>
+            <h2>1. Business Use Case (Why Roles Matter)</h2>
+            <p>Aether Corporate Portal Scenario</p>
+            <p>Aether is an internal / partner-facing corporate portal used by:</p>
+            <p>👤 Client Users</p>
+            <ul>
+                <li>Employees</li>
+                <li>Partners</li>
+                <li>Customers</li>
+                <li>Contractors</li>
+            </ul>
+
+            <p>Capabilities</p>
+            <ul>
+                <li>Login</li>
+                <li>View profile</li>
+                <li>Access assigned resources</li>
+                <li>Submit requests / tickets</li>
+                <li>Read announcements</li>
+            </ul>
+
+            <p>🛡 Admin Users</p>
+            <ul>
+                <li>HR</li>
+                <li>IT</li>
+                <li>Operations</li>
+                <li>Management</li>
+            </ul>
+
+            <p>Capabilities</p>
+            <ul>
+                <li>User management</li>
+                <li>Role assignment</li>
+                <li>Content moderation</li>
+                <li>Access sensitive data</li>
+                <li>Audit logs</li>
+            </ul>
+            <p>👉 Same app, same login, different privileges</p>
+        </section>
+
+        <section>
+            <h2>2. Why Firebase Authentication + Roles</h2>
+            <p>Firebase Auth only authenticates identity, not authorization.</p>
+            <p>So we combine:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Firebase Authentication</td>
+                        <td>Who are you?</td>
+                    </tr>
+                    <tr>
+                        <td>Firestore / Custom Claims</td>
+                        <td>What are you allowed to do?</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase Security Rules</td>
+                        <td>Enforce permissions</td>
+                    </tr>
+                    <tr>
+                        <td>iOS App Logic</td>
+                        <td>UI + feature gating</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>3. High-Level Architecture</h2>
+            <pre><code>
+iOS App (Swift)
+   ↓
+Firebase Authentication
+   ↓
+Firebase ID Token
+   ↓
+Firestore / Custom Claims
+   ↓
+Role-based UI & API Access
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Authentication Strategy</h2>
+            <p>Recommended Login Methods</p>
+            <ul>
+                <li>Email + Password (corporate)</li>
+                <li>Google Sign-In (optional)</li>
+                <li>Azure AD / SAML (enterprise future-ready)</li>
+            </ul>
+            <p>Firebase supports all of these.</p>
+        </section>
+
+        <section>
+            <h2>5. Role Modeling (VERY IMPORTANT)</h2>
+            <p>Option A (Recommended): Firestore Role Storage</p>
+            <p>Store roles in Firestore user documents.</p>
+            <pre><code>
+users/{uid}
+{
+  "email": "admin@aether.com",
+  "displayName": "Paul Dionisio",
+  "role": "admin",
+  "status": "active",
+  "createdAt": "timestamp"
+}
+            </code></pre>
+
+            <p>Roles</p>
+            <pre><code>
+admin
+client
+            </code></pre>
+            <p>✅ Best for large enterprise systems</p>
+            <p>⚠ Requires Cloud Functions</p>
+        </section>
+
+        <section>
+            <h2>6. Firebase Project Setup</h2>
+            <p>Enable Authentication</p>
+            <p>Firebase Console → Authentication → Sign-in methods</p>
+            <ul>
+                <li>Email/Password ✅</li>
+                <li>Google (optional)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Firestore Structure</h2>
+            <pre><code>
+users (collection)
+ └── uid
+     ├── email
+     ├── role
+     ├── status
+     ├── createdAt
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. iOS Implementation (Swift)</h2>
+            <p>7.1 Firebase Setup</p>
+            <pre><code>
+pod 'Firebase/Auth'
+pod 'Firebase/Firestore'
+            </code></pre>
+            <pre><code>
+FirebaseApp.configure()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7.2 Login Implementation</h2>
+            <pre><code>
+Auth.auth().signIn(withEmail: email, password: password) { result, error in
+    if let error = error {
+        print("Login error:", error.localizedDescription)
+        return
+    }
+    
+    guard let uid = result?.user.uid else { return }
+    self.fetchUserRole(uid: uid)
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7.3 Fetch Role from Firestore</h2>
+            <pre><code>
+func fetchUserRole(uid: String) {
+    let db = Firestore.firestore()
+    
+    db.collection("users").document(uid).getDocument { snapshot, error in
+        if let data = snapshot?.data(),
+            let role = data["role"] as? String {
+            
+            self.routeUser(by: role)
+        }
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Role-Based Navigation (Critical UX)</h2>
+            <pre><code>
+func routeUser(by role: String) {
+    switch role {
+    case "admin":
+        showAdminDashboard()
+    case "client":
+        showClientDashboard()
+    default:
+        showAccessDenied()
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. UI Separation Strategy</h2>
+            <p>Recommended Navigation Design</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Root Controller</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Client</td>
+                        <td>ClientTabBarController</td>
+                    </tr>
+                    <tr>
+                        <td>Admin</td>
+                        <td>AdminDashboardController</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <pre><code>
+func showAdminDashboard() {
+    let vc = AdminDashboardViewController()
+    navigationController?.setViewControllers([vc], animated: true)
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Security Rules (MANDATORY)</h2>
+            <p>Firestore Security Rules</p>
+            <pre><code>
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.token.role == "admin";
+    }
+
+    match /adminData/{doc} {
+      allow read, write: if request.auth.token.role == "admin";
+    }
+  }
+}
+            </code></pre>
+            <p>Here’s a clear breakdown of what your Firestore security rules do, plus important improvements you should strongly consider for production (especially for an iOS / corporate portal setup like Aether).</p>
+            <p>1️⃣ What your current rules mean</p>
+            <p>2️⃣ /users/{userId} rules (User profiles)</p>
+            <p>✅ Read rule</p>
+            <pre><code>
+allow read: if request.auth != null && request.auth.uid == userId;
+            </code></pre>
+            <p>✔️ Logged-in users</p>
+            <p>✔️ Can read only their own user document</p>
+            <p>❌ Cannot read other users</p>
+
+            <p>Use case</p>
+            <ul>
+                <li>Client user reads their own profile</li>
+                <li>Admin cannot read other users (this is a limitation)</li>
+            </ul>
+
+            <p>✅ Write rule</p>
+            <pre><code>
+allow write: if request.auth != null && request.auth.token.role == "admin";
+            </code></pre>
+
+            <p>✔️ Only admins can write</p>
+            <p>❌ Normal users cannot update their own profile</p>
+
+            <p>Impact</p>
+            <ul>
+                <li>Client users cannot update name, avatar, phone, etc.</li>
+                <li>Admins control all user data</li>
+            </ul>
+
+            <p>3️⃣ /adminData/{doc} rules (Admin-only data)</p>
+            <pre><code>
+allow read, write: if request.auth.token.role == "admin";
+            </code></pre>
+
+            <p>✔️ Admin-only access</p>
+            <p>❌ No request.auth != null check (⚠️ dangerous)</p>
+
+            <p>4️⃣ ⚠️ Critical issues to fix</p>
+            <p>❌ Missing request.auth != null check</p>
+            <p>If request.auth is null, Firestore will still try to evaluate token.role, which can cause rule errors.</p>
+            <p>Always guard with request.auth != null.</p>
+
+            <p>❌ Admin cannot read other users</p>
+            <p>Admins usually need to:</p>
+            <ul>
+                <li>View user lists</li>
+                <li>Audit user profiles</li>
+                <li>Manage roles</li>
+            </ul>
+            <p>Your rules currently block this.</p>
+
+            <p>❌ Users cannot update their own profile</p>
+            <p>Very restrictive for real-world apps.</p>
+        </section>
+
+        <section>
+            <h2>11. Admin Role Assignment (Backend Only)</h2>
+            <p>⚠ NEVER allow role changes from the iOS app</p>
+            <p>Cloud Function (Node.js)</p>
+            <pre><code>
+admin.auth().setCustomUserClaims(uid, { role: 'admin' });
+            </code></pre>
+
+            <p>or Firestore:</p>
+            <pre><code>
+db.collection('users').doc(uid).update({
+    role: 'admin'
+});                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>12. Profile Screen (Role-Aware UI)</h2>
+            <pre><code>
+if userRole == "admin" {
+    adminSettingsButton.isHidden = false
+} else {
+    adminSettingsButton.isHidden = true
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. Session Handling</h2>
+            <p>Firebase Auto Session Restore</p>
+            <pre><code>
+if let user = Auth.auth().currentUser {
+    fetchUserRole(uid: user.uid)
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>14. Logout</h2>
+            <pre><code>
+try Auth.auth().signOut()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>15. Enterprise Enhancements (Recommended for Aether)</h2>
+            <p>🔐 Extra Security</p>
+            <ul>
+                <li>Email domain restriction (@aether.com)</li>
+                <li>MFA for admins</li>
+                <li>Device binding</li>
+                <li>Audit logs</li>
+            </ul>
+
+            <p>🧠 Scalable Role Model</p>
+            <pre><code>
+roles: ["admin", "hr", "finance"]
+permissions: ["USER_MANAGE", "REPORT_VIEW"]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>16. Why This Architecture Works for Aether</h2>
+            <p>✅ Secure</p>
+            <p>✅ Scalable</p>
+            <p>✅ Easy to maintain</p>
+            <p>✅ Works with iOS, Web, Android</p>
+            <p>✅ Ready for AWS / Azure backend integration</p>
+            <p>✅ Matches corporate compliance standards</p>
+        </section>
+
+        <section>
+            <h2>17. Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Implemented</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Firebase Auth</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Role-based access</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Admin & Client separation</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Secure Firestore rules</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Enterprise ready</td>
+                        <td>✅</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>If you want, I can next:</p>
+            <ul>
+                <li>🔑 Add Azure AD / SAML to this setup</li>
+                <li>🧩 Integrate AWS Lambda authorization</li>
+                <li>📱 Provide complete Swift files (Login + Dashboard)</li>
+                <li>🛡 Design RBAC (Role-Based Access Control) system</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

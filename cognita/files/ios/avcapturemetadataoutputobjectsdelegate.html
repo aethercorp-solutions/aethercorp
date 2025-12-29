@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AVCaptureMetadataOutputObjectsDelegate callback</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AVCaptureMetadataOutputObjectsDelegate callback</h1>
+                    <p class="subtitle">
+                        That method is the AVCaptureMetadataOutputObjectsDelegate callback.
+It is called every time the capture session detects metadata objects (e.g. barcodes, QR codes, faces) in the video stream.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What this method is</h2>
+            <pre><code>
+- (void)captureOutput:(AVCaptureOutput *)captureOutput
+didOutputMetadataObjects:(NSArray *)metadataObjects
+     fromConnection:(AVCaptureConnection *)connection
+            </code></pre>
+
+            <p>This is invoked by AVCaptureMetadataOutput, not by the camera directly.</p>
+        </section>
+
+        <section>
+            <h2>When it is called</h2>
+            <p>It is called when ALL of the following are true:</p>
+            <ol>
+                <li>AVCaptureSession is running</li>
+                <li>AVCaptureMetadataOutput is added to the session</li>
+                <li>metadataObjectTypes contains supported types (e.g. QR, EAN, Code128)</li>
+                <li>The camera sees something matching those types</li>
+            </ol>
+            <p>👉 It may be called many times per second while the barcode stays visible.</p>
+        </section>
+
+        <section>
+            <h2>What each parameter means</h2>
+            <p>captureOutput</p>
+            <p>Usually:</p>
+            <pre><code>
+AVCaptureMetadataOutput *
+            </code></pre>
+
+            <p>You can check:</p>
+            <pre><code>
+if ([captureOutput isKindOfClass:[AVCaptureMetadataOutput class]]) { ... }
+            </code></pre>
+
+            <p>metadataObjects</p>
+            <p>An array of detected metadata objects.</p>
+            <p>Most common class:</p>
+            <pre><code>
+AVMetadataMachineReadableCodeObject
+            </code></pre>
+            <p>If no barcode is detected, this array can be empty.</p>
+
+            <p>connection</p>
+            <p>The AVCaptureConnection between the input (camera) and output.</p>
+            <p>Usually not needed unless you manage orientation or video mirroring.</p>
+        </section>
+
+        <section>
+            <h2>Typical barcode handling pattern</h2>
+            <pre><code>
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
+{
+    if (metadataObjects.count == 0) {
+        return;
+    }
+
+    AVMetadataMachineReadableCodeObject *code = (AVMetadataMachineReadableCodeObject *)metadataObjects.firstObject;
+
+    if (![code isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
+        return;
+    }
+
+    NSString *value = code.stringValue;
+    if (!value) return;
+
+    NSLog(@"Barcode detected: %@", value);
+
+    // IMPORTANT: prevent repeated scans
+    [self.captureSession stopRunning];
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Mapping barcode to preview coordinates (very common)</h2>
+            <p>If you use AVCaptureVideoPreviewLayer:</p>
+            <pre><code>
+AVMetadataObject *transformed = [self.previewLayer transformedMetadataObjectForMetadataObject:code];
+            </code></pre>
+            <p>This converts camera-space coordinates → screen-space coordinates.</p>
+        </section>
+
+        <section>
+            <h2>Why this method fires repeatedly</h2>
+            <p>By design:</p>
+            <ul>
+                <li>The camera keeps detecting the same barcode every frame</li>
+                <li>You must manually block duplicates</li>
+            </ul>
+
+            <p>Common solutions:</p>
+            <ul>
+                <li>Stop the session</li>
+                <li>Use a boolean flag</li>
+                <li>Debounce with a timestamp</li>
+                <li>Track scanned values</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+if (self.isProcessingScan) return;
+self.isProcessingScan = YES;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Required setup (often missed)</h2>
+            <pre><code>
+AVCaptureMetadataOutput *metadataOutput = [[AVCaptureMetadataOutput alloc] init];
+[self.captureSession addOutput:metadataOutput];
+
+[metadataOutput setMetadataObjectsDelegate:self
+                                     queue:dispatch_get_main_queue()];
+
+metadataOutput.metadataObjectTypes = @[
+    AVMetadataObjectTypeQRCode,
+    AVMetadataObjectTypeEAN13Code,
+    AVMetadataObjectTypeCode128Code
+];
+            </code></pre>
+            <p>⚠️ If metadataObjectTypes is empty → this method will never fire.</p>
+        </section>
+
+        <section>
+            <h2>Threading behavior</h2>
+            <ul>
+                <li>Runs on the queue you provided</li>
+                <li>If you passed dispatch_get_main_queue(), UI updates are safe</li>
+                <li>Heavy work should be dispatched to a background queue</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <p>✔ This method is the exact function called when a barcode is detected</p>
+            <p>✔ Triggered by AVCaptureMetadataOutput</p>
+            <p>✔ Fires continuously while barcode is visible</p>
+            <p>✔ You must manually prevent duplicate scans</p>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Trace why your barcode doesn’t detect again</li>
+                <li>Fix duplicate scan issues</li>
+                <li>Compare this with AVCaptureVideoDataOutput</li>
+                <li>Provide a production-safe barcode scanner pattern</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Aether role-based authentication & role switching</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Aether role-based authentication & role switching</h1>
+                    <p class="subtitle">
+                        Below is a complete, production-grade explanation of role-based authentication & role switching in Swift (iOS) using Firebase Authentication + Firestore, tailored to enterprise / corporate portal use cases (like admin, manager, client, staff).
+                        <p>This covers architecture, security, implementation, and real-world usage — not just theory.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔐 Firebase Auth + Firestore Role Switching (Swift iOS)</h2>
+            <p>🎯 What You’re Building</p>
+            <p>A secure role-based system where:</p>
+            <ul>
+                <li>Users authenticate via Firebase Authentication</li>
+                <li>Roles are stored & enforced via Firestore</li>
+                <li>UI changes dynamically based on role</li>
+                <li>Role switching is controlled and secure</li>
+                <li>Firestore Rules enforce permissions (not just the UI)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Core Concepts (Very Important)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Responsibility</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Firebase Auth</td>
+                        <td>Who the user is</td>
+                    </tr>
+                    <tr>
+                        <td>Firestore</td>
+                        <td>What the user can do</td>
+                    </tr>
+                    <tr>
+                        <td>Security Rules</td>
+                        <td>Enforce access</td>
+                    </tr>
+                    <tr>
+                        <td>Swift App</td>
+                        <td>Display correct UI</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>❗ Never trust the client alone for roles.</p>
+        </section>
+
+        <section>
+            <h2>🏗️ Architecture Overview</h2>
+            <pre><code>
+User → Firebase Auth → UID
+                ↓
+        Firestore /users/{uid}
+                ↓
+        role: admin | staff | client
+                ↓
+    UI + Firestore Rules enforce access
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧾 Firestore Data Model</h2>
+            <p>/users/{uid}</p>
+            <pre><code>
+{
+    "uid": "abc123",
+    "email": "user@company.com",
+    "displayName": "Paul Dionisio",
+    "role": "client",
+    "createdAt": "timestamp",
+    "activeRole": "client"
+}                  
+            </code></pre>
+
+            <p>Supported Roles</p>
+            <pre><code>
+enum UserRole: String {
+    case admin
+    case manager
+    case staff
+    case client
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔑 Authentication Flow (Swift)</h2>
+            <p>Sign In → Create Firestore User (First Login)</p>
+            <pre><code>
+func signIn(with credential: AuthCredential) {
+    Auth.auth().signIn(with: credential) { result, error in
+        guard let user = result?.user else { return }
+        self.createUserIfNeeded(user)
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>👤 Create Firestore User If Needed</h2>
+            <pre><code>
+func createUserIfNeeded(_ user: User) {
+    let ref = Firestore.firestore().collection("users").document(user.uid)
+
+    ref.getDocument { snapshot, _ in
+        if snapshot?.exists == false {
+            ref.setData([
+                "uid": user.uid,
+                "email": user.email ?? "",
+                "role": "client",
+                "activeRole": "client",
+                "createdAt": FieldValue.serverTimestamp()
+            ])
+        }
+    }
+}                
+            </code></pre>
+            <p>✔️ Default role = client</p>
+            <p>✔️ Admin role is assigned manually or via backend</p>
+        </section>
+
+        <section>
+            <h2>🔄 Role Switching (Client ⇄ Admin View)</h2>
+            <p>When Is Role Switching Needed?</p>
+            <ul>
+                <li>Admin acting as user</li>
+                <li>Multi-tenant portals</li>
+                <li>Support agents</li>
+                <li>QA testing</li>
+                <li>Corporate dashboards</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔁 Switch Role in Firestore (Controlled)</h2>
+            <pre><code>
+func switchRole(to role: UserRole) async throws {
+    guard let uid = Auth.auth().currentUser?.uid else { return }
+
+    let ref = Firestore.firestore().collection("users").document(uid)
+    try await ref.updateData([
+        "activeRole": role.rawValue
+    ])
+}                
+            </code></pre>
+            <p>⚠️ Only allow switching to allowed roles (rules below)</p>
+        </section>
+
+        <section>
+            <h2>🔐 Firestore Security Rules (CRITICAL)</h2>
+            <pre><code>
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      allow update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.activeRole in ['client', 'staff']
+        && request.resource.data.role == resource.data.role;
+    }
+
+    match /adminData/{doc} {
+      allow read, write: if request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid))
+            .data.activeRole == 'admin';
+    }
+  }
+}
+            </code></pre>
+
+            <p>✔️ Prevents privilege escalation</p>
+            <p>✔️ UI role ≠ backend permission</p>
+            <p>✔️ Firestore decides access</p>
+        </section>
+
+        <section>
+            <h2>🖥️ UI Switching in Swift</h2>
+            <p>Observe Role Changes</p>
+            <pre><code>
+func observeUserRole() {
+    guard let uid = Auth.auth().currentUser?.uid else { return }
+
+    Firestore.firestore()
+        .collection("users")
+        .document(uid)
+        .addSnapshotListener { snapshot, _ in
+            let role = snapshot?.get("activeRole") as? String ?? "client"
+            self.updateUI(for: role)
+        }
+}                
+            </code></pre>
+
+            <p>Role-Based Navigation</p>
+            <pre><code>
+func updateUI(for role: String) {
+    switch role {
+    case "admin":
+        showAdminDashboard()
+    case "staff":
+        showStaffDashboard()
+    default:
+        showClientDashboard()
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 Role Assignment (Admin Only)</h2>
+            <p>Admin Changes Role of Another User</p>
+            <pre><code>
+func setUserRole(uid: String, role: UserRole) async throws {
+    try await Firestore.firestore()
+        .collection("users")
+        .document(uid)
+        .updateData([
+            "role": role.rawValue
+        ])
+}                
+            </code></pre>
+            <p>🔥 Protect with Firestore Rules:</p>
+            <pre><code>
+allow update: if request.auth != null
+  && get(/databases/$(database)/documents/users/$(request.auth.uid))
+      .data.role == 'admin';
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚨 Common Security Mistakes (Avoid These)</h2>
+            <p>❌ Storing role only in UserDefaults</p>
+            <p>❌ Relying on UI logic for permission</p>
+            <p>❌ Letting client update role freely</p>
+            <p>❌ No backend validation</p>
+            <p>✔️ Always enforce in Firestore Rules</p>
+            <p>✔️ UI is cosmetic, rules are law</p>
+        </section>
+
+        <section>
+            <h2>🏢 Real-World Use Case Example</h2>
+            <p>Corporate Intranet (Aether / Enterprise Portal)</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Access</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Admin</td>
+                        <td>User management, reports</td>
+                    </tr>
+                    <tr>
+                        <td>Manager</td>
+                        <td>Team dashboards</td>
+                    </tr>
+                    <tr>
+                        <td>Staff</td>
+                        <td>Internal tools</td>
+                    </tr>
+                    <tr>
+                        <td>Client</td>
+                        <td>External portal</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>✔️ Admin can impersonate client</p>
+            <p>✔️ Client cannot access admin APIs</p>
+            <p>✔️ Role switching is logged</p>
+        </section>
+
+        <section>
+            <h2>🧪 Optional Enhancements (Enterprise Level)</h2>
+            <ul>
+                <li>Firebase Custom Claims (backend)</li>
+                <li>Audit logs (/roleSwitchLogs)</li>
+                <li>Expiring admin sessions</li>
+                <li>Multi-role support (roles: [])</li>
+                <li>Cloud Functions for role enforcement</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 When to Use Custom Claims vs Firestore Roles</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Best Choice</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>UI switching</td>
+                        <td>Firestore</td>
+                    </tr>
+                    <tr>
+                        <td>API authorization</td>
+                        <td>Custom Claims</td>
+                    </tr>
+                    <tr>
+                        <td>Fast rule checks</td>
+                        <td>Custom Claims</td>
+                    </tr>
+                    <tr>
+                        <td>Dynamic role change</td>
+                        <td>Firestore</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ Final Summary</h2>
+            <p>✔ Firebase Auth identifies users</p>
+            <p>✔ Firestore stores roles</p>
+            <p>✔ Firestore Rules enforce permissions</p>
+            <p>✔ Swift observes role changes</p>
+            <p>✔ Role switching is controlled & secure</p>
+
+            <p>If you want, I can next:</p>
+            <ul>
+                <li>Implement Custom Claims with Cloud Functions</li>
+                <li>Add audit logging</li>
+                <li>Create multi-tenant role hierarchy</li>
+                <li>Provide full Swift MVVM architecture</li>
+                <li>Integrate with AWS / Azure AD</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

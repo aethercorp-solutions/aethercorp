@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Environment variables and the env command</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Environment variables and the env command</h1>
+                    <p class="subtitle">
+                        In macOS, env refers to environment variables and the env command that manages them. It’s a core Unix concept used heavily in development, scripting, CI/CD, and system configuration.
+                        <p>Below is a deep, practical explanation from OS level → shell → apps → real-world implementation, tailored for developers (which fits your React Native / Node / AWS background).</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is env in macOS?</h2>
+            <p>Two meanings (related but different):</p>
+            <ol>
+                <li>
+                    Environment variables
+                    <p>Key–value pairs stored in a process environment</p>
+                    <pre><code>
+KEY=VALUE
+                    </code></pre>
+                </li>
+                <li>
+                    env command
+                    <p>A Unix utility that:</p>
+                    <ul>
+                        <li>Displays environment variables</li>
+                        <li>Runs commands with a modified environment</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>2. Environment Variables (Low-Level OS View)</h2>
+            <p>At OS level:</p>
+            <ul>
+                <li>macOS is Unix-based (Darwin)</li>
+                <li>
+                    Every process has:
+                    <ul>
+                        <li>Memory</li>
+                        <li>File descriptors</li>
+                        <li>Environment block ← env</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Example:</p>
+            <p>When Terminal launches node:</p>
+            <pre><code>
+Terminal → zsh → node
+            </code></pre>
+
+            <p>The environment is copied:</p>
+            <pre><code>
+zsh ENV → node ENV
+            </code></pre>
+
+            <p>⚠️ Important:</p>
+            <ul>
+                <li>Child processes inherit</li>
+                <li>Changes do NOT propagate upward</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Common Environment Variables on macOS</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>PATH</td>
+                        <td>Where commands are searched</td>
+                    </tr>
+                    <tr>
+                        <td>HOME</td>
+                        <td>User home directory</td>
+                    </tr>
+                    <tr>
+                        <td>USER</td>
+                        <td>Current username</td>
+                    </tr>
+                    <tr>
+                        <td>SHELL</td>
+                        <td>Active shell (/bin/zsh)</td>
+                    </tr>
+                    <tr>
+                        <td>PWD</td>
+                        <td>Current working directory</td>
+                    </tr>
+                    <tr>
+                        <td>LANG</td>
+                        <td>Locale & encoding</td>
+                    </tr>
+                    <tr>
+                        <td>NODE_ENV</td>
+                        <td>Node.js environment</td>
+                    </tr>
+                    <tr>
+                        <td>AWS_ACCESS_KEY_ID</td>
+                        <td>AWS credentials</td>
+                    </tr>
+                    <tr>
+                        <td>JAVA_HOME</td>
+                        <td>Java installation path</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. The env Command</h2>
+            <p>4.1 Show environment variables</p>
+            <pre><code>
+env
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+printenv
+            </code></pre>
+            <p>Example output:</p>
+            <pre><code>
+PATH=/usr/local/bin:/usr/bin:/bin
+HOME=/Users/paul
+SHELL=/bin/zsh
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4.2 Run a command with a temporary environment</h2>
+            <pre><code>
+env NODE_ENV=production node app.js
+            </code></pre>
+            <p>✔ Exists only for that command</p>
+            <p>✔ Does NOT affect your shell</p>
+        </section>
+
+        <section>
+            <h2>4.3 Clear environment completely</h2>
+            <pre><code>
+env -i /bin/zsh
+            </code></pre>
+            <p>Starts a shell with no environment (debugging use case)</p>
+        </section>
+
+        <section>
+            <h2>5. Setting Environment Variables in macOS</h2>
+            <p>5.1 Temporary (current shell only)</p>
+            <pre><code>
+export API_URL=https://api.example.com
+            </code></pre>
+            <p>Valid until:</p>
+            <ul>
+                <li>Terminal closes</li>
+                <li>Shell exits</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5.2 Permanent (User Level)</h2>
+            <p>macOS uses zsh (default)</p>
+            <p>Edit:</p>
+            <pre><code>
+~/.zshrc
+            </code></pre>
+            <p>Add:</p>
+            <pre><code>
+export NODE_ENV=development
+export PATH="/opt/homebrew/bin:$PATH"
+            </code></pre>
+
+            <p>Apply:</p>
+            <pre><code>
+source ~/.zshrc
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5.3 System-wide (All users)</h2>
+            <p>⚠️ Rarely recommended</p>
+            <pre><code>
+/etc/zshenv
+/etc/profile
+            </code></pre>
+
+            <p>Requires:</p>
+            <pre><code>
+sudo
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. env vs .env (Very Common Confusion)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>env</th>
+                        <th>.env</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OS-level</td>
+                        <td>File-based</td>
+                    </tr>
+                    <tr>
+                        <td>Managed by shell</td>
+                        <td>Managed by apps</td>
+                    </tr>
+                    <tr>
+                        <td>Used by macOS</td>
+                        <td>Used by Node, React Native</td>
+                    </tr>
+                    <tr>
+                        <td>Secure in memory</td>
+                        <td>Must be protected</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Example .env:</p>
+            <pre><code>
+DB_HOST=localhost
+DB_USER=admin
+DB_PASS=secret
+            </code></pre>
+
+            <p>Loaded by:</p>
+            <ul>
+                <li>dotenv</li>
+                <li>react-native-config</li>
+                <li>serverless framework</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Real Use Cases (Practical)</h2>
+            <p>7.1 Node.js / Express / AWS Lambda</p>
+            <pre><code>
+export NODE_ENV=production
+export MONGO_URI=mongodb+srv://...
+            </code></pre>
+
+            <pre><code>
+process.env.NODE_ENV
+process.env.MONGO_URI
+            </code></pre>
+
+            <p>✔ Used in:</p>
+            <ul>
+                <li>Serverless Framework</li>
+                <li>Lambda runtime</li>
+                <li>API Gateway</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7.2 React Native</h2>
+            <pre><code>
+export API_URL=https://dev.api.com
+            </code></pre>
+
+            <p>With react-native-config:</p>
+            <pre><code>
+Config.API_URL
+            </code></pre>
+
+            <p>Build-time injection:</p>
+            <pre><code>
+env API_URL=https://prod.api.com npx react-native run-ios
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7.3 CI/CD Pipelines</h2>
+            <pre><code>
+env AWS_REGION=us-east-1 npm run deploy
+            </code></pre>
+
+            <p>Used by:</p>
+            <ul>
+                <li>GitHub Actions</li>
+                <li>Bitbucket Pipelines</li>
+                <li>Jenkins</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7.4 macOS Launch Services (Advanced)</h2>
+            <p>GUI apps do not inherit Terminal env.</p>
+            <p>To set env for GUI apps:</p>
+            <pre><code>
+launchctl setenv API_URL https://api.example.com
+            </code></pre>
+
+            <p>Verify:</p>
+            <pre><code>
+launchctl getenv API_URL
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. PATH – Most Important env Variable</h2>
+            <p>How macOS finds commands:</p>
+            <pre><code>
+echo $PATH
+            </code></pre>
+
+            <p>Search order:</p>
+            <pre><code>
+/usr/local/bin
+/usr/bin
+/bin
+            </code></pre>
+
+            <p>If command not found:</p>
+            <pre><code>
+zsh: command not found
+            </code></pre>
+
+            <p>Fix:</p>
+            <pre><code>
+export PATH="/opt/homebrew/bin:$PATH"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Security Best Practices</h2>
+            <p>❌ Don’t commit .env files</p>
+            <p>❌ Don’t hardcode secrets</p>
+
+            <p>✔ Use:</p>
+            <ul>
+                <li>macOS Keychain</li>
+                <li>AWS Secrets Manager</li>
+                <li>GitHub Secrets</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Debugging env Issues</h2>
+            <p>Check variable:</p>
+            <pre><code>
+echo $VAR_NAME
+            </code></pre>
+
+            <p>Check in child process:</p>
+            <pre><code>
+node -e "console.log(process.env)"
+            </code></pre>
+
+            <p>Check conflicting definitions:</p>
+            <pre><code>
+grep VAR_NAME ~/.zshrc ~/.zprofile ~/.bashrc
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>11. Mental Model (Important)</h2>
+            <pre><code>
+macOS
+ └── Shell (zsh)
+      └── env (variables)
+           └── App / Script / Node / React Native
+            </code></pre>
+
+            <p>Environment variables:</p>
+            <ul>
+                <li>Are read-only snapshots for child processes</li>
+                <li>Are not global state</li>
+                <li>Are safe when scoped correctly</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>12. Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>env</td>
+                        <td>Environment variable system</td>
+                    </tr>
+                    <tr>
+                        <td>env command</td>
+                        <td>Manage environment for a command</td>
+                    </tr>
+                    <tr>
+                        <td>.env</td>
+                        <td>App-level config file</td>
+                    </tr>
+                    <tr>
+                        <td>export</td>
+                        <td>Set variable</td>
+                    </tr>
+                    <tr>
+                        <td>PATH</td>
+                        <td>Command lookup</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

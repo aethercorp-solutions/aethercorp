@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Implementation-level explanation of an iOS Aether Corporate Intranet</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Implementation-level explanation of an iOS Aether Corporate Intranet</h1>
+                    <p class="subtitle">Below is a deep, implementation-level explanation of an iOS Aether Corporate Intranet, with strong emphasis on the Profile Settings screen and clear separation of Client vs Admin roles. I’ll frame this as something you could realistically ship in an enterprise iOS app.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>iOS Aether Corporate Intranet</h2>
+            <p>Usage, Architecture & Detailed Implementation</p>
+            <p>Focus: Profile Settings Screen (Client & Admin Roles)</p>
+        </section>
+
+        <section>
+            <h2>1. What “Aether Corporate Intranet” Means on iOS</h2>
+            <p>An Aether Corporate Intranet on iOS is a secure, identity-driven internal ecosystem that enables employees, managers, and administrators to:</p>
+            <ul>
+                <li>Access internal tools and data</li>
+                <li>Manage identity, roles, and permissions</li>
+                <li>Communicate securely</li>
+                <li>Configure personal and organizational settings</li>
+            </ul>
+            <p>On iOS, the intranet app is typically:</p>
+            <ul>
+                <li>Private distribution (Apple Business Manager / MDM)</li>
+                <li>SSO-enabled</li>
+                <li>Policy-controlled</li>
+                <li>Role-aware</li>
+            </ul>
+            <p>The Profile Settings screen becomes the control center for:</p>
+            <ul>
+                <li>Identity</li>
+                <li>Security</li>
+                <li>Compliance</li>
+                <li>Role-based access behavior</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. High-Level Architecture (iOS Perspective)</h2>
+            <pre><code>
+┌────────────────────────────┐
+│        iOS App (Swift)     │
+│                            │
+│  - Login / SSO             │
+│  - Profile Settings        │◄── Core Focus
+│  - Intranet Modules        │
+│                            │
+└─────────────┬──────────────┘
+              │ HTTPS + OAuth/JWT
+┌─────────────▼──────────────┐
+│    Aether Intranet API     │
+│  (Auth + User Services)    │
+│                            │
+│ - User Profiles            │
+│ - Role & Policy Engine     │
+│ - Audit Logs               │
+│ - Admin Controls           │
+└─────────────┬──────────────┘
+              │
+┌─────────────▼──────────────┐
+│ Identity Provider (IdP)    │
+│ - Azure AD / Okta / LDAP   │
+│ - MFA / SSO                │
+└────────────────────────────┘
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Roles in Aether Intranet</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Scope</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Client (Employee/User)</td>
+                        <td>Personal profile, security, preferences</td>
+                    </tr>
+                    <tr>
+                        <td>Admin (HR / IT / Security)</td>
+                        <td>Users, policies, access control</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>The Profile Settings UI dynamically changes based on role.</p>
+        </section>
+
+        <section>
+            <h2>4. Profile Settings Screen – Core Responsibilities</h2>
+            <p>The Profile Settings screen is not just UI. It acts as:</p>
+            <ul>
+                <li>Identity Viewer</li>
+                <li>Security Manager</li>
+                <li>Policy Enforcer</li>
+                <li>Role Gateway</li>
+            </ul>
+            <p>Major Sections</p>
+            <pre><code>
+Profile Settings
+├── Identity Information
+├── Security & Authentication
+├── Access & Permissions
+├── Preferences
+├── Compliance & Audit
+└── Admin Controls (Admin only)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Client (Employee) Profile Settings – iOS Implementation</h2>
+            <p>5.1 Identity Information (Read-Only / Limited Edit)</p>
+            <p>Purpose</p>
+            <ul>
+                <li>Ensure identity consistency with corporate IdP</li>
+                <li>Prevent spoofing</li>
+            </ul>
+            <p>Fields</p>
+            <ul>
+                <li>Full Name (read-only)</li>
+                <li>Corporate Email (read-only)</li>
+                <li>Employee ID (read-only)</li>
+                <li>Department (read-only)</li>
+                <li>Profile Photo (editable)</li>
+            </ul>
+            <p>Implementation (Swift)</p>
+            <pre><code>
+struct UserProfile {
+    let userId: String
+    let fullName: String
+    let email: String
+    let department: String
+    let role: UserRole
+}                
+            </code></pre>
+            <ul>
+                <li>Name/email sourced from IdP claims</li>
+                <li>Photo uploaded to secure object storage</li>
+                <li>Changes logged via audit API</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5.2 Security & Authentication</h2>
+            <p>Client Capabilities</p>
+            <ul>
+                <li>Change password (if local auth allowed)</li>
+                <li>Enable/disable biometric login</li>
+                <li>View active sessions</li>
+                <li>Trigger logout from other devices</li>
+            </ul>
+            <p>iOS Features Used</p>
+            <ul>
+                <li>Face ID / Touch ID (LocalAuthentication)</li>
+                <li>Keychain for token storage</li>
+                <li>Secure Enclave</li>
+            </ul>
+            <pre><code>
+LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics)
+            </code></pre>
+
+            <p>Session Management</p>
+            <ul>
+                <li>Tokens refreshed silently</li>
+                <li>Sessions revoked via API</li>
+                <li>Display last login & device info</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5.3 Access & Permissions (Client View)</h2>
+            <p>Clients cannot edit permissions, but can:</p>
+            <ul>
+                <li>View their access level</li>
+                <li>Understand what systems they can use</li>
+            </ul>
+            <p>Example UI:</p>
+            <pre><code>
+Access Level: Standard Employee
+Modules Enabled:
+✓ HR Portal
+✓ Internal Chat
+✗ Admin Dashboard
+            </code></pre>
+            <p>This reduces support tickets and improves transparency.</p>
+        </section>
+
+        <section>
+            <h2>5.4 Preferences</h2>
+            <p>User-Controlled</p>
+            <ul>
+                <li>Language</li>
+                <li>Theme (light/dark/system)</li>
+                <li>Notification preferences</li>
+                <li>Default intranet landing page</li>
+            </ul>
+            <p>Preferences are:</p>
+            <ul>
+                <li>Stored server-side</li>
+                <li>Cached locally for offline use</li>
+            </ul>
+            <pre><code>
+struct UserPreferences {
+    var language: String
+    var notificationsEnabled: Bool
+    var defaultModule: String
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5.5 Compliance & Privacy</h2>
+            <p>Clients can:</p>
+            <ul>
+                <li>View privacy policy</li>
+                <li>View data usage summary</li>
+                <li>Request data export (GDPR-style)</li>
+            </ul>
+            <p>No direct deletion of corporate identity allowed.</p>
+        </section>
+
+        <section>
+            <h2>6. Admin Profile Settings – Extended Capabilities</h2>
+            <p>Admins see everything clients see, plus power controls.</p>
+        </section>
+
+        <section>
+            <h2>6.1 Admin Identity Verification</h2>
+            <p>Admins require:</p>
+            <ul>
+                <li>Mandatory MFA</li>
+                <li>Role verification badge</li>
+                <li>Elevated session timeouts</li>
+            </ul>
+            <p>UI Indicators:</p>
+            <ul>
+                <li>“Admin Mode Active”</li>
+                <li>Warning banners for destructive actions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6.2 User Management (Admin Only)</h2>
+            <p>Admins can:</p>
+            <ul>
+                <li>Search users</li>
+                <li>Edit roles</li>
+                <li>Disable/lock accounts</li>
+                <li>Force password reset</li>
+                <li>Revoke sessions</li>
+            </ul>
+            <p>Admin Profile Screen Includes</p>
+            <pre><code>
+Admin Tools
+├── User Directory
+├── Role Assignment
+├── Access Overrides
+└── Account Actions
+            </code></pre>
+            <p>Security Rule</p>
+            <p>Admin actions always require re-authentication</p>
+        </section>
+
+        <section>
+            <h2>6.3 Role & Permission Management</h2>
+            <p>Admins can assign:</p>
+            <ul>
+                <li>Client</li>
+                <li>Manager</li>
+                <li>Admin</li>
+                <li>Custom roles</li>
+            </ul>
+            <p>Permissions are policy-based, not hardcoded.</p>
+            <pre><code>
+{
+    "role": "manager",
+    "permissions": [
+        "view_reports",
+        "approve_requests"
+    ]
+}                  
+            </code></pre>
+            <p>Changes propagate in real time to iOS app via token refresh.</p>
+        </section>
+
+        <section>
+            <h2>6.4 Policy Enforcement (Critical)</h2>
+            <p>Admins configure:</p>
+            <ul>
+                <li>Password policies</li>
+                <li>Session timeouts</li>
+                <li>Device compliance rules</li>
+            </ul>
+            <p>Example:</p>
+            <ul>
+                <li>Block access if device is jailbroken</li>
+                <li>Enforce minimum iOS version</li>
+                <li>Force biometric authentication</li>
+            </ul>
+            <p>iOS enforcement:</p>
+            <ul>
+                <li>MDM signals</li>
+                <li>App checks on launch</li>
+                <li>API denial if non-compliant</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6.5 Audit & Compliance Logs</h2>
+            <p>Admins can view:</p>
+            <ul>
+                <li>Login history</li>
+                <li>Profile changes</li>
+                <li>Permission edits</li>
+                <li>Failed access attempts</li>
+            </ul>
+            <p>Audit logs are:</p>
+            <ul>
+                <li>Immutable</li>
+                <li>Timestamped</li>
+                <li>Device-tagged</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Profile Settings UI Behavior (Role-Driven)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Client</th>
+                        <th>Admin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Edit Name</td>
+                        <td>❌</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Change Photo</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Manage MFA</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>View Access</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Modify Roles</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>View Audit Logs</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Enforce Policies</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>UI Rendering Example:</p>
+            <pre><code>
+if user.role == .admin {
+    showAdminControls()
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Security Best Practices for iOS Aether Intranet</h2>
+            <ul>
+                <li>JWT stored in Keychain</li>
+                <li>No sensitive data in UserDefaults</li>
+                <li>Encrypted API traffic only</li>
+                <li>Biometric fallback required</li>
+                <li>App-level jailbreak detection</li>
+                <li>Automatic logout on policy violation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Why the Profile Settings Screen Is Critical</h2>
+            <p>In Aether Intranet, Profile Settings is the trust boundary:</p>
+            <ul>
+                <li>🔐 Identity assurance</li>
+                <li>🧭 Role clarity</li>
+                <li>🛡 Security enforcement</li>
+                <li>📜 Compliance visibility</li>
+                <li>⚙️ Admin governance</li>
+            </ul>
+            <p>Without a strong Profile Settings implementation:</p>
+            <ul>
+                <li>Security weakens</li>
+                <li>Admin overhead increases</li>
+                <li>Compliance fails</li>
+                <li>User trust erodes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Final Summary</h2>
+            <p>Client Profile Settings</p>
+            <ul>
+                <li>Identity visibility</li>
+                <li>Security self-service</li>
+                <li>Preference control</li>
+                <li>Transparency of access</li>
+            </ul>
+
+            <p>Admin Profile Settings</p>
+            <ul>
+                <li>Governance</li>
+                <li>Policy enforcement</li>
+                <li>Role control</li>
+                <li>Audit & compliance</li>
+            </ul>
+            <p>Together, they form the core control plane of the iOS Aether Corporate Intranet.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

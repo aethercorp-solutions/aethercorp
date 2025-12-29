@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AVCaptureSession</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AVCaptureSession</h1>
+                    <p class="subtitle">Alright! Let’s dive into AVCaptureSession, which is the core of AVFoundation’s capture pipeline. I’ll explain it from high-level purpose down to low-level behavior in detail.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is AVCaptureSession?</h2>
+            <p>AVCaptureSession is the central coordinator that manages the flow of data from capture devices (camera, microphone) to outputs (preview, file, metadata).</p>
+            <p>Think of it as a video/audio factory conveyor belt:</p>
+            <ul>
+                <li>Inputs → AVCaptureDeviceInput</li>
+                <li>Session → AVCaptureSession</li>
+                <li>Outputs → AVCaptureVideoDataOutput, AVCaptureVideoPreviewLayer, AVCaptureAudioDataOutput, etc.</li>
+            </ul>
+            <p>It handles timing, buffering, and synchronization between devices and outputs.</p>
+        </section>
+
+        <section>
+            <h2>2. Basic Components</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AVCaptureDevice</td>
+                        <td>Physical camera or microphone.</td>
+                    </tr>
+                    <tr>
+                        <td>AVCaptureDeviceInput</td>
+                        <td>Wraps the device to be used in a session.</td>
+                    </tr>
+                    <tr>
+                        <td>AVCaptureOutput</td>
+                        <td>Captures or processes the frames/audio. Examples: video file, preview layer, metadata detection.</td>
+                    </tr>
+                    <tr>
+                        <td>AVCaptureConnection</td>
+                        <td>Links inputs to outputs; handles orientation, mirroring, and video stabilization.</td>
+                    </tr>
+                    <tr>
+                        <td>AVCaptureSessionPreset</td>
+                        <td>Predefined configuration for resolution & frame rate (e.g., AVCaptureSessionPresetHigh).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>3. How it Works: High-Level Flow</h2>
+            <ol>
+                <li>
+                    Configure session
+                    <pre><code>
+AVCaptureSession *session = [[AVCaptureSession alloc] init];
+session.sessionPreset = AVCaptureSessionPresetHigh;
+                    </code></pre>
+                </li>
+                <li>
+                    Add inputs
+                    <pre><code>
+AVCaptureDevice *camera = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:camera error:nil];
+[session addInput:input];
+                    </code></pre>
+                </li>
+                <li>
+                    Add outputs
+                    <pre><code>
+AVCaptureVideoDataOutput *videoOutput = [[AVCaptureVideoDataOutput alloc] init];
+[session addOutput:videoOutput];
+                    </code></pre>
+                </li>
+                <li>
+                    Start the session
+                    <pre><code>
+[session startRunning];
+                    </code></pre>
+                </li>
+            </ol>
+            <p>Now the session pulls frames from the camera hardware, processes them, and sends them to outputs.</p>
+        </section>
+
+        <section>
+            <h2>4. Low-Level / Hardware Interaction</h2>
+            <p>Here’s what happens under the hood:</p>
+            <ol>
+                <li>
+                    Camera Hardware
+                    <ul>
+                        <li>Sensor captures light → converts to voltage → ADC → raw pixel data.</li>
+                        <li>Image Signal Processor (ISP) processes raw frames → RGB/YUV buffers.</li>
+                    </ul>
+                </li>
+                <li>
+                    AVCaptureDevice & Input
+                    <ul>
+                        <li>Wraps hardware access.</li>
+                        <li>Controls exposure, focus, frame rate, and camera switching.</li>
+                    </ul>
+                </li>
+                <li>
+                    AVCaptureSession
+                    <ul>
+                        <li>Manages the hardware capture pipeline.</li>
+                        <li>Allocates buffer pools (CVPixelBuffer) to avoid copying data.</li>
+                        <li>Synchronizes multiple inputs (e.g., front camera + microphone).</li>
+                        <li>Handles frame timing, including frame dropping if the pipeline is too slow.</li>
+                    </ul>
+                </li>
+                <li>
+                    Outputs
+                    <ul>
+                        <li>Preview Layer (AVCaptureVideoPreviewLayer) → GPU displays frames asynchronously.</li>
+                        <li>File Output → CPU/GPU encodes frames (H.264, HEVC) into a video container.</li>
+                        <li>Metadata Output → CPU reads frame buffers for face/barcode detection.</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>Pipeline Diagram (simplified):</p>
+            <pre><code>
+Camera Sensor → ISP → CVPixelBuffer Pool → AVCaptureSession → Output(s)
+                                        ↓
+                        Preview Layer / File / Metadata
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Important Methods and Properties</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method/Property</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>startRunning / stopRunning</td>
+                        <td>Begin/end capture session.</td>
+                    </tr>
+                    <tr>
+                        <td>sessionPreset</td>
+                        <td>Defines resolution & frame rate.</td>
+                    </tr>
+                    <tr>
+                        <td>addInput: / removeInput:</td>
+                        <td>Add/remove capture devices.</td>
+                    </tr>
+                    <tr>
+                        <td>addOutput: / removeOutput:</td>
+                        <td>Add/remove data sinks.</td>
+                    </tr>
+                    <tr>
+                        <td>canAddInput: / canAddOutput:</td>
+                        <td>Check compatibility before adding.</td>
+                    </tr>
+                    <tr>
+                        <td>connections</td>
+                        <td>Access AVCaptureConnection for orientation & mirroring.</td>
+                    </tr>
+                    <tr>
+                        <td>isRunning</td>
+                        <td>Check session status.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>6. Performance Considerations</h2>
+            <ul>
+                <li>
+                    Threading
+                    <ul>
+                        <li>startRunning and stopRunning block the calling thread. Use background queue.</li>
+                    </ul>
+                </li>
+                <li>
+                    Buffer Management
+                    <ul>
+                        <li>Outputs may drop frames if processing is slower than capture.</li>
+                    </ul>
+                </li>
+                <li>
+                    Preset Selection
+                    <ul>
+                        <li>High-resolution presets consume more CPU/GPU and memory.</li>
+                    </ul>
+                </li>
+                <li>
+                    Synchronization
+                    <ul>
+                        <li>AVCaptureSession synchronizes video + audio automatically for recording.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Use Cases</h2>
+            <ol>
+                <li>Camera Preview – feed to AVCaptureVideoPreviewLayer.</li>
+                <li>Photo Capture – feed to AVCapturePhotoOutput.</li>
+                <li>Video Recording – feed to AVCaptureMovieFileOutput.</li>
+                <li>Real-Time Processing – feed to AVCaptureVideoDataOutput for ML/AR.</li>
+                <li>Barcode/Face Detection – feed to AVCaptureMetadataOutput.</li>
+            </ol>
+            <p>If you want, I can make a detailed low-level diagram showing how AVCaptureSession connects hardware → input → session → outputs → preview/GPU, including buffer pools and pipeline flow.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

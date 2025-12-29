@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Bias in AI models</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Bias in AI models</h1>
+                    <p class="subtitle">
+                        Bias in AI models refers to systematic and unfair tendencies in an AI system that cause it to favor or disadvantage certain people, groups, or outcomes. This happens when the AI’s decisions or predictions are not neutral or equally accurate for everyone.
+                        <p>Below is a clear, beginner-friendly but technical explanation, with real-world examples and how engineers deal with it.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What “bias” means in AI</h2>
+            <p>In AI, bias ≠ intention.</p>
+            <p>It means:</p>
+            <i>The model consistently produces skewed or unfair results due to data, design, or deployment choices.</i>
+            <p>An AI model learns patterns from data. If the data or process is biased, the AI will reflect—and sometimes amplify—that bias.</p>
+        </section>
+
+        <section>
+            <h2>2. Main types of AI bias</h2>
+            <p>1️⃣ Data Bias (Most common)</p>
+            <p>Occurs when the training data does not represent reality fairly.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Face recognition trained mostly on light-skinned faces → poor accuracy on darker skin tones</li>
+                <li>Hiring AI trained on past resumes from mostly male engineers → favors male candidates</li>
+                <li>Loan approval data reflecting historical discrimination → rejects minorities more often</li>
+            </ul>
+            <p>Why it happens:</p>
+            <ul>
+                <li>Incomplete datasets</li>
+                <li>Historical inequality</li>
+                <li>Overrepresentation of one group</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Label Bias</h2>
+            <p>Happens when human-assigned labels are biased.</p>
+            <p>Example:</p>
+            <ul>
+                <li>Police crime data where certain neighborhoods are over-policed</li>
+                <li>Judges giving harsher sentences to certain groups → AI predicts higher “risk”</li>
+            </ul>
+            <p>The AI learns the human bias, not objective truth.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Algorithmic Bias</h2>
+            <p>Occurs when the model’s structure or objective function favors certain outcomes.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Optimizing only for “accuracy” instead of fairness</li>
+                <li>Using proxies (ZIP code → race, job title → gender)</li>
+                <li>Ranking systems that reinforce popularity instead of diversity</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Interaction Bias</h2>
+            <p>Bias emerges from how users interact with the AI.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Chatbots learning toxic language from users</li>
+                <li>Recommendation systems amplifying extreme content because it gets more clicks</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5️⃣ Deployment / Context Bias</h2>
+            <p>An AI is used outside the context it was designed for.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Medical AI trained on US data used in rural Philippines</li>
+                <li>Credit scoring AI used for small farmers instead of salaried workers</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Real-world examples</h2>
+            <p>🔹 Hiring AI</p>
+            <ul>
+                <li>Learns from past hiring decisions</li>
+                <li>Past company hired mostly men</li>
+                <li>AI “learns” men are better candidates</li>
+            </ul>
+
+            <p>🔹 Facial recognition</p>
+            <ul>
+                <li>Higher false-positive rates for minorities</li>
+                <li>Used in law enforcement → wrongful arrests</li>
+            </ul>
+
+            <p>🔹 Loan & credit scoring</p>
+            <ul>
+                <li>Uses spending patterns tied to socioeconomic status</li>
+                <li>Penalizes low-income groups unfairly</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Why AI bias is dangerous</h2>
+            <ul>
+                <li>❌ Reinforces discrimination at scale</li>
+                <li>❌ Appears “objective” but isn’t</li>
+                <li>❌ Hard to detect without auditing</li>
+                <li>❌ Affects jobs, freedom, healthcare, finance</li>
+            </ul>
+            <p>AI doesn’t just reflect society — it can amplify its worst inequalities.</p>
+        </section>
+
+        <section>
+            <h2>5. How engineers detect bias</h2>
+            <p>📊 Evaluation by group</p>
+            <p>Compare accuracy across:</p>
+            <ul>
+                <li>Gender</li>
+                <li>Age</li>
+                <li>Ethnicity</li>
+                <li>Location</li>
+                <li>Income level</li>
+            </ul>
+            <p>If accuracy differs significantly → bias likely exists.</p>
+        </section>
+
+        <section>
+            <h2>📈 Fairness metrics</h2>
+            <p>Common metrics:</p>
+            <ul>
+                <li>Demographic parity</li>
+                <li>Equal opportunity</li>
+                <li>Equalized odds</li>
+                <li>Disparate impact ratio</li>
+            </ul>
+            <p>No single metric fits all use cases.</p>
+        </section>
+
+        <section>
+            <h2>6. How bias is reduced (not eliminated)</h2>
+            <p>1️⃣ Data-level solutions</p>
+            <ul>
+                <li>Balance datasets</li>
+                <li>Collect missing group data</li>
+                <li>Re-weight underrepresented samples</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Model-level solutions</h2>
+            <ul>
+                <li>Fairness constraints in training</li>
+                <li>Adversarial debiasing</li>
+                <li>Remove proxy features</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Post-processing solutions</h2>
+            <ul>
+                <li>Adjust predictions per group</li>
+                <li>Threshold tuning</li>
+                <li>Human-in-the-loop review</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Important truth</h2>
+            <p>Bias can never be fully removed — only managed and minimized.</p>
+            <p>Because:</p>
+            <ul>
+                <li>Data comes from humans</li>
+                <li>Societies are unequal</li>
+                <li>Definitions of “fair” vary by culture and law</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Bias vs Accuracy trade-off</h2>
+            <p>Often:</p>
+            <ul>
+                <li>More fairness → slightly lower accuracy</li>
+                <li>More accuracy → higher risk of unfairness</li>
+            </ul>
+            <p>Responsible AI means choosing acceptable trade-offs.</p>
+        </section>
+
+        <section>
+            <h2>9. Bias in Generative AI (ChatGPT, image models)</h2>
+            <ul>
+                <li>Cultural bias in language</li>
+                <li>Stereotypes in image generation</li>
+                <li>Over-representation of Western viewpoints</li>
+                <li>Moral & political bias from training sources</li>
+            </ul>
+            <p>Mitigated using:</p>
+            <ul>
+                <li>RLHF (human feedback)</li>
+                <li>Content filters</li>
+                <li>Model auditing</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Simple takeaway</h2>
+            <p>AI bias is not a bug — it’s a reflection of our data, history, and design choices.</p>
+            <p>Good AI engineers:</p>
+            <ul>
+                <li>Measure bias</li>
+                <li>Acknowledge trade-offs</li>
+                <li>Design responsibly</li>
+                <li>Keep humans in the loop</li>
+            </ul>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Explain bias in ML code examples</li>
+                <li>Show bias detection in Python</li>
+                <li>Discuss AI bias in hiring, finance, or healthcare</li>
+                <li>Relate this to Firebase / AWS / real production systems</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

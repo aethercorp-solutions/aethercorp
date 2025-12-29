@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Difference between PreviewLayer, VideoDataOutput and MetadataOutput</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Difference between PreviewLayer, VideoDataOutput and MetadataOutput</h1>
+                    <p class="subtitle">
+                        In AVFoundation, these three often get confused because they all “deal with camera output,” but they serve very different roles in the capture pipeline.
+                        <p>I’ll explain them conceptually, then low-level, then give a when-to-use table, and finally a real barcode scanner example (which fits what you’ve been working on).</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ AVCaptureVideoPreviewLayer (PreviewLayer)</h2>
+            <p>What it is</p>
+            <p>A CALayer subclass whose only job is to display live camera frames on screen.</p>
+            <ul>
+                <li>It does NOT give you image data</li>
+                <li>It does NOT analyze frames</li>
+                <li>It does NOT affect capture quality</li>
+                <li>It is GPU-accelerated</li>
+            </ul>
+
+            <p>What it connects to</p>
+            <ul>
+                <li>
+                    Attached directly to an AVCaptureSession
+                    <pre><code>
+AVCaptureVideoPreviewLayer *preview =
+    [AVCaptureVideoPreviewLayer layerWithSession:session];
+                    </code></pre>
+                </li>
+            </ul>
+
+            <p>What happens internally</p>
+            <pre><code>
+Camera Sensor
+   ↓
+ISP (Image Signal Processor)
+   ↓
+AVCaptureSession
+   ↓
+PreviewLayer → Metal/OpenGL → Screen
+            </code></pre>
+
+            <ul>
+                <li>Frames go directly to the GPU</li>
+                <li>Zero CPU involvement</li>
+                <li>No pixel buffers exposed to your app</li>
+            </ul>
+            <p>Key properties</p>
+            <ul>
+                <li>videoGravity (aspectFill / aspectFit)</li>
+                <li>connection.videoOrientation</li>
+            </ul>
+            <p>Typical use</p>
+            <ul>
+                <li>Camera viewfinder</li>
+                <li>Barcode scanner camera UI</li>
+                <li>Face camera preview</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ AVCaptureVideoDataOutput (VideoDataOutput)</h2>
+            <p>What it is</p>
+            <p>A raw frame delivery output that sends every video frame to your code.</p>
+            <ul>
+                <li>You receive CMSampleBufferRef</li>
+                <li>CPU or GPU processing required</li>
+                <li>Heavy if misused</li>
+            </ul>
+            <p>What it connects to</p>
+            <ul>
+                <li>Attached to an AVCaptureSession</li>
+                <li>Requires a delegate</li>
+            </ul>
+            <pre><code>
+AVCaptureVideoDataOutput *videoOutput = [[AVCaptureVideoDataOutput alloc] init];
+[videoOutput setSampleBufferDelegate:self queue:videoQueue];
+            </code></pre>
+
+            <p>What happens internally</p>
+            <pre><code>
+Camera Sensor
+   ↓
+ISP
+   ↓
+AVCaptureSession
+   ↓
+VideoDataOutput
+   ↓
+CMSampleBuffer
+   ↓
+CPU / CoreImage / Metal
+            </code></pre>
+
+            <p>You can do things like</p>
+            <ul>
+                <li>Convert to CVPixelBuffer</li>
+                <li>Run Core ML</li>
+                <li>Run OpenCV</li>
+                <li>Custom image processing</li>
+                <li>Save raw frames</li>
+            </ul>
+            <p>Performance impact</p>
+            <p>⚠️ High</p>
+            <p>You are now in the critical frame path.</p>
+            <p>Typical use</p>
+            <ul>
+                <li>Machine learning</li>
+                <li>Computer vision</li>
+                <li>Custom filters</li>
+                <li>Recording with custom encoding</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ AVCaptureMetadataOutput (MetadataOutput)</h2>
+            <p>What it is</p>
+            <p>A hardware-accelerated analyzer that extracts metadata from frames.</p>
+            <p>It does not give you images — only results.</p>
+            <p>Supported metadata</p>
+            <ul>
+                <li>Barcodes (QR, EAN, Code 128, etc.)</li>
+                <li>Faces</li>
+                <li>Text (limited)</li>
+                <li>Object metadata</li>
+            </ul>
+
+            <p>What it connects to</p>
+            <ul>
+                <li>Attached to an AVCaptureSession</li>
+                <li>Delegate receives detected objects</li>
+            </ul>
+
+            <pre><code>
+AVCaptureMetadataOutput *metadataOutput = [[AVCaptureMetadataOutput alloc] init];
+[metadataOutput setMetadataObjectsDelegate:self queue:mainQueue];
+metadataOutput.metadataObjectTypes = metadataOutput.availableMetadataObjectTypes;
+            </code></pre>
+
+            <p>What happens internally</p>
+            <pre><code>
+Camera Sensor
+   ↓
+ISP
+   ↓
+AVCaptureSession
+   ↓
+MetadataOutput
+   ↓
+Hardware Vision Engines
+   ↓
+AVMetadataMachineReadableCodeObject
+            </code></pre>
+
+            <ul>
+                <li>Uses Apple’s private vision hardware</li>
+                <li>Much faster than VideoDataOutput</li>
+                <li>No pixel buffers exposed</li>
+            </ul>
+
+            <p>Typical use</p>
+            <ul>
+                <li>Barcode scanning</li>
+                <li>Face detection</li>
+                <li>Lightweight recognition</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Side-by-Side Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>PreviewLayer</th>
+                        <th>VideoDataOutput</th>
+                        <th>MetadataOutput</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Displays camera</td>
+                        <td>✅ Yes</td>
+                        <td>❌ No</td>
+                        <td>❌ No</td>
+                    </tr>
+                    <tr>
+                        <td>Provides image data</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                        <td>❌ No</td>
+                    </tr>
+                    <tr>
+                        <td>Provides detection results</td>
+                        <td>❌ No</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>CPU usage</td>
+                        <td>🟢 Very low</td>
+                        <td>🔴 High</td>
+                        <td>🟡 Low</td>
+                    </tr>
+                    <tr>
+                        <td>GPU usage</td>
+                        <td>🟢 Efficient</td>
+                        <td>🟡 Optional</td>
+                        <td>🟢 Efficient</td>
+                    </tr>
+                    <tr>
+                        <td>Real-time safe</td>
+                        <td>✅ Yes</td>
+                        <td>⚠️ Careful</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Delegate required</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>5️⃣ How They Are Commonly Used Together</h2>
+            <p>Most camera apps use all three at once:</p>
+            <pre><code>
+AVCaptureSession
+ ├── AVCaptureVideoPreviewLayer   → UI
+ ├── AVCaptureMetadataOutput      → Barcode / Face detection
+ └── AVCaptureVideoDataOutput     → (Optional) Custom processing
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6️⃣ Barcode Scanner Example (Best Practice)</h2>
+            <pre><code>
+// 1. Preview (UI)
+self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.session];
+
+// 2. Metadata (barcode detection)
+AVCaptureMetadataOutput *metadataOutput = [[AVCaptureMetadataOutput alloc] init];
+[metadataOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
+metadataOutput.metadataObjectTypes = @[AVMetadataObjectTypeEAN13Code];
+
+// NO VideoDataOutput needed unless doing custom CV
+            </code></pre>
+            <p>👉 Never use VideoDataOutput just to scan barcodes</p>
+            <p>It’s slower and wastes battery.</p>
+        </section>
+
+        <section>
+            <h2>7️⃣ Key Takeaways</h2>
+            <ul>
+                <li>PreviewLayer → Show camera</li>
+                <li>VideoDataOutput → Process raw frames yourself</li>
+                <li>MetadataOutput → Let Apple detect things for you</li>
+            </ul>
+            <p>If you want, I can also:</p>
+            <ul>
+                <li>Explain why barcode detection stops after deletion (related to MetadataOutput throttling)</li>
+                <li>Show why PreviewLayer orientation doesn’t match metadata coordinates</li>
+                <li>Diagram threading & queues for each output</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

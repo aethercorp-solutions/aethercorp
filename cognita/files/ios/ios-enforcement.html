@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>iOS enforcement</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">iOS enforcement</h1>
+                    <p class="subtitle">“iOS enforcement” is a broad term, but in practice it usually refers to how Apple enforces rules, security, and policies on iOS devices and apps. Here’s a clear breakdown from a developer and platform perspective (relevant to your iOS work).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. App Store Policy Enforcement</h2>
+            <p>Apple strictly enforces rules through App Review and runtime controls.</p>
+            <p>What Apple Enforces</p>
+            <ul>
+                <li>
+                    Privacy & Data Use
+                    <ul>
+                        <li>App Tracking Transparency (ATT)</li>
+                        <li>Proper usage of permissions (camera, mic, contacts, location)</li>
+                    </ul>
+                </li>
+                <li>
+                    Security
+                    <ul>
+                        <li>No private APIs</li>
+                        <li>No dynamic code execution (e.g., downloading JS to alter app behavior)</li>
+                    </ul>
+                </li>
+                <li>
+                    Payments
+                    <ul>
+                        <li>Digital goods must use In-App Purchase</li>
+                        <li>No external payment links (with limited regional exceptions)</li>
+                    </ul>
+                </li>
+                <li>
+                    Content & Behavior
+                    <ul>
+                        <li>No misleading UI</li>
+                        <li>No abusive, deceptive, or harmful behavior</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>How Enforcement Happens</p>
+            <ul>
+                <li>App Review rejection</li>
+                <li>App removal from the App Store</li>
+                <li>Developer account suspension for repeated violations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Platform Security Enforcement (System-Level)</h2>
+            <p>iOS enforces security at the OS level — apps cannot bypass this.</p>
+            <p>Core Mechanisms</p>
+            <ul>
+                <li>
+                    Sandboxing
+                    <ul>
+                        <li>Each app runs in isolation</li>
+                        <li>No access to other apps’ data</li>
+                    </ul>
+                </li>
+                <li>
+                    Code Signing
+                    <ul>
+                        <li>Only Apple-signed or Apple-approved code can run</li>
+                        <li>Jailbreak attempts break this chain</li>
+                    </ul>
+                </li>
+                <li>
+                    Entitlements
+                    <ul>
+                        <li>
+                            Explicit permission required for features like:
+                            <ul>
+                                <li>Push notifications</li>
+                                <li>Background modes</li>
+                                <li>Keychain sharing</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Secure Enclave
+                    <ul>
+                        <li>Enforces biometric security (Face ID / Touch ID)</li>
+                        <li>App never accesses raw biometric data</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Device Management & Enterprise Enforcement</h2>
+            <p>Used by companies, schools, and governments.</p>
+            <p>MDM (Mobile Device Management)</p>
+            <ul>
+                <li>
+                    Enforce:
+                    <ul>
+                        <li>Passcode policies</li>
+                        <li>App installation/removal</li>
+                        <li>VPN usage</li>
+                        <li>Device restrictions</li>
+                    </ul>
+                </li>
+                <li>
+                    Common tools:
+                    <ul>
+                        <li>Jamf</li>
+                        <li>Microsoft Intune</li>
+                        <li>VMware Workspace ONE</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Supervised Devices</p>
+            <ul>
+                <li>
+                    Stronger enforcement:
+                    <ul>
+                        <li>Disable AirDrop, iCloud, App Store</li>
+                        <li>Force single-app (kiosk) mode</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Privacy Enforcement (User-Controlled but System-Enforced)</h2>
+            <p>Apple enforces user consent strictly.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>One-time or approximate location</li>
+                <li>Background location warnings</li>
+                <li>Clipboard access alerts</li>
+                <li>Camera/mic indicators</li>
+            </ul>
+            <p>Apps cannot suppress or override these.</p>
+        </section>
+
+        <section>
+            <h2>5. Runtime Enforcement (What Apps Cannot Do)</h2>
+            <p>iOS actively blocks:</p>
+            <ul>
+                <li>Accessing system files</li>
+                <li>Reading SMS or call logs</li>
+                <li>Running persistent background services</li>
+                <li>Injecting code into other apps</li>
+                <li>Modifying system behavior</li>
+            </ul>
+            <p>Violations lead to crashes, rejection, or removal.</p>
+        </section>
+
+        <section>
+            <h2>6. Legal & Regional Enforcement</h2>
+            <p>Apple enforces:</p>
+            <ul>
+                <li>Local laws (GDPR, COPPA, regional content rules)</li>
+                <li>Export compliance (encryption declarations)</li>
+                <li>Government takedown requests (region-specific)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Common Developer Pitfalls (Seen Often)</h2>
+            <ul>
+                <li>Using undocumented APIs (even indirectly via libraries)</li>
+                <li>Collecting analytics before ATT consent</li>
+                <li>Misusing background modes</li>
+                <li>Linking to external payment systems</li>
+                <li>Over-requesting permissions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>In short:</h2>
+            <p>iOS enforcement = Apple controls the OS, the hardware, and the App Store.
+                You get strong security and consistency, but very limited freedom compared to Android.</p>
+            <p>If you want, tell me which angle you meant:</p>
+            <ul>
+                <li>App Store rejection?</li>
+                <li>Enterprise / MDM enforcement?</li>
+                <li>Security / jailbreak prevention?</li>
+                <li>Government or corporate iOS enforcement?</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

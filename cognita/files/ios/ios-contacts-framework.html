@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Contacts Framework</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Contacts Framework</h1>
+                    <p class="subtitle">
+                        Below is a beginner-friendly, step-by-step explanation of how to work with Phonebook / Contacts in Swift (iOS). I’ll explain the concepts first, then show simple code, and finally explain each part line-by-line.
+                        <p>This uses Apple’s Contacts framework (Contacts), which is the modern and correct way (not AddressBook, which is deprecated).</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ What is the Contacts Framework?</h2>
+            <p>iOS stores phonebook data (names, phone numbers, emails) in a system database.</p>
+            <p>Apple provides:</p>
+            <ul>
+                <li>CNContactStore → access to the contacts database</li>
+                <li>CNContact → a single person</li>
+                <li>CNContactFetchRequest → how you ask for contacts</li>
+                <li>CNAuthorizationStatus → permission handling</li>
+            </ul>
+            <p>📌 Important:</p>
+            <p>You must ask permission before reading contacts.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Add Permission in Info.plist (REQUIRED)</h2>
+            <p>Open Info.plist and add:</p>
+            <pre><code>
+Privacy - Contacts Usage Description
+            </code></pre>
+            <p>Value:</p>
+            <pre><code>
+This app needs access to your contacts to display your phonebook.
+            </code></pre>
+            <p>❌ Without this → app will crash</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Import Contacts Framework</h2>
+            <p>At the top of your Swift file:</p>
+            <pre><code>
+import Contacts
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4️⃣ Step 1: Request Permission to Access Contacts</h2>
+            <p>Code</p>
+            <pre><code>
+let contactStore = CNContactStore()
+
+contactStore.requestAccess(for: .contacts) { granted, error in
+    if granted {
+        print("Access granted")
+    } else {
+        print("Access denied")
+    }
+}
+            </code></pre>
+
+            <p>Explanation</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Line</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CNContactStore()</td>
+                        <td>Opens the phonebook database</td>
+                    </tr>
+                    <tr>
+                        <td>.requestAccess</td>
+                        <td>Asks the user for permission</td>
+                    </tr>
+                    <tr>
+                        <td>granted</td>
+                        <td>true if user tapped “Allow”</td>
+                    </tr>
+                    <tr>
+                        <td>error</td>
+                        <td>Contains error if something failed</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>📌 Always request permission before reading contacts</p>
+        </section>
+
+        <section>
+            <h2>5️⃣ Step 2: Define What Data You Want</h2>
+            <p>Contacts can contain many fields. You must specify which ones you need.</p>
+            <p>Common Keys</p>
+            <pre><code>
+let keys = [
+    CNContactGivenNameKey,
+    CNContactFamilyNameKey,
+    CNContactPhoneNumbersKey,
+    CNContactEmailAddressesKey
+]
+            </code></pre>
+            <p>Why?</p>
+            <p>🔹 Fetching everything is slow</p>
+            <p>🔹 Apple requires you to specify keys explicitly</p>
+        </section>
+
+        <section>
+            <h2>6️⃣ Step 3: Fetch Contacts</h2>
+            <p>Simple Fetch Example</p>
+            <pre><code>
+let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
+
+do {
+    try contactStore.enumerateContacts(with: request) { contact, stop in
+        print(contact.givenName)
+    }
+} catch {
+    print("Failed to fetch contacts")
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7️⃣ Understanding CNContact</h2>
+            <p>A CNContact represents one person.</p>
+            <p>Accessing Contact Data</p>
+            <pre><code>
+let firstName = contact.givenName
+let lastName = contact.familyName
+            </code></pre>
+
+            <p>Phone Numbers</p>
+            <pre><code>
+for number in contact.phoneNumbers {
+    let phone = number.value.stringValue
+    print(phone)
+}                
+            </code></pre>
+
+            <p>Emails</p>
+            <pre><code>
+for email in contact.emailAddresses {
+    print(email.value)
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8️⃣ Full Beginner Example (Print Phonebook)</h2>
+            <pre><code>
+import Contacts
+
+func fetchContacts() {
+    let store = CNContactStore()
+
+    let keys: [CNKeyDescriptor] = [
+        CNContactGivenNameKey as CNKeyDescriptor,
+        CNContactFamilyNameKey as CNKeyDescriptor,
+        CNContactPhoneNumbersKey as CNKeyDescriptor
+    ]
+
+    let request = CNContactFetchRequest(keysToFetch: keys)
+
+    do {
+        try store.enumerateContacts(with: request) { contact, stop in
+            let name = "\(contact.givenName) \(contact.familyName)"
+
+            for phone in contact.phoneNumbers {
+                print("Name: \(name)")
+                print("Phone: \(phone.value.stringValue)")
+            }
+        }
+    } catch {
+        print("Error fetching contacts")
+    }
+}
+            </code></pre>
+
+            <p>9️⃣ Common Beginner Mistakes ❌</p>
+            <p>❌ Forgetting Info.plist permission</p>
+            <p>➡️ App crashes</p>
+            <p>❌ Not requesting permission</p>
+            <p>➡️ No contacts returned</p>
+            <p>❌ Not specifying keys</p>
+            <p>➡️ Runtime error</p>
+            <p>❌ Doing heavy work on main thread</p>
+            <p>➡️ UI freezes</p>
+        </section>
+
+        <section>
+            <h2>🔟 Bonus: Check Permission Status</h2>
+            <pre><code>
+let status = CNContactStore.authorizationStatus(for: .contacts)
+
+switch status {
+case .authorized:
+    print("Already authorized")
+case .notDetermined:
+    print("Need to request permission")
+case .denied, .restricted:
+    print("Access denied")
+@unknown default:
+    break
+}
+            </code></pre>
+
+            <p>1️⃣1️⃣ Summary (Mental Model)</p>
+            <p>Think of contacts like this:</p>
+            <pre><code>
+Contacts App Database
+        ↓
+  CNContactStore
+        ↓
+  CNContactFetchRequest
+        ↓
+     CNContact
+        ↓
+  Name / Phone / Email
+            </code></pre>
+
+            <p>Want Next?</p>
+            <p>I can explain next:</p>
+            <ul>
+                <li>📱 Display contacts in UITableView</li>
+                <li>🔍 Search contacts</li>
+                <li>➕ Add new contact</li>
+                <li>✏️ Edit contact</li>
+                <li>🧠 SwiftUI version</li>
+                <li>⚠️ Performance tips for large phonebooks</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Error Domain=FIRFirestoreErrorDomain Code=7</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Error Domain=FIRFirestoreErrorDomain Code=7</h1>
+                    <p class="subtitle">
+                        Error Domain=FIRFirestoreErrorDomain Code=7 "Missing or insufficient permissions." UserInfo={NSLocalizedDescription=Missing or insufficient permissions.}
+                        <p>This error is 100% a Firestore Security Rules issue, not Swift or SPM.</p>
+                        <p>Error Code 7 = PERMISSION_DENIED</p>
+                        <p>Because you’re creating the Firestore user right after first login, Firestore is blocking the write.</p>
+                        <p>Let’s fix it correctly and securely.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔥 Why this happens (important)</h2>
+            <p>Your flow is:</p>
+            <ol>
+                <li>User signs in with Firebase Auth ✅</li>
+                <li>App immediately writes /users/{uid} ❌</li>
+                <li>Firestore rules don’t allow that write yet → Code 7</li>
+            </ol>
+            <p>Auth ≠ Firestore permission</p>
+            <p>Firestore only trusts security rules.</p>
+        </section>
+
+        <section>
+            <h2>✅ Correct Firestore Rules (REQUIRED)</h2>
+            <p>🔹 Minimal rule for your use case</p>
+            <p>This allows:</p>
+            <ul>
+                <li>User to create their own profile on first login</li>
+                <li>User to read/update only their own document</li>
+            </ul>
+            <pre><code>
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow create: if request.auth != null
+                    && request.auth.uid == userId;
+
+      allow read, update: if request.auth != null
+                          && request.auth.uid == userId;
+
+      allow delete: if false;
+    }
+  }
+}
+            </code></pre>
+            <p>👉 Deploy this in Firebase Console → Firestore → Rules</p>
+        </section>
+
+        <section>
+            <h2>✅ Why this rule is correct</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Allowed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>First login create</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>User read own profile</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>User update own profile</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>User delete profile</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Other users access</td>
+                        <td>❌</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>⚠️ Very Common Mistake</h2>
+            <p>❌ This rule FAILS:</p>
+            <pre><code>
+allow write: if request.auth.token.role == "client";
+            </code></pre>
+            <p>Because:</p>
+            <ul>
+                <li>role does not exist yet</li>
+                <li>Claims are added after Firestore user creation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Optional: If you use roles later (admin/client)</h2>
+            <p>🔹 Hybrid rule (safe)</p>
+            <pre><code>
+allow write: if request.auth != null
+        && (request.auth.uid == userId
+            || request.auth.token.role == "admin");
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 Debug Checklist</h2>
+            <p>After updating rules:</p>
+            <ol>
+                <li>Sign out</li>
+                <li>Delete app from device</li>
+                <li>Reinstall app</li>
+                <li>Login again</li>
+                <li>
+                    Watch Xcode console:
+                </li>
+            </ol>
+            <pre><code>
+Firestore user created for uid: ...
+            </code></pre>
+            <p>Firestore rules cache on device — reinstall avoids false negatives.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Why this happens to senior devs too</h2>
+            <p>Firestore rules evaluate:</p>
+            <ul>
+                <li>request.auth (JWT)</li>
+                <li>resource.data (existing doc)</li>
+                <li>NOT Swift logic</li>
+            </ul>
+            <p>Your Swift code is correct 👍</p>
+            <p>Firestore just needs permission.</p>
+        </section>
+
+        <section>
+            <h2>🚀 Next Improvements (optional)</h2>
+            <ul>
+                <li>Prevent overwriting existing users</li>
+                <li>Cloud Function user creation (enterprise)</li>
+                <li>Admin role via Custom Claims</li>
+                <li>Multi-company tenancy</li>
+            </ul>
+
+            <p>If you want, tell me:</p>
+            <ul>
+                <li>Are you using roles?</li>
+                <li>Single-user or company accounts?</li>
+                <li>Do you want admin users to edit others?</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Complete guide to Firebase Authentication</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Complete guide to Firebase Authentication</h1>
+                    <p class="subtitle">
+                        Below is a beginner-friendly but complete guide to Firebase Authentication, with real-world use cases and step-by-step implementation. I’ll keep it simple first, then gradually go deeper—perfect if you’re new but want to build something production-ready later.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is Firebase Authentication?</h2>
+            <p>Firebase Authentication (Firebase Auth) is a Google-provided service that lets you:</p>
+            <ul>
+                <li>Identify who the user is</li>
+                <li>Secure your app without building auth from scratch</li>
+                <li>Support multiple sign-in methods easily</li>
+            </ul>
+            <p>It handles:</p>
+            <ul>
+                <li>User sign-up</li>
+                <li>Login</li>
+                <li>Session management</li>
+                <li>Token creation</li>
+                <li>Password reset</li>
+                <li>Secure identity verification</li>
+            </ul>
+            <p>👉 Firebase Auth does NOT store your app data, only identity info.</p>
+        </section>
+
+        <section>
+            <h2>2. Why Use Firebase Auth?</h2>
+            <p>Without Firebase Auth</p>
+            <p>You must build:</p>
+            <ul>
+                <li>Password hashing</li>
+                <li>Login API</li>
+                <li>Session handling</li>
+                <li>Token expiration</li>
+                <li>OAuth integrations</li>
+                <li>Security rules</li>
+            </ul>
+
+            <p>With Firebase Auth</p>
+            <p>You get:</p>
+            <ul>
+                <li>🔐 Secure authentication (Google-grade)</li>
+                <li>🚀 Fast setup</li>
+                <li>🔄 Auto session handling</li>
+                <li>📱 Works on iOS, Android, Web</li>
+                <li>🔑 Easy integration with Firestore, Storage, Functions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Common Firebase Auth Use Cases</h2>
+            <p>1️⃣ Simple App Login</p>
+            <ul>
+                <li>Email + password</li>
+                <li>Social login (Google, Apple, Facebook)</li>
+            </ul>
+            <p>Example:</p>
+            <p>Login screen for a mobile app</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Role-Based App (Admin / User)</h2>
+            <ul>
+                <li>Admin dashboard</li>
+                <li>Client user area</li>
+                <li>Permissions controlled by role</li>
+            </ul>
+            <p>Example:</p>
+            <p>Corporate portal (Admin vs Employee)</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Secure Backend APIs</h2>
+            <ul>
+                <li>Use Firebase ID Token</li>
+                <li>Verify token in backend</li>
+                <li>Only authenticated users can call APIs</li>
+            </ul>
+            <p>Example:</p>
+            <p>Serverless APIs (AWS Lambda, Cloud Functions)</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Cross-Platform Auth</h2>
+            <ul>
+                <li>
+                    Same user logs in on:
+                    <ul>
+                        <li>iOS app</li>
+                        <li>Android app</li>
+                        <li>Web app</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Firebase Auth Supported Login Methods</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Email & Password</td>
+                        <td>Standard apps</td>
+                    </tr>
+                    <tr>
+                        <td>Google Sign-In</td>
+                        <td>Fast user onboarding</td>
+                    </tr>
+                    <tr>
+                        <td>Apple Sign-In</td>
+                        <td>Required for iOS apps</td>
+                    </tr>
+                    <tr>
+                        <td>Facebook</td>
+                        <td>Social apps</td>
+                    </tr>
+                    <tr>
+                        <td>Phone (OTP)</td>
+                        <td>Banking, delivery apps</td>
+                    </tr>
+                    <tr>
+                        <td>Anonymous</td>
+                        <td>Guest users</td>
+                    </tr>
+                    <tr>
+                        <td>Custom Token</td>
+                        <td>Enterprise / LDAP / SSO</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>5. Firebase Auth Architecture (Simple View)</h2>
+            <pre><code>
+User App (iOS / Android / Web)
+        |
+        | Login
+        v
+Firebase Authentication
+        |
+        | Issues ID Token (JWT)
+        v
+Your App / Firestore / Backend APIs
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Step-by-Step Firebase Auth Setup (Beginner)</h2>
+            <p>STEP 1: Create Firebase Project</p>
+            <ol>
+                <li>Go to Firebase Console</li>
+                <li>Click Add Project</li>
+                <li>Enable Authentication</li>
+                <li>Choose sign-in methods (Email, Google, Apple, etc.)</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>STEP 2: Add App (iOS / Android / Web)</h2>
+            <ul>
+                <li>Register your app</li>
+                <li>
+                    Download config:
+                    <ul>
+                        <li>iOS → GoogleService-Info.plist</li>
+                        <li>Android → google-services.json</li>
+                    </ul>
+                    Add to your project
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Email & Password Authentication (Basic)</h2>
+            <p>Enable Email Auth</p>
+            <p>Firebase Console → Authentication → Sign-in Method → Email/Password → Enable</p>
+
+            <p>Register User</p>
+            <p>iOS (Swift)</p>
+            <pre><code>
+Auth.auth().createUser(withEmail: email, password: password) { result, error in
+    if let error = error {
+        print(error.localizedDescription)
+        return
+    }
+    print("User registered:", result?.user.uid ?? "")
+}                
+            </code></pre>
+
+            <p>Login User</p>
+            <pre><code>
+Auth.auth().signIn(withEmail: email, password: password) { result, error in
+    if let error = error {
+        print(error.localizedDescription)
+        return
+    }
+    print("Logged in:", result?.user.email ?? "")
+}                
+            </code></pre>
+
+            <p>Get Current User</p>
+            <pre><code>
+if let user = Auth.auth().currentUser {
+    print(user.uid)
+}                
+            </code></pre>
+
+            <p>Logout</p>
+            <pre><code>
+try Auth.auth().signOut()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Authentication State (Auto Login)</h2>
+            <p>Firebase automatically remembers users.</p>
+            <pre><code>
+Auth.auth().addStateDidChangeListener { auth, user in
+    if let user = user {
+        print("User logged in:", user.uid)
+    } else {
+        print("User logged out")
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Storing User Profile in Firestore</h2>
+            <p>Firebase Auth stores identity only.</p>
+            <p>You usually store profile data in Firestore.</p>
+            <pre><code>
+/users/{uid}
+{
+  "name": "Paul Dionisio",
+  "email": "paul@email.com",
+  "role": "admin",
+  "createdAt": "timestamp"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Role-Based Authentication (Admin / User)</h2>
+            <p>Why Roles?</p>
+            <p>Firebase Auth does not support roles directly.</p>
+            <p>Solution:</p>
+            <ul>
+                <li>Use Custom Claims</li>
+                <li>Or Firestore roles</li>
+            </ul>
+
+            <p>Example Role Use Case</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Access</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>admin</td>
+                        <td>Manage users, data</td>
+                    </tr>
+                    <tr>
+                        <td>user</td>
+                        <td>Read own data</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Set Role Using Admin SDK (Server Only)</p>
+            <pre><code>
+admin.auth().setCustomUserClaims(uid, { role: 'admin' });
+            </code></pre>
+
+            <p>Access Role in App</p>
+            <pre><code>
+Auth.auth().currentUser?.getIDTokenResult { result, error in
+    let role = result?.claims["role"] as? String
+    print("Role:", role ?? "none")
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>11. Firestore Security Rules with Auth</h2>
+            <pre><code>
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow read: if request.auth != null &&
+                   request.auth.uid == userId;
+
+      allow write: if request.auth.token.role == "admin";
+    }
+
+    match /adminData/{doc} {
+      allow read, write: if request.auth.token.role == "admin";
+    }
+  }
+}
+            </code></pre>
+            <p>✔ Authenticated users only</p>
+            <p>✔ Admin-only access enforced server-side</p>
+        </section>
+
+        <section>
+            <h2>12. Firebase Auth + Backend API (JWT)</h2>
+            <p>Client</p>
+            <pre><code>
+Auth.auth().currentUser?.getIDToken { token, _ in
+    // Send token in Authorization header
+}                
+            </code></pre>
+
+            <p>Backend Verification</p>
+            <pre><code>
+admin.auth().verifyIdToken(token)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. Password Reset</h2>
+            <pre><code>
+Auth.auth().sendPasswordReset(withEmail: email)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>14. Firebase Auth Best Practices</h2>
+            <p>✅ Always enforce rules in Firestore</p>
+            <p>✅ Never trust client role logic</p>
+            <p>✅ Use Custom Claims for roles</p>
+            <p>✅ Store profile separately</p>
+            <p>✅ Secure backend APIs with ID tokens</p>
+        </section>
+
+        <section>
+            <h2>15. When Firebase Auth Is NOT Enough</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Alternative</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Enterprise SSO</td>
+                        <td>SAML / OAuth</td>
+                    </tr>
+                    <tr>
+                        <td>LDAP</td>
+                        <td>Custom Auth</td>
+                    </tr>
+                    <tr>
+                        <td>Complex RBAC</td>
+                        <td>Backend authorization</td>
+                    </tr>
+                    <tr>
+                        <td>Government systems</td>
+                        <td>Custom IAM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>16. Beginner Summary</h2>
+            <p>Firebase Auth:</p>
+            <ul>
+                <li>🔐 Handles authentication securely</li>
+                <li>🚀 Easy to implement</li>
+                <li>📱 Cross-platform</li>
+                <li>🔑 Integrates tightly with Firebase services</li>
+                <li>🏢 Scales from small apps to enterprise</li>
+            </ul>
+
+            <p>If you want, I can next:</p>
+            <ul>
+                <li>🔥 Show full iOS login screen implementation</li>
+                <li>🔥 Explain Firebase Auth vs Cognito vs Auth0</li>
+                <li>🔥 Build Admin / Client corporate portal</li>
+                <li>🔥 Integrate Firebase Auth with AWS Lambda or API Gateway</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
