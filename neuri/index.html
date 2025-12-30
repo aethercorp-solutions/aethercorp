@@ -1,139 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <title>Aether Neuri</title>
-  <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
-  <link rel="stylesheet" href="neuri.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neuri</title>
+<link rel="stylesheet" href="neuri.css">
 </head>
-
 <body>
-  <div class="container">
-    <div class="header">
-      <img src="../assets/aether-logo.png" alt="Aether Logo" />
-      <h1>Aether Neuri</h1>
-    </div>
 
-    <input type="text" id="search" placeholder="Search Aether Neuri..." />
-
-    <label>
-      <input type="checkbox" id="groupToggle" />
-      Group by category
-    </label>
-
-    <main>
-      <ul id="page-list"></ul>
-    </main>
+<div class="chat-container">
+  <div class="chat-header">Ask Neuri</div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input">
+    <input type="text" id="userInput" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
   </div>
+</div>
 
-  <script>
-    // Dynamically get base path (e.g., '/neuri/' or '/' for localhost)
-    const pathParts = window.location.pathname.split('/');
-    const repoName = pathParts[1] || '';
-    const isGitHubPages = window.location.hostname.includes('github.io');
-    const basePath = isGitHubPages ? `/${repoName}/neuri/` : './';
+<script>
+const chatMessages = document.getElementById('chatMessages');
+const userInput = document.getElementById('userInput');
 
-    // Files relative to basePath
-    const htmlFiles = [
-    ];
-
-    const htmlFilesWithBase = htmlFiles.map(file => basePath + file);
-
-    htmlFilesWithBase.sort((a, b) => {
-      const nameA = a.split("/").pop().toLowerCase();
-      const nameB = b.split("/").pop().toLowerCase();
-      return nameA.localeCompare(nameB);
-    });
-
-    const searchInput = document.getElementById('search');
-    const groupToggle = document.getElementById('groupToggle');
-    const listElement = document.getElementById('page-list');
-
-    function getDisplayName(filename) {
-      const cleanName = filename.replace('.html', '');
-      const words = cleanName.split('-');
-      const capitalizedWords = words.map(word =>
-        word.charAt(0).toUpperCase() + word.slice(1)
-      );
-      return capitalizedWords.join(' ');
-    }
-
-    function groupFiles(files) {
-      const grouped = {};
-      files.forEach(file => {
-        const parts = file.replace(basePath, '').split('/');
-        const folder = parts[1]; // e.g., 'aws', 'ios', 'deployment', 'react-native', etc.
-        if (!grouped[folder]) grouped[folder] = [];
-        grouped[folder].push(file);
-      });
-      return grouped;
-    }
-
-    function displayList(files, grouped) {
-      listElement.innerHTML = '';
-
-      if (grouped) {
-        const groupedFiles = groupFiles(files);
-        for (const [folder, fileList] of Object.entries(groupedFiles)) {
-          const section = document.createElement('section');
-          const heading = document.createElement('h2');
-          heading.textContent = folder.charAt(0).toUpperCase() + folder.slice(1);
-          section.appendChild(heading);
-
-          const ul = document.createElement('ul');
-          fileList.forEach(file => {
-            const li = document.createElement('li');
-            const link = document.createElement('a');
-            link.href = file;
-            link.textContent = getDisplayName(file.split('/').pop());
-            li.appendChild(link);
-            ul.appendChild(li);
-          });
-
-          section.appendChild(ul);
-          listElement.appendChild(section);
-        }
-      } else {
-        files.forEach(file => {
-          const li = document.createElement('li');
-          const link = document.createElement('a');
-          link.href = file;
-          link.textContent = getDisplayName(file.split('/').pop());
-          li.appendChild(link);
-          listElement.appendChild(li);
-        });
-      }
-
-      if (files.length === 0) {
-        listElement.innerHTML = '<li>No results found.</li>';
-      }
-    }
-
-    // Initial render
-    displayList(htmlFilesWithBase, groupToggle.checked);
-
-    searchInput.addEventListener('input', () => {
-      const query = searchInput.value.trim().toLowerCase();
-      const keywords = query.split(/\s+/).filter(Boolean);
-      const regex = new RegExp(keywords.map(k => `(?=.*${k})`).join(''), 'i');
-
-      const filtered = htmlFilesWithBase.filter(file => {
-        const fileName = file.split('/').pop().replace('.html', '').toLowerCase();
-        return regex.test(fileName);
-      });
-
-    displayList(filtered, groupToggle.checked);
-    });
+// Professional style bot responses
+const botReplies = [
+  "My knowledge base is currently being updated. I will provide a comprehensive response at the earliest opportunity.",
+  "I am reviewing your inquiry and will deliver a detailed answer shortly.",
+  "The information you requested is being compiled. Expect a precise response soon.",
+  "I am in the process of consolidating relevant data and will respond with clarity and accuracy.",
+  "Your question has been noted. I will ensure a thorough reply is provided promptly.",
+  "I am actively refining my knowledge base and will address your query with the utmost diligence.",
+  "Please be assured that a detailed response will follow as my resources are updated."
+];
 
 
-    // Group toggle event
-    groupToggle.addEventListener('change', () => {
-      const query = searchInput.value.toLowerCase();
-      const filtered = htmlFilesWithBase.filter(file => file.toLowerCase().includes(query));
-      displayList(filtered, groupToggle.checked);
-    });
-  </script>
+function addMessage(text, type) {
+  const msg = document.createElement('div');
+  msg.classList.add('message', type === 'user' ? 'user-msg' : 'bot-msg');
+  msg.textContent = text;
+  chatMessages.appendChild(msg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Simulate typing for corporate feel
+function botTyping(callback) {
+  const typingDiv = document.createElement('div');
+  typingDiv.classList.add('message', 'bot-msg');
+  typingDiv.textContent = "Typing...";
+  chatMessages.appendChild(typingDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  setTimeout(() => {
+    chatMessages.removeChild(typingDiv);
+    callback();
+  }, 800 + Math.random() * 600);
+}
+
+function sendMessage() {
+  const text = userInput.value.trim();
+  if(!text) return;
+  addMessage(text, 'user');
+  userInput.value = '';
+
+  botTyping(() => {
+    const reply = botReplies[Math.floor(Math.random() * botReplies.length)];
+    addMessage(reply, 'bot');
+  });
+}
+
+userInput.addEventListener('keypress', e => {
+  if(e.key === 'Enter') sendMessage();
+});
+</script>
+
 </body>
-
 </html>

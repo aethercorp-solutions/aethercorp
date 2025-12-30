@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AppState react-native</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AppState react-native</h1>
+                    <p class="subtitle">
+                        In React Native, AppState is a core API that lets your app detect and respond to changes in the app’s lifecycle state—basically, whether your app is active, in the background, or inactive.
+                        <p>This is especially useful for things like pausing tasks, saving data, refreshing auth tokens, or reconnecting sockets.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Basic Usage Example</h2>
+            <pre><code>
+import React, { useEffect, useState } from 'react';
+import { AppState, Text, View } from 'react-native';
+
+const AppStateExample = () => {
+  const [appState, setAppState] = useState(AppState.currentState);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      console.log('AppState changed to', nextAppState);
+      setAppState(nextAppState);
+    });
+
+    return () => {
+      subscription.remove(); // Clean up the listener
+    };
+  }, []);
+
+  return (
+    &lt;View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}&gt;
+        &lt;Text&gt;Current AppState: {appState}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default AppStateExample;
+            </code></pre>
+        </section>
+
+        <section>
+            <p>In React Native, AppState is a built-in API that allows you to detect the current state of your app and respond to changes. Essentially, it tells you whether your app is:</p>
+            <ul>
+                <li>Active: The app is running in the foreground.</li>
+                <li>Background: The app is running in the background.</li>
+                <li>Inactive: The app is transitioning between states (iOS only, e.g., when a call or notification overlay appears).</li>
+            </ul>
+            <p>This is especially useful for:</p>
+            <ul>
+                <li>Pausing/resuming tasks (like video/audio playback) when the app goes to the background.</li>
+                <li>Saving data when the app is about to go inactive.</li>
+                <li>Refreshing content when the app comes back to the foreground.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key Notes</h2>
+            <ol>
+                <li>AppState.currentState: Returns the current state of the app immediately.</li>
+                <li>Event listener: Use AppState.addEventListener('change', callback) to respond to changes.</li>
+                <li>Cleanup: Always remove the listener in useEffect cleanup to prevent memory leaks.</li>
+                <li>On iOS, inactive is a transient state before going to background.</li>
+                <li>On Android, inactive is usually not triggered—apps switch directly between active and background.</li>
+            </ol>
+        </section>
+
+        <section>
+            <p>Perfect! Let’s do a practical example using AppState to pause/resume a timer when the app goes into the background or comes back to the foreground.</p>
+            <h2>Example: Timer that Pauses in Background</h2>
+            <pre><code>
+import React, { useState, useEffect, useRef } from 'react';
+import { AppState, Text, View, Button } from 'react-native';
+
+const TimerApp = () => {
+  const [seconds, setSeconds] = useState(0);
+  const appState = useRef(AppState.currentState);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    const handleAppStateChange = nextAppState => {
+      console.log('AppState changed to', nextAppState);
+
+      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+        console.log('App has come to the foreground! Resuming timer...');
+        startTimer();
+      } else if (nextAppState.match(/inactive|background/)) {
+        console.log('App is going to the background! Pausing timer...');
+        stopTimer();
+      }
+
+      appState.current = nextAppState;
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    // Start timer initially
+    startTimer();
+
+    return () => {
+      subscription.remove();
+      stopTimer();
+    };
+  }, []);
+
+  const startTimer = () => {
+    if (!intervalRef.current) {
+      intervalRef.current = setInterval(() => {
+        setSeconds(prev => prev + 1);
+      }, 1000);
+    }
+  };
+
+  const stopTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  return (
+    &lt;View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}&gt;
+        &lt;Text style={{ fontSize: 24 }}>Timer: {seconds} seconds&lt;/Text&gt;
+        &lt;Button title="Pause Timer" onPress={stopTimer} /&gt;
+        &lt;Button title="Resume Timer" onPress={startTimer} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default TimerApp;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How it Works</h2>
+            <ol>
+                <li>AppState.currentState keeps track of the app’s state.</li>
+                <li>AppState.addEventListener('change', callback) listens for changes.</li>
+                <li>When the app goes background/inactive, stopTimer() pauses the timer.</li>
+                <li>When the app comes active, startTimer() resumes it.</li>
+                <li>Using useRef for both AppState and the interval ensures we can access the latest values inside the event handler without triggering unnecessary renders.</li>
+            </ol>
+
+            <p>This approach is commonly used for:</p>
+            <ul>
+                <li>Pausing video/audio playback</li>
+                <li>Pausing game timers</li>
+                <li>Stopping location updates in background</li>
+                <li>Saving app state to avoid data loss</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

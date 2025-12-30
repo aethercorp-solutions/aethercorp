@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>useEffect</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">useEffect</h1>
+                    <p class="subtitle">Sure! Let’s break down useEffect in React Native in detail, including its use cases, behavior, and implementation.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is useEffect?</h2>
+            <p>useEffect is a React Hook that lets you perform side effects in functional components. Side effects are operations that affect something outside the component or depend on something outside the component, like:</p>
+            <ul>
+                <li>Fetching data from an API</li>
+                <li>Setting up subscriptions or event listeners</li>
+                <li>Updating the document title (in React web)</li>
+                <li>Working with timers</li>
+                <li>Reading/writing from storage</li>
+            </ul>
+            <p>In React Native, you mostly use it for API calls, timers, subscriptions, AppState, and local storage interactions.</p>
+        </section>
+
+        <section>
+            <h2>2. Basic Syntax</h2>
+            <pre><code>
+useEffect(() => {
+    // Side effect code here
+    
+    return () => {
+        // Cleanup code here (optional)
+    };
+}, [dependencies]);                  
+            </code></pre>
+            <ul>
+                <li>Effect function: The first function runs after the component renders.</li>
+                <li>Cleanup function: Optional function returned from the effect to clean up resources (like removing listeners, clearing timers).</li>
+                <li>Dependencies array: Determines when the effect runs.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. How Dependencies Work</h2>
+            <ol>
+                <li>[] → Runs only once when the component mounts (like componentDidMount).</li>
+                <li>[value] → Runs every time value changes.</li>
+                <li>No dependencies → Runs after every render (like componentDidUpdate).</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>4. Common Use Cases in React Native</h2>
+            <p>A. Fetching Data from an API</p>
+            <pre><code>
+import React, { useEffect, useState } from 'react';
+import { View, Text, ActivityIndicator } from 'react-native';
+
+const UserList = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(res => res.json())
+      .then(data => {
+        setUsers(data);
+        setLoading(false);
+      })
+      .catch(err => console.error(err));
+  }, []); // Runs only once
+
+  if (loading) return &lt;ActivityIndicator size="large" /&gt;;
+
+  return (
+    &lt;View&gt;
+      {users.map(user => (
+        &lt;Text key={user.id}>{user.name}&lt;/Text&gt;
+      ))}
+    &lt;/View&gt;
+  );
+};
+
+export default UserList;
+            </code></pre>
+            <p>Use case: Fetch data when the component mounts.</p>
+        </section>
+
+        <section>
+            <h2>B. Timers / Intervals</h2>
+            <pre><code>
+useEffect(() => {
+    const interval = setInterval(() => {
+        console.log('Tick');
+    }, 1000);
+    
+    return () => clearInterval(interval); // Cleanup when component unmounts
+}, []);                  
+            </code></pre>
+            <p>Use case: Animations, countdown timers, or periodic tasks.</p>
+        </section>
+
+        <section>
+            <h2>C. Event Listeners / Subscriptions</h2>
+            <pre><code>
+import { AppState } from 'react-native';
+
+useEffect(() => {
+  const subscription = AppState.addEventListener('change', nextState => {
+    console.log('App state:', nextState);
+  });
+
+  return () => subscription.remove(); // Cleanup
+}, []);
+            </code></pre>
+
+            <p>Use case: Monitor app state changes, device orientation, keyboard events, etc.</p>
+        </section>
+
+        <section>
+            <h2>D. Cleanup Example</h2>
+            <pre><code>
+useEffect(() => {
+    console.log('Component mounted');
+    
+    return () => {
+        console.log('Component unmounted');
+    };
+}, []);                  
+            </code></pre>
+
+            <p>Use case: Remove timers, listeners, or cancel API requests to prevent memory leaks.</p>
+        </section>
+
+        <section>
+            <h2>5. Common Mistakes to Avoid</h2>
+            <ol>
+                <li>Missing dependency in the array → Can cause stale state or props in your effect.</li>
+                <li>Creating infinite loops → If you update state inside an effect without proper dependency management.</li>
+                <li>Not cleaning up subscriptions/timers → Can cause memory leaks, especially in React Native.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>6. Example: Combining API Fetch + Timer</h2>
+            <pre><code>
+useEffect(() => {
+    let isMounted = true;
+    
+    const fetchData = async () => {
+        const res = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+        const data = await res.json();
+        if (isMounted) setTodo(data);
+    };
+    
+    fetchData();
+    
+    const timer = setInterval(() => {
+        console.log('Running every 5 seconds');
+    }, 5000);
+    
+    return () => {
+        isMounted = false; // Prevent state update if unmounted
+        clearInterval(timer);
+    };
+}, []);                  
+            </code></pre>
+            <p>Use case: Start a timer and fetch data on mount, clean everything when unmounted.</p>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <ul>
+                <li>useEffect replaces componentDidMount, componentDidUpdate, and componentWillUnmount.</li>
+                <li>Used for side effects: API calls, timers, subscriptions, AppState, storage.</li>
+                <li>Dependencies array controls when the effect runs.</li>
+                <li>Always clean up subscriptions or timers in the cleanup function.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
