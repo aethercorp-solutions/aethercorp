@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What Are Public Keys?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What Are Public Keys?</h1>
+                    <p class="subtitle">
+                        A public key is one half of a public-key (asymmetric) cryptography pair:
+                        <ul>
+                            <li>🔐 Private Key – kept secret by the owner</li>
+                            <li>🌍 Public Key – shared openly with anyone</li>
+                        </ul>
+                        <p>They are mathematically linked.</p>
+                        <p>What one key encrypts, only the other can decrypt.</p>
+                        <p>What one key signs, the other can verify.</p>
+                        <p>There are two major uses:</p>
+                        <p>1️⃣ Encryption</p>
+                        <ul>
+                            <li>Public key encrypts data</li>
+                            <li>Private key decrypts data</li>
+                        </ul>
+                        <p>2️⃣ Digital Signatures (what Google & Apple mainly use for auth)</p>
+                        <ul>
+                            <li>Private key signs data</li>
+                            <li>Public key verifies the signature</li>
+                        </ul>
+                        <p>Authentication systems mostly use digital signatures, not encryption.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>How Google Uses Public Keys (Detailed Flow)</h2>
+            <p>When using Google Sign-In with Firebase or OAuth, Google uses RSA-based digital signatures with JWT tokens.</p>
+            <p>Relevant systems:</p>
+            <ul>
+                <li>Google</li>
+                <li>Firebase</li>
+                <li>Google Identity Platform</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step-by-Step: Google Sign-In Flow</h2>
+            <p>🔹 Step 1: User Authenticates</p>
+            <p>User logs in with Google in your app.</p>
+            <p>Google authenticates the user and generates:</p>
+            <ul>
+                <li>ID Token (JWT)</li>
+                <li>Access Token</li>
+            </ul>
+            <p>We focus on the ID Token.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Step 2: Google Signs the ID Token</h2>
+            <p>The ID token is a JWT (JSON Web Token).</p>
+            <p>Structure:</p>
+            <pre><code>
+HEADER.PAYLOAD.SIGNATURE
+            </code></pre>
+            <p>Example header:</p>
+            <pre><code>
+{
+    "alg": "RS256",
+    "kid": "abc123",
+    "typ": "JWT"
+}
+            </code></pre>
+            <ul>
+                <li>RS256 = RSA + SHA256</li>
+                <li>kid = Key ID (which public key to use)</li>
+            </ul>
+            <p>Google signs the token using its private key.</p>
+            <p>Only Google has that private key.</p>
+        </section>
+
+        <section>
+            <h2>What Are Public Keys?</h2>
+            <p>A public key is one half of a public–private key pair used in asymmetric cryptography.</p>
+            <ul>
+                <li>🔐 Private Key → kept secret, used to sign or decrypt</li>
+                <li>🔓 Public Key → shared publicly, used to verify signatures or encrypt</li>
+            </ul>
+            <p>They are mathematically related. Data signed with the private key can only be verified with the corresponding public key.</p>
+        </section>
+
+        <section>
+            <h2>Core Concept (Simple Example)</h2>
+            <ol>
+                <li>Google signs a token using its private key.</li>
+                <li>Your backend verifies that token using Google’s public key.</li>
+                <li>
+                    If verification succeeds → you know:
+                    <ul>
+                        <li>The token was really issued by Google.</li>
+                        <li>The token was not tampered with.</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>This is how trust works in modern authentication systems.</p>
+        </section>
+
+        <section>
+            <h2>How Google Uses Public Keys (Google Auth)</h2>
+            <p>When using Google Sign-In or Firebase Authentication, the flow relies on JWT (JSON Web Tokens) signed with asymmetric cryptography (usually RS256).</p>
+            <p>Step-by-Step Flow</p>
+            <p>1️⃣ User Signs In</p>
+            <p>User logs in via Google Sign-In in your React Native app.</p>
+            <p>Google issues:</p>
+            <ul>
+                <li>id_token (JWT)</li>
+                <li>access_token</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ The ID Token Is Signed</h2>
+            <p>The ID Token:</p>
+            <ul>
+                <li>Is a JWT</li>
+                <li>Is signed by Google using Google's private key</li>
+                <li>
+                    Contains:
+                    <ul>
+                        <li>sub (user ID)</li>
+                        <li>email</li>
+                        <li>aud (your app's client ID)</li>
+                        <li>iss (issuer)</li>
+                        <li>exp (expiration)</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Example header:</p>
+            <pre><code>
+{
+    "alg": "RS256",
+    "kid": "abc123"
+}
+            </code></pre>
+            <ul>
+                <li>RS256 → RSA with SHA-256</li>
+                <li>kid → key ID (tells you which public key to use)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Your Backend Verifies It</h2>
+            <p>Your AWS Lambda backend:</p>
+            <ol>
+                <li>Reads the token header</li>
+                <li>Extracts kid</li>
+                <li>
+                    Fetches Google’s public keys from:
+                    <pre><code>
+https://www.googleapis.com/oauth2/v3/certs
+                    </code></pre>
+                </li>
+                <li>Finds matching public key</li>
+                <li>Verifies signature</li>
+            </ol>
+            <p>If signature matches → token is authentic.</p>
+        </section>
+
+        <section>
+            <h2>Why This Is Secure</h2>
+            <ol>
+                <li>Only Google has the private key</li>
+                <li>Anyone can verify using the public key</li>
+                <li>Even if someone copies the token, they can’t forge a new valid one</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

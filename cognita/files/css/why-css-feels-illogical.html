@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Why CSS feels illogical</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Why CSS feels illogical</h1>
+                    <p class="subtitle"> Subtitle </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Drawing a triangle in css</h2>
+            <pre><code>
+.triangle {
+    width: 0;
+    height: 0;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 100px solid red;
+}
+            </code></pre>
+
+            <p>Why this draw a triangle?</p>
+            <p>Great question — this is one of the most important CSS “aha!” moments 👍
+                Let’s break it down visually and logically.</p>
+        </section>
+
+        <section>
+            <h2>1️⃣ What happens when width and height are 0</h2>
+            <pre><code>
+width: 0;
+height: 0;
+            </code></pre>
+            <p>There is no box to draw.</p>
+            <p>So:</p>
+            <ul>
+                <li>No background</li>
+                <li>No rectangle</li>
+            </ul>
+            <p>Only borders remain</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ How borders are actually drawn</h2>
+            <p>When an element has borders, the browser draws four trapezoids that meet at the center:</p>
+            <pre><code>
+top border
+      ▲
+      |
+◀─────+─────▶  left & right borders
+      |
+      ▼
+bottom border          
+            </code></pre>
+            <p>Each border points toward the center of the element.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Your border setup</h2>
+            <pre><code>
+border-left: 50px solid transparent;
+border-right: 50px solid transparent;
+border-bottom: 100px solid red;
+            </code></pre>
+
+            <p>That means:</p>
+            <ul>
+                <li>Left border → wide, invisible</li>
+                <li>Right border → wide, invisible</li>
+                <li>Bottom border → tall, red</li>
+                <li>Top border → missing (0)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Why a triangle appears</h2>
+            <p>Since:</p>
+            <ul>
+                <li>The element has zero size</li>
+                <li>Only borders exist</li>
+                <li>Three borders meet at one point</li>
+            </ul>
+            <p>The bottom border forms a triangle:</p>
+            <pre><code>
+    ▲
+   / \
+  /   \
+ /     \
+/_______\            
+            </code></pre>
+
+            <ul>
+                <li>The slanted sides come from the transparent left & right borders</li>
+                <li>The red face comes from the bottom border</li>
+            </ul>
+            <p>The browser clips everything else.</p>
+        </section>
+
+        <section>
+            <h2>5️⃣ Why it’s NOT a rectangle</h2>
+            <p>Normally, a border surrounds a box.</p>
+            <p>But with no box to surround, each border becomes a triangle pointing inward.</p>
+            <p>Only the colored one is visible → triangle!</p>
+        </section>
+
+        <section>
+            <h2>6️⃣ Mental model (easy way to remember)</h2>
+            <p>🧠 Think of borders as pizza slices meeting in the center.</p>
+            <p>If you:</p>
+            <ul>
+                <li>Color only one slice</li>
+                <li>Make the others transparent</li>
+            </ul>
+            <p>You see one triangle slice 🍕</p>
+        </section>
+
+        <section>
+            <h2>7️⃣ Change direction example</h2>
+            <p>Down triangle</p>
+            <pre><code>
+border-top: 100px solid red;
+            </code></pre>
+
+            <p>Left triangle</p>
+            <pre><code>
+border-right: 100px solid red;
+            </code></pre>
+
+            <p>Right triangle</p>
+            <pre><code>
+border-left: 100px solid red;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Final takeaway</h2>
+            <p>✔ Borders are not lines — they are shapes</p>
+            <p>✔ With width: 0; height: 0, borders form triangles</p>
+            <p>✔ One visible border = one triangle</p>
+            <p>If you want, I can explain how browsers rasterize borders at the pixel level or compare this with SVG / clip-path triangles.</p>
+        </section>
+        
+        <section>
+            <h2>Why CSS feels hard to learn and illogical?</h2>
+            <p>You’re not wrong — a LOT of developers feel this, even very experienced ones.</p>
+            <p>CSS feels illogical at first because it doesn’t think like programming.</p>
+            <p>Let me explain why it feels hard, and then I’ll show you the logic behind it.</p>
+        </section>
+
+        <section>
+            <h2>Why CSS feels illogical 😵‍💫</h2>
+            <p>1️⃣ CSS is declarative, not procedural</p>
+            <p>In JS / Swift / Obj-C / Java you say:</p>
+            <p>“Do this, then do that.”</p>
+            <p>In CSS you say:</p>
+            <p>“This is what it should look like.”</p>
+            <p>You don’t control the steps — the browser does.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ CSS is based on visual rules, not math rules</h2>
+            <p>CSS was designed for designers, not engineers.</p>
+            <p>Example:</p>
+            <pre><code>
+margin: auto;
+            </code></pre>
+            <p>🤨 “Auto?? Auto how?”</p>
+            <p>The logic is:</p>
+            <p>“Center this if there’s free space”</p>
+            <p>Not:</p>
+            <p>“Compute X = (container - width) / 2”</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Browsers have default behavior</h2>
+            <p>Even if you write nothing, browsers still apply styles.</p>
+            <p>That means you’re often fighting:</p>
+            <ul>
+                <li>user-agent styles</li>
+                <li>layout rules</li>
+                <li>inheritance</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Some features are historical hacks</h2>
+            <p>Triangles with borders?</p>
+            <p>Floats?</p>
+            <p>Clearing?</p>
+
+            <p>These exist because:</p>
+            <p>“CSS was never meant to draw shapes or build apps”</p>
+            <p>Yet here we are 😅</p>
+        </section>
+
+        <section>
+            <h2>The hidden logic behind CSS (this is the key)</h2>
+            <p>CSS is logical, but the logic is:</p>
+            <p>🧠 “Describe relationships, not instructions”</p>
+
+            <p>Instead of:</p>
+            <pre><code>
+moveLeft(20)
+            </code></pre>
+
+            <p>You say:</p>
+            <pre><code>
+left: 20px;
+            </code></pre>
+
+            <p>Instead of:</p>
+            <pre><code>
+centerElement()
+            </code></pre>
+
+            <p>You say:</p>
+            <pre><code>
+display: flex;
+justify-content: center;
+            </code></pre>
+
+            <p>You describe constraints, not actions.</p>
+        </section>
+
+        <section>
+            <h2>The 4 mental models that make CSS click 🔑</h2>
+            <p>1️⃣ Everything is a box</p>
+            <p>This is THE most important rule.</p>
+            <p>Every element is:</p>
+            <pre><code>
+margin
+border
+padding
+content
+            </code></pre>
+            <p>Once you see boxes everywhere → CSS starts making sense.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Layout systems are separate worlds</h2>
+            <p>CSS has multiple layout engines:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>System</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Normal flow</td>
+                        <td>Default text layout</td>
+                    </tr>
+                    <tr>
+                        <td>Flexbox</td>
+                        <td>1-direction layout</td>
+                    </tr>
+                    <tr>
+                        <td>Grid</td>
+                        <td>2-direction layout</td>
+                    </tr>
+                    <tr>
+                        <td>Position</td>
+                        <td>Absolute placement</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 Mixing them without understanding causes confusion.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ CSS rules compete</h2>
+            <p>Multiple rules apply at once.</p>
+            <p>Winner is decided by:</p>
+            <ol>
+                <li>Specificity</li>
+                <li>Order</li>
+                <li>Importance (!important)</li>
+            </ol>
+            <p>This feels like “random” until you learn the rules.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ CSS is constraint-based</h2>
+            <p>You don’t say how.</p>
+            <p>You say what must be true.</p>
+            <p>Example:</p>
+            <pre><code>
+max-width: 600px;
+            </code></pre>
+            <p>Browser decides how to satisfy it.</p>
+        </section>
+
+        <section>
+            <h2>Why even senior devs say “CSS is weird”</h2>
+            <p>Because:</p>
+            <ul>
+                <li>It evolved over 30+ years</li>
+                <li>Backward compatibility was never broken</li>
+                <li>Old hacks still exist</li>
+                <li>New systems (Flex/Grid) were added later</li>
+            </ul>
+            <p>It’s a layer cake, not a clean design.</p>
+        </section>
+
+        <section>
+            <h2>The good news 🎉</h2>
+            <p>Once CSS clicks:</p>
+            <ul>
+                <li>You stop memorizing tricks</li>
+                <li>You start predicting behavior</li>
+                <li>You debug visually instead of guessing</li>
+            </ul>
+            <p>That “triangle hack” you saw?</p>
+            <p>That’s border geometry, not magic.</p>
+
+            <p>If you want</p>
+            <p>I can:</p>
+            <ul>
+                <li>Teach CSS like an engineer, not a designer</li>
+                <li>Give you mental rules instead of syntax</li>
+                <li>Show why browsers behave the way they do</li>
+                <li>Translate CSS concepts into JS-like logic</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

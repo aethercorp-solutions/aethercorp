@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How images are represented using vectors</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How images are represented using vectors</h1>
+                    <p class="subtitle">Great question—this is one of those topics that sounds abstract at first but becomes very intuitive once the pieces click. Let’s walk through it from the ground up and then zoom out to how modern AI actually uses image vectors.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. The core idea: images → numbers → vectors</h2>
+            <p>A vector is just an ordered list of numbers.</p>
+            <p>An image, at its heart, is also just numbers:</p>
+            <ul>
+                <li>Numbers that describe brightness</li>
+                <li>Or color intensities</li>
+                <li>Arranged in a grid (rows × columns)</li>
+            </ul>
+
+            <p>So representing images as vectors means:</p>
+            <p>taking all those pixel values and arranging them into a numerical vector that a computer (or ML model) can work with.</p>
+        </section>
+
+        <section>
+            <h2>2. Pixels: the building blocks</h2>
+            <p>Grayscale images</p>
+            <p>In a grayscale image:</p>
+            <ul>
+                <li>Each pixel has one value</li>
+                <li>
+                    Usually between 0 and 255
+                    <ul>
+                        <li>0 = black</li>
+                        <li>255 = white</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>Example:</p>
+            <p>A tiny 3×3 grayscale image</p>
+            <pre><code>
+[  
+    0,   50,  100
+    150, 200, 255
+    30,  80,  130 
+]
+            </code></pre>
+            <p>This is already numerical data.</p>
+        </section>
+
+        <section>
+            <h2>Color images (RGB)</h2>
+            <p>Most images are RGB:</p>
+            <ul>
+                <li>
+                    Each pixel has three values:
+                    <ul>
+                        <li>Red</li>
+                        <li>Green</li>
+                        <li>Blue</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Each value is usually in [0, 255]</p>
+            <p>Example pixel:</p>
+            <pre><code>
+(120, 200, 75)
+            </code></pre>
+            <p>So an image of size:</p>
+            <pre><code>
+Height × Width × 3
+            </code></pre>
+
+            <p>Example:</p>
+            <ul>
+                <li>64 × 64 RGB image</li>
+                <li>Total numbers = 64 × 64 × 3 = 12,288</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Flattening an image into a vector</h2>
+            <p>Machine learning models often expect 1D vectors, not 2D or 3D grids.</p>
+            <p>So we flatten the image.</p>
+            <p>Example: 2×2 RGB image</p>
+            <pre><code>
+Pixel grid:
+[
+ [(255,0,0), (0,255,0)],
+ [(0,0,255), (255,255,255)]
+]
+            </code></pre>
+
+            <p>Flattened into a vector:</p>
+            <pre><code>
+[255,0,0,  0,255,0,  0,0,255,  255,255,255]
+            </code></pre>
+
+            <p>That’s now a vector in 12-dimensional space.</p>
+            <p>Every image of the same size becomes a point in the same high-dimensional vector space.</p>
+        </section>
+
+        <section>
+            <h2>4. Normalization: making vectors behave nicely</h2>
+            <p>Raw pixel values (0–255) are often scaled to make learning easier.</p>
+            <p>Common approaches:</p>
+            <ul>
+                <li>Divide by 255 → values in [0,1]</li>
+                <li>Standardize to mean 0, variance 1</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+255 → 1.0
+128 → 0.502
+            </code></pre>
+            <p>This doesn’t change the image—just how it’s represented numerically.</p>
+        </section>
+
+        <section>
+            <h2>5. Images as points in high-dimensional space</h2>
+            <p>Once flattened:</p>
+            <ul>
+                <li>A 28×28 grayscale image → vector in 784D</li>
+                <li>A 224×224 RGB image → vector in 150,528D</li>
+            </ul>
+
+            <p>It’s describing a way to think about images mathematically, not something you’d ever visualize directly.</p>
+            <p>Here’s the intuition step by step.</p>
+            
+            <p>1. Images are just numbers</p>
+            <p>A digital image is a grid of pixel values.</p>
+            <ul>
+                <li>Grayscale image: each pixel = 1 number (intensity)</li>
+                <li>RGB image: each pixel = 3 numbers (red, green, blue)</li>
+            </ul>
+
+            <p>2. “Flattening” an image</p>
+            <p>Flattening means taking that 2D (or 3D for RGB) grid and laying all the numbers out in one long list.</p>
+            <ul>
+                <li>
+                    A 28 × 28 grayscale image
+                    <p>→ 28 × 28 = 784 pixels</p>
+                    <p>→ one list of 784 numbers</p>
+                    <p>→ a vector in 784-dimensional space</p>
+                </li>
+                <li>
+                    A 224 × 224 RGB image
+                    <p>→ 224 × 224 × 3 = 150,528 values</p>
+                    <p>→ one list of 150,528 numbers</p>
+                    <p>→ a vector in 150,528-dimensional space</p>
+                </li>
+            </ul>
+
+            <p>3. “High-dimensional space” idea</p>
+            <p>In math:</p>
+            <ul>
+                <li>2 numbers → a point on a 2D plane</li>
+                <li>3 numbers → a point in 3D space</li>
+                <li>784 numbers → a point in 784D space</li>
+                <li>150,528 numbers → a point in 150,528D space</li>
+            </ul>
+
+            <p>So each image is a single point in a space with one dimension per pixel value.</p>
+            <p>You can’t visualize this space, but mathematically it works the same way.</p>
+
+            <p>4. Why this matters (the real point)</p>
+            <p>This idea lets machine learning models:</p>
+            <ul>
+                <li>Compare images using distance (e.g., “how similar are these two points?”)</li>
+                <li>Apply linear algebra (dot products, projections, transformations)</li>
+                <li>Learn patterns by reshaping or compressing these giant spaces (e.g., neural networks)</li>
+            </ul>
+
+            <p>For example:</p>
+            <ul>
+                <li>Two similar images → points close together</li>
+                <li>Very different images → points far apart</li>
+            </ul>
+
+            <p>One important caveat</p>
+            <p>Flattening throws away spatial structure (which pixel was next to which), which is why:</p>
+            <ul>
+                <li>Classical ML used flattened vectors</li>
+                <li>CNNs keep the 2D structure instead</li>
+            </ul>
+
+            <p>If you want, I can also explain:</p>
+            <ul>
+                <li>Why CNNs avoid flattening early</li>
+                <li>What “distance between images” really means</li>
+                <li>Or how this connects to embeddings and latent spaces</li>
+            </ul>
+
+            <p>Each image is:</p>
+            <ul>
+                <li>One point in that space</li>
+                <li>Similar images → points close together</li>
+                <li>Different images → far apart</li>
+            </ul>
+
+            <p>Different images → far apart</p>
+            <ul>
+                <li>
+                    Measure similarity with distance metrics
+                    <ul>
+                        <li>Euclidean distance</li>
+                        <li>Cosine similarity</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Why raw pixel vectors are not enough</h2>
+            <p>Flattened pixel vectors have problems:</p>
+            <ul>
+                <li>Lose spatial structure (nearby pixels matter!)</li>
+                <li>Very high dimensional</li>
+                <li>Sensitive to small changes (lighting, noise, rotation)</li>
+            </ul>
+            <p>Two images of the same cat can be far apart as raw vectors.</p>
+            <p>So modern systems use learned vector representations.</p>
+        </section>
+
+        <section>
+            <h2>7. Feature vectors from neural networks (the important part)</h2>
+            <p>Instead of using raw pixels, we pass the image through a neural network (usually a CNN or Vision Transformer).</p>
+            <p>What happens:</p>
+            <ol>
+                <li>
+                    Early layers detect:
+                    <ul>
+                        <li>Edges</li>
+                        <li>Corners</li>
+                        <li>Textures</li>
+                    </ul>
+                </li>
+                <li>
+                    Middle layers detect:
+                    <ul>
+                        <li>Shapes</li>
+                        <li>Parts (eyes, wheels)</li>
+                    </ul>
+                </li>
+                <li>
+                    Final layers detect:
+                    <ul>
+                        <li>High-level concepts (faces, dogs, cars)</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <p>The output of a hidden layer is a feature vector (also called an embedding).</p>
+            <p>Example:</p>
+            <pre><code>
+Image → Neural Network → 512-dimensional vector
+            </code></pre>
+
+            <p>This vector:</p>
+            <ul>
+                <li>Encodes meaning, not just pixels</li>
+                <li>Is robust to small changes</li>
+                <li>Clusters semantically similar images together</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Image embeddings: how AI “understands” images</h2>
+            <p>An image embedding vector might look like:</p>
+            <pre><code>
+[0.12, -0.03, 0.88, ..., -0.41]
+            </code></pre>
+
+            <p>Properties:</p>
+            <ul>
+                <li>Fixed length (e.g. 256, 512, 1024)</li>
+                <li>Dense (not sparse like raw pixels)</li>
+                <li>Learned from massive datasets</li>
+            </ul>
+
+            <p>Used for:</p>
+            <ul>
+                <li>Image search (“find images like this”)</li>
+                <li>Face recognition</li>
+                <li>Object detection</li>
+                <li>Multimodal models (image ↔ text)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Vector similarity in practice</h2>
+            <p>To compare two images:</p>
+            <ol>
+                <li>Convert each image to a vector</li>
+                <li>Compute similarity</li>
+            </ol>
+            <p>Common metric:</p>
+            <ul>
+                <li>
+                    Cosine similarity
+                    <pre><code>
+similarity = (v₁ · v₂) / (||v₁|| ||v₂||)
+                    </code></pre>
+                </li>
+                <li>Close to 1 → very similar</li>
+                <li>Close to 0 → unrelated</li>
+            </ul>
+
+            <p>This is the backbone of:</p>
+            <ul>
+                <li>Google Images</li>
+                <li>Pinterest visual search</li>
+                <li>CLIP-style image–text matching</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Big picture summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Representation</th>
+                        <th>What it captures</th>
+                        <th>Vector size</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Raw pixels</td>
+                        <td>Exact colors</td>
+                        <td>Huge</td>
+                    </tr>
+                    <tr>
+                        <td>Flattened image</td>
+                        <td>Pixel values only</td>
+                        <td>Very large</td>
+                    </tr>
+                    <tr>
+                        <td>CNN features</td>
+                        <td>Shapes & patterns</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Embeddings</td>
+                        <td>Semantic meaning</td>
+                        <td>Compact</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>In short:</p>
+            <p>Images are represented as vectors by turning pixel values—or learned visual features—into numerical lists that live in high-dimensional space, where geometry encodes visual similarity.</p>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Walk through a Python example</li>
+                <li>Explain CNNs mathematically</li>
+                <li>Compare CNN vs Vision Transformer embeddings</li>
+                <li>Or connect this to image generation (diffusion models)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

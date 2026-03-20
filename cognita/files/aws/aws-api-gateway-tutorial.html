@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>🌐 AWS API Gateway Tutorial (Beginner → Advanced)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">🌐 AWS API Gateway Tutorial (Beginner → Advanced)</h1>
+                    <p class="subtitle">Here’s a complete AWS API Gateway tutorial tailored for developers like you (Node.js + serverless + React Native experience), starting from fundamentals to production-level usage 🚀</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 What Is AWS API Gateway?</h2>
+            <p>AWS API Gateway is a fully managed service to create REST, HTTP, or WebSocket APIs that:</p>
+            <ul>
+                <li>Expose endpoints like /users, /login</li>
+                <li>Route requests to Lambda, EC2, containers, or external APIs</li>
+                <li>Handle auth, throttling, caching, monitoring</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🏗️ Architecture Overview</h2>
+            <p>Typical modern serverless architecture:</p>
+            <pre><code>
+Client → API Gateway → Lambda → Database
+            </code></pre>
+
+            <p>Example stack:</p>
+            <ul>
+                <li>React Native / Web app</li>
+                <li>API Gateway</li>
+                <li>AWS Lambda</li>
+                <li>DynamoDB / MongoDB</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚔️ API Types (Choose the Right One)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Use Case</th>
+                        <th>Cost</th>
+                        <th>Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>HTTP API</td>
+                        <td>Simple APIs</td>
+                        <td>💸 Cheapest</td>
+                        <td>Fast, JWT auth</td>
+                    </tr>
+                    <tr>
+                        <td>REST API</td>
+                        <td>Enterprise APIs</td>
+                        <td>💰 Higher</td>
+                        <td>API keys, caching</td>
+                    </tr>
+                    <tr>
+                        <td>WebSocket API</td>
+                        <td>Real-time</td>
+                        <td>⚡</td>
+                        <td>Chat, live updates</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>✅ Recommendation:</p>
+            <p>👉 Use HTTP API for modern apps unless you need advanced features.</p>
+        </section>
+
+        <section>
+            <h2>🚀 Step-by-Step Tutorial (Hands-On)</h2>
+            <p>1️⃣ Create a Lambda Function</p>
+            <p>Node.js example:</p>
+            <pre><code>
+exports.handler = async (event) => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+        message: "Hello from API Gateway!"
+        }),
+    };
+};                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2️⃣ Create API Gateway (HTTP API)</h2>
+            <p>AWS Console Steps</p>
+            <ol>
+                <li>Open API Gateway</li>
+                <li>Click Create API</li>
+                <li>Choose HTTP API</li>
+                <li>Click Add Integration → Lambda</li>
+                <li>Select your Lambda</li>
+                <li>Click Create</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>3️⃣ Add Route</h2>
+            <p>Example:</p>
+            <pre><code>
+GET /hello
+            </code></pre>
+            <p>Attach Lambda integration.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Deploy API</h2>
+            <ol>
+                <li>Click Deploy</li>
+                <li>Copy the public URL</li>
+            </ol>
+            <p>Test:</p>
+            <pre><code>
+https://abc123.execute-api.us-east-1.amazonaws.com/hello
+            </code></pre>
+            <p>🎉 Done!</p>
+        </section>
+
+        <section>
+            <h2>🔐 Add Authentication (JWT / Cognito)</h2>
+            <p>Example with Cognito JWT Authorizer</p>
+            <p>Steps:</p>
+            <ol>
+                <li>Create Cognito User Pool</li>
+                <li>API Gateway → Authorizers → JWT</li>
+                <li>Attach authorizer to route</li>
+            </ol>
+            <p>Client sends header:</p>
+            <pre><code>
+Authorization: Bearer &lt;JWT_TOKEN&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📦 Connect API Gateway to MongoDB (Lambda Example)</h2>
+            <pre><code>
+const mongoose = require("mongoose");
+
+exports.handler = async () => {
+  await mongoose.connect(process.env.MONGO_URI);
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ status: "connected" }),
+  };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ Enable CORS (React Native / Web)</h2>
+            <p>Add in API Gateway settings:</p>
+            <pre><code>
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Methods: *
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 Local Testing Options</h2>
+            <p>Option A — Postman</p>
+            <p>Option B — Curl</p>
+            <pre><code>
+curl https://api.example.com/hello
+            </code></pre>
+
+            <p>Option C — Serverless Offline</p>
+            <pre><code>
+npm i serverless-offline
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ Performance Optimizations</h2>
+            <p>🔥 Enable Lambda Proxy Integration</p>
+            <p>Allows full request access:</p>
+            <pre><code>
+event.body
+event.headers
+event.queryStringParameters
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Add Caching (REST API Only)</h2>
+            <p>Benefits:</p>
+            <ul>
+                <li>Faster response</li>
+                <li>Lower Lambda cost</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚧 Rate Limiting & Throttling</h2>
+            <p>Protect against abuse:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Setting</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Burst</td>
+                        <td>Instant limit</td>
+                    </tr>
+                    <tr>
+                        <td>Rate</td>
+                        <td>Requests/sec</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📊 Logging & Monitoring</h2>
+            <p>Enable:</p>
+            <ul>
+                <li>CloudWatch Logs</li>
+                <li>X-Ray tracing</li>
+                <li>Access logs</li>
+            </ul>
+            <p>Sample log format</p>
+            <pre><code>
+$context.identity.sourceIp
+$context.requestTime
+$context.status
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 Deploy with Serverless Framework</h2>
+            <p>Since you already use Serverless, here’s the fastest setup:</p>
+            <p>serverless.yml</p>
+            <pre><code>
+service: my-api
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+
+functions:
+  hello:
+    handler: handler.handler
+    events:
+      - httpApi:
+          path: /hello
+          method: GET
+            </code></pre>
+
+            <p>Deploy</p>
+            <pre><code>
+serverless deploy
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 Advanced API Gateway Features</h2>
+            <p>Enterprise-level capabilities:</p>
+            <ul>
+                <li>API Keys & Usage Plans</li>
+                <li>Custom Domains</li>
+                <li>Request/Response Mapping</li>
+                <li>Canary Deployments</li>
+                <li>WebSockets</li>
+                <li>GraphQL integration</li>
+                <li>Private APIs (VPC only)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💰 Cost Breakdown (Realistic Example)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Requests</th>
+                        <th>Monthly Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1M</td>
+                        <td>~$1.00</td>
+                    </tr>
+                    <tr>
+                        <td>10M</td>
+                        <td>~$10.00</td>
+                    </tr>
+                    <tr>
+                        <td>100M</td>
+                        <td>~$100</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>💡 HTTP APIs are ~70% cheaper.</p>
+        </section>
+
+        <section>
+            <h2>⚠️ Common Mistakes</h2>
+            <p>❌ Cold start latency</p>
+            <p>❌ Missing CORS headers</p>
+            <p>❌ No timeout tuning</p>
+            <p>❌ MongoDB reconnect every request</p>
+            <p>❌ Forgetting IAM permissions</p>
+        </section>
+
+        <section>
+            <h2>🏆 Best Practices (Production-Grade)</h2>
+            <p>✅ Use HTTP API for speed</p>
+            <p>✅ Use Lambda layers for shared code</p>
+            <p>✅ Enable connection pooling</p>
+            <p>✅ Use JWT authorizers</p>
+            <p>✅ Add WAF for security</p>
+            <p>✅ Separate dev/staging/prod</p>
+        </section>
+
+        <section>
+            <h2>📚 Real-World Use Cases</h2>
+            <ul>
+                <li>Mobile app backend</li>
+                <li>SaaS microservices</li>
+                <li>Payment APIs</li>
+                <li>Chat apps</li>
+                <li>IoT dashboards</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🎯 Want Next Level Tutorials?</h2>
+            <p>Tell me which one you want:</p>
+            <ol>
+                <li>🔥 API Gateway + Lambda + MongoDB full project</li>
+                <li>⚡ API Gateway + Express.js (serverless REST API)</li>
+                <li>🔐 API Gateway + Cognito authentication</li>
+                <li>🌍 API Gateway custom domain + HTTPS</li>
+                <li>🚀 API Gateway performance optimization</li>
+                <li>📡 WebSocket API real-time chat</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

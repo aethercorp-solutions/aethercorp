@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GitHub Actions</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">GitHub Actions</h1>
+                    <p class="subtitle">
+                        Think of GitHub Actions as GitHub’s built-in robot that watches your repo and does stuff automatically when something happens 🤖
+                        <p>Here’s the mental model, step by step.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ What triggers a GitHub Action?</h2>
+            <p>An event happens in your repo, for example:</p>
+            <ul>
+                <li>You push code</li>
+                <li>You open a pull request</li>
+                <li>You merge to main</li>
+                <li>You manually click “Run workflow”</li>
+            </ul>
+            <p>These events are defined in YAML using on:.</p>
+            <pre><code>
+on:
+  push:
+    branches:
+      - main
+            </code></pre>
+            <p>👉 This means: “Run this workflow whenever someone pushes to main.”</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Where does GitHub Actions live?</h2>
+            <p>All workflows live here:</p>
+            <pre><code>
+.github/workflows/
+            </code></pre>
+            <p>Each file is a workflow, written in YAML.</p>
+            <p>Example:</p>
+            <pre><code>
+.github/workflows/deploy.yml
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3️⃣ What is a workflow made of?</h2>
+            <p>A workflow has jobs, and jobs have steps.</p>
+            <p>High level:</p>
+            <pre><code>
+Workflow
+ └── Job
+      └── Step
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+name: Deploy API
+
+on: push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install
+      - run: npm test
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4️⃣ What is a job?</h2>
+            <p>A job:</p>
+            <ul>
+                <li>Runs on a fresh virtual machine (runner)</li>
+                <li>Has its own OS (ubuntu, windows, macos)</li>
+                <li>Can run in parallel with other jobs</li>
+            </ul>
+            <pre><code>
+jobs:
+  build:
+    runs-on: ubuntu-latest
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5️⃣ What is a step?</h2>
+            <p>A step is a single action inside a job.</p>
+            <p>Two types:</p>
+            <ol>
+                <li>
+                    Use an existing action
+                    <pre><code>
+- uses: actions/checkout@v4
+                    </code></pre>
+                </li>
+                <li>
+                    Run shell commands
+                    <pre><code>
+- run: npm install
+                    </code></pre>
+                </li>
+            </ol>
+            <p>Steps run top to bottom.</p>
+        </section>
+
+        <section>
+            <h2>6️⃣ What is a runner?</h2>
+            <p>A runner is the machine that executes your job.</p>
+            <ul>
+                <li>GitHub-hosted runner → free VM from GitHub</li>
+                <li>Self-hosted runner → your own server</li>
+            </ul>
+            <p>Each run:</p>
+            <ul>
+                <li>Starts clean</li>
+                <li>Runs your steps</li>
+                <li>Gets destroyed after</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7️⃣ How do environment variables work?</h2>
+            <p>You can:</p>
+            <ul>
+                <li>Set env variables</li>
+                <li>Pass values between steps</li>
+                <li>Use GitHub secrets</li>
+            </ul>
+
+            <p>Example:</p>
+            <pre><code>
+env:
+  NODE_ENV: production
+            </code></pre>
+
+            <p>Or dynamically:</p>
+            <pre><code>
+echo "STAGE=prod" >> $GITHUB_ENV
+            </code></pre>
+            <p>(This is exactly what you used in your deploy example.)</p>
+        </section>
+
+        <section>
+            <h2>8️⃣ How secrets work 🔐</h2>
+            <p>Secrets are stored in:</p>
+            <ul>
+                <li>Repo settings</li>
+                <li>Org settings</li>
+            </ul>
+            <p>Usage:</p>
+            <pre><code>
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            </code></pre>
+            <p>👉 Secrets are:</p>
+            <ul>
+                <li>Encrypted</li>
+                <li>Hidden in logs</li>
+                <li>Injected at runtime</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9️⃣ Typical real-world flow (CI/CD)</h2>
+            <p>For a backend like yours (Serverless + AWS):</p>
+            <ol>
+                <li>Push to GitHub</li>
+                <li>GitHub Action triggers</li>
+                <li>Runner spins up</li>
+                <li>Code is checked out</li>
+                <li>Dependencies installed</li>
+                <li>Tests run</li>
+                <li>App deployed</li>
+            </ol>
+
+            <pre><code>
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npx serverless deploy --stage prod
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10️⃣ Why people love GitHub Actions</h2>
+            <ul>
+                <li>Built into GitHub</li>
+                <li>No separate CI server</li>
+                <li>YAML is simple</li>
+                <li>Massive marketplace</li>
+                <li>Perfect for DevOps automation</li>
+            </ul>
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Explain your specific deploy workflow</li>
+                <li>Show a real production-grade CI/CD setup</li>
+                <li>Compare GitHub Actions vs Jenkins vs GitLab CI</li>
+                <li>Explain how it works with AWS credentials securely</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>- uses: actions/checkout@v4</p>
+            <p>That line is one step in a GitHub Actions workflow. Here’s what it does, plain and simple 👇</p>
+            <pre><code>
+- uses: actions/checkout@v4
+            </code></pre>
+
+            <p>What it means</p>
+            <ul>
+                <li>
+                    uses:
+                    <p>Tells GitHub Actions to run a prebuilt action (not a shell command).</p>
+                </li>
+                <li>
+                    actions/checkout
+                    <p>This is the official GitHub action that checks out (clones) your repository into the runner.</p>
+                </li>
+                <li>
+                    @v4
+                    <p>The version of the action (v4 is the current stable one).</p>
+                </li>
+            </ul>
+
+            <p>Why it’s needed</p>
+            <p>Without this step:</p>
+            <ul>
+                <li>Your workflow runner has no access to your code</li>
+                <li>npm install, serverless deploy, tests, builds → ❌ will fail</li>
+            </ul>
+
+            <p>With this step:</p>
+            <ul>
+                <li>Your repo is cloned into the runner</li>
+                <li>Files are available at GITHUB_WORKSPACE</li>
+                <li>All following steps can read your code</li>
+            </ul>
+
+            <p>What happens under the hood</p>
+            <p>It basically runs:</p>
+            <pre><code>
+git clone https://github.com/your-org/your-repo.git
+            </code></pre>
+            <p>(using a secure GitHub token automatically)</p>
+            <p>Typical placement</p>
+            <p>Almost always the first step in a job:</p>
+            <pre><code>
+steps:
+  - uses: actions/checkout@v4
+
+  - name: Install dependencies
+    run: npm ci
+
+  - name: Deploy
+    run: npx serverless deploy
+            </code></pre>
+
+            <p>Common options (optional)</p>
+            <pre><code>
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0   # full git history (needed for tags, versioning)
+            </code></pre>
+            <p>If you want, I can also explain:</p>
+            <ul>
+                <li>how it works with private repos</li>
+                <li>how it behaves with PRs vs main branch</li>
+                <li>or why fetch-depth: 0 matters in CI/CD 🚀</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

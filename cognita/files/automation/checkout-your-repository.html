@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Checkout your repository</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Checkout your repository</h1>
+                    <p class="subtitle">You’re asking what “Checkout your repository” means, specifically in a React / Next.js GitHub Actions workflow.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What does “Checkout your repository” mean?</h2>
+            <p>In GitHub Actions, each job runs on a fresh virtual machine.</p>
+            <p>👉 That machine starts EMPTY</p>
+            <p>👉 Your code is NOT there by default</p>
+            <p>So this step:</p>
+            <pre><code>
+- uses: actions/checkout@v4
+            </code></pre>
+            <p>downloads (clones) your GitHub repository into the runner, similar to:</p>
+            <pre><code>
+git clone https://github.com/your/repo.git
+            </code></pre>
+
+            <p>Without this step:</p>
+            <ul>
+                <li>npm install ❌ fails</li>
+                <li>npm run build ❌ fails</li>
+                <li>
+                    next build ❌ fails
+                    <p>because there is no source code</p>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why it’s REQUIRED for React / Next.js</h2>
+            <p>A Next.js app needs:</p>
+            <ul>
+                <li>package.json</li>
+                <li>next.config.js</li>
+                <li>pages/ or app/</li>
+                <li>node_modules (installed after checkout)</li>
+            </ul>
+            <p>All of that comes from your repo.</p>
+            <p>So this step is mandatory for:</p>
+            <ul>
+                <li>CI</li>
+                <li>Builds</li>
+                <li>Deployments</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Minimal Working Next.js Workflow (Correct)</h2>
+            <pre><code>
+name: Next.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Get your code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 4️⃣ Build Next.js
+      - name: Build
+        run: npm run build
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What happens step-by-step</h2>
+            <p>1️⃣ Runner starts</p>
+            <pre><code>
+/home/runner/work/
+            </code></pre>
+
+            <p>2️⃣ Checkout step</p>
+            <pre><code>
+/home/runner/work/your-repo/your-repo/
+            </code></pre>
+
+            <p>Your files now exist:</p>
+            <pre><code>
+package.json
+next.config.js
+app/
+pages/
+            </code></pre>
+
+            <p>3️⃣ npm install works</p>
+            <p>4️⃣ next build works</p>
+        </section>
+
+        <section>
+            <h2>What happens if you REMOVE checkout?</h2>
+            <pre><code>
+steps:
+  - run: npm install
+            </code></pre>
+            <p>❌ Error:</p>
+            <pre><code>
+npm ERR! enoent ENOENT: no such file or directory, package.json
+            </code></pre>
+            <p>This is one of the #1 GitHub Actions beginner mistakes.</p>
+        </section>
+
+        <section>
+            <h2>Advanced: Checkout Options (Optional)</h2>
+            <p>Full git history (for versioning)</p>
+            <pre><code>
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+            </code></pre>
+
+            <p>Specific branch</p>
+            <pre><code>
+- uses: actions/checkout@v4
+  with:
+    ref: main
+            </code></pre>
+
+            <p>Private submodules</p>
+            <pre><code>
+- uses: actions/checkout@v4
+  with:
+    submodules: true
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Next.js Deployment Examples (if you want next)</h2>
+            <p>I can give you ready-to-use workflows for:</p>
+            <ul>
+                <li>🔹 Vercel</li>
+                <li>🔹 AWS (EC2 / S3 / CloudFront)</li>
+                <li>🔹 Docker</li>
+                <li>🔹 Firebase Hosting</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

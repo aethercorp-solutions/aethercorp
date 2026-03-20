@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS Serverless Framework</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS Serverless Framework</h1>
+                    <p class="subtitle">
+                        The AWS Serverless Framework (usually just called Serverless Framework) is a developer toolchain that lets you define, deploy, and manage serverless applications on AWS using configuration instead of manual AWS console work.
+                        <p>Since you already work with AWS Lambda, API Gateway, Cognito, MongoDB, and Node.js, I’ll explain it from the ground up, then map it to how it actually runs on AWS, and finally show real-world flows and best practices.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What “Serverless Framework” actually is</h2>
+            <p>Serverless Framework is NOT a cloud service.</p>
+            <p>It is a CLI + configuration system that:</p>
+            <ul>
+                <li>Translates your app definition into AWS CloudFormation</li>
+                <li>Deploys AWS resources in the correct order</li>
+                <li>Packages and uploads your code to AWS</li>
+                <li>Manages stages (dev, prod, etc.)</li>
+                <li>Handles permissions (IAM)</li>
+                <li>Supports many cloud providers (AWS, Azure, GCP), but AWS is the most common</li>
+            </ul>
+            <p>👉 Think of it as Terraform + Lambda-specific automation, but more opinionated for serverless apps.</p>
+        </section>
+
+        <section>
+            <h2>2. Core building blocks</h2>
+            <p>A. serverless.yml (the brain of everything)</p>
+            <p>This file defines what AWS should create.</p>
+            <p>Example (simplified):</p>
+            <pre><code>
+service: my-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-1
+  stage: dev
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
+            </code></pre>
+
+            <p>This single file eventually becomes:</p>
+            <ul>
+                <li>1 Lambda function</li>
+                <li>1 API Gateway endpoint</li>
+                <li>IAM roles</li>
+                <li>CloudWatch logs</li>
+                <li>Permissions to link everything</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>B. Functions → AWS Lambda</h2>
+            <p>Each functions: entry becomes one AWS Lambda function.</p>
+            <pre><code>
+functions:
+  login:
+    handler: auth.login
+            </code></pre>
+
+            <p>Maps to:</p>
+            <ul>
+                <li>Lambda function name: my-api-dev-login</li>
+                <li>Runtime: Node.js</li>
+                <li>Entry point: auth.js → exports.login</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>C. Events → Triggers</h2>
+            <p>Events define what triggers the Lambda.</p>
+            <p>Common ones:</p>
+            <ul>
+                <li>API Gateway (HTTP / REST)</li>
+                <li>SQS</li>
+                <li>SNS</li>
+                <li>EventBridge</li>
+                <li>S3</li>
+                <li>DynamoDB Streams</li>
+                <li>Scheduled cron jobs</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+events:
+  - http:
+      path: users/{id}
+      method: get
+            </code></pre>
+
+            <p>Creates:</p>
+            <ul>
+                <li>API Gateway route</li>
+                <li>Integration to Lambda</li>
+                <li>IAM permission allowing API Gateway → Lambda</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. What happens when you run serverless deploy</h2>
+            <p>This is the most important part.</p>
+            <p>Step-by-step deployment flow</p>
+            <p>1️⃣ Parse serverless.yml</p>
+            <p>The framework reads:</p>
+            <ul>
+                <li>provider settings</li>
+                <li>functions</li>
+                <li>plugins</li>
+                <li>environment variables</li>
+            </ul>
+
+            <p>2️⃣ Package your code</p>
+            <ul>
+                <li>Bundles Node.js files</li>
+                <li>Excludes node_modules if using layers</li>
+                <li>Zips everything</li>
+            </ul>
+
+            <p>You can control this with:</p>
+            <pre><code>
+package:
+  individually: true
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3️⃣ Generate CloudFormation</h2>
+            <p>Serverless converts your config into CloudFormation templates.</p>
+            <p>This includes:</p>
+            <ul>
+                <li>Lambda functions</li>
+                <li>API Gateway</li>
+                <li>IAM roles & policies</li>
+                <li>Log groups</li>
+                <li>Permissions</li>
+            </ul>
+            <p>👉 Serverless itself does NOT create resources directly — CloudFormation does.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Upload artifacts to S3</h2>
+            <ul>
+                <li>Zip files are uploaded to an auto-created S3 bucket</li>
+                <li>CloudFormation references these objects</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5️⃣ CloudFormation executes</h2>
+            <p>AWS:</p>
+            <ul>
+                <li>Creates or updates resources</li>
+                <li>Rolls back if something fails</li>
+                <li>Ensures consistency</li>
+            </ul>
+            <p>This is why deployments are safe and repeatable.</p>
+        </section>
+
+        <section>
+            <h2>4. Request lifecycle (runtime flow)</h2>
+            <p>Let’s say a client calls your API.</p>
+            <p>Example: React Native → API Gateway → Lambda → MongoDB</p>
+            <pre><code>
+Mobile App
+   ↓ HTTPS
+API Gateway
+   ↓
+Lambda (Node.js)
+   ↓
+MongoDB Atlas
+            </code></pre>
+
+            <p>Detailed runtime steps:</p>
+            <ol>
+                <li>Client hits API Gateway</li>
+                <li>
+                    API Gateway:
+                    <ul>
+                        <li>Validates request</li>
+                        <li>Applies authorizer (Cognito / JWT)</li>
+                    </ul>
+                </li>
+                <li>API Gateway invokes Lambda</li>
+                <li>
+                    Lambda:
+                    <ul>
+                        <li>Cold start (if not warm)</li>
+                        <li>Executes handler</li>
+                        <li>Reuses DB connection if possible</li>
+                    </ul>
+                </li>
+                <li>Lambda returns response</li>
+                <li>API Gateway sends HTTP response</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>5. IAM: how permissions work</h2>
+            <p>Serverless auto-creates an IAM role per service (or per function if configured).</p>
+            <p>Example:</p>
+            <pre><code>
+provider:
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+          Resource: "*"
+            </code></pre>
+
+            <p>This becomes:</p>
+            <ul>
+                <li>An IAM Role attached to Lambda</li>
+                <li>Least-privilege access</li>
+            </ul>
+            <p>👉 This is critical for security and compliance.</p>
+        </section>
+
+        <section>
+            <h2>6. Environment variables & stages</h2>
+            <p>Stages</p>
+            <pre><code>
+serverless deploy --stage prod
+            </code></pre>
+
+            <p>Creates:</p>
+            <ul>
+                <li>my-api-dev-*</li>
+                <li>my-api-prod-*</li>
+            </ul>
+            <p>You can define stage-specific values:</p>
+
+            <pre><code>
+provider:
+  environment:
+    DB_URI: ${ssm:/my-api/${self:provider.stage}/db-uri}
+            </code></pre>
+
+            <p>Uses:</p>
+            <ul>
+                <li>AWS SSM Parameter Store</li>
+                <li>Secrets Manager</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Plugins (why Serverless is powerful)</h2>
+            <p>Serverless is plugin-driven.</p>
+            <p>Common plugins you may already use or should use:</p>
+            <p>A. serverless-offline</p>
+            <p>Run API Gateway + Lambda locally</p>
+            <pre><code>
+serverless offline
+            </code></pre>
+            <p>Great for React Native backend testing.</p>
+        </section>
+
+        <section>
+            <h2>B. serverless-esbuild</h2>
+            <p>Fast bundling for Node.js Lambdas</p>
+            <pre><code>
+plugins:
+  - serverless-esbuild
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>C. serverless-domain-manager</h2>
+            <p>Custom domains for APIs</p>
+        </section>
+
+        <section>
+            <h2>8. How it compares to other approaches</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Approach</th>
+                        <th>Pros</th>
+                        <th>Cons</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AWS Console</td>
+                        <td>Visual</td>
+                        <td>Manual, error-prone</td>
+                    </tr>
+                    <tr>
+                        <td>CloudFormation raw</td>
+                        <td>Powerful</td>
+                        <td>Verbose, slow</td>
+                    </tr>
+                    <tr>
+                        <td>Terraform</td>
+                        <td>Multi-cloud</td>
+                        <td>More boilerplate</td>
+                    </tr>
+                    <tr>
+                        <td>Serverless Framework</td>
+                        <td>Fast, dev-friendly</td>
+                        <td>Opinionated</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>For Lambda-heavy APIs, Serverless is usually the fastest.</p>
+        </section>
+
+        <section>
+            <h2>9. Common real-world architecture (what you already do)</h2>
+            <p>Typical stack (similar to yours):</p>
+            <ul>
+                <li>API Gateway (HTTP API)</li>
+                <li>Lambda (Node.js)</li>
+                <li>Cognito / JWT authorizers</li>
+                <li>MongoDB Atlas</li>
+                <li>SSM for secrets</li>
+                <li>CloudWatch logs</li>
+                <li>CI/CD (GitHub Actions)</li>
+            </ul>
+            <p>All defined in:</p>
+            <pre><code>
+serverless.yml
+src/
+handlers/
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Key advantages</h2>
+            <p>✔ Infrastructure as code</p>
+            <p>✔ Easy multi-environment deployments</p>
+            <p>✔ Automatic IAM</p>
+            <p>✔ Scales to zero</p>
+            <p>✔ Cheap for low/medium traffic</p>
+            <p>✔ Easy rollback</p>
+        </section>
+
+        <section>
+            <h2>11. Common pitfalls (important)</h2>
+            <p>❌ Too many Lambdas → harder tracing</p>
+            <p>❌ Cold starts (especially VPC + MongoDB)</p>
+            <p>❌ Large bundles increase latency</p>
+            <p>❌ Poor DB connection reuse</p>
+            <p>You already touched these in your MongoDB serverless work 😉</p>
+        </section>
+
+        <section>
+            <h2>12. Mental model (best way to remember)</h2>
+            <p>Serverless Framework =
+                A compiler that converts your app definition into CloudFormation, which then creates real AWS resources.</p>
+
+            <p>If you want, next I can:</p>
+            <ul>
+                <li>Walk through a complete production serverless.yml</li>
+                <li>Explain cold starts & optimization</li>
+                <li>Compare API Gateway REST vs HTTP APIs</li>
+                <li>Show how CI/CD works with Serverless</li>
+                <li>Explain how it differs from AWS SAM</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

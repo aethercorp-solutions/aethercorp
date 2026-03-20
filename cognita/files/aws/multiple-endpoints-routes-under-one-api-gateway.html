@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>multiple endpoints (routes) under one API Gateway</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">multiple endpoints (routes) under one API Gateway</h1>
+                    <p class="subtitle">
+                        You create multiple endpoints (routes) under one API Gateway by defining multiple routes/resources that all live inside the same gateway and can point to the same or different backends (Lambda, HTTP service, etc.).
+                        <p>Below is the practical, no-confusion explanation, with both HTTP API and REST API patterns.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Core Concept</h2>
+            <p>One API Gateway</p>
+            <p>→ many routes (endpoints)</p>
+            <p>→ each route maps to a backend</p>
+            <p>Example:</p>
+            <pre><code>
+https://api.example.com/users
+https://api.example.com/users/{id}
+https://api.example.com/orders
+https://api.example.com/orders/{id}
+            </code></pre>
+            <p>All of these live under ONE API Gateway.</p>
+        </section>
+
+        <section>
+            <h2>✅ OPTION 1: HTTP API (Recommended)</h2>
+            <p>1️⃣ Create Multiple Routes (Endpoints)</p>
+            <p>In API Gateway → Your HTTP API → Routes</p>
+            <p>Add routes like:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Path</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GET</td>
+                        <td>/users</td>
+                    </tr>
+                    <tr>
+                        <td>POST</td>
+                        <td>/users</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td>/users/{id}</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td>/orders</td>
+                    </tr>
+                    <tr>
+                        <td>POST</td>
+                        <td>/orders</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Each route can point to:</p>
+            <ul>
+                <li>Same Lambda (monolith-style)</li>
+                <li>Different Lambdas (microservices)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Single Lambda Handling Multiple Endpoints (Most Common)</h2>
+            <p>Best for small–medium APIs</p>
+            <pre><code>
+export const handler = async (event) => {
+    const { routeKey, pathParameters, body } = event;
+    
+    switch (routeKey) {
+        case "GET /users":
+        return ok(await getUsers());
+    
+        case "POST /users":
+        return ok(await createUser(JSON.parse(body)));
+    
+        case "GET /users/{id}":
+        return ok(await getUser(pathParameters.id));
+    
+        default:
+        return notFound();
+    }
+};
+    
+const ok = (data) => ({
+    statusCode: 200,
+    body: JSON.stringify(data),
+});
+    
+const notFound = () => ({
+    statusCode: 404,
+    body: "Not Found",
+});                  
+            </code></pre>
+
+            <p>📌 routeKey is the key for HTTP APIs</p>
+            <p>(METHOD + path)</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Different Lambda per Endpoint (Microservice Style)</h2>
+            <p>Example:</p>
+            <pre><code>
+GET  /users     → users-get-lambda
+POST /users     → users-post-lambda
+GET  /orders    → orders-get-lambda
+            </code></pre>
+            <p>✅ Cleaner separation</p>
+            <p>❌ More Lambdas to manage</p>
+        </section>
+
+        <section>
+            <h2>✅ OPTION 2: REST API (Older but Powerful)</h2>
+            <p>Resource Structure</p>
+            <pre><code>
+/
+├── users
+│   ├── GET
+│   ├── POST
+│   └── {id}
+│       └── GET
+└── orders
+    └── POST
+            </code></pre>
+            <p>Each method is a separate endpoint.</p>
+        </section>
+
+        <section>
+            <h2>🔁 Path Parameters & Query Strings</h2>
+            <p>Path Parameter</p>
+            <pre><code>
+GET /users/123
+            </code></pre>
+
+            <pre><code>
+event.pathParameters.id
+            </code></pre>
+
+            <p>Query String</p>
+            <pre><code>
+GET /users?limit=10
+            </code></pre>
+
+            <pre><code>
+event.queryStringParameters.limit
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 Securing Multiple Endpoints</h2>
+            <p>You can apply different auth per route:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Route</th>
+                        <th>Auth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GET /public</td>
+                        <td>None</td>
+                    </tr>
+                    <tr>
+                        <td>POST /users</td>
+                        <td>JWT</td>
+                    </tr>
+                    <tr>
+                        <td>GET /admin</td>
+                        <td>IAM</td>
+                    </tr>
+                </tbody>
+                <p>HTTP API → Routes → Authorization</p>
+            </table>
+        </section>
+
+        <section>
+            <h2>📁 Recommended Folder Structure (Lambda)</h2>
+            <pre><code>
+src/
+ ├── handlers/
+ │   ├── users.js
+ │   ├── orders.js
+ │   └── auth.js
+ └── index.js
+            </code></pre>
+
+            <pre><code>
+import * as users from "./handlers/users.js";
+import * as orders from "./handlers/orders.js";
+
+export const handler = async (event) => {
+  switch (event.routeKey) {
+    case "GET /users":
+      return users.getAll();
+    case "POST /orders":
+      return orders.create();
+  }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ Best Practices</h2>
+            <p>✅ Use one API Gateway per app</p>
+            <p>✅ Use HTTP API unless you need REST features</p>
+            <p>✅ Group endpoints logically</p>
+            <p>✅ Use one Lambda first, split later if needed</p>
+            <p>✅ Version your API (/v1/users)</p>
+        </section>
+
+        <section>
+            <p>✔ One API Gateway can have unlimited endpoints</p>
+            <p>✔ Add multiple routes (method + path)</p>
+            <p>✔ Map routes to one or many Lambdas</p>
+            <p>✔ Handle routing inside Lambda or via API Gateway</p>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Show this with Serverless Framework</li>
+                <li>Design a real-world API structure</li>
+                <li>Add JWT auth per endpoint</li>
+                <li>Help you split monolith → microservices later</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

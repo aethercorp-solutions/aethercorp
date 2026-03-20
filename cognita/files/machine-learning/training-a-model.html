@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Training a model</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Training a model</h1>
+                    <p class="subtitle">
+                        Training a model means teaching a computer program to recognize patterns and make predictions or decisions by learning from data, instead of being explicitly programmed with rules.
+                        <p>Let’s break it down clearly and intuitively.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is a “model”?</h2>
+            <p>A model is a mathematical function that takes input and produces output.</p>
+            <p>Examples:</p>
+            <ol>
+                <li>Input: a photo → Output: “cat” or “dog”</li>
+                <li>Input: audio → Output: text (speech recognition)</li>
+                <li>Input: numbers about a house → Output: price estimate</li>
+            </ol>
+            <p>At first, the model knows nothing. Its internal numbers (called parameters or weights) start as random values.</p>
+        </section>
+
+        <section>
+            <h2>1. What is a “model”?</h2>
+            <p>A model is a mathematical function that takes input and produces output.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Input: a photo → Output: “cat” or “dog”</li>
+                <li>Input: audio → Output: text (speech recognition)</li>
+                <li>Input: numbers about a house → Output: price estimate</li>
+            </ul>
+            <p>At first, the model knows nothing. Its internal numbers (called parameters or weights) start as random values.</p>
+        </section>
+
+        <section>
+            <h2>3. Training step-by-step (simple view)</h2>
+            <p>Step 1: Provide data</p>
+            <p>You give the model many examples.</p>
+            <p>Example (image classification):</p>
+            <ul>
+                <li>Image of a cat → correct answer: “cat”</li>
+                <li>Image of a dog → correct answer: “dog”</li>
+            </ul>
+            <p>This is called training data.</p>
+        </section>
+
+        <section>
+            <h2>Step 2: Make a prediction</h2>
+            <p>The model looks at an input and makes a guess.</p>
+            <p>Example:</p>
+            <ul>
+                <li>Image: cat</li>
+                <li>Model guess: “dog” ❌</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 3: Measure the error (loss)</h2>
+            <p>The model compares its guess with the correct answer.</p>
+            <ul>
+                <li>How wrong was it?</li>
+                <li>This is measured using a loss function</li>
+            </ul>
+            <p>Example:</p>
+            <ul>
+                <li>Correct: cat</li>
+                <li>Predicted: dog</li>
+                <li>Loss = high</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 4: Adjust the model (learning)</h2>
+            <p>The model slightly adjusts its internal numbers to reduce the error next time.</p>
+            <p>This adjustment is usually done using:</p>
+            <ul>
+                <li>Gradient descent</li>
+                <li>Backpropagation (for neural networks)</li>
+            </ul>
+            <p>In simple terms:</p>
+            <p>“Change the numbers so I’m less wrong next time.”</p>
+        </section>
+
+        <section>
+            <h2>Step 5: Repeat many times</h2>
+            <p>This process repeats:</p>
+            <ul>
+                <li>Thousands or millions of examples</li>
+                <li>Many passes over the data (called epochs)</li>
+            </ul>
+            <p>Over time:</p>
+            <ul>
+                <li>Loss goes down</li>
+                <li>Accuracy goes up</li>
+            </ul>
+            <p>This is training.</p>
+        </section>
+
+        <section>
+            <h2>4. What the model learns</h2>
+            <p>The model doesn’t “memorize” in a human sense.</p>
+            <p>It learns patterns.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Edges → shapes → objects (images)</li>
+                <li>Grammar → meaning (language)</li>
+                <li>Trends → correlations (numbers)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Types of training (big picture)</h2>
+            <p>1️⃣ Supervised learning</p>
+            <p>Data has correct answers.</p>
+            <p>Example:</p>
+            <ul>
+                <li>Email + label (spam / not spam)</li>
+            </ul>
+            <p>Used for:</p>
+            <ul>
+                <li>Classification</li>
+                <li>Regression</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Unsupervised learning</h2>
+            <p>No correct answers given.</p>
+            <p>Example:</p>
+            <ul>
+                <li>Group customers by behavior</li>
+            </ul>
+            <p>Used for:</p>
+            <ul>
+                <li>Clustering</li>
+                <li>Pattern discovery</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Reinforcement learning</h2>
+            <p>The model learns by trial and reward.</p>
+            <p>Example:</p>
+            <ul>
+                <li>Game AI</li>
+                <li>Robotics</li>
+            </ul>
+
+            <p>Used for:</p>
+            <ul>
+                <li>Decision-making</li>
+                <li>Control systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Training vs Using (Inference)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Training</th>
+                        <th>Inference</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Learning</td>
+                        <td>Using</td>
+                    </tr>
+                    <tr>
+                        <td>Slow</td>
+                        <td>Fast</td>
+                    </tr>
+                    <tr>
+                        <td>Needs lots of data</td>
+                        <td>Needs only input</td>
+                    </tr>
+                    <tr>
+                        <td>Happens once or occasionally</td>
+                        <td>Happens all the time</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Example:</p>
+            <ul>
+                <li>Training a face recognition model → hours or days</li>
+                <li>Using it to unlock a phone → milliseconds</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Simple analogy</h2>
+            <p>🎸 Learning guitar</p>
+            <ul>
+                <li>Training = practicing chords daily</li>
+                <li>Model = your hands + muscle memory</li>
+                <li>Data = songs and exercises</li>
+                <li>Loss = wrong notes</li>
+                <li>Improvement = fewer mistakes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Why training matters</h2>
+            <p>Without training:</p>
+            <ul>
+                <li>The model is random</li>
+                <li>Predictions are useless</li>
+            </ul>
+
+            <p>With good training:</p>
+            <ul>
+                <li>The model generalizes</li>
+                <li>It works on new, unseen data</li>
+            </ul>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Explain training with code examples</li>
+                <li>Relate this to Core ML / Apple ML</li>
+                <li>Compare training vs fine-tuning vs pre-trained models</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

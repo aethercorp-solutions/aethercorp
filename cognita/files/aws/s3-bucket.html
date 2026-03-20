@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>S3 Bucket</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">S3 Bucket</h1>
+                    <p class="subtitle">Sure! Let's break this down carefully. I’ll explain what an S3 bucket is, and then how it is used to deploy a React-Vite web app.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is an S3 Bucket?</h2>
+            <p>An S3 bucket is part of Amazon S3 (Simple Storage Service), which is a storage service provided by Amazon Web Services (AWS). Think of it as a cloud folder where you can store files like HTML, CSS, JavaScript, images, videos, or any other data.</p>
+            <p>Key characteristics:</p>
+            <ul>
+                <li>Scalable: Can store unlimited files.</li>
+                <li>Accessible: You can make files private or public.</li>
+                <li>Durable: AWS promises 99.999999999% durability of stored objects.</li>
+                <li>Static website hosting: S3 can host static websites directly (HTML, CSS, JS).</li>
+            </ul>
+            <p>A “bucket” is just a container in S3. Each bucket has a unique name across AWS and can have its own settings (like permissions, region, versioning).</p>
+        </section>
+
+        <section>
+            <h2>2. Why Use S3 for Deploying React-Vite Apps?</h2>
+            <p>React apps built with Vite are static websites after build (they become HTML, JS, CSS files). Since S3 can host static websites, it’s perfect for:</p>
+            <ul>
+                <li>Hosting the production-ready files.</li>
+                <li>Serving them via HTTP/HTTPS.</li>
+                <li>Scaling automatically with traffic.</li>
+                <li>Integrating with CloudFront for CDN support.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Steps to Deploy a React-Vite App on S3</h2>
+            <p>Let’s go step by step:</p>
+            <p>Step 1: Build the React-Vite App</p>
+            <ol>
+                <li>
+                    Go to your project directory:
+                    <pre><code>
+cd my-vite-app
+                    </code></pre>
+                </li>
+                <li>
+                    Build the production-ready files:
+                    <pre><code>
+npm run build
+                    </code></pre>
+                    <p>This creates a dist folder with index.html, assets, and JS bundles.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 2: Create an S3 Bucket</h2>
+            <ol>
+                <li>Log in to AWS Management Console → Go to S3.</li>
+                <li>
+                    Click Create bucket.
+                    <ul>
+                        <li>Give it a unique name (e.g., my-react-vite-app).</li>
+                        <li>Choose a region close to your users.</li>
+                        <li>Uncheck “Block all public access” (because a website should be public).</li>
+                    </ul>
+                </li>
+                <li>Create the bucket.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 3: Configure the Bucket for Static Website Hosting</h2>
+            <ol>
+                <li>Open your bucket → Go to Properties.</li>
+                <li>Enable Static website hosting.</li>
+                <li>
+                    Set:
+                    <ul>
+                        <li>Index document: index.html</li>
+                        <li>Error document: index.html (important for React routes)</li>
+                    </ul>
+                    <p>React uses client-side routing, so all routes should fallback to index.html.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 4: Upload Your Files</h2>
+            <ol>
+                <li>Go to Objects → Upload → Upload all files from the dist folder.</li>
+                <li>
+                    Make the files publicly readable:
+                    <ul>
+                        <li>
+                            Select the files → Actions → Make public
+                            <p>OR</p>
+                        </li>
+                        <li>
+                            Configure Bucket Policy (JSON example):
+                            <pre><code>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Sid": "PublicReadGetObject",
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::my-react-vite-app/*"
+        }
+    ]
+}                                  
+                            </code></pre>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 5: Access the Website</h2>
+            <ul>
+                <li>After upload, go to Properties → Static website hosting → Endpoint.</li>
+                <li>This URL serves your React-Vite app publicly.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Optional Step 6: Use a Custom Domain with CloudFront</h2>
+            <ul>
+                <li>If you want your app at www.example.com, use CloudFront (AWS CDN) in front of S3.</li>
+                <li>
+                    Benefits:
+                    <ul>
+                        <li>HTTPS</li>
+                        <li>Caching</li>
+                        <li>Global performance boost</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Notes for React-Vite Apps on S3</h2>
+            <ul>
+                <li>Routing: Use index.html as a fallback for SPA (Single Page Application) routes.</li>
+                <li>Environment Variables: Use VITE_ prefix and build with npm run build.</li>
+                <li>Cache Busting: Vite automatically hashes files in the build for caching.</li>
+            </ul>
+
+            <p>✅ Summary:</p>
+            <ol>
+                <li>S3 bucket = cloud folder for files.</li>
+                <li>React-Vite produces static files in dist/.</li>
+                <li>Upload dist/ to S3 → enable static hosting.</li>
+                <li>Set public access + index.html fallback → your app is live.</li>
+            </ol>
+            <p>If you want, I can make a ready-to-use step-by-step AWS CLI version, so you can deploy your React-Vite app in one terminal command, without clicking around the console. It’s much faster for developers.</p>
+        </section>
+
+        <section>
+            <p>Perfect! Let’s do a full AWS CLI deployment for your React-Vite app. I’ll give you a step-by-step command setup so you can deploy your app entirely from the terminal.</p>
+            <h2>1️⃣ Prerequisites</h2>
+            <p>Make sure you have:</p>
+            <ul>
+                <li>
+                    AWS CLI installed and configured:
+                    <pre><code>
+aws configure
+                    </code></pre>
+                    <p>Enter your Access Key ID, Secret Access Key, default region, and output format (json is fine).</p>
+                </li>
+                <li>Node.js & npm installed for building Vite apps.</li>
+                <li>Your React-Vite app ready (dist/ folder after build).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Build Your React-Vite App</h2>
+            <p>From your project folder:</p>
+            <pre><code>
+npm run build
+            </code></pre>
+            <ul>
+                <li>This creates the dist/ folder with your production files.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Create an S3 Bucket via CLI</h2>
+            <p>Replace my-react-vite-app with a globally unique bucket name:</p>
+            <pre><code>
+aws s3 mb s3://my-react-vite-app --region us-east-1
+            </code></pre>
+            <ul>
+                <li>mb = make bucket.</li>
+                <li>--region = choose your preferred AWS region.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Configure Bucket for Public Access</h2>
+            <p>You need a bucket policy so anyone can access your files:</p>
+            <pre><code>
+aws s3api put-bucket-policy --bucket my-react-vite-app --policy '{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Sid": "PublicReadGetObject",
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::my-react-vite-app/*"
+        }
+    ]
+}'                  
+            </code></pre>
+            <p>This makes all files publicly readable.</p>
+        </section>
+
+        <section>
+            <h2>5️⃣ Enable Static Website Hosting</h2>
+            <pre><code>
+aws s3 website s3://my-react-vite-app/ --index-document index.html --error-document index.html
+            </code></pre>
+            <ul>
+                <li>The error document is also index.html so React routing works.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6️⃣ Upload Your React-Vite Build</h2>
+            <pre><code>
+aws s3 sync dist/ s3://my-react-vite-app/ --delete
+            </code></pre>
+            <ul>
+                <li>sync = uploads files and deletes old files not in dist/.</li>
+                <li>--delete = keeps S3 in sync with your local build.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7️⃣ Access Your Website</h2>
+            <p>Once uploaded:</p>
+            <pre><code>
+http://my-react-vite-app.s3-website-us-east-1.amazonaws.com
+            </code></pre>
+            <ul>
+                <li>Replace us-east-1 with your bucket region if different.</li>
+                <li>Your React-Vite app should be live!</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8️⃣ Optional: Use CloudFront for HTTPS</h2>
+            <pre><code>
+aws cloudfront create-distribution --origin-domain-name my-react-vite-app.s3.amazonaws.com
+            </code></pre>
+            <ul>
+                <li>CloudFront gives you HTTPS, caching, and global delivery.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Summary of CLI Commands</h2>
+            <pre><code>
+npm run build
+aws s3 mb s3://my-react-vite-app --region us-east-1
+aws s3api put-bucket-policy --bucket my-react-vite-app --policy '<policy-json>'
+aws s3 website s3://my-react-vite-app/ --index-document index.html --error-document index.html
+aws s3 sync dist/ s3://my-react-vite-app/ --delete
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Amazon CloudFront</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Amazon CloudFront</h1>
+                    <p class="subtitle">Amazon CloudFront is a Content Delivery Network (CDN) service that securely delivers content (websites, APIs, videos, images, software downloads) to users with low latency and high transfer speeds by using a global network of edge locations.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🌍 1. Core Idea: How a CDN Works</h2>
+            <p>Instead of serving content from one central server (origin), CloudFront:</p>
+            <ol>
+                <li>Caches copies of your content</li>
+                <li>Stores them in many Edge Locations worldwide</li>
+                <li>Delivers content from the closest edge location to the user</li>
+            </ol>
+            <p>This reduces:</p>
+            <ul>
+                <li>Latency</li>
+                <li>Load on origin servers</li>
+                <li>Network congestion</li>
+                <li>Infrastructure costs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🏗 2. CloudFront Architecture Components</h2>
+            <p>1️⃣ Origin</p>
+            <p>The original source of your content.</p>
+            <p>Common origins:</p>
+            <ul>
+                <li>Amazon S3 (static files like images, JS, CSS)</li>
+                <li>Amazon EC2 (web applications)</li>
+                <li>Elastic Load Balancing</li>
+                <li>On-premise servers</li>
+            </ul>
+
+            <p>2️⃣ Edge Locations</p>
+            <ul>
+                <li>Global data centers</li>
+                <li>Cache content close to users</li>
+                <li>First place user requests go</li>
+            </ul>
+
+            <p>3️⃣ Regional Edge Caches</p>
+            <ul>
+                <li>Intermediate caching layer</li>
+                <li>Reduces load on origin even more</li>
+                <li>Improves cache hit ratio</li>
+            </ul>
+
+            <p>4️⃣ Distribution</p>
+            <p>A CloudFront Distribution is the configuration that connects:</p>
+            <ul>
+                <li>Origin</li>
+                <li>Cache behaviors</li>
+                <li>Security rules</li>
+                <li>Domain name</li>
+                <li>SSL certificate</li>
+            </ul>
+
+            <p>There are two types:</p>
+            <ul>
+                <li>Web distribution (HTTP/HTTPS)</li>
+                <li>RTMP (legacy streaming)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔄 3. Step-by-Step: How CloudFront Works</h2>
+            <p>Example: User Requests an Image</p>
+            <p>Step 1: User Request</p>
+            <p>A user types:</p>
+            <pre><code>
+https://example.com/logo.png
+            </code></pre>
+            <p>DNS routes the request to the nearest CloudFront edge location.</p>
+        </section>
+
+        <section>
+            <h2>Step 2: Cache Check</h2>
+            <p>Edge location checks:</p>
+            <ul>
+                <li>Is logo.png already cached?</li>
+            </ul>
+            <p>✅ If YES (Cache Hit)</p>
+            <p>→ File is returned immediately</p>
+            <p>→ Fast response</p>
+            <p>❌ If NO (Cache Miss)</p>
+            <p>→ CloudFront forwards request to origin</p>
+        </section>
+
+        <section>
+            <h2>Step 3: Fetch from Origin</h2>
+            <p>CloudFront:</p>
+            <ul>
+                <li>Retrieves file from origin (e.g., S3)</li>
+                <li>Caches it at edge location</li>
+                <li>Sends it to user</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 4: Future Requests</h2>
+            <p>Next users in that region:</p>
+            <p>→ Get file directly from cache</p>
+            <p>→ No origin request needed</p>
+        </section>
+
+        <section>
+            <h2>⚙️ 4. Caching Behavior (Important)</h2>
+            <p>CloudFront caches based on:</p>
+            <ul>
+                <li>URL path</li>
+                <li>Query strings</li>
+                <li>Headers</li>
+                <li>Cookies</li>
+            </ul>
+            <p>You can configure:</p>
+            <ul>
+                <li>TTL (Time To Live) – How long content stays cached</li>
+                <li>Minimum TTL</li>
+                <li>Maximum TTL</li>
+                <li>Default TTL</li>
+            </ul>
+            <p>Example:</p>
+            <ul>
+                <li>Set TTL = 24 hours</li>
+                <li>CloudFront keeps file for 24h before checking origin again</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 5. Security Features</h2>
+            <p>CloudFront integrates with:</p>
+            <p>🛡 AWS Shield</p>
+            <ul>
+                <li>Protects against DDoS attacks</li>
+            </ul>
+
+            <p>🔥 AWS WAF</p>
+            <ul>
+                <li>Blocks malicious traffic</li>
+                <li>Rate limiting</li>
+                <li>IP filtering</li>
+            </ul>
+
+            <p>🔒 HTTPS / SSL</p>
+            <ul>
+                <li>Free SSL via AWS Certificate Manager</li>
+                <li>Enforces HTTPS</li>
+            </ul>
+
+            <p>🔑 Signed URLs & Cookies</p>
+            <ul>
+                <li>Restrict access to premium content</li>
+                <li>Time-limited access</li>
+            </ul>
+        </section>
+        
+        <section>
+            <h2>🚀 6. Performance Optimization</h2>
+            <p>CloudFront improves performance using:</p>
+            <ul>
+                <li>HTTP/2 and HTTP/3 support</li>
+                <li>Persistent connections</li>
+                <li>Brotli & Gzip compression</li>
+                <li>TCP optimization</li>
+                <li>Edge computing (Lambda@Edge, CloudFront Functions)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 7. Advanced Features</h2>
+            <p>Lambda@Edge</p>
+            <p>Run code at edge locations:</p>
+            <ul>
+                <li>Modify headers</li>
+                <li>Authentication</li>
+                <li>Redirects</li>
+                <li>A/B testing</li>
+            </ul>
+            <p>Origin Failover</p>
+            <ul>
+                <li>Primary + Secondary origin</li>
+                <li>Automatic failover if origin is down</li>
+            </ul>
+            <p>Field-Level Encryption</p>
+            <ul>
+                <li>Encrypt specific sensitive fields</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 8. Static vs Dynamic Content</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Content Type</th>
+                        <th>How CloudFront Handles It</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Static files</td>
+                        <td>Cached at edge</td>
+                    </tr>
+                    <tr>
+                        <td>Dynamic content</td>
+                        <td>Forwarded but optimized</td>
+                    </tr>
+                    <tr>
+                        <td>API calls</td>
+                        <td>Cached selectively</td>
+                    </tr>
+                    <tr>
+                        <td>Live streaming</td>
+                        <td>Supported</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🌎 9. Real-World Example Architecture</h2>
+            <p>User → CloudFront → S3 (static content)</p>
+            <p>User → CloudFront → ALB → EC2 (web app)</p>
+            <p>User → CloudFront → API Gateway (API backend)</p>
+        </section>
+
+        <section>
+            <h2>💰 10. Pricing Model</h2>
+            <p>You pay for:</p>
+            <ul>
+                <li>Data transfer out (per GB)</li>
+                <li>Requests (per 10,000)</li>
+                <li>Invalidation requests</li>
+                <li>Edge compute (if used)</li>
+            </ul>
+            <p>Pricing varies by region.</p>
+        </section>
+
+        <section>
+            <h2>🎯 Why Use CloudFront?</h2>
+            <p>✔ Faster global delivery</p>
+            <p>✔ Reduced server load</p>
+            <p>✔ DDoS protection</p>
+            <p>✔ SSL support</p>
+            <p>✔ Scalability</p>
+            <p>✔ Lower latency</p>
+            <p>✔ Edge computing</p>
+        </section>
+
+        <section>
+            <h2>🧩 Simple Analogy</h2>
+            <p>Without CloudFront:</p>
+            <ul>
+                <li>One shop serving the whole world.</li>
+            </ul>
+            <p>With CloudFront:</p>
+            <p>Many small local stores serving nearby customers.</p>
+        </section>
+
+        <section>
+            <h2>🏁 Summary</h2>
+            <p>CloudFront works by:</p>
+            <ol>
+                <li>Receiving user requests</li>
+                <li>Checking nearest edge cache</li>
+                <li>Fetching from origin if needed</li>
+                <li>Caching and delivering content</li>
+                <li>Improving speed, scalability, and security</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>pure AWS, no Serverless Framework, no CDK, no SAM, no Terraform</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">pure AWS, no Serverless Framework, no CDK, no SAM, no Terraform</h1>
+                    <p class="subtitle">
+                        Got it — pure AWS, no Serverless Framework, no CDK, no SAM, no Terraform.
+                        <p>Just raw AWS services, how they actually work under the hood. Let’s strip the magic away. 🧱⚙️</p>
+                        <p>I’ll explain this like you’re building it from scratch, the way AWS itself sees it.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What “bare AWS services” really means</h2>
+            <p>When you remove wrappers, you are responsible for:</p>
+            <ul>
+                <li>Creating every resource</li>
+                <li>Wiring permissions explicitly</li>
+                <li>Handling deployments manually</li>
+                <li>Managing environments (dev/prod) yourself</li>
+                <li>Debugging IAM 😈</li>
+            </ul>
+            <p>Nothing is “automatic”.</p>
+        </section>
+
+        <section>
+            <h2>2. Core building blocks (mental model)</h2>
+            <p>Think of AWS like LEGO pieces. Wrappers just snap them together for you.</p>
+            <p>Bare AWS = you snap them together by hand.</p>
+            <pre><code>
+Client → API Gateway → Lambda → (DB / S3 / other services)
+        ↑
+        IAM
+            </code></pre>
+            <p>Everything revolves around IAM, networking, and service-to-service trust.</p>
+        </section>
+
+        <section>
+            <h2>3. IAM (Identity & Access Management) — the spine of AWS</h2>
+            <p>3.1 IAM Users (humans)</p>
+            <p>Used for:</p>
+            <ul>
+                <li>Console login</li>
+                <li>CLI access (aws configure)</li>
+            </ul>
+            <p>Contains:</p>
+            <ul>
+                <li>Access Key ID</li>
+                <li>Secret Access Key</li>
+            </ul>
+            <p>Example policy (read-only S3):</p>
+            <pre><code>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Effect": "Allow",
+        "Action": ["s3:GetObject"],
+        "Resource": "arn:aws:s3:::my-bucket/*"
+        }
+    ]
+}                  
+            </code></pre>
+            <p>⚠️ Best practice:</p>
+            <ul>
+                <li>Humans → IAM Users</li>
+                <li>Services → IAM Roles</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3.2 IAM Roles (services)</h2>
+            <p>Services assume roles.</p>
+            <p>Lambda never uses access keys.</p>
+            <p>It assumes a role at runtime.</p>
+            <p>Example Lambda role trust policy:</p>
+            <pre><code>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Effect": "Allow",
+        "Principal": { "Service": "lambda.amazonaws.com" },
+        "Action": "sts:AssumeRole"
+        }
+    ]
+}                  
+            </code></pre>
+            <p>Then attach permissions:</p>
+            <pre><code>
+{
+    "Effect": "Allow",
+    "Action": ["dynamodb:PutItem"],
+    "Resource": "arn:aws:dynamodb:ap-southeast-1:*:table/Users"
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Networking — VPC (most people don’t really understand this)</h2>
+            <p>4.1 VPC</p>
+            <p>A private network inside AWS.</p>
+            <ul>
+                <li>CIDR block: 10.0.0.0/16</li>
+                <li>You control traffic, routing, isolation</li>
+            </ul>
+            <p>Default VPC exists, but serious systems don’t rely on it.</p>
+        </section>
+
+        <section>
+            <h2>4.2 Subnets</h2>
+            <p>Split VPC into zones:</p>
+            <ul>
+                <li>Public subnet (internet access)</li>
+                <li>Private subnet (no internet)</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+10.0.1.0/24 → public
+10.0.2.0/24 → private
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4.3 Internet Gateway + Route Tables</h2>
+            <p>Public subnet needs:</p>
+            <ul>
+                <li>Internet Gateway attached to VPC</li>
+                <li>Route 0.0.0.0/0 → igw</li>
+            </ul>
+            <p>Without this: no internet</p>
+        </section>
+
+        <section>
+            <h2>4.4 Security Groups (stateful firewall)</h2>
+            <p>Attached to:</p>
+            <ul>
+                <li>EC2</li>
+                <li>RDS</li>
+                <li>Load Balancers</li>
+            </ul>
+            <p>Example:</p>
+            <ul>
+                <li>Allow HTTP 80</li>
+                <li>Allow HTTPS 443</li>
+            </ul>
+            <pre><code>
+Inbound:
+  TCP 443 from 0.0.0.0/0
+Outbound:
+  All traffic
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Compute services (no abstraction)</h2>
+            <p>5.1 EC2 — raw virtual machines</p>
+            <p>You manage:</p>
+            <ul>
+                <li>OS</li>
+                <li>Updates</li>
+                <li>Security patches</li>
+                <li>Scaling</li>
+                <li>Failures</li>
+            </ul>
+
+            <p>Launch flow:</p>
+            <ol>
+                <li>Choose AMI</li>
+                <li>Choose instance type</li>
+                <li>Attach security group</li>
+                <li>Attach IAM role</li>
+                <li>SSH in</li>
+            </ol>
+            <p>You become sysadmin again.</p>
+        </section>
+
+        <section>
+            <h2>5.2 Lambda — managed compute, still bare wiring</h2>
+            <p>What AWS gives:</p>
+            <ul>
+                <li>Runtime</li>
+                <li>Scaling</li>
+                <li>Execution environment</li>
+            </ul>
+            <p>What you must do:</p>
+            <ul>
+                <li>Create role</li>
+                <li>Set permissions</li>
+                <li>Deploy code</li>
+                <li>Define triggers</li>
+            </ul>
+            <p>Create function:</p>
+            <pre><code>
+aws lambda create-function \
+  --function-name hello \
+  --runtime nodejs18.x \
+  --handler index.handler \
+  --role arn:aws:iam::123:role/lambda-role \
+  --zip-file fileb://function.zip
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. API Gateway (no magic)</h2>
+            <p>6.1 REST API vs HTTP API</p>
+            <ul>
+                <li>REST API → full control, expensive</li>
+                <li>HTTP API → lighter, cheaper</li>
+            </ul>
+            <p>Bare setup requires:</p>
+            <ol>
+                <li>Create API</li>
+                <li>Create resource (/users)</li>
+                <li>Create method (GET)</li>
+                <li>Integrate Lambda</li>
+                <li>Grant permission to invoke Lambda</li>
+                <li>Deploy to stage</li>
+            </ol>
+            <p>Lambda permission example:</p>
+            <pre><code>
+aws lambda add-permission \
+  --function-name hello \
+  --statement-id apigw \
+  --action lambda:InvokeFunction \
+  --principal apigateway.amazonaws.com
+            </code></pre>
+            <p>Miss one step → 403 error 😅</p>
+        </section>
+
+        <section>
+            <h2>7. Storage</h2>
+            <p>7.1 S3 — object storage</p>
+            <p>Buckets are global namespace.</p>
+            <p>You manage:</p>
+            <ul>
+                <li>Bucket policy</li>
+                <li>Object ACL</li>
+                <li>Encryption</li>
+                <li>Lifecycle rules</li>
+            </ul>
+            <p>Example bucket policy:</p>
+            <pre><code>
+{
+    "Effect": "Allow",
+    "Principal": "*",
+    "Action": "s3:GetObject",
+    "Resource": "arn:aws:s3:::my-site/*"
+}                  
+            </code></pre>
+
+            <p>7.2 Databases</p>
+            <p>DynamoDB</p>
+            <ul>
+                <li>No servers</li>
+                <li>Partition keys matter</li>
+                <li>IAM-based access</li>
+            </ul>
+            <p>RDS</p>
+            <ul>
+                <li>Managed EC2</li>
+                <li>
+                    Still needs:
+                    <ul>
+                        <li>Subnet groups</li>
+                        <li>Security groups</li>
+                        <li>Backups</li>
+                        <li>Patch windows</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Environment separation (WITHOUT wrappers)</h2>
+            <p>Wrappers hide this — bare AWS makes it explicit.</p>
+            <p>Option A: Separate accounts (best)</p>
+            <pre><code>
+aws-dev
+aws-prod
+aws-staging
+            </code></pre>
+            <p>Option B: Same account (manual discipline)</p>
+            <ul>
+                <li>Resource naming</li>
+                <li>Separate IAM roles</li>
+                <li>Separate VPCs</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+my-api-dev
+my-api-prod
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Logging & Monitoring</h2>
+            <p>CloudWatch</p>
+            <ul>
+                <li>Logs → per service</li>
+                <li>Metrics → CPU, memory, invocations</li>
+                <li>Alarms → SNS</li>
+            </ul>
+            <p>Lambda logs:</p>
+            <pre><code>
+/aws/lambda/my-function
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Deployment (no CI fairy)</h2>
+            <p>Bare AWS means:</p>
+            <ul>
+                <li>Zip files</li>
+                <li>CLI commands</li>
+                <li>Manual rollbacks</li>
+            </ul>
+            <p>Typical flow:</p>
+            <pre><code>
+zip function.zip index.js
+aws lambda update-function-code \
+  --function-name hello \
+  --zip-file fileb://function.zip
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>11. Why wrappers exist (hard truth)</h2>
+            <p>Wrappers solve:</p>
+            <ul>
+                <li>IAM hell</li>
+                <li>Ordering dependencies</li>
+                <li>Rollbacks</li>
+                <li>Repeatability</li>
+                <li>Human error</li>
+            </ul>
+            <p>Bare AWS gives:</p>
+            <ul>
+                <li>Maximum control</li>
+                <li>Maximum responsibility</li>
+                <li>Maximum pain 😄</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>12. When bare AWS makes sense</h2>
+            <p>✅ Learning AWS deeply</p>
+            <p>✅ Regulated / locked-down environments</p>
+            <p>✅ Highly customized networking</p>
+            <p>❌ Fast-moving startups</p>
+            <p>❌ Solo devs shipping fast</p>
+
+            <p>If you want, next we can:</p>
+            <ul>
+                <li>Build a full API manually (CLI-only) step by step</li>
+                <li>Compare bare AWS vs Serverless Framework line by line</li>
+                <li>Explain CloudFormation raw templates (still bare, just declarative)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS CLI profiles</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS CLI profiles</h1>
+                    <p class="subtitle">Ah! You want to understand how to use AWS CLI profiles (dev, prod) with the Serverless Framework. Let me explain step by step, carefully.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ What --profile does</h2>
+            <p>When you run:</p>
+            <pre><code>
+aws configure --profile dev
+            </code></pre>
+
+            <p>AWS CLI saves a set of credentials under the name dev.</p>
+            <p>It creates (or updates) entries in:</p>
+            <pre><code>
+~/.aws/credentials
+~/.aws/config
+            </code></pre>
+
+            <p>Example ~/.aws/credentials:</p>
+            <pre><code>
+[dev]
+aws_access_key_id = AKIAxxxxxxxx
+aws_secret_access_key = xxxxxxxxxxxxx
+
+[prod]
+aws_access_key_id = AKIAyyyyyyyy
+aws_secret_access_key = yyyyyyyyyyyyy
+            </code></pre>
+
+            <p>Example ~/.aws/config:</p>
+            <pre><code>
+[profile dev]
+region = ap-southeast-1
+output = json
+
+[profile prod]
+region = us-east-1
+output = json
+            </code></pre>
+            <p>Each profile can have different keys, regions, or output formats.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Using profiles with the Serverless Framework</h2>
+            <p>Option A: Directly in deploy command</p>
+            <pre><code>
+serverless deploy --stage dev --aws-profile dev
+serverless deploy --stage prod --aws-profile prod
+            </code></pre>
+
+            <p>Explanation:</p>
+            <ul>
+                <li>--stage dev → sets the stage in serverless.yml</li>
+                <li>--aws-profile dev → tells Serverless which AWS credentials to use</li>
+            </ul>
+            <p>✅ This is the most common approach.</p>
+        </section>
+
+        <section>
+            <h2>Option B: Default profile in serverless.yml</h2>
+            <p>You can also set it in your config:</p>
+            <pre><code>
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  profile: ${opt:aws-profile, 'dev'}   # &lt;-- default AWS profile
+  region: ap-southeast-1
+            </code></pre>
+            <p>Then deploy like:</p>
+            <pre><code>
+serverless deploy --stage prod --aws-profile prod
+            </code></pre>
+            <p>Or, if you don’t specify, it defaults to dev because of profile: dev.</p>
+        </section>
+
+        <section>
+            <h2>Option C: Environment variable (optional)</h2>
+            <pre><code>
+export AWS_PROFILE=dev
+serverless deploy
+            </code></pre>
+            <ul>
+                <li>Serverless uses AWS_PROFILE if --aws-profile is not provided.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Switching between dev and prod</h2>
+            <ul>
+                <li>
+                    Step 1: Create profiles once:
+                    <pre><code>
+aws configure --profile dev
+aws configure --profile prod
+                    </code></pre>
+                </li>
+                <li>
+                    Step 2: Deploy to dev:
+                    <pre><code>
+serverless deploy --stage dev --aws-profile dev
+                    </code></pre>
+                </li>
+                <li>
+serverless deploy --stage prod --aws-profile prod
+                </li>
+            </ul>
+            <p>Each stage uses its own credentials, region, and resources.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Verify which profile Serverless is using</h2>
+            <pre><code>
+serverless info --verbose
+            </code></pre>
+            <p>It shows:</p>
+            <ul>
+                <li>Stage</li>
+                <li>Region</li>
+                <li>Profile</li>
+                <li>API endpoints</li>
+                <li>Lambda functions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Key Tips</h2>
+            <ol>
+                <li>Never use your personal root account; create IAM users per profile with only needed permissions.</li>
+                <li>Profiles let you manage dev/staging/prod independently.</li>
+                <li>You can mix profile + stage + environment variables for fully separate deployments.</li>
+            </ol>
+            <p>If you want, I can make a ready-to-use serverless.yml example showing dev and prod profiles, environment variables, MongoDB connection, and JWT auth, so you can deploy safely without touching the AWS console.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

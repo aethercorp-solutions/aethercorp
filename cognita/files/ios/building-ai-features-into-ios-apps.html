@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Building AI features into iOS apps</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Building AI features into iOS apps</h1>
+                    <p class="subtitle">
+                        If you're building AI features into iOS apps (especially with your AI + React Native + AWS background), here’s a detailed breakdown of iOS LLM API use cases, architecture, and real implementation patterns.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔥 What is an iOS LLM API?</h2>
+            <p>An LLM API lets your iOS app send text (or multimodal data) to a Large Language Model and receive generated responses such as:</p>
+            <ul>
+                <li>Text generation</li>
+                <li>Code generation</li>
+                <li>Summarization</li>
+                <li>Classification</li>
+                <li>Chat responses</li>
+                <li>Tool calling</li>
+                <li>Structured JSON outputs</li>
+            </ul>
+            <p>Common providers:</p>
+            <ul>
+                <li>OpenAI</li>
+                <li>Google (Gemini)</li>
+                <li>Anthropic (Claude)</li>
+                <li>Microsoft (Azure OpenAI)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Real-World iOS LLM Use Cases (With Detailed Examples)</h2>
+            <p>1️⃣ AI Chat Assistant Inside Your App</p>
+            <p>Example:</p>
+            <p>A customer support assistant inside your app.</p>
+            <p>Flow:</p>
+            <ul>
+                <li>User types question</li>
+                <li>App sends message to LLM API</li>
+                <li>LLM responds with contextual answer</li>
+                <li>App renders streaming response</li>
+            </ul>
+            <p>Architecture:</p>
+            <pre><code>
+iOS App
+   ↓
+Your Secure Backend (Node.js Lambda)
+   ↓
+LLM Provider API
+            </code></pre>
+            <p>Why not call LLM directly from iOS?</p>
+            <ul>
+                <li>API key exposure risk</li>
+                <li>Rate limiting</li>
+                <li>Logging & moderation</li>
+                <li>Context management</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Smart Form Auto-Fill (Very Powerful for Business Apps)</h2>
+            <p>Since you work with structured systems (inventory, tagging, contracts), this is relevant.</p>
+            <p>Example:</p>
+            <p>User pastes this:</p>
+            <pre><code>
+Delivered 12 rolls of black fabric under contract JP-003.
+Inspection not required.
+            </code></pre>
+            <p>LLM returns structured JSON:</p>
+            <pre><code>
+{
+    "quantity": 12,
+    "item": "black fabric",
+    "contract": "JP-003",
+    "inspection_required": false
+}
+            </code></pre>
+            <p>iOS Implementation Flow</p>
+            <ol>
+                <li>User enters free text</li>
+                <li>App sends prompt:
+                    <p>Extract structured data. Return valid JSON only.</p>
+                </li>
+                <li>
+                    LLM returns structured JSON
+                </li>
+                <li>App decodes into Swift model</li>
+            </ol>
+        </section>
+
+        <section>
+            <p>Building AI features into iOS apps in 2026 is very practical—especially with on-device models, Apple Intelligence, and API-based LLMs.</p>
+            <p>Since you’re an experienced iOS dev (Objective-C/Swift), I’ll structure this in a practical, architecture-focused way.</p>
+            <h2>1️⃣ Types of AI You Can Add to an iOS App</h2>
+            <p>A. On-Device AI (Fast, Private, Offline)</p>
+            <p>Use:</p>
+            <ul>
+                <li>
+                    Apple frameworks:
+                    <ul>
+                        <li>Core ML</li>
+                        <li>Vision</li>
+                        <li>NaturalLanguage</li>
+                        <li>Create ML</li>
+                        <li>SoundAnalysis</li>
+                        <li>Speech</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>Best for:</p>
+            <ul>
+                <li>Text classification</li>
+                <li>Image recognition</li>
+                <li>Object detection</li>
+                <li>Sentiment analysis</li>
+                <li>Offline ML inference</li>
+                <li>Custom small LLMs (quantized)</li>
+            </ul>
+            <p>Example Use Case</p>
+            <p>A warehouse app:</p>
+            <ul>
+                <li>Scan product label → detect text via Vision</li>
+                <li>Classify product category via Core ML</li>
+                <li>Predict reorder demand locally</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>B. Cloud-Based AI (LLMs / Generative AI)</h2>
+            <p>Use APIs:</p>
+            <ul>
+                <li>OpenAI</li>
+                <li>Google (Gemini)</li>
+                <li>Anthropic (Claude)</li>
+                <li>Microsoft (Azure OpenAI)</li>
+            </ul>
+            <p>Best for:</p>
+            <ul>
+                <li>Chatbots</li>
+                <li>Summarization</li>
+                <li>Code generation</li>
+                <li>Semantic search</li>
+                <li>Knowledge assistants</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Architecture Pattern (Production-Ready)</h2>
+            <p>Since you're backend-oriented as well, here's the proper architecture:</p>
+            <p>❌ Don’t</p>
+            <p>Call OpenAI directly from iOS with your API key.</p>
+            <p>✅ Do</p>
+            <p>Use this pattern:</p>
+            <pre><code>
+iOS App
+   ↓
+Your Backend (AWS Lambda / Node.js)
+   ↓
+LLM API (OpenAI / Azure / etc)
+            </code></pre>
+            <p>Benefits:</p>
+            <ul>
+                <li>Protect API keys</li>
+                <li>Add logging</li>
+                <li>Add caching</li>
+                <li>Add rate limits</li>
+                <li>Add user-level billing</li>
+                <li>Add moderation</li>
+            </ul>
+            <p>Given you’re already using AWS Lambda + API Gateway in other projects, this fits perfectly.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Example: Adding AI Chat to iOS (Swift)</h2>
+            <p>Step 1 – Backend Endpoint</p>
+            <p>POST /ai/chat</p>
+            <p>Request:</p>
+            <pre><code>
+{
+    "message": "Summarize this inventory list..."
+}
+            </code></pre>
+            <p>Backend calls LLM → returns result.</p>
+        </section>
+
+        <section>
+            <h2>Step 2 – Swift API Call</h2>
+            <pre><code>
+struct ChatRequest: Codable {
+    let message: String
+}
+
+struct ChatResponse: Codable {
+    let reply: String
+}
+
+func sendMessage(_ text: String) async throws -> String {
+    let url = URL(string: "https://api.yourserver.com/ai/chat")!
+    
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    
+    let body = ChatRequest(message: text)
+    request.httpBody = try JSONEncoder().encode(body)
+    
+    let (data, _) = try await URLSession.shared.data(for: request)
+    let response = try JSONDecoder().decode(ChatResponse.self, from: data)
+    
+    return response.reply
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4️⃣ Advanced AI Features for iOS Apps</h2>
+            <p>Here are powerful features you can realistically ship:</p>
+            <p>🔹 1. AI Smart Search (Semantic Search)</p>
+            <p>Instead of keyword search:</p>
+            <ul>
+                <li>Convert text → embeddings</li>
+                <li>Store embeddings in vector DB</li>
+                <li>Search by similarity</li>
+            </ul>
+            <p>Use cases:</p>
+            <ul>
+                <li>CRM search</li>
+                <li>Inventory lookup</li>
+                <li>Knowledge base</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 2. AI Autocomplete Forms</h2>
+            <p>Example:</p>
+            <ul>
+                <li>User types partial address</li>
+                <li>AI predicts full structured data</li>
+                <li>Suggests corrections</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 3. AI-Powered Camera Analysis</h2>
+            <p>Using Vision + Core ML:</p>
+            <ul>
+                <li>Detect damaged goods</li>
+                <li>Count objects</li>
+                <li>Barcode + intelligent description</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 4. On-Device LLM (Private AI)</h2>
+            <p>You can now deploy:</p>
+            <ul>
+                <li>Quantized small language models via Core ML</li>
+                <li>Offline summarization</li>
+                <li>Local document Q&A</li>
+            </ul>
+            <p>Best for enterprise privacy scenarios.</p>
+        </section>
+
+        <section>
+            <h2>5️⃣ Performance & UX Best Practices</h2>
+            <p>⚡ Stream Responses</p>
+            <p>If using LLMs:</p>
+            <ul>
+                <li>Stream tokens</li>
+                <li>Update UI progressively</li>
+                <li>Show typing animation</li>
+            </ul>
+            <p>🧠 Cache AI Results</p>
+            <ul>
+                <li>Avoid repeated cost</li>
+                <li>Store summarized outputs</li>
+                <li>Use hashing for identical inputs</li>
+            </ul>
+            <p>🔐 Always Moderate</p>
+            <ul>
+                <li>Use content filtering endpoint</li>
+                <li>Protect your app from misuse</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6️⃣ Cost Control Strategy (Important)</h2>
+            <p>In production apps:</p>
+            <ol>
+                <li>Add per-user token limits</li>
+                <li>Log token usage</li>
+                <li>Add fallback model (cheaper model first)</li>
+                <li>Use summarization compression before large prompts</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>7️⃣ AI Feature Ideas For Your Type of Apps</h2>
+            <p>Since you build enterprise + warehouse/logistics apps:</p>
+            <p>🔹 AI Inventory Assistant</p>
+            <p>"Why is SKU 123 delayed?"</p>
+            <p>→ AI analyzes historical logs.</p>
+
+            <p>🔹 AI Exception Analyzer</p>
+            <p>Upload CSV → AI explains anomalies.</p>
+
+            <p>🔹 AI Task Generator</p>
+            <p>AI converts job notes into structured tasks.</p>
+
+            <p>🔹 AI Voice Commands</p>
+            <p>Speech → Structured workflow action.</p>
+        </section>
+
+        <section>
+            <h2>8️⃣ If You Want Cutting-Edge (2026)</h2>
+            <p>Combine:</p>
+            <ul>
+                <li>On-device ML (fast classification)</li>
+                <li>Backend LLM reasoning</li>
+                <li>RAG (Retrieval-Augmented Generation)</li>
+                <li>Vector database</li>
+                <li>Real-time streaming</li>
+            </ul>
+            <p>This creates enterprise-grade AI apps.</p>
+        </section>
+
+        <section>
+            <h2>9️⃣ Example Real Product Architecture</h2>
+            <pre><code>
+iOS App (SwiftUI)
+  - Streaming Chat UI
+  - Camera AI
+  - Voice Input
+
+Backend (AWS Lambda)
+  - Auth (Cognito)
+  - Rate limit
+  - Embeddings store
+  - LLM orchestration
+
+Database
+  - MongoDB
+  - Vector store (Pinecone / Atlas Vector)
+            </code></pre>
+
+            <p>If you’d like, I can next give you:</p>
+            <ul>
+                <li>🔥 A full production-ready AI chat architecture diagram</li>
+                <li>🔥 On-device LLM Core ML integration example</li>
+                <li>🔥 RAG implementation guide for iOS + AWS</li>
+                <li>🔥 Cost-optimized enterprise AI blueprint</li>
+                <li>🔥 AI feature roadmap for TryCastanet</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

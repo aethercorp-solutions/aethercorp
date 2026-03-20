@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How computer draw graphics</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How computer draw graphics</h1>
+                    <p class="subtitle">Here’s a clear but detailed explanation of how computers draw graphics, covering both hardware and software, explained simply, step by step.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>How Computers Draw Graphics</h2>
+            <p>(Hardware + Software, Simplified)</p>
+            <p>Think of graphics drawing as a pipeline:</p>
+            <p>👉 Instructions → Math → Pixels on the screen</p>
+        </section>
+
+        <section>
+            <h2>1. The Screen (Final Goal)</h2>
+            <p>Your screen is a grid of pixels.</p>
+            <ul>
+                <li>Each pixel has a color (RGB: red, green, blue)</li>
+                <li>
+                    Example:
+                    <ul>
+                        <li>1920 × 1080 screen = 2,073,600 pixels</li>
+                    </ul>
+                </li>
+                <li>Graphics = deciding what color each pixel should be</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Hardware Side (Who Does the Work)</h2>
+            <p>2.1 CPU (Brain / Manager)</p>
+            <ul>
+                <li>Runs your program or game</li>
+                <li>
+                    Decides:
+                    <ul>
+                        <li>What objects exist</li>
+                        <li>Where they are</li>
+                        <li>When to draw them</li>
+                    </ul>
+                </li>
+                <li>Sends drawing instructions to the GPU</li>
+            </ul>
+            <p>💡 CPU is good at logic, not drawing millions of pixels.</p>
+
+            <p>2.2 GPU (Graphics Processing Unit)</p>
+            <ul>
+                <li>Specialized for massive parallel math</li>
+                <li>Can process thousands of pixels/vertices at once</li>
+                <li>This is where most graphics work happens</li>
+            </ul>
+            <p>💡 GPU is like 10,000 tiny calculators working together.</p>
+
+            <p>2.3 VRAM (Video Memory)</p>
+            <ul>
+                <li>Fast memory connected to the GPU</li>
+                <li>
+                    Stores:
+                    <ul>
+                        <li>Textures (images)</li>
+                        <li>Vertex data (3D models)</li>
+                        <li>Framebuffers (final image before display)</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>2.4 Display Controller</p>
+            <ul>
+                <li>Takes the final image</li>
+                <li>Sends it to your monitor 60–144 times per second</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Software Side (How We Tell Hardware What to Draw)</h2>
+            <p>3.1 Application / Game</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Games</li>
+                <li>iOS / Android apps</li>
+                <li>Web browsers</li>
+                <li>3D modeling tools</li>
+            </ul>
+            <p>These do NOT draw pixels directly.</p>
+            <p>They say things like:</p>
+            <p>“Draw a triangle here”</p>
+            <p>“Apply this texture”</p>
+            <p>“Use lighting”</p>
+        </section>
+
+        <section>
+            <h2>3.2 Graphics APIs (The Translator)</h2>
+            <p>Examples:</p>
+            <ul>
+                <li>OpenGL</li>
+                <li>Vulkan</li>
+                <li>Metal (Apple)</li>
+                <li>DirectX (Windows)</li>
+                <li>WebGL (Browsers)</li>
+            </ul>
+            <p>These APIs:</p>
+            <ul>
+                <li>Translate app commands → GPU instructions</li>
+                <li>Manage memory</li>
+                <li>Control shaders</li>
+            </ul>
+            <p>💡 Think of APIs as languages the GPU understands.</p>
+
+            <p>3.3 Drivers (Middle Layer)</p>
+            <ul>
+                <li>Written by GPU manufacturers (Apple, NVIDIA, AMD)</li>
+                <li>Convert API commands into hardware-specific instructions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. The Graphics Pipeline (Core Concept)</h2>
+            <p>This is the step-by-step process the GPU uses.</p>
+
+            <p>Step 1: Vertices (Points in Space)</p>
+            <p>Everything starts with vertices.</p>
+            <ul>
+                <li>A triangle = 3 vertices</li>
+                <li>A cube = many triangles</li>
+            </ul>
+
+            <p>Each vertex has:</p>
+            <ul>
+                <li>Position (x, y, z)</li>
+                <li>Color</li>
+                <li>Texture coordinates</li>
+                <li>Normal (direction for lighting)</li>
+            </ul>
+
+            <p>Step 3: Primitive Assembly</p>
+            <ul>
+                <li>
+                    GPU connects vertices into:
+                    <ul>
+                        <li>Triangles</li>
+                        <li>Lines</li>
+                        <li>Points</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>⚠️ GPUs draw almost everything as triangles</p>
+        </section>
+
+        <section>
+            <h2>Step 4: Rasterization (Pixels Are Born)</h2>
+            <p>This is a BIG step.</p>
+            <ul>
+                <li>GPU takes triangles</li>
+                <li>Figures out which pixels they cover</li>
+                <li>Converts shapes → fragments (potential pixels)</li>
+            </ul>
+            <p>📌 A triangle becomes thousands of pixel candidates</p>
+
+            <p>Step 5: Fragment / Pixel Shader (Color Stage)</p>
+            <p>Runs for every pixel.</p>
+            <p>Decides:</p>
+            <ul>
+                <li>Final color</li>
+                <li>Lighting</li>
+                <li>Shadows</li>
+                <li>Texture lookup</li>
+                <li>Transparency</li>
+            </ul>
+            <p>📌 Example:</p>
+            <pre><code>
+If light hits here → brighter
+If shadow → darker
+            </code></pre>
+
+            <p>Step 6: Depth & Blending Tests</p>
+            <p>GPU checks:</p>
+            <ul>
+                <li>Depth test → which object is in front?</li>
+                <li>Blending → transparency (glass, smoke)</li>
+                <li>Stencil test → masking effects</li>
+            </ul>
+
+            <p>Step 7: Framebuffer (Final Image)</p>
+            <ul>
+                <li>Resulting pixels are written to memory</li>
+                <li>This is the image shown on screen</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. 2D Graphics (Simpler but Same Pipeline)</h2>
+            <p>Even 2D:</p>
+            <ul>
+                <li>Buttons</li>
+                <li>Text</li>
+                <li>Icons</li>
+            </ul>
+            <p>Are still:</p>
+            <ul>
+                <li>Rectangles made of two triangles</li>
+                <li>Processed by the same pipeline</li>
+            </ul>
+            <p>💡 Your UI is secretly triangles 😄</p>
+        </section>
+
+        <section>
+            <h2>6. Example: Drawing a Button on Screen</h2>
+            <ol>
+                <li>App says: “Draw a rectangle”</li>
+                <li>Rectangle → 2 triangles</li>
+                <li>Vertices sent to GPU</li>
+                <li>Vertex shader positions it</li>
+                <li>Rasterizer creates pixels</li>
+                <li>Fragment shader colors it</li>
+                <li>GPU sends image to display</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>7. Why GPUs Are So Fast</h2>
+            <ul>
+                <li>Parallel processing</li>
+                <li>Simple repetitive tasks</li>
+                <li>Thousands of cores</li>
+                <li>Designed for math, not logic</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Modern Extras (Brief)</h2>
+            <p>Textures</p>
+            <ul>
+                <li>Images wrapped on triangles</li>
+            </ul>
+            <p>Lighting Models</p>
+            <ul>
+                <li>Phong</li>
+                <li>PBR (Physically Based Rendering)</li>
+            </ul>
+            <p>Post-Processing</p>
+            <ul>
+                <li>Bloom</li>
+                <li>Motion blur</li>
+                <li>Color grading</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Hardware vs Software Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Part</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CPU</td>
+                        <td>Decides what to draw</td>
+                    </tr>
+                    <tr>
+                        <td>GPU</td>
+                        <td>Draws it fast</td>
+                    </tr>
+                    <tr>
+                        <td>VRAM</td>
+                        <td>Stores textures & frames</td>
+                    </tr>
+                    <tr>
+                        <td>API</td>
+                        <td>Communication</td>
+                    </tr>
+                    <tr>
+                        <td>Shaders</td>
+                        <td>Custom math programs</td>
+                    </tr>
+                    <tr>
+                        <td>Screen</td>
+                        <td>Shows pixels</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>10. One-Sentence Summary</h2>
+            <p>Computers draw graphics by converting shapes into triangles, running math on the GPU, turning them into pixels, coloring them with shaders, and displaying the result dozens of times per second.</p>
+            <p>If you want next:</p>
+            <ul>
+                <li>🎮 How games render frames</li>
+                <li>📱 How iOS / Android draw UI</li>
+                <li>🌐 How browsers render HTML & Canvas</li>
+                <li>🧠 Why shaders are written in GLSL/Metal</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

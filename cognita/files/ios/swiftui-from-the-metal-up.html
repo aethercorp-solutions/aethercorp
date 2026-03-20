@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SwiftUI from the metal up</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">SwiftUI from the metal up</h1>
+                    <p class="subtitle">Alright, let’s peel SwiftUI from the metal up—modern, opinionated, and honest about what’s actually happening under the hood. Think of this as the full stack of SwiftUI, bottom → top 🧱⬆️</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Hardware & OS Layer (The Foundation)</h2>
+            <p>Apple Silicon (CPU / GPU / Neural Engine)</p>
+            <p>SwiftUI is designed specifically for Apple Silicon-era devices:</p>
+            <ul>
+                <li>Massive parallelism (big.LITTLE cores)</li>
+                <li>Metal-accelerated rendering</li>
+                <li>Unified memory (CPU + GPU share RAM)</li>
+            </ul>
+
+            <p>Why this matters:</p>
+            <ul>
+                <li>Animations, transitions, and layout diffs are cheap</li>
+                <li>Declarative updates don’t kill performance</li>
+            </ul>
+
+            <p>SwiftUI assumes:</p>
+            <p>“Recompute views often — the system is fast enough.”</p>
+        </section>
+
+        <section>
+            <h2>Operating System (iOS / macOS / watchOS / tvOS / visionOS)</h2>
+            <p>SwiftUI is not cross-platform like React Native.</p>
+            <p>It’s a single abstraction layer over multiple native OS frameworks.</p>
+            <p>Each OS provides:</p>
+            <ul>
+                <li>Window & event lifecycle</li>
+                <li>Accessibility</li>
+                <li>Input systems (touch, pointer, keyboard, gaze)</li>
+                <li>Rendering surfaces</li>
+            </ul>
+            <p>SwiftUI adapts automatically:</p>
+            <pre><code>
+Button("Save") { }
+            </code></pre>
+
+            <p>Same code → different behavior on:</p>
+            <ul>
+                <li>iPhone (touch)</li>
+                <li>Mac (mouse + keyboard)</li>
+                <li>Vision Pro (hand + eye)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Core System Frameworks (The Hidden Engines)</h2>
+            <p>Core Animation</p>
+            <p>SwiftUI does not draw pixels directly.</p>
+            <p>Instead:</p>
+            <ul>
+                <li>Generates a render tree</li>
+                <li>Hands it to Core Animation</li>
+                <li>CA batches GPU commands efficiently</li>
+            </ul>
+            <p>This is why:</p>
+            <ul>
+                <li>Animations feel “free”</li>
+                <li>State-driven animations don’t block UI</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Metal</h2>
+            <p>Metal is the final renderer.</p>
+            <p>SwiftUI:</p>
+            <ul>
+                <li>Compiles views → display lists</li>
+                <li>
+                    Uses Metal shaders for:
+                    <ul>
+                        <li>Gradients</li>
+                        <li>Blurs</li>
+                        <li>Shadows</li>
+                        <li>Effects (.material, .blur, .opacity)</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>When you write:</p>
+            <pre><code>
+.background(.ultraThinMaterial)
+            </code></pre>
+            <p>You’re basically invoking:</p>
+            <p>“Apply a GPU-backed real-time blur pipeline”</p>
+        </section>
+
+        <section>
+            <h2>3. Swift Language Features (Critical to SwiftUI)</h2>
+            <p>SwiftUI is impossible without modern Swift.</p>
+            <p>Result Builders (@ViewBuilder)</p>
+            <p>This is what allows this magic:</p>
+            <pre><code>
+var body: some View {
+    if isLoggedIn {
+        Dashboard()
+    } else {
+        Login()
+    }
+}                
+            </code></pre>
+            <p>Under the hood:</p>
+            <ul>
+                <li>Transforms conditional blocks into a type-safe view tree</li>
+                <li>No runtime interpretation</li>
+                <li>No reflection</li>
+            </ul>
+            <p>Compile-time magic 🧠</p>
+        </section>
+
+        <section>
+            <h2>Value Types & Immutability</h2>
+            <p>SwiftUI views are:</p>
+            <ul>
+                <li>structs</li>
+                <li>Cheap</li>
+                <li>Disposable</li>
+                <li>Recreated constantly</li>
+            </ul>
+            <pre><code>
+Text("Hello")
+            </code></pre>
+
+            <p>This is not a UI object.</p>
+            <p>It’s a description of UI.</p>
+            <p>SwiftUI views are blueprints, not houses.</p>
+        </section>
+
+        <section>
+            <h2>Protocol-Oriented Design</h2>
+            <p>Everything is:</p>
+            <pre><code>
+protocol View {
+    associatedtype Body : View
+}                
+            </code></pre>
+            <p>Benefits:</p>
+            <ul>
+                <li>Zero-cost abstractions</li>
+                <li>Static dispatch</li>
+                <li>Aggressive compiler optimizations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. SwiftUI Runtime (The Brain)</h2>
+            <p>This is where SwiftUI becomes special.</p>
+            <p>Diffing Engine</p>
+            <p>SwiftUI:</p>
+            <ol>
+                <li>Rebuilds the entire view tree</li>
+                <li>Compares it to the previous tree</li>
+                <li>Applies minimal mutations to the render tree</li>
+            </ol>
+
+            <p>This is similar to React—but:</p>
+            <ul>
+                <li>Fully compile-time typed</li>
+                <li>No virtual DOM</li>
+                <li>No string-based reconciliation</li>
+            </ul>
+
+            <p>Key principle:</p>
+            <p>“Views are cheap. Side effects are expensive.”</p>
+        </section>
+
+        <section>
+            <h2>Identity & Stability</h2>
+            <p>SwiftUI tracks views via:</p>
+            <ul>
+                <li>Structural position</li>
+                <li>Explicit IDs (.id())</li>
+                <li>ForEach identity</li>
+            </ul>
+
+            <p>Bad identity = weird bugs 😅</p>
+            <pre><code>
+ForEach(items, id: \.id) { item in
+    Row(item)
+}                
+            </code></pre>
+
+            <p>This tells SwiftUI:</p>
+            <p>“This view represents the same conceptual entity across updates.”</p>
+        </section>
+
+        <section>
+            <h2>5. State System (The Heartbeat)</h2>
+            <p>SwiftUI is state-driven UI.</p>
+            <p>Property Wrappers</p>
+            <p>These are not just syntax sugar.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Wrapper</th>
+                        <th>Ownership</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@State</td>
+                        <td>View</td>
+                        <td>Local mutable state</td>
+                    </tr>
+                    <tr>
+                        <td>@Binding</td>
+                        <td>External</td>
+                        <td>Two-way state</td>
+                    </tr>
+                    <tr>
+                        <td>@StateObject</td>
+                        <td>View</td>
+                        <td>Owns reference model</td>
+                    </tr>
+                    <tr>
+                        <td>@ObservedObject</td>
+                        <td>External</td>
+                        <td>Subscribes only</td>
+                    </tr>
+                    <tr>
+                        <td>@EnvironmentObject</td>
+                        <td>App</td>
+                        <td>Dependency injection</td>
+                    </tr>
+                    <tr>
+                        <td>@Environment</td>
+                        <td>System</td>
+                        <td>OS-provided values</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Example:</p>
+            <pre><code>
+@State private var count = 0
+            </code></pre>
+
+            <p>Triggers:</p>
+            <ol>
+                <li>State change</li>
+                <li>View invalidation</li>
+                <li>Tree diff</li>
+                <li>Render update</li>
+            </ol>
+            <p>No manual refresh. Ever.</p>
+        </section>
+
+        <section>
+            <h2>Observation (Modern SwiftUI)</h2>
+            <p>iOS 17+:</p>
+            <pre><code>
+@Observable class UserModel {
+    var name: String = ""
+}                
+            </code></pre>
+            <p>Replaces:</p>
+            <ul>
+                <li>ObservableObject</li>
+                <li>@Published</li>
+                <li>Combine boilerplate</li>
+            </ul>
+            <p>Swift compiler now tracks field-level mutations.</p>
+            <p>This is huge.</p>
+        </section>
+
+        <section>
+            <h2>6. Layout System (Constraint-Free but Strict)</h2>
+            <p>SwiftUI layout works in 3 passes:</p>
+            <p>1️⃣ Propose Size</p>
+            <p>Parent says:</p>
+            <p>“You may be up to this big.”</p>
+
+            <p>2️⃣ Choose Size</p>
+            <p>Child responds:</p>
+            <p>“I want this size.”</p>
+
+            <p>3️⃣ Position</p>
+            <p>Parent places the child.</p>
+            <p>Unlike Auto Layout:</p>
+
+            <ul>
+                <li>No constraints</li>
+                <li>No solver</li>
+                <li>Deterministic</li>
+                <li>Predictable</li>
+            </ul>
+            <p>This is why SwiftUI layouts are fast.</p>
+        </section>
+
+        <section>
+            <h2>Layout Protocol (Advanced)</h2>
+            <p>Custom layouts:</p>
+            <pre><code>
+struct MyLayout: Layout {
+    func sizeThatFits(...)
+    func placeSubviews(...)
+}                
+            </code></pre>
+            <p>This is lower-level than most devs ever need—and that’s intentional.</p>
+        </section>
+
+        <section>
+            <h2>7. Navigation & Scene Management</h2>
+            <p>App Protocol</p>
+            <pre><code>
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+            </code></pre>
+
+            <p>This replaces:</p>
+            <ul>
+                <li>AppDelegate</li>
+                <li>SceneDelegate</li>
+                <li>Storyboards</li>
+            </ul>
+            <p>Everything is declarative.</p>
+        </section>
+
+        <section>
+            <h2>NavigationStack</h2>
+            <p>SwiftUI models navigation as data:</p>
+            <pre><code>
+@State private var path: [Route] = []
+            </code></pre>
+            <p>UI = projection of state.</p>
+        </section>
+
+        <section>
+            <h2>8. Animation System (Physics, Not Timelines)</h2>
+            <p>Animations are:</p>
+            <ul>
+                <li>State transitions</li>
+                <li>Interpolated by the system</li>
+            </ul>
+
+            <pre><code>
+withAnimation(.spring()) {
+    expanded.toggle()
+}                
+            </code></pre>
+
+            <p>SwiftUI:</p>
+            <ul>
+                <li>Captures before & after states</li>
+                <li>Calculates deltas</li>
+                <li>Applies physics-based interpolation</li>
+            </ul>
+            <p>This is why animations “just work”.</p>
+        </section>
+
+        <section>
+            <h2>9. Interop Layer (UIKit / AppKit)</h2>
+            <p>SwiftUI is not replacing UIKit.</p>
+            <p>It’s sitting on top of it.</p>
+            <p>You can:</p>
+            <ul>
+                <li>Embed UIKit views</li>
+                <li>Access view controllers</li>
+                <li>Drop to imperative code when needed</li>
+            </ul>
+            <pre><code>
+UIViewRepresentable
+            </code></pre>
+            <p>Apple’s philosophy:</p>
+            <p>“Use SwiftUI first. Escape when necessary.”</p>
+        </section>
+
+        <section>
+            <h2>10. Philosophy (Why SwiftUI Feels Different)</h2>
+            <p>SwiftUI is built on these beliefs:</p>
+            <ul>
+                <li>UI is a function of state</li>
+                <li>Recompute everything</li>
+                <li>Let the compiler optimize</li>
+                <li>Let the GPU do the work</li>
+                <li>Avoid mutation</li>
+                <li>Make illegal states unrepresentable</li>
+            </ul>
+            <p>This is functional UI married to systems-level performance.</p>
+        </section>
+
+        <section>
+            <h2>Mental Model (TL;DR)</h2>
+            <pre><code>
+State changes
+   ↓
+View tree rebuilds
+   ↓
+Diffing engine computes minimal updates
+   ↓
+Core Animation updates render tree
+   ↓
+Metal draws pixels
+            </code></pre>
+
+            <p>If you want, next we can:</p>
+            <ul>
+                <li>Compare SwiftUI vs UIKit internals</li>
+                <li>Explain SwiftUI like React but faster</li>
+                <li>Deep-dive into SwiftUI performance traps</li>
+                <li>Show how Apple compiles SwiftUI views</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

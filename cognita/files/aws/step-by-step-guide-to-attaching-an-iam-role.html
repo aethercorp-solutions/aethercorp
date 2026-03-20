@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Step-by-step guide to attaching an IAM role for access to Amazon S3 in Amazon Web Services</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Step-by-step guide to attaching an IAM role for access to Amazon S3 in Amazon Web Services</h1>
+                    <p class="subtitle">
+                        Here’s a detailed, step-by-step guide to attaching an IAM role for access to Amazon S3 in Amazon Web Services.
+                        <p>I’ll cover the most common scenario:</p>
+                        <ul>
+                            <li>Create an IAM role</li>
+                            <li>Attach an S3 access policy</li>
+                            <li>
+                                Attach the role to an EC2 instance
+                                <p>(You can adapt the same idea for Lambda, ECS, etc.)</p>
+                            </li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Step 1: Understand the Components</h2>
+            <p>Before starting, know the 3 key pieces:</p>
+            <ol>
+                <li>IAM Role – A set of permissions that AWS services can assume.</li>
+                <li>IAM Policy – Defines what actions are allowed (e.g., read/write S3).</li>
+                <li>Trusted Entity – The AWS service that can assume the role (e.g., EC2).</li>
+            </ol>
+            <p>IAM is managed through AWS Identity and Access Management.</p>
+        </section>
+
+        <section>
+            <h2>✅ Step 2: Create an IAM Role</h2>
+            <p>1️⃣ Go to IAM Console</p>
+            <ul>
+                <li>Log in to AWS Console</li>
+                <li>Search for IAM</li>
+                <li>Click Roles</li>
+                <li>Click Create role</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Choose Trusted Entity</h2>
+            <p>Select the AWS service that will use the role.</p>
+            <p>For example:</p>
+            <ul>
+                <li>Choose AWS service</li>
+                <li>Select EC2 (if attaching to an EC2 instance)</li>
+                <li>Click Next</li>
+            </ul>
+            <p>(If using Lambda, choose Lambda instead.)</p>
+        </section>
+
+        <section>
+            <h2>✅ Step 3: Attach S3 Permissions Policy</h2>
+            <p>Now attach permissions.</p>
+            <p>Option A: Use AWS Managed Policy (Simple Way)</p>
+            <p>Search and select:</p>
+            <ul>
+                <li>AmazonS3ReadOnlyAccess (read-only)</li>
+                <li>AmazonS3FullAccess (full access)</li>
+            </ul>
+            <p>These are AWS managed policies for Amazon S3.</p>
+            <p>Click Next</p>
+        </section>
+
+        <section>
+            <h2>Option B: Create a Custom Policy (Recommended for Production)</h2>
+            <ol>
+                <li>Click Create policy</li>
+                <li>Choose JSON</li>
+                <li>
+                    Example: Allow access to a specific bucket:
+                    <pre><code>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Effect": "Allow",
+        "Action": [
+            "s3:GetObject",
+            "s3:PutObject"
+        ],
+        "Resource": [
+            "arn:aws:s3:::my-bucket-name/*"
+        ]
+        }
+    ]
+}
+                    </code></pre>
+                </li>
+                <li>Click Next</li>
+                <li>Name the policy (e.g., MyAppS3AccessPolicy)</li>
+                <li>Create policy</li>
+                <li>Go back and attach it to your role</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ Step 4: Name and Create the Role</h2>
+            <ul>
+                <li>Enter a role name (e.g., EC2-S3-Access-Role)</li>
+                <li>Review settings</li>
+                <li>Click Create role</li>
+            </ul>
+            <p>Your IAM role is now created.</p>
+        </section>
+
+        <section>
+            <h2>✅ Step 5: Attach the Role to an EC2 Instance</h2>
+            <p>If you're using Amazon EC2:</p>
+            <p>Option A: Attach During Launch</p>
+            <ul>
+                <li>When launching EC2</li>
+                <li>Under Advanced details</li>
+                <li>Choose the IAM role</li>
+            </ul>
+            <p>Option B: Attach to Existing Instance</p>
+            <ol>
+                <li>Go to EC2 Dashboard</li>
+                <li>Select your instance</li>
+                <li>Click Actions</li>
+                <li>
+                    Choose:
+                    <pre><code>
+Security → Modify IAM role
+                    </code></pre>
+                </li>
+                <li>Select your role</li>
+                <li>Click Update IAM role</li>
+            </ol>
+            <p>Done ✅</p>
+        </section>
+
+        <section>
+            <h2>✅ Step 6: Verify It Works</h2>
+            <p>SSH into your EC2 instance and test:</p>
+            <pre><code>
+aws s3 ls
+            </code></pre>
+            <p>If configured correctly:</p>
+            <ul>
+                <li>It will list buckets</li>
+                <li>No access key configuration is needed</li>
+            </ul>
+            <p>IAM roles automatically provide temporary credentials.</p>
+        </section>
+
+        <section>
+            <h2>🔐 Important Best Practices</h2>
+            <p>✔ Follow least privilege principle</p>
+            <p>✔ Avoid AmazonS3FullAccess in production</p>
+            <p>✔ Restrict access to specific bucket ARN</p>
+            <p>✔ Use IAM roles instead of access keys</p>
+            <p>✔ Enable CloudTrail for auditing</p>
+        </section>
+
+        <section>
+            <h2>🧠 What Happens Behind the Scenes?</h2>
+            <p>When EC2 starts:</p>
+            <ol>
+                <li>It assumes the IAM role</li>
+                <li>AWS generates temporary credentials</li>
+                <li>Credentials are available via Instance Metadata Service</li>
+                <li>AWS SDK automatically uses them</li>
+            </ol>
+            <p>No hardcoded keys needed.</p>
+        </section>
+
+        <section>
+            <h2>🎯 Common Use Cases</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>How Role is Used</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>EC2</td>
+                        <td>Access S3 from app server</td>
+                    </tr>
+                    <tr>
+                        <td>Lambda</td>
+                        <td>Process files from S3</td>
+                    </tr>
+                    <tr>
+                        <td>ECS</td>
+                        <td>Containers access S3</td>
+                    </tr>
+                    <tr>
+                        <td>Glue</td>
+                        <td>Data processing from S3</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

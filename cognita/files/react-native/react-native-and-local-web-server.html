@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Native and Local Web Server</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Native and Local Web Server</h1>
+                    <p class="subtitle">Ah, yes! This is a really interesting quirk of React Native. Let’s break it down clearly.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. React Native and “Local Web Server”</h2>
+            <p>When people say “React Native uses a local web server,” they usually refer to Metro, the JavaScript bundler and development server that ships with React Native.</p>
+            <ul>
+                <li>Metro runs on your development machine (or emulator/device when using localhost/IP).</li>
+                <li>It serves your JavaScript bundle, assets, and transforms your JSX/ES6 code into standard JavaScript the mobile runtime can execute.</li>
+            </ul>
+            <p>So, technically, React Native doesn’t render in a browser, but it does fetch the JS bundle from a local server.</p>
+        </section>
+
+        <section>
+            <h2>2. Why it uses a local server</h2>
+            <p>a) Dynamic bundling & hot reloading</p>
+            <ul>
+                <li>Metro watches your project files.</li>
+                <li>When you change a file, it rebundles only the changed code and sends it to the app in real-time.</li>
+                <li>This enables fast refresh (you see changes instantly on the device/emulator).</li>
+            </ul>
+            <p>Without a local server, you’d need to rebuild the entire app every time you change JS.</p>
+
+            <p>b) Asset management</p>
+            <ul>
+                <li>Images, fonts, or other resources in React Native projects can be referenced via require('./image.png').</li>
+                <li>Metro serves these assets on-demand to the app, similar to how a web server serves static files.</li>
+            </ul>
+
+            <p>c) Unified development workflow</p>
+            <ul>
+                <li>The app itself runs native code (Objective-C/Swift for iOS, Java/Kotlin for Android).</li>
+                <li>Your JavaScript code is not compiled into native binaries.</li>
+                <li>The app fetches your JS bundle from Metro at runtime.</li>
+                <li>This allows a single JS bundle to drive both platforms without rebuilding the native code constantly.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. How it works in practice</h2>
+            <ol>
+                <li>
+                    Start the app with:
+                    <pre><code>
+npx react-native start
+                    </code></pre>
+                </li>
+                <li>Metro starts a local server, usually on http://localhost:8081.</li>
+                <li>The app running on simulator/device requests the JavaScript bundle from this local server.</li>
+                <li>If you change code, Metro hot-reloads the app with only the changes, without recompiling native code.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>4. Key Points</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Why Local Server?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>JS bundle delivery</td>
+                        <td>App fetches JS code at runtime.</td>
+                    </tr>
+                    <tr>
+                        <td>Hot reload / Fast refresh</td>
+                        <td>Only changed code is sent instantly.</td>
+                    </tr>
+                    <tr>
+                        <td>Asset serving</td>
+                        <td>Images, fonts, and other resources are served dynamically.</td>
+                    </tr>
+                    <tr>
+                        <td>Development speed</td>
+                        <td>No need to rebuild native code every change.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>✅ Summary:</p>
+            <p>React Native uses a “local web server” (Metro) not because the app runs in a browser, but to serve JS bundles and assets dynamically. This enables fast refresh, dynamic updates, and cross-platform JS execution without rebuilding the entire app.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

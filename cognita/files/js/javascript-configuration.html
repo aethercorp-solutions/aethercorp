@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JavaScript configuration object</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JavaScript configuration object</h1>
+                    <p class="subtitle">
+                        A JavaScript configuration object is simply a plain JavaScript object used to store settings, options, or parameters that control how something behaves.
+                        <p>Think of it as a bundle of preferences you pass into a function, library, or component instead of passing many separate arguments.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple definition</h2>
+            <p>A configuration object is an object that contains key–value pairs used to configure or customize behavior.</p>
+
+            <p>Basic example</p>
+            <pre><code>
+const config = {
+    theme: "dark",
+    language: "en",
+    debug: true
+};                  
+            </code></pre>
+            <p>Here:</p>
+            <ul>
+                <li>theme, language, and debug are configuration options</li>
+                <li>The object itself is the configuration object</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why configuration objects are used</h2>
+            <p>1. Cleaner function calls</p>
+            <p>Instead of this ❌:</p>
+            <pre><code>
+initApp("dark", "en", true, false, 3000);
+            </code></pre>
+
+            <p>You do this ✅:</p>
+            <pre><code>
+initApp({
+    theme: "dark",
+    language: "en",
+    debug: true,
+    cache: false,
+    timeout: 3000
+});                  
+            </code></pre>
+            <p>Much easier to read and maintain.</p>
+
+            <p>2. Order doesn’t matter</p>
+            <pre><code>
+initApp({
+    timeout: 3000,
+    debug: true
+});                  
+            </code></pre>
+            <p>No need to remember parameter positions.</p>
+
+            <p>3. Optional settings</p>
+            <p>You only pass what you need.</p>
+            <pre><code>
+function initApp(config = {}) {
+    const debug = config.debug ?? false;
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real-world examples</h2>
+            <p>1. Function configuration</p>
+            <pre><code>
+function connectDatabase(config) {
+    console.log(config.host, config.port);
+}
+    
+connectDatabase({
+    host: "localhost",
+    port: 27017,
+    ssl: false
+});                  
+            </code></pre>
+
+            <p>2. Library usage (very common)</p>
+            <pre><code>
+fetch(url, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+});                  
+            </code></pre>
+            <p>The second argument is a configuration object.</p>
+
+            <p>3. React / React Native</p>
+            <pre><code>
+&lt;Button
+  title="Save"
+  color="blue"
+  disabled={false}
+/&gt;
+            </code></pre>
+            <p>Props behave like a configuration object for the component.</p>
+
+            <p>4. Framework config files</p>
+            <pre><code>
+// webpack.config.js
+module.exports = {
+  entry: "./src/index.js",
+  output: {
+    filename: "bundle.js"
+  }
+};
+            </code></pre>
+            <p>This entire file is a configuration object.</p>
+        </section>
+
+        <section>
+            <h2>Common patterns in configuration objects</h2>
+            <p>Default values</p>
+            <pre><code>
+const defaultConfig = {
+    retries: 3,
+    timeout: 5000
+};
+    
+const finalConfig = { ...defaultConfig, ...userConfig };                  
+            </code></pre>
+
+            <p>Nested configuration</p>
+            <pre><code>
+const config = {
+    api: {
+        baseUrl: "https://api.example.com",
+        version: "v1"
+    },
+    auth: {
+        token: "abc123"
+    }
+};                  
+            </code></pre>
+            <p>Key takeaway</p>
+            <p>A JavaScript configuration object is:</p>
+            <ul>
+                <li>Just a plain object</li>
+                <li>Used to configure behavior</li>
+                <li>Makes code readable, flexible, and scalable</li>
+                <li>Widely used in APIs, libraries, React, Node.js, and frameworks</li>
+            </ul>
+
+            <p>If you want, I can explain:</p>
+            <ul>
+                <li>How to design a good config object</li>
+                <li>Config objects vs environment variables</li>
+                <li>Type-safe config objects (TypeScript)</li>
+                <li>Common mistakes developers make with configs</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here’s a clear, real-world example of using global settings in a React Native app, with patterns you’d actually use in production.</p>
+            <h2>Use case: Global App Settings (Theme, Language, Notifications)</h2>
+            <p>Imagine a React Native app where:</p>
+            <ul>
+                <li>Theme (light / dark)</li>
+                <li>Language (en / fil)</li>
+                <li>Notification toggle</li>
+            </ul>
+            <p>must be accessible everywhere in the app.</p>
+        </section>
+
+        <section>
+            <h2>1️⃣ Define a global settings configuration object</h2>
+            <pre><code>
+// settings/defaultSettings.js
+export const defaultSettings = {
+  theme: "light",
+  language: "en",
+  notificationsEnabled: true
+};
+            </code></pre>
+            <p>This is your global configuration object.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Create a Settings Context (Global State)</h2>
+            <pre><code>
+// settings/SettingsContext.js
+import React, { createContext, useContext, useState } from "react";
+import { defaultSettings } from "./defaultSettings";
+
+const SettingsContext = createContext(null);
+
+export const SettingsProvider = ({ children }) => {
+  const [settings, setSettings] = useState(defaultSettings);
+
+  const updateSettings = (updates) => {
+    setSettings((prev) => ({ ...prev, ...updates }));
+  };
+
+  return (
+    &lt;SettingsContext.Provider value={{ settings, updateSettings }}&gt;
+      {children}
+    &lt;/SettingsContext.Provider&gt;
+  );
+};
+
+export const useSettings = () => useContext(SettingsContext);
+            </code></pre>
+            <p>This makes your settings global.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Wrap your app with the provider</h2>
+            <pre><code>
+// App.js
+import { SettingsProvider } from "./settings/SettingsContext";
+
+export default function App() {
+  return (
+    &lt;SettingsProvider&gt;
+        &lt;MainNavigator /&gt;
+    &lt;/SettingsProvider&gt;
+  );
+}
+            </code></pre>
+            <p>Now every screen can read/update global settings.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Use global settings anywhere</h2>
+            <p>Example: Apply theme globally</p>
+            <pre><code>
+                import { View, Text } from "react-native";
+import { useSettings } from "../settings/SettingsContext";
+
+export default function HomeScreen() {
+  const { settings } = useSettings();
+
+  return (
+    &lt;View
+      style={{
+        flex: 1,
+        backgroundColor: settings.theme === "dark" ? "#000" : "#fff"
+      }}
+    &gt;
+        &lt;Text style={{ color: settings.theme === "dark" ? "#fff" : "#000" }}&gt;
+        Home Screen
+        &lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5️⃣ Update settings from a Settings screen</h2>
+            <pre><code>
+import { Switch, Button } from "react-native";
+import { useSettings } from "../settings/SettingsContext";
+
+export default function SettingsScreen() {
+  const { settings, updateSettings } = useSettings();
+
+  return (
+    &lt;&gt;
+        &lt;Switch
+        value={settings.notificationsEnabled}
+        onValueChange={(value) =>
+          updateSettings({ notificationsEnabled: value })
+        }
+      /&gt;
+
+    &lt;Button
+        title="Dark Mode"
+        onPress={() =&gt; updateSettings({ theme: "dark" })}
+      /&gt;
+    &lt;/&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6️⃣ Persist settings (important in real apps)</h2>
+            <pre><code>
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const saveSettings = async (settings) => {
+  await AsyncStorage.setItem("APP_SETTINGS", JSON.stringify(settings));
+};
+            </code></pre>
+            <p>Load them on app startup and override defaults.</p>
+        </section>
+
+        <section>
+            <h2>When to use global settings in React Native</h2>
+            <p>✅ Good use cases</p>
+            <ul>
+                <li>Theme</li>
+                <li>Language / locale</li>
+                <li>User preferences</li>
+                <li>Feature flags</li>
+                <li>API base URL (non-secret)</li>
+                <li>Accessibility settings</li>
+            </ul>
+            <p>❌ Bad use cases</p>
+            <ul>
+                <li>Temporary UI state (modals, input text)</li>
+                <li>Screen-specific state</li>
+                <li>Large dynamic datasets</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Production note (important)</h2>
+            <p>For larger apps (like your TryCastanet platform), global settings often evolve into:</p>
+            <ul>
+                <li>Context + AsyncStorage</li>
+                <li>Or Zustand / Redux Toolkit</li>
+                <li>Or Expo’s Appearance + custom theme system</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key takeaway</h2>
+            <p>A global settings config object in React Native:</p>
+            <ul>
+                <li>Centralizes app behavior</li>
+                <li>Avoids prop drilling</li>
+                <li>Makes UI consistent</li>
+                <li>Scales cleanly as the app grows</li>
+            </ul>
+            <p>If you want, I can next show:</p>
+            <ul>
+                <li>TypeScript version</li>
+                <li>Zustand-based global settings</li>
+                <li>System theme sync</li>
+                <li>Multi-tenant / environment-based settings</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What this function does</h2>
+            <pre><code>
+const updateSettings = (updates) => {
+    setSettings((prev) => ({ ...prev, ...updates }));
+};                  
+            </code></pre>
+            <p>✅ It updates part of a settings object in React state</p>
+            <p>✅ It preserves existing values</p>
+            <p>✅ It safely handles async state updates</p>
+        </section>
+
+        <section>
+            <h2>Step-by-step explanation</h2>
+            <ol>
+                <li>
+                    setSettings
+                    <p>This is the state setter from useState:</p>
+                    <pre><code>
+const [settings, setSettings] = useState({
+    theme: 'light',
+    notifications: true,
+    language: 'en',
+});                          
+                    </code></pre>
+                </li>
+                <li>
+                    Functional update (prev)
+                    <pre><code>
+setSettings((prev) => ...)
+                    </code></pre>
+                    <ul>
+                        <li>React gives you the latest state value</li>
+                        <li>Prevents bugs when multiple updates happen quickly</li>
+                    </ul>
+                </li>
+                <li>
+                    Object spread
+                    <pre><code>
+{ ...prev, ...updates }
+                    </code></pre>
+                    <ul>
+                        <li>Copies all existing settings</li>
+                        <li>Overwrites only the keys provided in updates</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <p>Example usage</p>
+            <p>Update one setting</p>
+            <pre><code>
+updateSettings({ theme: 'dark' });
+            </code></pre>
+
+            <p>Before</p>
+            <pre><code>
+{ theme: 'light', notifications: true, language: 'en' }
+            </code></pre>
+
+            <p>After</p>
+            <pre><code>
+{ theme: 'dark', notifications: true, language: 'en' }
+            </code></pre>
+
+            <p>Update multiple settings</p>
+            <pre><code>
+updateSettings({
+    notifications: false,
+    language: 'fil',
+});                  
+            </code></pre>
+
+            <p>Result:</p>
+            <pre><code>
+{ theme: 'dark', notifications: false, language: 'fil' }
+            </code></pre>
+
+            <p>Why this pattern is recommended</p>
+            <p>✔ Avoids mutating state</p>
+            <p>✔ Safe for concurrent rendering (React 18+)</p>
+            <p>✔ Scales well for global settings (Context, Redux-like patterns)</p>
+
+            <p>Common real-world use cases (React / React Native)</p>
+            <ul>
+                <li>App preferences (theme, language, timezone)</li>
+                <li>User profile edits</li>
+                <li>Feature toggles</li>
+                <li>Form state management</li>
+                <li>Global config objects</li>
+            </ul>
+
+            <p>⚠️ Important limitation (nested objects)</p>
+            <p>This is a shallow merge.</p>
+            <p>❌ This will overwrite nested objects entirely:</p>
+            <pre><code>
+updateSettings({
+    profile: { name: 'Paul' }
+});                  
+            </code></pre>
+
+            <p>If you need deep updates, you must spread nested levels:</p>
+            <pre><code>
+updateSettings({
+    profile: {
+        ...settings.profile,
+        name: 'Paul',
+    },
+});                  
+            </code></pre>
+            <p>(or use useReducer for complex state)</p>
+
+            <p>Pro tip (TypeScript)</p>
+            <pre><code>
+const updateSettings = (updates: Partial<Settings>) => {
+    setSettings(prev => ({ ...prev, ...updates }));
+};                  
+            </code></pre>
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Convert this to useReducer</li>
+                <li>Make it immutable-safe for deep objects</li>
+                <li>Turn it into a reusable custom hook</li>
+                <li>Apply it to a React Native global settings context</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

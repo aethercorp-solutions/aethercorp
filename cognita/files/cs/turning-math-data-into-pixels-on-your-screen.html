@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Turning math and data into pixels on your screen</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Turning math and data into pixels on your screen</h1>
+                    <p class="subtitle">Computers draw graphics by turning math and data into pixels on your screen. Here’s a clear, step-by-step explanation from the lowest level to what you see.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. The Screen Is a Grid of Pixels</h2>
+            <p>A display is a matrix of tiny dots called pixels.</p>
+            <ul>
+                <li>Each pixel has a position: (x, y)</li>
+                <li>
+                    Each pixel has a color: (R, G, B)
+                    <p>Example: (255, 0, 0) = red</p>
+                </li>
+            </ul>
+            <p>📺 A 1920×1080 screen = 2,073,600 pixels</p>
+        </section>
+
+        <section>
+            <h2>2. Graphics Are Represented as Data</h2>
+            <p>Computers don’t “see” images — they store numbers.</p>
+            <p>Two main graphic types:</p>
+            <p>A. Raster Graphics (Pixels)</p>
+            <ul>
+                <li>Photos, screenshots, textures</li>
+                <li>Stored as pixel color values</li>
+                <li>Example:</li>
+            </ul>
+            <pre><code>
+Pixel (10, 5) → RGB(0, 255, 0)
+            </code></pre>
+
+            <p>B. Vector Graphics (Math Shapes)</p>
+            <ul>
+                <li>Lines, circles, polygons</li>
+                <li>Defined by equations</li>
+                <li>Example:</li>
+            </ul>
+            <pre><code>
+Circle(center=(100,100), radius=50)
+            </code></pre>
+            <p>Vectors must be converted into pixels to display.</p>
+        </section>
+
+        <section>
+            <h2>3. CPU vs GPU</h2>
+            <p>🧠 CPU (Central Processing Unit)</p>
+            <ul>
+                <li>Handles logic, instructions</li>
+                <li>Tells what to draw</li>
+            </ul>
+            <p>🚀 GPU (Graphics Processing Unit)</p>
+            <ul>
+                <li>Specialized for millions of parallel calculations</li>
+                <li>Tells how to draw pixels fast</li>
+            </ul>
+            <p>Modern graphics rely heavily on the GPU.</p>
+            <p>This is the most important part.</p>
+            <p>Step 1: Application Sends Data</p>
+            <p>Your app/game sends:</p>
+            <ul>
+                <li>Vertices (points in 3D space)</li>
+                <li>Colors</li>
+                <li>Textures</li>
+                <li>Shaders (small programs)</li>
+            </ul>
+            <p>Example (triangle):</p>
+            <pre><code>
+(0,0,0)
+(1,0,0)
+(0,1,0)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2: Vertex Processing</h2>
+            <p>The GPU:</p>
+            <ul>
+                <li>Transforms coordinates</li>
+                <li>Converts 3D → 2D (projection)</li>
+                <li>Applies camera and perspective</li>
+            </ul>
+            <p>🧮 Math involved:</p>
+            <ul>
+                <li>Matrix multiplication</li>
+                <li>Linear algebra</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 3: Rasterization</h2>
+            <p>This step converts shapes into pixels.</p>
+            <ul>
+                <li>A triangle becomes thousands of pixels</li>
+                <li>GPU decides which pixels are inside the shape</li>
+            </ul>
+            <p>This is where vector → raster happens.</p>
+        </section>
+
+        <section>
+            <h2>Step 4: Fragment (Pixel) Shading</h2>
+            <p>For each pixel:</p>
+            <ul>
+                <li>Calculate color</li>
+                <li>Apply lighting</li>
+                <li>Apply texture</li>
+                <li>Apply shadows</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+FinalColor = TextureColor × LightIntensity
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 5: Framebuffer Output</h2>
+            <ul>
+                <li>Final pixel colors are written to memory</li>
+                <li>The screen refreshes (usually 60–120 times per second)</li>
+            </ul>
+            <p>🎞️ Each full image = one frame</p>
+        </section>
+
+        <section>
+            <h2>5. 2D Graphics (UI, Apps, Web)</h2>
+            <p>Even 2D graphics use the GPU:</p>
+            <ul>
+                <li>Rectangles → two triangles</li>
+                <li>Text → textured quads</li>
+                <li>Icons → vector paths → pixels</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+Button → rectangle → triangles → pixels
+            </code></pre>
+            <p>Frameworks:</p>
+            <ul>
+                <li>iOS: Core Graphics, Metal</li>
+                <li>Android: Canvas, Vulkan</li>
+                <li>Web: Canvas, WebGL</li>
+                <li>React Native: Skia, Fabric</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. 3D Graphics (Games, AR, VR)</h2>
+            <p>Extra steps:</p>
+            <ul>
+                <li>3D models (meshes)</li>
+                <li>Lighting (Phong, PBR)</li>
+                <li>Depth buffer (Z-buffer)</li>
+                <li>Shaders (GLSL, HLSL, Metal)</li>
+            </ul>
+            <p>Depth example:</p>
+            <pre><code>
+Pixel closer to camera wins
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Double Buffering (No Flicker)</h2>
+            <p>Computers draw using two buffers:</p>
+            <ol>
+                <li>Back buffer → drawing happens here</li>
+                <li>Front buffer → currently displayed</li>
+            </ol>
+            <p>Then they swap instantly.</p>
+            <p>This prevents flickering.</p>
+        </section>
+
+        <section>
+            <h2>8. Why GPUs Are So Fast</h2>
+            <p>GPUs:</p>
+            <ul>
+                <li>Have thousands of cores</li>
+                <li>Do the same math on many pixels at once</li>
+                <li>Perfect for graphics and AI</li>
+            </ul>
+            <p>CPU: few powerful cores</p>
+            <p>GPU: many simple cores</p>
+        </section>
+
+        <section>
+            <h2>9. Simple Mental Model</h2>
+            <p>Think of it like this:</p>
+            <ol>
+                <li>Math defines shapes</li>
+                <li>GPU breaks shapes into pixels</li>
+                <li>Each pixel gets a color</li>
+                <li>Pixels appear on screen</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>10. Tiny Example (Conceptual)</h2>
+            <p>Draw a red line:</p>
+            <pre><code>
+For x = 10 to 100:
+    Pixel(x, 50) = Red
+            </code></pre>
+            <p>The GPU does this millions of times per frame.</p>
+
+            <p>If you want, I can explain:</p>
+            <ul>
+                <li>🎮 how game engines do it</li>
+                <li>📱 how iOS / Android draw UI</li>
+                <li>🧮 the math behind 3D graphics</li>
+                <li>🎨 shaders with examples</li>
+                <li>🖥️ OpenGL vs Metal vs Vulkan</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

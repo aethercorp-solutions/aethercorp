@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS SAM (Serverless Application Model)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS SAM (Serverless Application Model)</h1>
+                    <p class="subtitle">
+                        AWS SAM (Serverless Application Model) is an open-source framework for building serverless applications on AWS. It simplifies the process of defining, developing, and deploying serverless applications that use services like AWS Lambda, API Gateway, DynamoDB, S3, and Step Functions.
+                        <p>Here’s a detailed breakdown:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Purpose</h2>
+            <p>AWS SAM allows you to define serverless applications using a simple syntax (based on YAML or JSON) and provides tools to build, test, and deploy them in a consistent way.</p>
+        </section>
+
+        <section>
+            <h2>2. Key Features</h2>
+            <ol>
+                <li>
+                    Simplified Resource Definitions:
+                    <p>You can define Lambda functions, APIs, and other AWS resources using a few lines of YAML instead of writing long CloudFormation templates.</p>
+                </li>
+                <li>
+                    Local Development & Testing:
+                    <p>SAM CLI can emulate Lambda functions locally, so you can run and debug functions on your machine before deploying them.</p>
+                </li>
+                <li>
+                    Easy Deployment:
+                    <p>SAM integrates with AWS CloudFormation to deploy your application as a single stack, including all its resources.</p>
+                </li>
+                <li>
+                    Event Source Integration:
+                    <p>SAM makes it easy to link Lambda functions to triggers like S3 uploads, DynamoDB streams, or API Gateway HTTP requests.</p>
+                </li>
+                <li>
+                    Packaging:
+                    <p>Automatically packages your code and dependencies and uploads them to S3 for deployment.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>3. How it Works</h2>
+            <ol>
+                <li>
+                    Define your serverless application in a template.yaml file.
+                    <p>Example:</p>
+                    <pre><code>
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Resources:
+  HelloWorldFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs18.x
+      CodeUri: ./src
+      Events:
+        HelloWorldAPI:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+                    </code></pre>
+                </li>
+                <li>
+                    Build & Test locally with SAM CLI:
+                    <pre><code>
+sam build
+sam local invoke HelloWorldFunction
+sam local start-api
+                    </code></pre>
+                </li>
+                <li>
+                    Deploy to AWS:
+                    <pre><code>
+sam deploy --guided
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>4. Why Use AWS SAM?</h2>
+            <ul>
+                <li>Reduces boilerplate for serverless apps.</li>
+                <li>Integrates tightly with AWS services.</li>
+                <li>Supports local testing, which speeds up development.</li>
+                <li>Works with CI/CD pipelines.</li>
+                <li>Leverages CloudFormation, so all AWS infrastructure is reproducible.</li>
+            </ul>
+
+            <p>Think of AWS SAM as a developer-friendly wrapper over CloudFormation for serverless apps—it lets you write less code but still manage your infrastructure as code.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

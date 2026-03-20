@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Python machine-learning example</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Python machine-learning example</h1>
+                    <p class="subtitle">
+                        Here’s a clean, practical Python machine-learning example showing vector data representation, using something everyone recognizes: text → vectors → ML model.
+                        <p>We’ll go step by step so you can see what the vectors actually look like and why they matter.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Example: Text as vectors (Bag-of-Words / TF-IDF)</h2>
+            <p>1. Raw data (not usable by ML yet)</p>
+            <pre><code>
+documents = [
+    "I love machine learning",
+    "Machine learning is fun",
+    "I hate bugs"
+]
+            </code></pre>
+            <p>Models can’t work with strings — we need numerical vectors.</p>
+        </section>
+
+        <section>
+            <h2>2. Vector representation using TF-IDF</h2>
+            <p>Each document becomes a vector of numbers, one number per word.</p>
+            <pre><code>
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(documents)
+
+print("Feature names (vector dimensions):")
+print(vectorizer.get_feature_names_out())
+
+print("\nVector representation:")
+print(X.toarray())
+            </code></pre>
+
+            <p>Output conceptually looks like:</p>
+            <pre><code>
+Features: ['bugs', 'fun', 'hate', 'learning', 'love', 'machine', 'is', 'i']
+
+Document vectors:
+[
+ [0.0, 0.0, 0.0, 0.53, 0.53, 0.53, 0.0, 0.37],
+ [0.0, 0.53, 0.0, 0.53, 0.0, 0.53, 0.53, 0.0],
+ [0.57, 0.0, 0.57, 0.0, 0.0, 0.0, 0.0, 0.57]
+]
+            </code></pre>
+
+            <p>👉 Each row = one document</p>
+            <p>👉 Each column = one word</p>
+            <p>👉 Each value = importance of that word</p>
+            <p>That matrix is the vector data representation.</p>
+        </section>
+
+        <section>
+            <h2>3. Using vectors in a machine-learning model</h2>
+            <p>Let’s classify sentiment (positive vs negative):</p>
+            <pre><code>
+from sklearn.linear_model import LogisticRegression
+
+y = [1, 1, 0]  # 1 = positive, 0 = negative
+
+model = LogisticRegression()
+model.fit(X, y)
+
+# Predict new text
+new_text = ["I love learning"]
+new_vec = vectorizer.transform(new_text)
+
+prediction = model.predict(new_vec)
+print("Prediction:", prediction)
+            </code></pre>
+
+            <p>ML models never see text — they only see vectors like:</p>
+            <pre><code>
+[0.0, 0.0, 0.0, 0.62, 0.62, 0.0, 0.0, 0.49]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Another common vector example: Numerical features</h2>
+            <p>Vectors aren’t only for text.</p>
+            <pre><code>
+# Each row is a vector: [height, weight, age]
+X = [
+    [170, 65, 30],
+    [180, 80, 25],
+    [160, 50, 40]
+]
+            </code></pre>
+            <p>This is already vectorized — each sample is a feature vector in ℝ³.</p>
+        </section>
+
+        <section>
+            <h2>5. Mental model (important 🧠)</h2>
+            <p>Think of vectors as:</p>
+            <ul>
+                <li>Points in space</li>
+                <li>Directions</li>
+                <li>Encoded meaning</li>
+            </ul>
+            <p>In ML:</p>
+            <ul>
+                <li>Text → vectors</li>
+                <li>Images → vectors</li>
+                <li>Audio → vectors</li>
+                <li>Tabular data → vectors</li>
+            </ul>
+            <p>Everything becomes numbers.</p>
+
+            <p>If you want, I can show:</p>
+            <ul>
+                <li>Word embeddings (Word2Vec / GloVe)</li>
+                <li>Image vectors (CNN features)</li>
+                <li>Vector similarity (cosine distance)</li>
+                <li>How vectors look in high-dimensional space</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

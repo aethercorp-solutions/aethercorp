@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Optimize older React Native codebase</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Optimize older React Native codebase</h1>
+                    <p class="subtitle">
+                        If you're working with an older React Native codebase (especially pre–0.65 or without the new architecture), optimization focuses mainly on reducing unnecessary re-renders, improving list performance, and minimizing bridge usage.
+                        <p>Here’s a practical guide tailored for legacy React Native apps:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ Optimize Re-renders</h2>
+            <p>✅ Use PureComponent or React.memo</p>
+            <p>For class components:</p>
+            <pre><code>
+class MyComponent extends React.PureComponent { }
+            </code></pre>
+
+            <p>For functional components:</p>
+            <pre><code>
+export default React.memo(MyComponent);
+            </code></pre>
+            <p>This prevents unnecessary re-renders when props haven’t changed.</p>
+        </section>
+
+        <section>
+            <h2>✅ Implement shouldComponentUpdate</h2>
+            <p>For heavy components:</p>
+            <pre><code>
+shouldComponentUpdate(nextProps) {
+    return nextProps.value !== this.props.value;
+}                  
+            </code></pre>
+            <p>Avoid deep comparisons — they can be slower than re-rendering.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Optimize FlatList (Very Important)</h2>
+            <p>In older RN versions, list rendering is usually the biggest performance bottleneck.</p>
+            <p>❌ Avoid:</p>
+            <ul>
+                <li>ScrollView for large lists</li>
+                <li>Inline arrow functions inside renderItem</li>
+                <li>Missing keyExtractor</li>
+            </ul>
+
+            <p>✅ Use:</p>
+            <pre><code>
+&lt;FlatList
+  data={data}
+  renderItem={renderItem}
+  keyExtractor={(item) => item.id}
+  initialNumToRender={10}
+  maxToRenderPerBatch={5}
+  windowSize={5}
+  removeClippedSubviews={true}
+/&gt;
+            </code></pre>
+
+            <p>Extra Tips:</p>
+            <ul>
+                <li>Use getItemLayout if items have fixed height</li>
+                <li>Memoize renderItem</li>
+                <li>Avoid dynamic inline styles</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Avoid Heavy Inline Objects</h2>
+            <p>❌ Bad:</p>
+            <pre><code>
+&lt;View style={{ margin: 10 }} /&gt;
+            </code></pre>
+
+            <p>✅ Good:</p>
+            <pre><code>
+const styles = StyleSheet.create({
+    container: { margin: 10 }
+});                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4️⃣ Reduce JS ↔ Native Bridge Calls</h2>
+            <p>Old architecture relies heavily on the bridge, which is slow.</p>
+            <p>Avoid:</p>
+            <ul>
+                <li>Frequent setState calls in loops</li>
+                <li>Excessive logging (console.log)</li>
+                <li>Heavy animations in JS thread</li>
+            </ul>
+
+            <p>Use:</p>
+            <ul>
+                <li>InteractionManager</li>
+                <li>Native-driven animations:</li>
+            </ul>
+
+            <pre><code>
+Animated.timing(value, {
+    toValue: 1,
+    useNativeDriver: true
+}).start();                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5️⃣ Optimize Images</h2>
+            <p>Use:</p>
+            <ul>
+                <li>Proper image sizes</li>
+                <li>Caching libraries (like react-native-fast-image)</li>
+                <li>Avoid huge PNGs</li>
+            </ul>
+
+            <p>For heavy apps:</p>
+            <ul>
+                <li>Preload images</li>
+                <li>Use WebP if supported</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6️⃣ Disable Dev Mode in Production</h2>
+            <p>Development mode is MUCH slower.</p>
+            <p>Always test performance in:</p>
+            <pre><code>
+react-native run-android --variant=release
+            </code></pre>
+            <p>or build a release IPA/APK.</p>
+        </section>
+
+        <section>
+            <h2>7️⃣ Memory Leak Prevention</h2>
+            <p>Common old RN problems:</p>
+            <ul>
+                <li>Unremoved listeners</li>
+                <li>Uncancelled timers</li>
+                <li>EventEmitter leaks</li>
+            </ul>
+            <p>Always clean up:</p>
+            <pre><code>
+componentWillUnmount() {
+    this.listener?.remove();
+}                  
+            </code></pre>
+
+            <p>8️⃣ Use Hermes (If Possible)</p>
+            <p>If you're on RN 0.64+, enable Hermes — huge JS performance gain on Android.</p>
+        </section>
+
+        <section>
+            <h2>9️⃣ Avoid Large Redux State Updates</h2>
+            <p>If using Redux:</p>
+            <ul>
+                <li>Normalize state</li>
+                <li>Avoid deep nested objects</li>
+                <li>Use selectors (reselect)</li>
+                <li>Connect smaller components instead of entire screens</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔟 Profile Before Optimizing</h2>
+            <p>Use:</p>
+            <ul>
+                <li>Flipper (for newer legacy versions)</li>
+                <li>Chrome DevTools profiler</li>
+                <li>why-did-you-render</li>
+            </ul>
+            <p>Don’t optimize blindly.</p>
+        </section>
+
+        <section>
+            <h2>🚀 If You Tell Me:</h2>
+            <ul>
+                <li>Your RN version</li>
+                <li>iOS or Android (or both)</li>
+                <li>If you're using Redux/MobX</li>
+                <li>Main issue (slow scroll? memory leak? startup time?)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What is class MyComponent extends React.PureComponent { }</h2>
+            <p>Here’s what that means:</p>
+            <p>🔹 What is React.PureComponent?</p>
+            <p>React.PureComponent is a base class provided by React that automatically implements a performance optimization.</p>
+            <p>It performs a shallow comparison of:</p>
+            <ul>
+                <li>this.props</li>
+                <li>this.state</li>
+            </ul>
+            <p>If neither has changed, the component does NOT re-render.</p>
+
+            <p>🔹 Normal Component vs PureComponent</p>
+            <p>Regular component:</p>
+            <pre><code>
+class MyComponent extends React.Component {
+}                
+            </code></pre>
+            <ul>
+                <li>Re-renders whenever parent re-renders (by default).</li>
+            </ul>
+
+            <p>Pure component:</p>
+            <pre><code>
+class MyComponent extends React.PureComponent {
+}                
+            </code></pre>
+            <ul>
+                <li>Only re-renders if props or state actually change (based on shallow comparison).</li>
+            </ul>
+
+            <p>🔹 What is “shallow comparison”?</p>
+            <p>It checks:</p>
+            <ul>
+                <li>Primitive values (number, string, boolean) → compares by value.</li>
+                <li>Objects & arrays → compares by reference (not deep equality).</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+this.setState({ count: 1 }) // if count was already 1
+            </code></pre>
+
+            <p>A PureComponent will NOT re-render because the value hasn’t changed.</p>
+            <p>But:</p>
+            <pre><code>
+this.setState({ items: [] })
+            </code></pre>
+            <p>Even if logically empty before, this creates a new array reference, so it WILL re-render.</p>
+
+            <p>🔹 When to Use PureComponent</p>
+            <p>✅ Good for:</p>
+            <ul>
+                <li>Performance optimization</li>
+                <li>Components that render the same output for the same props/state</li>
+                <li>Immutable data patterns</li>
+            </ul>
+            <p>❌ Avoid if:</p>
+            <ul>
+                <li>You mutate objects instead of creating new ones</li>
+                <li>You rely on deep object comparisons</li>
+            </ul>
+
+            <p>🔹 Modern React Equivalent</p>
+            <p>In modern React (with function components), the equivalent optimization is:</p>
+            <pre><code>
+export default React.memo(MyComponent);
+            </code></pre>
+            <p>React.memo does the same shallow comparison for functional components.</p>
+
+            <p>🔹 Summary</p>
+            <p>class MyComponent extends React.PureComponent { } means:</p>
+            <p>“Create a React class component that automatically skips unnecessary re-renders if props and state haven’t changed.”</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

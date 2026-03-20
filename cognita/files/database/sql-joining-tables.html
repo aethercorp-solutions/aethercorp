@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is SQL JOIN? (Absolute Beginner Explanation)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is SQL JOIN? (Absolute Beginner Explanation)</h1>
+                    <p class="subtitle">
+                        In a database, data is often split into multiple tables to keep it organized.
+                        <p>👉 JOIN is how SQL connects related tables together so you can see combined data in one result.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of a real-life example 📚</h2>
+            <p>Imagine a school:</p>
+            <p>Table 1: Students</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>student_id</th>
+                        <th>name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Anna</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Ben</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Chris</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Table 2: Grades</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>grade_id</th>
+                        <th>student_id</th>
+                        <th>subject</th>
+                        <th>grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>101</td>
+                        <td>1</td>
+                        <td>Math</td>
+                        <td>90</td>
+                    </tr>
+                    <tr>
+                        <td>102</td>
+                        <td>1</td>
+                        <td>English</td>
+                        <td>85</td>
+                    </tr>
+                    <tr>
+                        <td>103</td>
+                        <td>2</td>
+                        <td>Math</td>
+                        <td>88</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 The connection between these tables is student_id.</p>
+        </section>
+
+        <section>
+            <h2>Why we need JOIN</h2>
+            <p>If you query Students, you see names but no grades.</p>
+            <p>If you query Grades, you see grades but not student names.</p>
+            <p>JOIN lets you combine them.</p>
+        </section>
+
+        <section>
+            <h2>Basic JOIN syntax</h2>
+            <pre><code>
+SELECT columns
+FROM table1
+JOIN table2
+ON condition;
+            </code></pre>
+            <p>What each part means:</p>
+            <ul>
+                <li>SELECT → what columns you want to see</li>
+                <li>FROM → first table</li>
+                <li>JOIN → second table</li>
+                <li>ON → how the tables are connected</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1️⃣ INNER JOIN (Most Common)</h2>
+            <p>Meaning:</p>
+            <p>👉 Show only matching data in both tables.</p>
+            <p>Example:</p>
+            <pre><code>
+SELECT
+  Students.name,
+  Grades.subject,
+  Grades.grade
+FROM Students
+INNER JOIN Grades
+ON Students.student_id = Grades.student_id;
+            </code></pre>
+
+            <p>Result:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <td>name</td>
+                        <td>subject</td>
+                        <td>grade</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Anna</td>
+                        <td>Math</td>
+                        <td>90</td>
+                    </tr>
+                    <tr>
+                        <td>Anna</td>
+                        <td>English</td>
+                        <td>85</td>
+                    </tr>
+                    <tr>
+                        <td>Ben</td>
+                        <td>Math</td>
+                        <td>88</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>❌ Chris is missing because he has no grades.</p>
+        </section>
+
+        <section>
+            <h2>Mental picture 🧠</h2>
+            <p>INNER JOIN = overlap only</p>
+            <pre><code>
+Students ∩ Grades
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2️⃣ LEFT JOIN (Very Important)</h2>
+            <p>Meaning:</p>
+            <p>👉 Show ALL rows from the left table, even if there’s no match.</p>
+            <p>Example:</p>
+            <pre><code>
+SELECT
+  Students.name,
+  Grades.subject,
+  Grades.grade
+FROM Students
+LEFT JOIN Grades
+ON Students.student_id = Grades.student_id;
+            </code></pre>
+
+            <p>Result:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>subject</th>
+                        <th>grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Anna</td>
+                        <td>Math</td>
+                        <td>90</td>
+                    </tr>
+                    <tr>
+                        <td>Anna</td>
+                        <td>English</td>
+                        <td>85</td>
+                    </tr>
+                    <tr>
+                        <td>Ben</td>
+                        <td>Math</td>
+                        <td>88</td>
+                    </tr>
+                    <tr>
+                        <td>Chris</td>
+                        <td>NULL</td>
+                        <td>NULL</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>✔ Chris appears, but with NULL values.</p>
+        </section>
+
+        <section>
+            <h2>Mental picture 🧠</h2>
+            <p>INNER JOIN = overlap only</p>
+            <pre><code>
+Students ∩ Grades
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2️⃣ LEFT JOIN (Very Important)</h2>
+            <p>Meaning:</p>
+            <p>👉 Show ALL rows from the left table, even if there’s no match.</p>
+            <p>Example:</p>
+            <pre><code>
+SELECT
+  Students.name,
+  Grades.subject,
+  Grades.grade
+FROM Students
+LEFT JOIN Grades
+ON Students.student_id = Grades.student_id;
+            </code></pre>
+
+            <p>Result:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>subject</th>
+                        <th>grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Anna</td>
+                        <td>Math</td>
+                        <td>90</td>
+                    </tr>
+                    <tr>
+                        <td>Anna</td>
+                        <td>English</td>
+                        <td>85</td>
+                    </tr>
+                    <tr>
+                        <td>Ben</td>
+                        <td>Math</td>
+                        <td>88</td>
+                    </tr>
+                    <tr>
+                        <td>Chris</td>
+                        <td>NULL</td>
+                        <td>NULL</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>✔ Chris appears, but with NULL values.</p>
+        </section>
+
+        <section>
+            <h2>Mental picture 🧠</h2>
+            <p>LEFT JOIN = everything on the left</p>
+            <pre><code>
+Students ⟵ Grades
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3️⃣ RIGHT JOIN</h2>
+            <p>Meaning:</p>
+            <p>👉 Show ALL rows from the right table, even if no match.</p>
+            <pre><code>
+SELECT
+  Students.name,
+  Grades.subject,
+  Grades.grade
+FROM Students
+RIGHT JOIN Grades
+ON Students.student_id = Grades.student_id;
+            </code></pre>
+            <p>
+                👉 Less commonly used (LEFT JOIN is preferred).
+                
+                </p>
+        </section>
+
+        <section>
+            <h2>4️⃣ FULL JOIN</h2>
+            <p>Meaning:</p>
+            <p>👉 Show everything from both tables, matched or not.</p>
+            <pre><code>
+SELECT
+  Students.name,
+  Grades.subject,
+  Grades.grade
+FROM Students
+FULL JOIN Grades
+ON Students.student_id = Grades.student_id;
+            </code></pre>
+            <p>⚠ Not supported in MySQL (works in PostgreSQL, SQL Server).</p>
+        </section>
+
+        <section>
+            <h2>5️⃣ JOIN with WHERE (Filtering)</h2>
+            <pre><code>
+SELECT
+  Students.name,
+  Grades.subject,
+  Grades.grade
+FROM Students
+JOIN Grades
+ON Students.student_id = Grades.student_id
+WHERE Grades.subject = 'Math';
+            </code></pre>
+            <p>👉 Shows only Math grades.</p>
+        </section>
+
+        <section>
+            <h2>Very Common Beginner Mistakes ⚠️</h2>
+            <p>❌ Forgetting the ON condition</p>
+            <pre><code>
+JOIN Grades   -- ❌ WRONG
+            </code></pre>
+
+            <p>✔ Always use:</p>
+            <pre><code>
+ON Students.student_id = Grades.student_id
+            </code></pre>
+
+            <p>❌ Confusing JOIN vs WHERE</p>
+            <ul>
+                <li>ON → how tables connect</li>
+                <li>WHERE → filtering results</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple Analogy 🧩</h2>
+            <p>Think of JOIN like matching:</p>
+            <ul>
+                <li>Students = people</li>
+                <li>Grades = report cards</li>
+                <li>student_id = ID number</li>
+            </ul>
+            <p>SQL JOIN says:</p>
+            <p>“Match rows where the ID number is the same.”</p>
+        </section>
+
+        <section>
+            <h2>Quick Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>JOIN Type</th>
+                        <th>What it shows</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>INNER JOIN</td>
+                        <td>Only matching rows</td>
+                    </tr>
+                    <tr>
+                        <td>LEFT JOIN</td>
+                        <td>All left + matches</td>
+                    </tr>
+                    <tr>
+                        <td>RIGHT JOIN</td>
+                        <td>All right + matches</td>
+                    </tr>
+                    <tr>
+                        <td>FULL JOIN</td>
+                        <td>Everything</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>If you want, I can next:</p>
+            <ul>
+                <li>Explain JOIN with 3 tables</li>
+                <li>Show real business examples (customers & orders)</li>
+                <li>Explain JOIN vs SUBQUERY</li>
+                <li>Give practice exercises with answers</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Great choice 👍</p>
+            <p>This is the most common real-world SQL JOIN scenario.</p>
+            <p>I’ll explain this slowly, clearly, and practically, like in an actual business system.</p>
+            <h2>Real Business Example: Customers & Orders</h2>
+            <p>Imagine an online store.</p>
+
+            <p>🧾 Table 1: Customers</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>customer_id</th>
+                        <th>name</th>
+                        <th>email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Alice</td>
+                        <td>alice@email.com</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Bob</td>
+                        <td>bob@email.com</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Charlie</td>
+                        <td>charlie@email.com</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>📦 Table 2: Orders</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>order_id</th>
+                        <th>customer_id</th>
+                        <th>order_date</th>
+                        <th>total_amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>101</td>
+                        <td>1</td>
+                        <td>2025-01-01</td>
+                        <td>150.00</td>
+                    </tr>
+                    <tr>
+                        <td>102</td>
+                        <td>1</td>
+                        <td>2025-01-05</td>
+                        <td>200.00</td>
+                    </tr>
+                    <tr>
+                        <td>103</td>
+                        <td>2</td>
+                        <td>2025-01-03</td>
+                        <td>99.99</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 customer_id connects the tables</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

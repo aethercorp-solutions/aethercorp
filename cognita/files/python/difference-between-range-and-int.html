@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Difference between range and int</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Difference between range and int</h1>
+                    <p class="subtitle">In Python, range and int (integer) are completely different types with different purposes:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔢 int (Integer)</h2>
+            <ul>
+                <li>Represents a single whole number</li>
+                <li>Can be positive, negative, or zero</li>
+                <li>Used for calculations</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+x = 5
+y = -10
+z = 0
+            </code></pre>
+            <p>You can do math with it:</p>
+            <pre><code>
+print(x + 2)  # 7
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔁 range</h2>
+            <ul>
+                <li>Represents a sequence of numbers</li>
+                <li>Commonly used in loops</li>
+                <li>Doesn’t store all numbers in memory (efficient)</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+r = range(5)
+            </code></pre>
+            <p>This represents:</p>
+            <pre><code>
+0, 1, 2, 3, 4
+            </code></pre>
+            <p>Used in loops:</p>
+            <pre><code>
+for i in range(5):
+    print(i)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚖️ Key Differences</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>int</th>
+                        <th>range</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Type</td>
+                        <td>Single number</td>
+                        <td>Sequence of numbers</td>
+                    </tr>
+                    <tr>
+                        <td>Usage</td>
+                        <td>Math operations</td>
+                        <td>Iteration (loops)</td>
+                    </tr>
+                    <tr>
+                        <td>Example</td>
+                        <td>5</td>
+                        <td>range(5)</td>
+                    </tr>
+                    <tr>
+                        <td>Memory</td>
+                        <td>Stores value</td>
+                        <td>Generates values on demand</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>💡 Simple Analogy</p>
+            <ul>
+                <li>int = one number (like a single house 🏠)</li>
+                <li>range = a list of numbers (like a street of houses 🏘️)</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Great—let’s break down range(start, stop, step) clearly 👇</p>
+            <h2>🔁 Full Syntax</h2>
+            <pre><code>
+range(start, stop, step)
+            </code></pre>
+            <p>📌 Meaning:</p>
+            <ul>
+                <li>start → where the sequence begins</li>
+                <li>stop → where it ends (NOT included)</li>
+                <li>step → how much to increment (or decrement)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Example 1: Basic range</h2>
+            <pre><code>
+for i in range(1, 6):
+    print(i)
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+1 2 3 4 5
+            </code></pre>
+            <p>👉 Starts at 1, stops before 6</p>
+        </section>
+
+        <section>
+            <h2>⏩ Example 2: Using step</h2>
+            <pre><code>
+for i in range(0, 10, 2):
+    print(i)
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+0 2 4 6 8
+            </code></pre>
+            <p>👉 Jumps by 2 each time</p>
+        </section>
+
+        <section>
+            <h2>⏪ Example 3: Negative step (reverse)</h2>
+            <pre><code>
+for i in range(5, 0, -1):
+    print(i)
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+5 4 3 2 1
+            </code></pre>
+            <p>👉 Counts backwards</p>
+        </section>
+
+        <section>
+            <h2>🧠 Important Rules</h2>
+            <p>1. stop is always excluded</p>
+            <pre><code>
+list(range(3))
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+[0, 1, 2]
+            </code></pre>
+
+            <p>2. Default values</p>
+            <p>If you omit parameters:</p>
+            <pre><code>
+range(5)
+            </code></pre>
+            <p>Same as:</p>
+            <pre><code>
+range(0, 5, 1)
+            </code></pre>
+
+            <p>3. Step cannot be zero ❌</p>
+            <pre><code>
+range(1, 10, 0)  # ERROR
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔍 Visual Understanding</h2>
+            <p>Think of it like:</p>
+            <pre><code>
+range(start, stop, step)
+            </code></pre>
+            <p>➡️ Start here → move by step → stop before limit</p>
+
+            <p>💡 Pro Tip</p>
+            <p>If you want to actually see the numbers:</p>
+            <pre><code>
+print(list(range(1, 10, 3)))
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+[1, 4, 7]
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

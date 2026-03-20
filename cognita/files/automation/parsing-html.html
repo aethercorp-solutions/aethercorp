@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Parsing HTML</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Parsing HTML</h1>
+                    <p class="subtitle">
+                        Parsing HTML means reading an HTML document and turning it into a structured, usable representation so your program can find, extract, modify, or analyze elements like tags, text, attributes, and links.
+                        <p>Below is a basic but detailed explanation, starting from concepts and moving to practical examples.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What “Parsing HTML” Really Means</h2>
+            <p>HTML is just text:</p>
+            <pre><code>
+&lt;html&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello&lt;/h1&gt;
+        &lt;p class="intro">Welcome&lt;/p&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+
+            <p>When you parse HTML, you convert this text into a tree structure called the DOM (Document Object Model).</p>
+            <p>DOM Tree View</p>
+            <pre><code>
+Document
+ └── html
+     └── body
+         ├── h1 → "Hello"
+         └── p (class="intro") → "Welcome"
+            </code></pre>
+
+            <p>Once parsed, your code can:</p>
+            <ul>
+                <li>Find elements (h1, p)</li>
+                <li>Read attributes (class)</li>
+                <li>Extract text</li>
+                <li>Modify or remove nodes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Why You Parse HTML</h2>
+            <p>Common use cases:</p>
+            <ul>
+                <li>🕷 Web scraping</li>
+                <li>📄 Reading HTML emails</li>
+                <li>🧠 Chatbots analyzing content</li>
+                <li>🔄 Converting HTML → text / JSON</li>
+                <li>✏️ Editing HTML programmatically</li>
+                <li>📱 Rendering or sanitizing user content</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Key Concepts You Must Know</h2>
+            <p>a. Tags</p>
+            <pre><code>
+&lt;p&gt;Hello&lt;/p&gt;
+            </code></pre>
+
+            <ul>
+                <li>Opening tag: &lt;p&gt;</li>
+                <li>Closing tag: &lt;/p&gt;</li>
+            </ul>
+
+            <p>b. Attributes</p>
+            <pre><code>
+&lt;img src="logo.png" alt="Logo"&gt;
+            </code></pre>
+            <ul>
+                <li>src, alt are attributes</li>
+            </ul>
+
+            <p>c. Elements</p>
+            <p>Everything combined:</p>
+            <pre><code>
+&lt;p class="text"&gt;Hello&lt;/p&gt;
+            </code></pre>
+
+            <p>d. Text Nodes</p>
+            <pre><code>
+&lt;p&gt;Hello&lt;/p&gt;
+            </code></pre>
+            <p>Hello is a text node inside <p></p>
+        </section>
+
+        <section>
+            <h2>4. Parsing vs Regex (Important)</h2>
+            <p>❌ Do NOT parse HTML with regex</p>
+            <p>Why?</p>
+            <ul>
+                <li>HTML can be nested</li>
+                <li>Attributes can be in any order</li>
+                <li>Invalid HTML still works in browsers</li>
+            </ul>
+            <p>✅ Always use an HTML parser</p>
+        </section>
+
+        <section>
+            <h2>5. Basic HTML Parsing in JavaScript (Browser)</h2>
+            <p>Using DOMParser</p>
+            <pre><code>
+const html = `
+  &lt;div&gt;
+    &lt;h1&gt;Hello&lt;/h1&gt;
+    &lt;p class="intro"&gt;Welcome&lt;/p&gt;
+  &lt;/div&gt;
+`;
+
+const parser = new DOMParser();
+const doc = parser.parseFromString(html, "text/html");
+
+// Find elements
+const title = doc.querySelector("h1").textContent;
+const intro = doc.querySelector(".intro").textContent;
+
+console.log(title); // Hello
+console.log(intro); // Welcome
+            </code></pre>
+
+            <p>What Happened</p>
+            <ol>
+                <li>HTML string → DOM document</li>
+                <li>querySelector works like CSS</li>
+                <li>Extract text easily</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>6. Parsing HTML in Node.js (Server-side)</h2>
+            <p>Browsers have DOM built-in. Node.js does not.</p>
+            <p>Option 1: jsdom</p>
+            <pre><code>
+npm install jsdom
+            </code></pre>
+
+            <pre><code>
+import { JSDOM } from "jsdom";
+
+const html = `
+  &lt;div&gt;
+    &lt;h1&gt;Hello&lt;/h1&gt;
+    &lt;a href="/home"&gt;Home&lt;/a&gt;
+  &lt;/div&gt;
+`;
+
+const dom = new JSDOM(html);
+const document = dom.window.document;
+
+const link = document.querySelector("a");
+console.log(link.textContent);  // Home
+console.log(link.href);         // http://localhost/home
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Option 2: cheerio (Fast & Lightweight)</h2>
+            <pre><code>
+npm install cheerio
+            </code></pre>
+
+            <pre><code>
+import cheerio from "cheerio";
+
+const html = `
+  &lt;ul&gt;
+    &lt;li&gt;Apple&lt;/li&gt;
+    &lt;li&gt;Banana&lt;/li&gt;
+  &lt;/ul&gt;
+`;
+
+const $ = cheerio.load(html);
+
+$("li").each((i, el) => {
+  console.log($(el).text());
+});
+            </code></pre>
+            <p>📌 Cheerio is ideal for scraping (no JS execution).</p>
+        </section>
+
+        <section>
+            <h2>7. Parsing HTML in Python (Bonus)</h2>
+            <p>Using BeautifulSoup</p>
+            <pre><code>
+pip install beautifulsoup4
+            </code></pre>
+
+            <pre><code>
+from bs4 import BeautifulSoup
+
+html = """
+&lt;div&gt;
+    &lt;h1&gt;Hello&lt;/h1&gt;
+    &lt;p class="intro"&gt;Welcome&lt;/p&gt;
+&lt;/div&gt;
+"""
+
+soup = BeautifulSoup(html, "html.parser")
+
+print(soup.h1.text)
+print(soup.select_one(".intro").text)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Common HTML Parsing Tasks</h2>
+            <p>Find Elements</p>
+            <pre><code>
+document.querySelector("p")
+document.querySelectorAll("li")
+            </code></pre>
+
+            <p>Read Attributes</p>
+            <pre><code>
+element.getAttribute("href")
+            </code></pre>
+
+            <p>Modify HTML</p>
+            <pre><code>
+element.textContent = "Updated"
+            </code></pre>
+
+            <p>Remove Elements</p>
+            <pre><code>
+element.remove()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Handling Broken or Real-World HTML</h2>
+            <p>HTML in the wild is often:</p>
+            <ul>
+                <li>Missing closing tags</li>
+                <li>Poorly nested</li>
+                <li>Auto-corrected by browsers</li>
+            </ul>
+
+            <p>HTML parsers:</p>
+            <ul>
+                <li>Fix structure automatically</li>
+                <li>Normalize tags</li>
+                <li>Ignore invalid markup</li>
+            </ul>
+            <p>This is why parsing is safer than string manipulation.</p>
+        </section>
+
+        <section>
+            <h2>10. Best Practices</h2>
+            <p>✅ Use a real parser</p>
+            <p>✅ Use CSS selectors</p>
+            <p>✅ Sanitize untrusted HTML</p>
+            <p>❌ Never use regex</p>
+            <p>❌ Don’t assume perfect structure</p>
+        </section>
+
+        <section>
+            <h2>11. When to Choose Which Tool</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Tool</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Browser</td>
+                        <td>DOMParser</td>
+                    </tr>
+                    <tr>
+                        <td>Node.js scraping</td>
+                        <td>Cheerio</td>
+                    </tr>
+                    <tr>
+                        <td>Node.js full DOM</td>
+                        <td>jsdom</td>
+                    </tr>
+                    <tr>
+                        <td>Python</td>
+                        <td>BeautifulSoup</td>
+                    </tr>
+                    <tr>
+                        <td>Large-scale scraping</td>
+                        <td>Puppeteer / Playwright</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>12. Mental Model (Simple)</h2>
+            <p>Think of HTML parsing like:</p>
+            <p>Turning a document into a tree, then walking the branches to get what you need 🌳</p>
+
+            <p>If you want, I can next:</p>
+            <ul>
+                <li>Show parsing + scraping a real webpage</li>
+                <li>Explain HTML parsing step-by-step visually</li>
+                <li>Show React Native / backend use cases</li>
+                <li>Explain security (XSS, sanitization)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

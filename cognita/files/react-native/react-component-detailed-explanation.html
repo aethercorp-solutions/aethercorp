@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React.Component — Detailed Explanation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React.Component — Detailed Explanation</h1>
+                    <p class="subtitle">
+                        React.Component is the base class for creating class-based components in React. Before React Hooks (introduced in 2019), this was the primary way to create stateful components.
+                        <p>When you create a class component, you extend React.Component:</p>
+                        <pre><code>
+import React from "react";
+
+class MyComponent extends React.Component {
+  render() {
+    return &lt;h1&gt;Hello World&lt;/h1&gt;
+  }
+}
+                        </code></pre>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ What is React.Component?</h2>
+            <p>React.Component is a JavaScript class that provides:</p>
+            <ul>
+                <li>Component lifecycle methods</li>
+                <li>State management (this.state)</li>
+                <li>Props handling (this.props)</li>
+                <li>Rendering via render()</li>
+                <li>Built-in update mechanisms (setState())</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Core Concepts</h2>
+            <p>✅ A) render() Method (Required)</p>
+            <p>Every class component must implement render().</p>
+            <pre><code>
+render() {
+    return &lt;div&gt;Hello&lt;/div&gt;
+}                  
+            </code></pre>
+            <ul>
+                <li>Returns JSX</li>
+                <li>Must return a single root element</li>
+                <li>Must be pure (no side effects)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ B) Props</h2>
+            <p>Props are inputs passed from parent components.</p>
+            <pre><code>
+class Welcome extends React.Component {
+    render() {
+        return &lt;h1&gt;Hello {this.props.name}&lt;/h1&gt;
+    }
+}                  
+            </code></pre>
+
+            <p>Usage:</p>
+            <pre><code>
+&lt;Welcome name="John" /&gt;
+            </code></pre>
+            <p>Props are:</p>
+            <ul>
+                <li>Read-only</li>
+                <li>Immutable inside the component</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ C) State</h2>
+            <p>State stores internal data that can change over time.</p>
+            <pre><code>
+class Counter extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { count: 0 };
+    }
+    
+    render() {
+        return &lt;h1&gt;{this.state.count}&lt;/h1&gt;
+    }
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3️⃣ setState()</h2>
+            <p>You must use setState() to update state.</p>
+            <pre><code>
+this.setState({ count: 1 });
+            </code></pre>
+
+            <p>Why?</p>
+            <ul>
+                <li>It triggers re-render</li>
+                <li>It updates efficiently</li>
+                <li>It batches updates</li>
+            </ul>
+
+            <p>Functional setState (Recommended)</p>
+            <pre><code>
+this.setState((prevState) => ({
+    count: prevState.count + 1
+}));                  
+            </code></pre>
+            <p>Use this when new state depends on old state.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Lifecycle Methods</h2>
+            <p>Lifecycle methods allow you to run code at different stages.</p>
+            <p>🔵 Mounting (Component Creation)</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>constructor()</td>
+                        <td>Initialize state</td>
+                    </tr>
+                    <tr>
+                        <td>render()</td>
+                        <td>Return JSX</td>
+                    </tr>
+                    <tr>
+                        <td>componentDidMount()</td>
+                        <td>Runs after first render</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Example:</p>
+            <pre><code>
+componentDidMount() {
+    console.log("Component mounted");
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🟡 Updating (Re-rendering)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>shouldComponentUpdate()</td>
+                        <td>Performance control</td>
+                    </tr>
+                    <tr>
+                        <td>componentDidUpdate()</td>
+                        <td>Runs after update</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Example:</p>
+            <pre><code>
+componentDidUpdate(prevProps, prevState) {
+    if (prevState.count !== this.state.count) {
+        console.log("Count changed");
+    }
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔴 Unmounting (Component Removal)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>componentWillUnmount()</td>
+                        <td>Cleanup tasks</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Example:</p>
+            <pre><code>
+componentWillUnmount() {
+    clearInterval(this.timer);
+}                  
+            </code></pre>
+
+            <p>Important for:</p>
+            <ul>
+                <li>Removing event listeners</li>
+                <li>Clearing timers</li>
+                <li>Cancelling API calls</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5️⃣ Event Handling in Class Components</h2>
+            <pre><code>
+class Button extends React.Component {
+    handleClick = () => {
+        console.log("Clicked");
+    };
+    
+    render() {
+        return &lt;button onClick={this.handleClick}&gt;Click&lt;/button&gt;;
+    }
+}                  
+            </code></pre>
+
+            <p>If not using arrow functions, you must bind:</p>
+            <pre><code>
+this.handleClick = this.handleClick.bind(this);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6️⃣ PureComponent</h2>
+            <p>React also provides:</p>
+            <pre><code>
+class MyComp extends React.PureComponent {}
+            </code></pre>
+            <p>It automatically implements shouldComponentUpdate() with shallow comparison for better performance.</p>
+        </section>
+
+        <section>
+            <h2>7️⃣ Class Component vs Functional Component</h2>
+            <p>Modern React prefers functional components + Hooks.</p>
+            <p>Example using Hooks:</p>
+            <pre><code>
+function Counter() {
+    const [count, setCount] = React.useState(0);
+    return &lt;h1&gt;{count}&lt;/h1&gt;
+}                  
+            </code></pre>
+
+            <p>Class components are:</p>
+            <ul>
+                <li>Still supported</li>
+                <li>Used in legacy codebases</li>
+                <li>Required for error boundaries (before React 16.8)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8️⃣ When To Use React.Component Today?</h2>
+            <p>Use class components if:</p>
+            <ul>
+                <li>Working on old React projects</li>
+                <li>Maintaining legacy code</li>
+                <li>Using Error Boundaries (without Hooks alternative)</li>
+            </ul>
+            <p>Otherwise → prefer functional components.</p>
+        </section>
+
+        <section>
+            <h2>9️⃣ Complete Example</h2>
+            <pre><code>
+import React from "react";
+
+class Counter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { count: 0 };
+  }
+
+  increment = () => {
+    this.setState((prev) => ({
+      count: prev.count + 1
+    }));
+  };
+
+  componentDidMount() {
+    console.log("Mounted");
+  }
+
+  componentWillUnmount() {
+    console.log("Unmounted");
+  }
+
+  render() {
+    return (
+      &lt;div&gt;
+        &lt;h1&gt;{this.state.count}&lt;h1&gt;
+        &lt;button onClick={this.increment}&gt;+&lt;button&gt;
+      &lt;&lt;div&gt;
+    );
+  }
+}
+
+export default Counter;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 Summary</h2>
+            <p>React.Component provides:</p>
+            <ul>
+                <li>✔ State management</li>
+                <li>✔ Props access</li>
+                <li>✔ Lifecycle methods</li>
+                <li>✔ Re-rendering system</li>
+                <li>✔ Structured component logic</li>
+            </ul>
+            <p>Modern React → prefers Hooks</p>
+            <p>Legacy React → uses React.Component</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

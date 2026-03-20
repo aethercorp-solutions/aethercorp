@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Complete step-by-step guide to configure Amazon CloudFront</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Complete step-by-step guide to configure Amazon CloudFront</h1>
+                    <p class="subtitle">
+                        Below is a complete step-by-step guide to configure Amazon CloudFront with a typical setup (S3 static website + HTTPS + custom domain).
+                        <p>I’ll cover:</p>
+                        <ol>
+                            <li>✅ Basic setup (S3 + CloudFront)</li>
+                            <li>🔐 Enable HTTPS</li>
+                            <li>🌍 Add custom domain</li>
+                            <li>⚡ Optimize caching</li>
+                            <li>🚀 Production best practices</li>
+                        </ol>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Scenario Example</h2>
+            <p>We’ll configure:</p>
+            <ul>
+                <li>Origin → Amazon S3</li>
+                <li>CDN → CloudFront</li>
+                <li>DNS → Amazon Route 53</li>
+                <li>SSL → AWS Certificate Manager</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 STEP 1: Create S3 Bucket (Origin)</h2>
+            <ol>
+                <li>Go to AWS Console</li>
+                <li>Open S3</li>
+                <li>Click Create bucket</li>
+                <li>
+                    Enter:
+                    <ul>
+                        <li>Bucket name: my-static-website</li>
+                        <li>Region: Choose region</li>
+                    </ul>
+                </li>
+                <li>Disable "Block all public access" (if using public content)</li>
+                <li>
+                    Upload:
+                    <ul>
+                        <li>index.html</li>
+                        <li>CSS / JS / images</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔐 (Recommended) Use S3 with Origin Access Control (Private Bucket)</h2>
+            <p>Instead of making S3 public:</p>
+            <ol>
+                <li>Keep S3 bucket private</li>
+                <li>
+                    Let CloudFront access it securely using:
+                    <ul>
+                        <li>Origin Access Control (OAC)</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>This is the recommended production approach.</p>
+        </section>
+
+        <section>
+            <h2>🌍 STEP 2: Create CloudFront Distribution</h2>
+            <ol>
+                <li>Open CloudFront</li>
+                <li>Click Create Distribution</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>1️⃣ Origin Settings</h2>
+            <ul>
+                <li>Origin domain → Select S3 bucket</li>
+                <li>
+                    Origin access → Choose:
+                    <ul>
+                        <li>Origin Access Control (recommended)</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Click Create OAC if needed.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Default Cache Behavior</h2>
+            <p>Set:</p>
+            <ul>
+                <li>Viewer protocol policy → Redirect HTTP to HTTPS</li>
+                <li>Allowed HTTP methods → GET, HEAD (or more for API)</li>
+                <li>Cache policy → CachingOptimized</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Settings</h2>
+            <ul>
+                <li>Price class → Choose region coverage</li>
+                <li>Default root object → index.html</li>
+            </ul>
+            <p>Click Create Distribution</p>
+            <p>⏳ Deployment takes 5–15 minutes.</p>
+            <p>You’ll get a domain like:</p>
+            <pre><code>
+d123abc.cloudfront.net
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 STEP 3: Enable HTTPS (SSL Certificate)</h2>
+            <p>Go to:</p>
+            <p>→ AWS Certificate Manager (ACM)</p>
+            <p>Important:</p>
+            <p>Certificate MUST be created in us-east-1 (N. Virginia) for CloudFront.</p>
+            <ol>
+                <li>Request public certificate</li>
+                <li>Enter domain:
+                    <ul>
+                        <li>example.com</li>
+                        <li>www.example.com</li>
+                    </ul>
+                </li>
+                <li>Choose DNS validation</li>
+                <li>Validate via Route 53 (auto)</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🌎 STEP 4: Add Custom Domain to CloudFront</h2>
+            <p>Go back to CloudFront:</p>
+            <ol>
+                <li>Open distribution</li>
+                <li>Edit</li>
+                <li>Add:
+                    <ul>
+                        <li>Alternate domain name (CNAME): example.com</li>
+                    </ul>
+                </li>
+                <li>
+                    Choose:
+                    <ul>
+                        <li>Custom SSL certificate → Select ACM certificate</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>Save changes.</p>
+        </section>
+
+        <section>
+            <h2>🌐 STEP 5: Configure DNS (Route 53)</h2>
+            <ol>
+                <li>Open Route 53</li>
+                <li>Hosted Zones</li>
+                <li>Select domain</li>
+                <li>Create record:</li>
+            </ol>
+            <p>Type: A</p>
+            <p>Alias: YES</p>
+            <p>Alias target → Select CloudFront distribution</p>
+            <p>Now:</p>
+            <pre><code>
+example.com → CloudFront → S3
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ STEP 6: Test It</h2>
+            <p>Open browser:</p>
+            <pre><code>
+https://example.com
+            </code></pre>
+            <p>You should see your website via CloudFront.</p>
+        </section>
+
+        <section>
+            <h2>🧠 STEP 7: Configure Caching Properly</h2>
+            <p>In CloudFront → Behaviors:</p>
+            <p>You can control:</p>
+            <ul>
+                <li>TTL (Time to Live)</li>
+                <li>
+                    Cache based on:
+                    <ul>
+                        <li>Headers</li>
+                        <li>Cookies</li>
+                        <li>Query strings</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Example:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔄 STEP 8: Invalidate Cache (When Updating Files)</h2>
+            <p>If you update index.html:</p>
+            <ol>
+                <li>Go to CloudFront</li>
+                <li>Invalidations</li>
+                <li>Create invalidation</li>
+                <li>Add:
+                    <pre><code>
+/*
+                    </code></pre>
+                </li>
+            </ol>
+            <p>This forces CloudFront to refresh cache.</p>
+        </section>
+
+        <section>
+            <h2>🛡 STEP 9: (Optional) Add Security Layer</h2>
+            <p>You can integrate:</p>
+            <ul>
+                <li>AWS WAF → block attacks</li>
+                <li>AWS Shield → DDoS protection</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 STEP 10: Production Best Practices</h2>
+            <p>✅ Use Origin Access Control (keep S3 private)</p>
+            <p>✅ Enable compression (Brotli, Gzip)</p>
+            <p>✅ Redirect HTTP → HTTPS</p>
+            <p>✅ Set proper cache headers</p>
+            <p>✅ Use versioning for static files:</p>
+            <pre><code>
+style.v2.css
+            </code></pre>
+            <p>✅ Enable logging (store logs in S3)</p>
+        </section>
+
+        <section>
+            <h2>🏗 Example Production Architecture</h2>
+            <pre><code>
+User
+↓
+CloudFront
+↓
+S3 (static files)
+
+OR
+
+User
+↓
+CloudFront
+↓
+ALB
+↓
+EC
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🎯 Summary of Configuration Flow</h2>
+            <ol>
+                <li>Create S3 bucket</li>
+                <li>Upload files</li>
+                <li>Create CloudFront distribution</li>
+                <li>Attach SSL certificate</li>
+                <li>Configure DNS</li>
+                <li>Optimize caching</li>
+                <li>Secure with WAF</li>
+                <li>Test & deploy</li>
+            </ol>
+
+            <p>If you want, I can also explain:</p>
+            <ul>
+                <li>🔥 CloudFront with EC2 step-by-step</li>
+                <li>🌎 CloudFront with API Gateway</li>
+                <li>📦 CloudFront for React / Angular apps</li>
+                <li>🎯 Interview-focused explanation</li>
+                <li>🧪 Hands-on lab practice scenario</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

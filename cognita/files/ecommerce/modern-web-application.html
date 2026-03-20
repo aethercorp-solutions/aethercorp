@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Modern Web Application</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Modern Web Application</h1>
+                    <p class="subtitle">
+                        Below is a clear, end-to-end, structured guide to developing a modern web application, from idea to production. This is framework-agnostic first, then I’ll give concrete tech stack examples you can actually use.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What Is a “Modern” Web Application?</h2>
+            <p>A modern web app typically has:</p>
+            <ul>
+                <li>Single Page Application (SPA) or Hybrid SSR/SSG</li>
+                <li>API-driven backend</li>
+                <li>Authentication & authorization</li>
+                <li>Scalable architecture</li>
+                <li>CI/CD deployment</li>
+                <li>Cloud-native infrastructure</li>
+                <li>Responsive & accessible UI</li>
+                <li>Security & performance optimized</li>
+            </ul>
+
+            <p>Examples:</p>
+            <ul>
+                <li>SaaS dashboards</li>
+                <li>Social platforms</li>
+                <li>E-commerce systems</li>
+                <li>Admin portals</li>
+                <li>AI-powered apps</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. High-Level Architecture</h2>
+            <pre><code>
+Browser / Mobile
+     |
+Frontend (React / Vue / Svelte)
+     |
+API Gateway / BFF
+     |
+Backend Services
+     |
+Database + Cache + Storage
+            </code></pre>
+
+            <p>Core Layers</p>
+            <ol>
+                <li>Frontend (Client)</li>
+                <li>Backend (Server / APIs)</li>
+                <li>Database</li>
+                <li>Authentication</li>
+                <li>Infrastructure & Deployment</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>3. Planning Phase (Before Coding)</h2>
+            <p>3.1 Define the Product</p>
+            <ul>
+                <li>What problem does it solve?</li>
+                <li>Who are the users?</li>
+                <li>Core features (MVP first)</li>
+            </ul>
+            <p>Example MVP:</p>
+            <ul>
+                <li>User login</li>
+                <li>CRUD data</li>
+                <li>Dashboard</li>
+                <li>Notifications</li>
+            </ul>
+
+            <p>3.2 Choose App Type</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>When to Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SPA</td>
+                        <td>Dashboard, internal tools</td>
+                    </tr>
+                    <tr>
+                        <td>SSR</td>
+                        <td>SEO, blogs, e-commerce</td>
+                    </tr>
+                    <tr>
+                        <td>PWA</td>
+                        <td>Offline & mobile-like</td>
+                    </tr>
+                    <tr>
+                        <td>API-only</td>
+                        <td>Mobile apps</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. Frontend Development</h2>
+            <p>4.1 Modern Frontend Stack</p>
+            <p>Most common choices:</p>
+            <p>Frameworks</p>
+            <ul>
+                <li>React (most popular)</li>
+                <li>Vue</li>
+                <li>Svelte</li>
+                <li>Angular</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Meta Frameworks (Recommended)</h2>
+            <ul>
+                <li>Next.js (React + SSR + API routes)</li>
+                <li>Nuxt (Vue)</li>
+                <li>SvelteKit</li>
+            </ul>
+
+            <p>Why meta frameworks?</p>
+            <ul>
+                <li>SEO</li>
+                <li>Routing built-in</li>
+                <li>Server rendering</li>
+                <li>Better performance</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4.2 Frontend Structure</h2>
+            <pre><code>
+src/
+ ├─ app/ or pages/
+ ├─ components/
+ ├─ hooks/
+ ├─ services/ (API calls)
+ ├─ styles/
+ ├─ utils/
+ └─ types/
+            </code></pre>
+
+            <p>Key Concepts</p>
+            <ul>
+                <li>Component-based UI</li>
+                <li>State management</li>
+                <li>Reusable hooks</li>
+                <li>Typed data (TypeScript)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4.3 State Management</h2>
+            <p>Choose based on complexity:</p>
+            <ul>
+                <li>React Context (simple)</li>
+                <li>Redux Toolkit</li>
+                <li>Zustand</li>
+                <li>TanStack Query (server state)</li>
+            </ul>
+            <p>Modern rule:</p>
+            <p>Server state ≠ UI state</p>
+        </section>
+
+        <section>
+            <h2>4.4 Styling</h2>
+            <p>Modern options:</p>
+            <ul>
+                <li>Tailwind CSS</li>
+                <li>CSS Modules</li>
+                <li>Styled Components</li>
+            </ul>
+            <p>Best practice:</p>
+            <ul>
+                <li>Utility-first + component styles</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Backend Development</h2>
+            <p>5.1 Backend Options</p>
+            <p>Traditional Server</p>
+            <ul>
+                <li>Node.js (Express, Fastify)</li>
+                <li>Java (Spring)</li>
+                <li>Python (Django, FastAPI)</li>
+            </ul>
+
+            <p>Serverless (Modern Default)</p>
+            <ul>
+                <li>AWS Lambda</li>
+                <li>Vercel Functions</li>
+                <li>Cloudflare Workers</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5.2 Backend Responsibilities</h2>
+            <ul>
+                <li>Authentication</li>
+                <li>Business logic</li>
+                <li>Validation</li>
+                <li>Database access</li>
+                <li>Authorization</li>
+                <li>API responses</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5.3 API Design</h2>
+            <p>REST</p>
+            <pre><code>
+GET    /users
+POST   /users
+PUT    /users/:id
+DELETE /users/:id
+            </code></pre>
+
+            <p>GraphQL</p>
+            <ul>
+                <li>Flexible queries</li>
+                <li>Fewer requests</li>
+            </ul>
+
+            <p>gRPC</p>
+            <ul>
+                <li>High performance</li>
+                <li>Internal services</li>
+            </ul>
+            <p>Most apps start with REST.</p>
+        </section>
+
+        <section>
+            <h2>5.4 Backend Structure (Node Example)</h2>
+            <pre><code>
+src/
+ ├─ routes/
+ ├─ controllers/
+ ├─ services/
+ ├─ models/
+ ├─ middleware/
+ ├─ utils/
+ └─ config/
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Database Layer</h2>
+            <p>6.1 Choose the Right Database</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Database</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Structured data</td>
+                        <td>PostgreSQL</td>
+                    </tr>
+                    <tr>
+                        <td>Flexible schema</td>
+                        <td>MongoDB</td>
+                    </tr>
+                    <tr>
+                        <td>Caching</td>
+                        <td>Redis</td>
+                    </tr>
+                    <tr>
+                        <td>Search</td>
+                        <td>Elasticsearch</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Modern default: PostgreSQL + Redis</p>
+        </section>
+
+        <section>
+            <h2>6.2 ORM / ODM</h2>
+            <ul>
+                <li>Prisma</li>
+                <li>TypeORM</li>
+                <li>Sequelize</li>
+                <li>Mongoose</li>
+            </ul>
+            <p>Mongoose</p>
+            <ul>
+                <li>Type safety</li>
+                <li>Migrations</li>
+                <li>Cleaner code</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Authentication & Authorization</h2>
+            <p>7.1 Authentication Methods</p>
+            <ul>
+                <li>Email/password</li>
+                <li>OAuth (Google, Apple)</li>
+                <li>Magic links</li>
+                <li>SSO (Azure AD, Cognito)</li>
+            </ul>
+
+            <p>7.2 Token-Based Auth</p>
+            <ul>
+                <li>JWT</li>
+                <li>Access token + refresh token</li>
+            </ul>
+            <pre><code>
+User → Login → JWT → API
+            </code></pre>
+
+            <p>7.3 Role-Based Access Control</p>
+            <pre><code>
+Admin
+User
+Guest
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Security Best Practices</h2>
+            <ul>
+                <li>HTTPS everywhere</li>
+                <li>Input validation</li>
+                <li>Rate limiting</li>
+                <li>CSRF protection</li>
+                <li>XSS protection</li>
+                <li>Secure cookies</li>
+                <li>Secrets in environment variables</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Performance Optimization</h2>
+            <p>Frontend</p>
+            <ul>
+                <li>Code splitting</li>
+                <li>Lazy loading</li>
+                <li>Image optimization</li>
+                <li>CDN usage</li>
+            </ul>
+
+            <p>Backend</p>
+            <ul>
+                <li>Caching (Redis)</li>
+                <li>Database indexes</li>
+                <li>Pagination</li>
+                <li>Background jobs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Testing Strategy</h2>
+            <p>Types of Tests</p>
+            <ul>
+                <li>Unit tests</li>
+                <li>Integration tests</li>
+                <li>E2E tests</li>
+            </ul>
+
+            <p>Tools</p>
+            <ul>
+                <li>Jest</li>
+                <li>Vitest</li>
+                <li>Playwright</li>
+                <li>Cypress</li>
+            </ul>
+
+            <p>Modern rule:</p>
+            <p>Test business logic, not UI details</p>
+        </section>
+
+        <section>
+            <h2>11. Deployment & Infrastructure</h2>
+            <p>11.1 Hosting Options</p>
+            <p>Frontend</p>
+            <ul>
+                <li>Vercel</li>
+                <li>Netlify</li>
+                <li>Cloudflare Pages</li>
+            </ul>
+
+            <p>Backend</p>
+            <ul>
+                <li>AWS (Lambda, EC2)</li>
+                <li>Google Cloud</li>
+                <li>Azure</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>11.2 CI/CD Pipeline</h2>
+            <pre><code>
+Git Push
+   ↓
+Tests
+   ↓
+Build
+   ↓
+Deploy
+            </code></pre>
+
+            <p>Tools:</p>
+            <ul>
+                <li>GitHub Actions</li>
+                <li>GitLab CI</li>
+                <li>Bitbucket Pipelines</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>12. Observability & Monitoring</h2>
+            <ul>
+                <li>Logging (Winston, Pino)</li>
+                <li>Error tracking (Sentry)</li>
+                <li>Metrics (Prometheus)</li>
+                <li>Tracing (OpenTelemetry)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>13. Example Modern Tech Stack (Recommended)</h2>
+            <p>Full Stack</p>
+            <ul>
+                <li>Frontend: Next.js + TypeScript + Tailwind</li>
+                <li>Backend: Node.js + Serverless</li>
+                <li>Database: PostgreSQL + Prisma</li>
+                <li>Auth: OAuth + JWT</li>
+                <li>Hosting: Vercel + AWS</li>
+                <li>CI/CD: GitHub Actions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>14. Development Workflow</h2>
+            <ol>
+                <li>Design UI (Figma)</li>
+                <li>Define API contract</li>
+                <li>Build frontend components</li>
+                <li>Implement backend logic</li>
+                <li>Connect database</li>
+                <li>Add authentication</li>
+                <li>Write tests</li>
+                <li>Deploy</li>
+                <li>Monitor & iterate</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>15. Common Mistakes to Avoid</h2>
+            <p>❌ Overengineering early</p>
+            <p>❌ No validation</p>
+            <p>❌ No error handling</p>
+            <p>❌ Ignoring security</p>
+            <p>❌ No logging</p>
+            <p>❌ Tight frontend-backend coupling</p>
+        </section>
+
+        <section>
+            <h2>16. How I Can Help Next</h2>
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Design a real production architecture</li>
+                <li>Build a starter repo</li>
+                <li>Explain Next.js + Node + AWS step by step</li>
+                <li>Create a scalable folder structure</li>
+                <li>Walk you through deployment live</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

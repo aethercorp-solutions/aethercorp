@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Production-ready GitHub Actions deployment pipeline</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Production-ready GitHub Actions deployment pipeline</h1>
+                    <p class="subtitle">
+                        Since you’re already working with AWS (S3, CloudFront, API Gateway, Lambda) for your React + Node.js setup, I’ll show you a production-ready GitHub Actions deployment pipeline that fits your architecture.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🚀 Automate Deployment with GitHub Actions (AWS + React + Node.js)</h2>
+            <p>🏗 Typical Architecture (Based on Your Setup)</p>
+            <ul>
+                <li>
+                    Frontend (React Web) → Deploy to:
+                    <ul>
+                        <li>Amazon S3</li>
+                        <li>Amazon CloudFront</li>
+                    </ul>
+                </li>
+                <li>
+                    Backend (Node.js API) → Deploy to:
+                    <ul>
+                        <li>AWS Lambda</li>
+                        <li>Amazon API Gateway</li>
+                    </ul>
+                </li>
+                <li>
+                    DNS:
+                    <ul>
+                        <li>Amazon Route 53</li>
+                    </ul>
+                </li>
+                <li>
+                    CI/CD:
+                    <ul>
+                        <li>GitHub Actions</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 Step 1 — Create IAM User for GitHub</h2>
+            <p>Create a dedicated IAM user:</p>
+            <ol>
+                <li>Go to AWS IAM</li>
+                <li>Create user: github-deploy-user</li>
+                <li>Attach policies:</li>
+            </ol>
+            <p>For S3 + CloudFront:</p>
+            <ul>
+                <li>AmazonS3FullAccess (or scoped bucket policy)</li>
+                <li>CloudFrontFullAccess</li>
+            </ul>
+            <p>For Lambda:</p>
+            <ul>
+                <li>AWSLambdaFullAccess</li>
+                <li>AmazonAPIGatewayAdministrator</li>
+            </ul>
+            <p>⚠️ Production tip: Create a custom scoped policy instead of full access.</p>
+            <p>Then generate:</p>
+            <ul>
+                <li>AWS_ACCESS_KEY_ID</li>
+                <li>AWS_SECRET_ACCESS_KEY</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔒 Step 2 — Add GitHub Secrets</h2>
+            <p>In your GitHub repo:</p>
+            <pre><code>
+Settings → Secrets and variables → Actions → New repository secret
+            </code></pre>
+            <p>Add:</p>
+            <pre><code>
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION
+S3_BUCKET_NAME
+CLOUDFRONT_DISTRIBUTION_ID
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚛️ Example 1 — Deploy React App to S3 + CloudFront</h2>
+            <p>Create:</p>
+            <pre><code>
+.github/workflows/deploy-frontend.yml
+            </code></pre>
+
+            <pre><code>
+name: Deploy React App to S3
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build React app
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync build/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+            </code></pre>
+            <p>What This Does</p>
+            <p>Every push to main:</p>
+            <ol>
+                <li>Builds React</li>
+                <li>Uploads to S3</li>
+                <li>Clears CloudFront cache</li>
+                <li>Your custom domain updates automatically</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 Example 2 — Deploy Node.js Lambda (Serverless Framework)</h2>
+            <p>Since you’re using serverless AWS setup, this is ideal.</p>
+            <p>Install Serverless in your project:</p>
+            <pre><code>
+npm install serverless
+            </code></pre>
+            <p>Create:</p>
+            <pre><code>
+.github/workflows/deploy-backend.yml
+            </code></pre>
+            <pre><code>
+name: Deploy Backend to Lambda
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Serverless
+        run: npm install -g serverless
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy
+        run: serverless deploy --stage production
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🌎 Production-Level Upgrade (Recommended for You)</h2>
+            <p>Since you're building real production systems (TryCastanet + AWS infra), here’s how to level it up:</p>
+            <p>1️⃣ Use Environment-Based Deployment</p>
+            <p>Branches:</p>
+            <pre><code>
+dev → deploy to staging
+main → deploy to production
+            </code></pre>
+            <pre><code>
+on:
+  push:
+    branches:
+      - dev
+      - main
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+run: serverless deploy --stage ${{ github.ref_name }}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2️⃣ Use OIDC Instead of AWS Secrets (Best Practice 🔥)</h2>
+            <p>Instead of storing AWS keys:</p>
+            <p>Use:</p>
+            <ul>
+                <li>GitHub OIDC</li>
+                <li>IAM Role with trust policy</li>
+                <li>Temporary credentials</li>
+            </ul>
+            <p>This is the most secure production method.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Add Automatic Testing Before Deploy</h2>
+            <pre><code>
+- name: Run tests
+  run: npm test
+            </code></pre>
+            <p>Deployment only happens if tests pass.</p>
+        </section>
+
+        <section>
+            <h2>🧱 CI/CD Flow Summary</h2>
+            <pre><code>
+git push →
+GitHub Actions →
+Build →
+Test →
+Deploy to AWS →
+Invalidate CDN →
+Live
+            </code></pre>
+            <p>Fully automated. Zero manual uploads.</p>
+        </section>
+
+        <section>
+            <h2>🎯 For Your Architecture (Recommended Setup)</h2>
+            <p>Since you're:</p>
+            <ul>
+                <li>Using AWS serverless</li>
+                <li>Managing authentication flows</li>
+                <li>Handling production domains</li>
+            </ul>
+            <p>I recommend:</p>
+            <p>✅ Separate frontend & backend workflows</p>
+            <p>✅ Use environment stages</p>
+            <p>✅ Use OIDC authentication</p>
+            <p>✅ Add test + lint stage</p>
+            <p>✅ Add Slack/Email notification</p>
+
+            <p>If you want, tell me:</p>
+            <ul>
+                <li>Are you deploying React to S3 or EC2?</li>
+                <li>Are you using Serverless Framework or SAM?</li>
+                <li>Do you want full production CI/CD architecture diagram?**</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

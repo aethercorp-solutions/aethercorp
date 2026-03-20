@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>A modern MongoDB query</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">A modern MongoDB query</h1>
+                    <p class="subtitle">
+                        A modern MongoDB query usually refers to using the newer MongoDB query syntax and features introduced in recent versions (MongoDB 4.x–7.x), especially with the MongoDB Query API, aggregation pipeline, and modern operators instead of older patterns.
+                        <p>Here are common modern MongoDB query examples.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Basic Find Query (Modern Style)</h2>
+            <pre><code>
+db.users.find(
+  { age: { $gte: 18 } },
+  { name: 1, email: 1, _id: 0 }
+);
+            </code></pre>
+            <p>Explanation:</p>
+            <ul>
+                <li>$gte → greater than or equal</li>
+                <li>second parameter → projection</li>
+                <li>_id:0 removes _id from result</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Using $in Operator</h2>
+            <pre><code>
+db.users.find({
+    role: { $in: ["admin", "editor"] }
+});
+            </code></pre>
+            <p>Find users where role is admin OR editor.</p>
+        </section>
+
+        <section>
+            <h2>3. Modern Update Query</h2>
+            <pre><code>
+db.users.updateOne(
+  { email: "user@email.com" },
+  { $set: { verified: true } }
+);
+            </code></pre>
+            <p>Or update multiple:</p>
+            <pre><code>
+db.users.updateMany(
+  { active: false },
+  { $set: { archived: true } }
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Aggregation Pipeline (Modern MongoDB)</h2>
+            <p>Modern MongoDB heavily uses aggregation pipelines.</p>
+            <pre><code>
+db.orders.aggregate([
+  { $match: { status: "completed" } },
+  { $group: { _id: "$userId", totalSpent: { $sum: "$amount" } } },
+  { $sort: { totalSpent: -1 } }
+]);
+            </code></pre>
+            <p>Steps:</p>
+            <ol>
+                <li>$match → filter</li>
+                <li>$group → aggregate</li>
+                <li>$sort → order</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>5. Lookup (Modern Join)</h2>
+            <p>MongoDB now supports joins via $lookup.</p>
+            <pre><code>
+db.orders.aggregate([
+  {
+    $lookup: {
+      from: "users",
+      localField: "userId",
+      foreignField: "_id",
+      as: "user"
+    }
+  }
+]);
+            </code></pre>
+            <p>Equivalent to SQL JOIN.</p>
+        </section>
+
+        <section>
+            <h2>6. Modern Text Search</h2>
+            <pre><code>
+db.posts.find({
+    $text: { $search: "mongodb tutorial" }
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Using $expr (Modern Dynamic Query)</h2>
+            <pre><code>
+db.orders.find({
+    $expr: { $gt: ["$amount", "$discount"] }
+});
+            </code></pre>
+            <p>Compares fields inside the document.</p>
+        </section>
+
+        <section>
+            <h2>8. Modern Query with Date</h2>
+            <pre><code>
+db.events.find({
+    createdAt: {
+        $gte: new Date("2026-01-01"),
+        $lte: new Date("2026-12-31")
+    }
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Projection with Computed Fields</h2>
+            <pre><code>
+db.users.aggregate([
+  {
+    $project: {
+      name: 1,
+      fullEmail: { $concat: ["User: ", "$email"] }
+    }
+  }
+]);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Modern Pagination</h2>
+            <pre><code>
+db.users.find()
+  .sort({ createdAt: -1 })
+  .skip(20)
+  .limit(10);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example in Node.js (Mongoose or Native Driver)</h2>
+            <p>Since you're working with Node.js + MongoDB in AWS Lambda, a typical modern query:</p>
+            <pre><code>
+const users = await User.find({
+    role: { $in: ["admin", "editor"] },
+    active: true
+})
+.select("name email")
+.sort({ createdAt: -1 })
+.limit(20);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Modern MongoDB Best Practices</h2>
+            <ol>
+                <li>Use Aggregation Pipeline</li>
+                <li>Use Indexes</li>
+                <li>Avoid large skip values</li>
+                <li>Use projection</li>
+                <li>Use lean() in Mongoose</li>
+            </ol>
+            <p>Example:</p>
+            <pre><code>
+User.find({ active: true }).lean();
+            </code></pre>
+            <p>Faster because it skips Mongoose document overhead.</p>
+        </section>
+
+        <section>
+            <p>Since you're building a Node.js + AWS Lambda + MongoDB backend (as in your contact-connect platform TryCastanet), a modern MongoDB architecture usually uses:</p>
+            <ul>
+                <li>Repository Pattern</li>
+                <li>Aggregation Pipelines</li>
+                <li>Lean Queries</li>
+                <li>Pagination</li>
+                <li>Separation of Service and Data Layers</li>
+            </ul>
+            <p>Below is a clean production-style structure.</p>
+        </section>
+
+        <section>
+            <h2>1. Typical Modern Backend Structure</h2>
+            <pre><code>
+src
+ ├── controllers
+ │     calendar.controller.js
+ │
+ ├── services
+ │     calendar.service.js
+ │
+ ├── repositories
+ │     calendar.repository.js
+ │
+ ├── models
+ │     schedule.model.js
+ │
+ └── utils
+       pagination.js
+            </code></pre>
+            <p>Purpose:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Responsibility</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Controller</td>
+                        <td>HTTP request/response</td>
+                    </tr>
+                    <tr>
+                        <td>Service</td>
+                        <td>Business logic</td>
+                    </tr>
+                    <tr>
+                        <td>Repository</td>
+                        <td>Database queries</td>
+                    </tr>
+                    <tr>
+                        <td>Model</td>
+                        <td>MongoDB schema</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>2. MongoDB Repository (Modern Query Layer)</h2>
+            <p>calendar.repository.js</p>
+            <pre><code>
+const Schedule = require("../models/schedule.model");
+
+class CalendarRepository {
+
+  async getSchedules(filter, limit = 20, skip = 0) {
+
+    return Schedule.aggregate([
+      { $match: filter },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+
+      { $unwind: "$user" },
+
+      {
+        $project: {
+          title: 1,
+          startDate: 1,
+          endDate: 1,
+          "user.name": 1,
+          "user.email": 1
+        }
+      },
+
+      { $sort: { startDate: 1 } },
+
+      { $skip: skip },
+
+      { $limit: limit }
+
+    ]);
+  }
+
+}
+
+module.exports = new CalendarRepository();
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Service Layer (Business Logic)</h2>
+            <p>calendar.service.js</p>
+            <pre><code>
+const CalendarRepo = require("../repositories/calendar.repository");
+
+class CalendarService {
+
+  async getCalendarSchedules(userId, start, end, limit, skip) {
+
+    const filter = {
+      userId,
+      startDate: {
+        $gte: start,
+        $lte: end
+      }
+    };
+
+    return CalendarRepo.getSchedules(filter, limit, skip);
+  }
+
+}
+
+module.exports = new CalendarService();
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Controller (AWS Lambda Handler)</h2>
+            <pre><code>
+const CalendarService = require("../services/calendar.service");
+
+exports.getCalendarSchedules = async (req) => {
+
+  const { userId, start, end, limit, skip } = req.query;
+
+  const data = await CalendarService.getCalendarSchedules(
+    userId,
+    new Date(start),
+    new Date(end),
+    Number(limit),
+    Number(skip)
+  );
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(data)
+  };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. MongoDB Schema (Mongoose)</h2>
+            <pre><code>
+const mongoose = require("mongoose");
+
+const ScheduleSchema = new mongoose.Schema({
+
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
+
+  title: String,
+
+  startDate: Date,
+
+  endDate: Date
+
+}, { timestamps: true });
+
+module.exports = mongoose.model("Schedule", ScheduleSchema);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Example API Query</h2>
+            <pre><code>
+GET /calendar?userId=123&start=2026-03-01&end=2026-03-30&limit=20&skip=0
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Example Aggregation Output</h2>
+            <pre><code>
+[
+  {
+    "title": "Sales Meeting",
+    "startDate": "2026-03-17T08:00:00Z",
+    "endDate": "2026-03-17T09:00:00Z",
+    "user": {
+      "name": "Paul",
+      "email": "paul@email.com"
+    }
+  }
+]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Performance Best Practices (Important for Lambda)</h2>
+            <p>Use Indexes</p>
+            <pre><code>
+db.schedules.createIndex({ userId: 1, startDate: 1 })
+            </code></pre>
+            <p>Use .lean() when using find()</p>
+            <pre><code>
+Schedule.find(filter).lean()
+            </code></pre>
+            <p>Avoid large .skip()</p>
+            <p>Instead use cursor pagination</p>
+            <p>Example:</p>
+            <pre><code>
+{ createdAt: { $lt: lastItemDate } }
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Modern MongoDB Features You Should Use</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Why</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Aggregation Pipeline</td>
+                        <td>powerful queries</td>
+                    </tr>
+                    <tr>
+                        <td>$lookup</td>
+                        <td>joins</td>
+                    </tr>
+                    <tr>
+                        <td>$facet</td>
+                        <td>pagination + total count</td>
+                    </tr>
+                    <tr>
+                        <td>$expr</td>
+                        <td>dynamic comparisons</td>
+                    </tr>
+                    <tr>
+                        <td>$project</td>
+                        <td>computed fields</td>
+                    </tr>
+                    <tr>
+                        <td>$addFields</td>
+                        <td>derived data</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>10. Example Advanced Modern Query (Used by Large Apps)</h2>
+            <pre><code>
+db.schedules.aggregate([
+  { $match: { userId: ObjectId(userId) } },
+
+  {
+    $facet: {
+      data: [
+        { $sort: { startDate: 1 } },
+        { $skip: 0 },
+        { $limit: 20 }
+      ],
+
+      total: [
+        { $count: "count" }
+      ]
+    }
+  }
+])
+            </code></pre>
+            <p>Returns:</p>
+            <pre><code>
+{
+    data: [...],
+    total: [{ count: 124 }]
+}
+            </code></pre>
+            <p>Perfect for mobile pagination.</p>
+        </section>
+
+        <section>
+            <p>Nice — this is where MongoDB becomes really powerful, especially for your AWS Lambda + React Native (TryCastanet) setup.</p>
+            <p>Here are 5 advanced MongoDB aggregation patterns used in real production systems (Uber / Airbnb-style backends).</p>
+            <h2>1. Pagination + Total Count ($facet) ✅</h2>
+            <p>👉 Solves: “Get data + total count in one query”</p>
+            <pre><code>
+db.schedules.aggregate([
+  { $match: { userId: ObjectId(userId) } },
+
+  {
+    $facet: {
+      data: [
+        { $sort: { startDate: -1 } },
+        { $skip: 0 },
+        { $limit: 10 }
+      ],
+      total: [
+        { $count: "count" }
+      ]
+    }
+  }
+])
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>UICollectionView in UIKit</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">UICollectionView in UIKit</h1>
+                    <p class="subtitle">Alright, let’s really demystify UICollectionView in UIKit, step by step, no hand-waving. I’ll explain what it is, how it works internally, all the main parts, and real-world usage patterns (like App Store–style layouts, grids, carousels, etc.).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ What is UICollectionView (in plain English)</h2>
+            <p>UICollectionView is a highly flexible, reusable, scrollable view used to display lists of items in custom layouts.</p>
+            <p>Think of it as:</p>
+            <p>UITableView on steroids</p>
+            <p>While UITableView is:</p>
+            <ul>
+                <li>Vertical list only</li>
+                <li>One column</li>
+                <li>Limited layouts</li>
+            </ul>
+            <p>UICollectionView supports:</p>
+            <ul>
+                <li>Grids (2D layouts)</li>
+                <li>Horizontal scrolling</li>
+                <li>Paging</li>
+                <li>Carousels</li>
+                <li>Masonry / Pinterest layouts</li>
+                <li>Custom animated layouts</li>
+                <li>Multiple sections with headers & footers</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ When should you use UICollectionView?</h2>
+            <p>Use UICollectionView when you need:</p>
+            <p>✅ Grid layout</p>
+            <p>✅ Horizontal scrolling</p>
+            <p>✅ Cards / carousel UI</p>
+            <p>✅ App Store / Netflix / Spotify style UI</p>
+            <p>✅ Dynamic cell sizes</p>
+            <p>✅ Advanced animations</p>
+            <p>If it’s just a simple list → UITableView is still fine.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Core building blocks (VERY IMPORTANT)</h2>
+            <p>A. UICollectionView</p>
+            <p>The container view that:</p>
+            <ul>
+                <li>Displays cells</li>
+                <li>Handles scrolling</li>
+                <li>Talks to data source & delegate</li>
+            </ul>
+
+            <pre><code>
+let collectionView = UICollectionView(frame: .zero,
+                        collectionViewLayout: layout)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>B. UICollectionViewCell</h2>
+            <p>This is each item (like a row in table view).</p>
+            <p>You usually subclass it:</p>
+            <pre><code>
+class MyCell: UICollectionViewCell {
+    static let reuseID = "MyCell"
+
+    let label = UILabel()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.addSubview(label)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}                
+            </code></pre>
+            <p>💡 contentView is important — never add views directly to the cell</p>
+        </section>
+
+        <section>
+            <h2>C. Reuse mechanism (performance magic)</h2>
+            <p>Cells are recycled, not created every time.</p>
+            <pre><code>
+collectionView.register(MyCell.self,
+        forCellWithReuseIdentifier: MyCell.reuseID)
+            </code></pre>
+
+            <p>Then:</p>
+            <pre><code>
+let cell = collectionView.dequeueReusableCell(
+    withReuseIdentifier: MyCell.reuseID,
+    for: indexPath
+)
+            </code></pre>
+            <p>This is why UICollectionView can handle thousands of items smoothly.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Data flow: DataSource & Delegate</h2>
+            <p>A. UICollectionViewDataSource</p>
+            <p>What data to show</p>
+            <p>Required methods:</p>
+            <pre><code>
+func collectionView(_ collectionView: UICollectionView,
+                    numberOfItemsInSection section: Int) -> Int
+
+func collectionView(_ collectionView: UICollectionView,
+                    cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+func collectionView(_ collectionView: UICollectionView,
+                    numberOfItemsInSection section: Int) -> Int {
+    return items.count
+}
+
+func collectionView(_ collectionView: UICollectionView,
+                    cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    let cell = collectionView.dequeueReusableCell(
+        withReuseIdentifier: MyCell.reuseID,
+        for: indexPath
+    ) as! MyCell
+
+    cell.label.text = items[indexPath.item]
+    return cell
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>B. UICollectionViewDelegate</h2>
+            <p>User interactions</p>
+            <pre><code>
+func collectionView(_ collectionView: UICollectionView,
+                    didSelectItemAt indexPath: IndexPath)
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+func collectionView(_ collectionView: UICollectionView,
+                    didSelectItemAt indexPath: IndexPath) {
+    print("Tapped item at \(indexPath.item)")
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5️⃣ Layouts (this is where UICollectionView shines)</h2>
+            <p>A. UICollectionViewFlowLayout (most common)</p>
+            <p>Supports:</p>
+            <ul>
+                <li>Grid layout</li>
+                <li>Horizontal / vertical scrolling</li>
+                <li>Spacing control</li>
+            </ul>
+
+            <pre><code>
+let layout = UICollectionViewFlowLayout()
+layout.scrollDirection = .vertical
+layout.itemSize = CGSize(width: 100, height: 120)
+layout.minimumLineSpacing = 12
+layout.minimumInteritemSpacing = 8
+            </code></pre>
+            <p>🔥 Used in 90% of apps.</p>
+        </section>
+
+        <section>
+            <h2>B. Dynamic sizing (Auto Layout cells)</h2>
+            <pre><code>
+layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+            </code></pre>
+            <p>Your cell must use Auto Layout constraints properly.</p>
+            <p>Used for:</p>
+            <ul>
+                <li>Tags</li>
+                <li>Chips</li>
+                <li>Dynamic text</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>C. Compositional Layout (modern, powerful)</h2>
+            <p>C. Compositional Layout (modern, powerful)</p>
+            <p>Used by:</p>
+            <ul>
+                <li>App Store</li>
+                <li>Apple Music</li>
+            </ul>
+            <p>Example idea:</p>
+            <ul>
+                <li>Section 1: horizontal cards</li>
+                <li>Section 2: grid</li>
+                <li>Section 3: list</li>
+            </ul>
+            <pre><code>
+let layout = UICollectionViewCompositionalLayout { sectionIndex, _ in
+    // return NSCollectionLayoutSection
+}                
+            </code></pre>
+            <p>This deserves its own deep dive (happy to do it).</p>
+        </section>
+
+        <section>
+            <h2>6️⃣ Sections, Headers, and Footers</h2>
+            <p>Multiple sections</p>
+            <pre><code>
+func numberOfSections(in collectionView: UICollectionView) -> Int {
+    return 3
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Headers & footers</h2>
+            <p>Register:</p>
+            <pre><code>
+collectionView.register(HeaderView.self,
+    forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+    withReuseIdentifier: "HeaderView")
+            </code></pre>
+
+            <p>Provide:</p>
+            <pre><code>
+func collectionView(_ collectionView: UICollectionView,
+    viewForSupplementaryElementOfKind kind: String,
+    at indexPath: IndexPath) -> UICollectionReusableView
+            </code></pre>
+
+            <p>Used for:</p>
+            <ul>
+                <li>Category titles</li>
+                <li>Dates</li>
+                <li>Section labels</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7️⃣ Scrolling styles (horizontal cards / carousel)</h2>
+            <pre><code>
+layout.scrollDirection = .horizontal
+collectionView.isPagingEnabled = true
+collectionView.showsHorizontalScrollIndicator = false
+            </code></pre>
+
+            <p>Perfect for:</p>
+            <ul>
+                <li>Featured content</li>
+                <li>Stories</li>
+                <li>Card menus (like the one you asked before 😉)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8️⃣ Updating data (VERY IMPORTANT)</h2>
+            <p>Reload everything (simple but heavy)</p>
+            <pre><code>
+collectionView.reloadData()
+            </code></pre>
+
+            <p>Insert / delete / reload items (best practice)</p>
+            <pre><code>
+collectionView.performBatchUpdates {
+    collectionView.insertItems(at: [IndexPath(item: 0, section: 0)])
+}                
+            </code></pre>
+            <p>Smooth animations, better performance.</p>
+        </section>
+
+        <section>
+            <h2>9️⃣ Diffable Data Source (modern way)</h2>
+            <p>Instead of manual updates:</p>
+            <pre><code>
+UICollectionViewDiffableDataSource&lt;Section, Item&gt;
+            </code></pre>
+
+            <p>Benefits:</p>
+            <p>✅ No crashes from bad index paths</p>
+            <p>✅ Automatic animations</p>
+            <p>✅ Cleaner code</p>
+            <p>This is Apple-recommended now.</p>
+        </section>
+
+        <section>
+            <h2>🔟 Real-world usage examples</h2>
+            <p>App Store home</p>
+            <ul>
+                <li>Compositional Layout</li>
+                <li>Horizontal scrolling sections</li>
+                <li>Dynamic cell sizes</li>
+            </ul>
+
+            <p>Netflix</p>
+            <ul>
+                <li>Vertical collection view</li>
+                <li>Each section contains a horizontal collection view (nested)</li>
+            </ul>
+
+            <p>Photo gallery</p>
+            <ul>
+                <li>Grid layout</li>
+                <li>Pinch to zoom</li>
+                <li>Reordering support</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Common mistakes (watch out)</h2>
+            <p>❌ Adding subviews directly to cell (not contentView)</p>
+            <p>❌ Not reusing cells properly</p>
+            <p>❌ Heavy logic in cellForItemAt</p>
+            <p>❌ Forgetting to reset cell state on reuse</p>
+            <p>❌ Hardcoding sizes instead of Auto Layout</p>
+
+            <p>UICollectionView =</p>
+            <ul>
+                <li>Flexible</li>
+                <li>Powerful</li>
+                <li>Scalable</li>
+                <li>The backbone of modern iOS UIs</li>
+            </ul>
+            <p>Once you master layouts + reuse, you can build any UI Apple shows.</p>
+
+            <p>If you want next:</p>
+            <p>👉 UICollectionView vs UITableView (deep comparison)</p>
+            <p>👉 Compositional Layout explained visually</p>
+            <p>👉 App Store–style card carousel code</p>
+            <p>👉 Performance optimization for large datasets</p>
+        </section>
+
+        <section>
+            <p>Great question — this is one of those UIKit things that looks simple but hides a lot of machinery underneath. Let’s pop the hood and see exactly what collectionView.register(_:forCellWithReuseIdentifier:) does technically.</p>
+            <p>I’ll go from high-level → runtime → memory → lifecycle, so it really clicks.</p>
+            
+            <h2>1️⃣ What you think register() does (and what it does NOT)</h2>
+            <pre><code>
+collectionView.register(MyCell.self,
+    forCellWithReuseIdentifier: MyCell.reuseID)
+            </code></pre>
+
+            <p>❌ It does NOT:</p>
+            <ul>
+                <li>Create cells immediately</li>
+                <li>Add cells to the view hierarchy</li>
+                <li>Allocate one cell per item</li>
+            </ul>
+
+            <p>✅ It DOES:</p>
+            <ul>
+                <li>Tell UICollectionView how to create cells later</li>
+                <li>Associate a reuse identifier → cell class</li>
+                <li>Register a factory rule, not an instance</li>
+            </ul>
+            <p>Think of it as:</p>
+            <p>“Hey UICollectionView, when you need a cell with identifier MyCell, create it using class MyCell.”</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Internally: what UICollectionView stores</h2>
+            <p>When you call register, UIKit internally updates something conceptually like:</p>
+            <pre><code>
+reuseRegistry = {
+    "MyCell" : MyCell.self
+}                
+            </code></pre>
+            
+            <p>This registry lives inside the collection view.</p>
+            <p>So later, when you ask:</p>
+            <pre><code>
+dequeueReusableCell(withReuseIdentifier: "MyCell", for: indexPath)
+            </code></pre>
+
+            <p>UICollectionView now knows:</p>
+            <ul>
+                <li>Which class to instantiate</li>
+                <li>How to initialize it</li>
+                <li>How to reuse it</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ What happens at runtime (step-by-step)</h2>
+            <p>Let’s walk through the exact lifecycle.</p>
+
+            <p>STEP 1: First time a cell is needed</p>
+            <p>When a cell scrolls into view:</p>
+            <pre><code>
+collectionView.dequeueReusableCell(
+    withReuseIdentifier: "MyCell",
+    for: indexPath
+)
+            </code></pre>
+
+            <p>UIKit does:</p>
+            <ol>
+                <li>Check reuse pool for available cells with identifier "MyCell"</li>
+                <li>❌ None found (first load)</li>
+                <li>Look up "MyCell" in registration registry</li>
+                <li>Found → MyCell.self</li>
+                <li>Create a new instance:</li>
+            </ol>
+
+            <pre><code>
+MyCell(frame: calculatedFrame)
+            </code></pre>
+            <p>⚠️ This is why your init(frame:) MUST exist</p>
+        </section>
+
+        <section>
+            <h2>STEP 2: Cell configuration</h2>
+            <p>After creation:</p>
+            <ul>
+                <li>UIKit assigns the cell its indexPath</li>
+                <li>Calls layout methods</li>
+                <li>Passes it to your cellForItemAt</li>
+            </ul>
+            <p>You configure it:</p>
+            <pre><code>
+cell.label.text = "Hello"
+            </code></pre>
+
+            <p>STEP 3: Cell goes offscreen</p>
+            <p>When user scrolls:</p>
+            <ul>
+                <li>Cell is removed from visible hierarchy</li>
+                <li>UIKit does NOT deallocate it</li>
+                <li>Cell is placed into the reuse pool</li>
+            </ul>
+
+            <pre><code>
+reusePool["MyCell"] = [cell1, cell2, cell3]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 4: Reuse happens</h2>
+            <p>When a new item comes onscreen:</p>
+            <ol>
+                <li>UIKit checks reuse pool</li>
+                <li>Finds available cell</li>
+                <li>Reuses it</li>
+                <li>Calls prepareForReuse()</li>
+                <li>Hands it back to you via cellForItemAt</li>
+            </ol>
+            <p>💡 This is why you must reset state in prepareForReuse()</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Why register is REQUIRED (crash explanation)</h2>
+            <p>If you forget to register:</p>
+            <pre><code>
+*** Terminating app due to uncaught exception:
+could not dequeue a view of kind UICollectionElementKindCell
+with identifier MyCell
+            </code></pre>
+
+            <p>Why?</p>
+            <p>Because UIKit does:</p>
+            <pre><code>
+"Give me a cell with identifier MyCell"
+→ Registry lookup fails
+→ No factory rule exists
+→ Fatal error
+            </code></pre>
+            <p>UIKit refuses to guess.</p>
+        </section>
+
+        <section>
+            <h2>5️⃣ Class vs Nib registration (important difference)</h2>
+            <p>Registering a class</p>
+            <pre><code>
+collectionView.register(MyCell.self,
+    forCellWithReuseIdentifier: "MyCell")
+            </code></pre>
+
+            <p>UIKit does:</p>
+            <pre><code>
+MyCell(frame: CGRect)
+            </code></pre>
+
+            <p>✔ Programmatic UI</p>
+            <p>✔ Faster</p>
+            <p>✔ Preferred for performance</p>
+        </section>
+
+        <section>
+            <h2>Registering a NIB</h2>
+            <pre><code>
+collectionView.register(
+    UINib(nibName: "MyCell", bundle: nil),
+    forCellWithReuseIdentifier: "MyCell"
+)
+            </code></pre>
+
+            <p>UIKit does:</p>
+            <ul>
+                <li>Load .xib</li>
+                <li>Inflate views</li>
+                <li>Connect outlets</li>
+            </ul>
+
+            <p>✔ Interface Builder</p>
+            <p>❌ Slightly slower</p>
+        </section>
+
+        <section>
+            <h2>6️⃣ Why reuse identifiers exist at all</h2>
+            <p>Without reuse:</p>
+            <ul>
+                <li>1,000 items = 1,000 views</li>
+                <li>Memory explosion 💥</li>
+                <li>Scrolling stutters</li>
+            </ul>
+
+            <p>With reuse:</p>
+            <ul>
+                <li>Only ~10–20 cells alive at once</li>
+                <li>Constant recycling</li>
+                <li>Smooth 60fps</li>
+            </ul>
+            <p>This design comes from UITableView in early iOS and was kept for performance.</p>
+        </section>
+
+        <section>
+            <h2>7️⃣ Why identifier must match EXACTLY</h2>
+            <p>This fails silently until dequeue:</p>
+            <pre><code>
+register(MyCell.self, forCellWithReuseIdentifier: "Cell")
+dequeueReusableCell(withReuseIdentifier: "MyCell")
+            </code></pre>
+
+            <p>UIKit:</p>
+            <p>❌ Registry lookup fails</p>
+            <p>💥 Crash</p>
+
+            <p>Best practice:</p>
+            <pre><code>
+static let reuseID = String(describing: MyCell.self)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8️⃣ Mental model (best way to remember)</h2>
+            <p>Think of register as:</p>
+            <p>“Installing a blueprint into UICollectionView”</p>
+            <ul>
+                <li>Blueprint = class or nib</li>
+                <li>Reuse ID = blueprint name</li>
+                <li>Dequeue = “build or reuse one”</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9️⃣ Real-world analogy</h2>
+            <p>🏭 Factory analogy</p>
+            <ul>
+                <li>register() → install machine</li>
+                <li>reuseIdentifier → machine label</li>
+                <li>dequeueReusableCell() → ask factory to produce an item</li>
+                <li>reuse pool → warehouse of returned items</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 Key takeaways</h2>
+            <ul>
+                <li>register() does NOT create cells</li>
+                <li>It registers a cell factory</li>
+                <li>Cells are created lazily</li>
+                <li>Reuse pool saves memory & boosts performance</li>
+                <li>Missing registration = guaranteed crash</li>
+            </ul>
+
+            <p>If you want next, I can:</p>
+            <p>👉 Explain prepareForReuse() in painful detail</p>
+            <p>👉 Show how reuse breaks if you forget to reset state</p>
+            <p>👉 Compare register vs storyboard prototype cells</p>
+            <p>👉 Explain how Diffable Data Source interacts with reuse</p>
+        </section>
+
+        <section>
+            <p>Ah! You’re asking about cell factories, like in iOS (UICollectionViewCell/UITableViewCell) or other UI frameworks, and how they relate technically to factory patterns and dependency injection. Let’s break it down carefully.</p>
+            <h2>1️⃣ What is a Cell Factory?</h2>
+            <p>In UI frameworks like UIKit (iOS) or JavaFX/Android, a cell factory is a mechanism that produces UI cells on demand for lists, tables, or collection views.</p>
+            <p>Example: In a UICollectionView:</p>
+            <pre><code>
+collectionView.register(MyCell.self, forCellWithReuseIdentifier: "MyCellID")
+            </code></pre>
+
+            <p>Later, when the collection view needs a cell:</p>
+            <pre><code>
+func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCellID", for: indexPath) as! MyCell
+    cell.configure(with: data[indexPath.row])
+    return cell
+}                
+            </code></pre>
+
+            <p>Key idea: You don’t manually create all cells; the collection view asks the “factory” (the registration + dequeue mechanism) to give you a cell.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Relation to the Factory Pattern</h2>
+            <p>The Factory Pattern is a design pattern that abstracts the creation of objects:</p>
+            <ul>
+                <li>You ask the factory: “Give me an instance of type X.”</li>
+                <li>You don’t care how it’s created internally; the factory handles the construction.</li>
+            </ul>
+            <p>In UICollectionView:</p>
+            <ul>
+                <li>register(_:forCellWithReuseIdentifier:) → tells the collection view what factory to use.</li>
+                <li>
+                    dequeueReusableCell(withReuseIdentifier:for:) → acts as the factory method:
+                    <ul>
+                        <li>If a reusable cell exists → return it.</li>
+                        <li>Otherwise → instantiate a new cell using the class or nib registered.</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>So the collection view itself is a factory manager:</p>
+            <ul>
+                <li>It maintains a pool of reusable cells (like an object cache/registry).</li>
+                <li>It produces cells on demand, similar to a Factory Pattern in software engineering.</li>
+            </ul>
+            <p>Diagram analogy:</p>
+            <pre><code>
+CollectionView (Factory Manager)
+  |
+  +-- dequeues MyCell from pool (reuse)
+  +-- creates MyCell if pool empty (factory)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3️⃣ Registry + Dependency Injection Analogy</h2>
+            <p>Think about registry and DI:</p>
+            <ul>
+                <li>Registry: A place where you “register” mappings from identifiers → creators/factories.</li>
+                <li>Dependency Injection (DI): Instead of a class creating its own dependencies, they are injected/provided.</li>
+            </ul>
+
+            <p>In UICollectionView terms:</p>
+            <ul>
+                <li>
+                    Registry:
+                    <pre><code>
+collectionView.register(MyCell.self, forCellWithReuseIdentifier: "MyCellID")
+                    </code></pre>
+                    <p>You’re registering a type under an identifier. The collection view now knows “if someone asks for MyCellID, I can produce a MyCell”.</p>
+                </li>
+                <li>
+                    Injection:
+                    <p>When you call dequeueReusableCell, the collection view injects the cell into your cellForItemAt method:</p>
+                    <pre><code>
+let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCellID", for: indexPath) as! MyCell
+                    </code></pre>
+                    You don’t init the cell manually; the collection view provides it, satisfying the cell’s dependencies (size, reuse state, nib configuration, etc.).
+                </li>
+            </ul>
+            <p>💡 Conceptually:</p>
+            <ul>
+                <li>register → register factory into registry</li>
+                <li>dequeueReusableCell → request object from registry/factory</li>
+                <li>Collection view → factory + registry + DI container for cells</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Why Reuse + Factory + DI Together?</h2>
+            <ul>
+                <li>Reuse: Avoid creating hundreds/thousands of cells for a long list → improves performance.</li>
+                <li>Factory: Abstracts the creation logic (so the view doesn’t care how cells are made).</li>
+                <li>Registry/DI: Makes it configurable. You can inject different cell types without changing the collection view code.</li>
+            </ul>
+            <p>Example of DI analogy:</p>
+            <pre><code>
+protocol ConfigurableCell {
+    associatedtype DataType
+    func configure(with data: DataType)
+}
+
+class MyCell: UICollectionViewCell, ConfigurableCell {
+    func configure(with data: String) {
+        // setup UI
+    }
+}
+
+// Later in collectionView:
+let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCellID", for: indexPath) as! MyCell
+cell.configure(with: "Injected Data")                
+            </code></pre>
+
+            <ul>
+                <li>The data dependency ("Injected Data") is injected.</li>
+                <li>The cell creation is abstracted via factory/registry.</li>
+                <li>You get loose coupling → you can swap cells without touching the collection view logic.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>UIKit/UICollectionView</th>
+                        <th>Design Pattern Analogy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Factory</td>
+                        <td>dequeueReusableCell creates/provides a cell</td>
+                        <td>Factory Pattern</td>
+                    </tr>
+                    <tr>
+                        <td>Registry</td>
+                        <td>register(_:forCellWithReuseIdentifier:) maps ID → cell type</td>
+                        <td>Registry</td>
+                    </tr>
+                    <tr>
+                        <td>Dependency Injection</td>
+                        <td>cell.configure(with:) injects data</td>
+                        <td>DI / Inversion of Control</td>
+                    </tr>
+                    <tr>
+                        <td>Reuse</td>
+                        <td>CollectionView pools cells</td>
+                        <td>Object Pool Pattern (related)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>In short:</p>
+            <p>UICollectionView cell management = Factory Pattern + Registry + DI + Object Pool, all rolled into one.</p>
+            <p>Factory creates cells, registry maps identifiers to cell types, DI injects the data, and reuse optimizes performance.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

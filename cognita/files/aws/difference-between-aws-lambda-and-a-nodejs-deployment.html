@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>difference between AWS Lambda and a “Node.js deployment</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">difference between AWS Lambda and a “Node.js deployment</h1>
+                    <p class="subtitle">Here’s a clear, practical breakdown of the difference between AWS Lambda and a “Node.js deployment” in an AWS serverless context, with some real-world guidance (especially relevant to your Lambda + API Gateway background).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What AWS Lambda actually is</h2>
+            <p>AWS Lambda is a compute service.</p>
+            <p>It runs your code without managing servers.</p>
+            <ul>
+                <li>You upload code (Node.js, Python, etc.)</li>
+                <li>AWS runs it only when triggered</li>
+                <li>You pay per execution + execution time</li>
+                <li>Scaling is automatic</li>
+            </ul>
+            <p>👉 Lambda is the runtime environment, not the language.</p>
+        </section>
+
+        <section>
+            <h2>2. What “Node.js deployment” usually means</h2>
+            <p>When people say “Node.js deployment on AWS”, they usually mean one of these:</p>
+            <p>A. Node.js on servers (non-serverless)</p>
+            <p>Examples:</p>
+            <ul>
+                <li>EC2</li>
+                <li>ECS (with EC2)</li>
+                <li>Elastic Beanstalk</li>
+            </ul>
+            <p>Characteristics:</p>
+            <ul>
+                <li>You run a long-lived Node.js process (Express, Fastify, NestJS)</li>
+                <li>You manage:
+                    <ul>
+                        <li>Servers</li>
+                        <li>Scaling</li>
+                        <li>Patching</li>
+                    </ul>
+                </li>
+                <li>App is always running</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>B. Node.js on AWS Lambda (serverless Node.js)</h2>
+            <p>This is Node.js deployed to Lambda, not a separate concept.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Lambda + API Gateway</li>
+                <li>Lambda + ALB</li>
+                <li>Serverless Framework / SAM / CDK</li>
+            </ul>
+
+            <p>Characteristics:</p>
+            <ul>
+                <li>Node.js code runs only on demand</li>
+                <li>No Express server (or adapted via wrappers)</li>
+                <li>Event-driven execution</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Key differences (side-by-side)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>AWS Lambda (Node.js)</th>
+                        <th>Traditional Node.js Deployment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Server management</td>
+                        <td>❌ None</td>
+                        <td>✅ You manage servers</td>
+                    </tr>
+                    <tr>
+                        <td>Process lifetime</td>
+                        <td>Short-lived (per request)</td>
+                        <td>Long-running</td>
+                    </tr>
+                    <tr>
+                        <td>Scaling</td>
+                        <td>Automatic</td>
+                        <td>Manual or autoscaling</td>
+                    </tr>
+                    <tr>
+                        <td>Pricing</td>
+                        <td>Pay per request + ms</td>
+                        <td>Pay for uptime</td>
+                    </tr>
+                    <tr>
+                        <td>Cold starts</td>
+                        <td>Yes (can be mitigated)</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Local state</td>
+                        <td>❌ Not reliable</td>
+                        <td>✅ In-memory state possible</td>
+                    </tr>
+                    <tr>
+                        <td>Best for</td>
+                        <td>APIs, microservices, jobs</td>
+                        <td>Heavy apps, WebSockets, long tasks</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. Architecture difference (important)</h2>
+            <p>Lambda (Serverless)</p>
+            <pre><code>
+API Gateway
+   ↓
+AWS Lambda (Node.js handler)
+   ↓
+DB / S3 / External APIs
+            </code></pre>
+
+            <ul>
+                <li>No app.listen()</li>
+                <li>Function = entry point</li>
+                <li>Stateless by design</li>
+            </ul>
+            <p>Example:</p>
+
+            <pre><code>
+export const handler = async (event) => {
+    return { statusCode: 200, body: "Hello" }
+}                  
+            </code></pre>
+
+            <p>Traditional Node.js</p>
+            <pre><code>
+Load Balancer
+   ↓
+EC2 / ECS
+   ↓
+Node.js (Express app running forever)
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+app.listen(3000, () => console.log("Server running"))
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. When to choose AWS Lambda (Node.js)</h2>
+            <p>Use Lambda if:</p>
+            <ul>
+                <li>You want true serverless</li>
+                <li>Traffic is bursty or unpredictable</li>
+                <li>You want low ops overhead</li>
+                <li>
+                    You are building:
+                    <ul>
+                        <li>REST APIs</li>
+                        <li>Background jobs</li>
+                        <li>Webhooks</li>
+                        <li>Auth handlers</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>This fits perfectly with:</p>
+            <ul>
+                <li>API Gateway</li>
+                <li>Cognito</li>
+                <li>MongoDB Atlas</li>
+                <li>Firebase / OAuth flows</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. When to choose traditional Node.js deployment</h2>
+            <p>Use EC2 / ECS / EB if:</p>
+            <ul>
+                <li>
+                    You need:
+                    <ul>
+                        <li>WebSockets at scale</li>
+                        <li>Long-running tasks</li>
+                        <li>Heavy in-memory caching</li>
+                    </ul>
+                </li>
+                <li>
+                    You want full control over:
+                    <ul>
+                        <li>Process lifecycle</li>
+                        <li>Threads / workers</li>
+                    </ul>
+                </li>
+                <li>Cold starts are unacceptable</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Common misconception</h2>
+            <p>❌ “AWS Lambda vs Node.js”</p>
+            <p>Correct framing:</p>
+            <p>✅ AWS Lambda vs server-based Node.js hosting</p>
+            <p>Node.js is the runtime</p>
+            <p>Lambda is the execution model</p>
+        </section>
+
+        <section>
+            <h2>8. Practical summary</h2>
+            <ul>
+                <li>AWS Lambda = how your code runs</li>
+                <li>Node.js = what language your code is written in</li>
+                <li>Serverless Node.js = Node.js functions running on Lambda</li>
+                <li>Traditional Node.js = Node.js apps running on servers</li>
+            </ul>
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Compare Lambda vs ECS vs EC2 for your use case</li>
+                <li>Show Express → Lambda migration patterns</li>
+                <li>Break down cost differences with real numbers</li>
+                <li>Recommend best architecture for your existing serverless stack</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Manually set up a custom domain for a React web app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Manually set up a custom domain for a React web app</h1>
+                    <p class="subtitle">
+                        To manually set up a custom domain for a React web app, the steps depend on where you're hosting it. Since you work heavily with AWS (CloudFront, S3, Route 53, ACM), I’ll show both:
+                        <ol>
+                            <li>✅ Generic hosting (Vercel / Netlify / any server)</li>
+                            <li>✅ Manual AWS setup (S3 + CloudFront + Route 53 + ACM) — production-ready approach</li>
+                        </ol>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ OPTION 1: Generic Hosting (Vercel / Netlify / Any Host)</h2>
+            <p>If your React app is already deployed:</p>
+            <p>Step 1 — Buy a Domain</p>
+            <p>You can buy from:</p>
+            <ul>
+                <li>Namecheap</li>
+                <li>GoDaddy</li>
+                <li>Google Domains</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 2 — Add Custom Domain in Hosting Dashboard</h2>
+            <p>Example:</p>
+            <ul>
+                <li>Go to Project Settings</li>
+                <li>Click Domains</li>
+                <li>Add: yourdomain.com</li>
+            </ul>
+            <p>The host will give you either:</p>
+            <ul>
+                <li>A CNAME record, or</li>
+                <li>An A record (IP address)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 3 — Configure DNS at Your Domain Registrar</h2>
+            <p>Go to DNS settings and add:</p>
+            <p>If CNAME:</p>
+            <pre><code>
+Type: CNAME
+Host: www
+Value: yourapp.hostingplatform.com
+            </code></pre>
+
+            <p>If A record:</p>
+            <pre><code>
+Type: A
+Host: @
+Value: 123.45.67.89
+            </code></pre>
+            <p>Wait 5–30 minutes for propagation.</p>
+        </section>
+
+        <section>
+            <h2>✅ OPTION 2: Manual AWS Setup (S3 + CloudFront + Route 53)</h2>
+            <p>This is the correct scalable architecture for production.</p>
+            <p>Architecture Overview</p>
+            <pre><code>
+React Build → S3 → CloudFront → Route 53 → Custom Domain
+            ↑
+          ACM SSL
+            </code></pre>
+            <p>STEP 1 — Build Your React App</p>
+            <pre><code>
+npm run build
+            </code></pre>
+            <p>This generates the /build folder.</p>
+        </section>
+
+        <section>
+            <h2>STEP 2 — Upload to S3</h2>
+            <ol>
+                <li>Go to Amazon S3</li>
+                <li>
+                    Create bucket:
+                    <pre><code>
+yourdomain.com
+                    </code></pre>
+                </li>
+                <li>Disable "Block all public access"</li>
+                <li>Enable Static Website Hosting</li>
+                <li>
+                    Set:
+                    <ul>
+                        <li>Index: index.html</li>
+                        <li>Error: index.html (important for React routing)</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>Upload your /build files.</p>
+        </section>
+
+        <section>
+            <h2>STEP 3 — Request SSL Certificate</h2>
+            <p>Go to:</p>
+            <ul>
+                <li>AWS Certificate Manager</li>
+            </ul>
+            <p>⚠ IMPORTANT:</p>
+            <p>Request certificate in us-east-1 (required for CloudFront)</p>
+            <p>Add:</p>
+            <pre><code>
+yourdomain.com
+www.yourdomain.com
+            </code></pre>
+            <p>Choose DNS validation</p>
+            <p>Create validation record in Route 53.</p>
+            <p>Wait until status = Issued.</p>
+        </section>
+
+        <section>
+            <h2>STEP 4 — Create CloudFront Distribution</h2>
+            <p>Go to:</p>
+            <ul>
+                <li>Amazon CloudFront</li>
+            </ul>
+            <p>Origin:</p>
+            <pre><code>
+S3 bucket (NOT the website endpoint)
+            </code></pre>
+
+            <p>Enable:</p>
+            <ul>
+                <li>Redirect HTTP → HTTPS</li>
+                <li>
+                    Add Alternate Domain Name:
+                    <pre><code>
+yourdomain.com
+www.yourdomain.com
+                    </code></pre>
+                </li>
+                <li>Attach ACM certificate</li>
+            </ul>
+            <p>Default Root Object:</p>
+            <pre><code>
+index.html
+            </code></pre>
+            <p>Deploy (takes ~10–15 mins)</p>
+        </section>
+
+        <section>
+            <h2>STEP 5 — Point Domain to CloudFront</h2>
+            <p>Go to:</p>
+            <ul>
+                <li>Amazon Route 53</li>
+            </ul>
+            <p>Create records:</p>
+            <p>For root domain:</p>
+            <pre><code>
+Type: A
+Alias: YES
+Alias Target: CloudFront distribution
+            </code></pre>
+            <p>For www:</p>
+            <pre><code>
+Type: A
+Alias: YES
+Alias Target: CloudFront distribution
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Important for React Router (SPA Fix)</h2>
+            <p>If using React Router:</p>
+            <p>CloudFront → Error Pages → Add:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Error Code</th>
+                        <th>Response</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>403</td>
+                        <td>/index.html</td>
+                    </tr>
+                    <tr>
+                        <td>404</td>
+                        <td>/index.html</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>This prevents route refresh errors.</p>
+        </section>
+
+        <section>
+            <h2>Optional: Redirect www → non-www</h2>
+            <p>You can:</p>
+            <ul>
+                <li>Create separate S3 bucket www.yourdomain.com</li>
+                <li>Redirect to root domain</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>How DNS Flow Works</h2>
+            <pre><code>
+User types domain
+↓
+Route 53 resolves DNS
+↓
+CloudFront (CDN)
+↓
+S3 (static files)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Quick Comparison</h2>
+            <table>
+                <thead>
+                    <th>Hosting</th>
+                    <th>Difficulty</th>
+                    <th>Scalable</th>
+                    <th>SSL</th>
+                    <th>CDN</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vercel</td>
+                        <td>Easy</td>
+                        <td>Yes</td>
+                        <td>Auto</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Netlify</td>
+                        <td>Easy</td>
+                        <td>Yes</td>
+                        <td>Auto</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>AWS Manual</td>
+                        <td>Advanced</td>
+                        <td>Yes (Enterprise)</td>
+                        <td>Manual</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Since You’re an AWS Dev (Paul)</h2>
+            <p>If this is for TryCastanet or another production system, I strongly recommend:</p>
+            <ul>
+                <li>S3 (private)</li>
+                <li>CloudFront with OAC</li>
+                <li>ACM in us-east-1</li>
+                <li>Route 53 Alias</li>
+                <li>React SPA error rewrite</li>
+            </ul>
+            <p>That gives you:</p>
+            <ul>
+                <li>Global CDN</li>
+                <li>HTTPS</li>
+                <li>DDoS protection (via CloudFront)</li>
+                <li>Production scalability</li>
+            </ul>
+
+            <p>If you'd like, I can next explain:</p>
+            <ul>
+                <li>🔐 How to secure S3 with OAC (no public access)</li>
+                <li>⚡ How to automate deployment with GitHub Actions</li>
+                <li>🌍 How to handle multiple environments (dev/staging/prod)</li>
+                <li>🚀 How custom domains work internally (deep DNS + TLS handshake explanation)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔐 How to secure S3 with OAC (no public access)</h2>
+            <p>Perfect — this is the correct modern setup for production 🔥</p>
+            <p>Since you're building AWS serverless systems already, this is the architecture you should be using.</p>
+            <p>We’ll secure:</p>
+            <pre><code>
+React App → Private S3 → CloudFront (OAC) → Custom Domain
+            </code></pre>
+            <p>No public S3 access at all.</p>
+        </section>
+
+        <section>
+            <h2>🔐 What is OAC?</h2>
+            <p>OAC (Origin Access Control) is the new secure way for</p>
+            <p>Amazon CloudFront to access</p>
+            <p>Amazon S3</p>
+            <p>It replaces the older OAI (Origin Access Identity).</p>
+            <p>With OAC:</p>
+            <ul>
+                <li>S3 bucket stays completely private</li>
+                <li>Only CloudFront can access it</li>
+                <li>Signed requests are enforced</li>
+                <li>Uses SigV4 authentication</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🏗 Secure Architecture</h2>
+            <pre><code>
+User
+  ↓
+Route 53
+  ↓
+CloudFront (OAC signs request)
+  ↓
+Private S3 bucket (no public access)
+            </code></pre>
+        </section>
+        
+        <section>
+            <h2>✅ STEP-BY-STEP: Secure S3 with OAC</h2>
+            <p>STEP 1 — Create S3 Bucket (Private)</p>
+            <ol>
+                <li>Go to S3</li>
+                <li>
+                    Create bucket:
+                    <pre><code>
+yourdomain.com
+                    </code></pre>
+                </li>
+                <li>
+                    ✅ KEEP:
+                    <pre><code>
+Block ALL public access = ENABLED
+                    </code></pre>
+                </li>
+                <li>
+                    Do NOT enable static website hosting
+                    <p>(We use CloudFront origin, not website endpoint)</p>
+                </li>
+            </ol>
+            <p>Upload your React /build files.</p>
+        </section>
+
+        <section>
+            <h2>STEP 2 — Create CloudFront Distribution</h2>
+            <p>Go to CloudFront → Create distribution</p>
+            <p>Origin Settings:</p>
+            <p>Origin Domain:</p>
+            <pre><code>
+Select S3 bucket (not website endpoint)
+            </code></pre>
+
+            <p>Origin Access:</p>
+            <pre><code>
+Origin access control settings (recommended)
+            </code></pre>
+
+            <p>Click:</p>
+            <pre><code>
+Create new OAC
+            </code></pre>
+
+            <p>Settings:</p>
+            <ul>
+                <li>Signing behavior: Sign requests</li>
+                <li>Signing protocol: SigV4</li>
+            </ul>
+            <p>Save.</p>
+        </section>
+
+        <section>
+            <h2>STEP 3 — Attach Bucket Policy (IMPORTANT)</h2>
+            <p>After creating OAC, CloudFront will show:</p>
+            <pre><code>“Update bucket policy”</code></pre>
+            <p>Click Copy policy</p>
+            <p>Go to:</p>
+            <p>S3 → Permissions → Bucket Policy → Paste policy</p>
+            <p>It will look like:</p>
+            <pre><code>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Sid": "AllowCloudFrontServicePrincipalReadOnly",
+        "Effect": "Allow",
+        "Principal": {
+            "Service": "cloudfront.amazonaws.com"
+        },
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::yourdomain.com/*",
+        "Condition": {
+            "StringEquals": {
+            "AWS:SourceArn": "arn:aws:cloudfront::ACCOUNT-ID:distribution/DISTRIBUTION-ID"
+            }
+        }
+        }
+    ]
+}
+            </code></pre>
+            <p>This means:</p>
+            <ul>
+                <li>Only YOUR CloudFront distribution can access S3</li>
+                <li>Direct S3 URL access = ❌ Forbidden</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>STEP 4 — Viewer Protocol Policy</h2>
+            <p>Set:</p>
+            <pre><code>
+Redirect HTTP to HTTPS
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 5 — Default Root Object</h2>
+            <p>Set:</p>
+            <pre><code>
+index.html
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 6 — React SPA Fix (Important)</h2>
+            <p>CloudFront → Error Pages → Add:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>HTTP Code</th>
+                        <th>Response Page</th>
+                        <th>Response Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>403</td>
+                        <td>/index.html</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>404</td>
+                        <td>/index.html</td>
+                        <td>200</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>This prevents route refresh errors.</p>
+        </section>
+
+        <section>
+            <h2>🔍 How to Verify It's Secure</h2>
+            <p>Try opening:</p>
+            <pre><code>
+https://yourbucket.s3.amazonaws.com/index.html
+            </code></pre>
+
+            <p>You should get:</p>
+            <pre><code>
+Access Denied
+            </code></pre>
+
+            <p>But:</p>
+            <pre><code>
+https://yourcloudfrontdomain.com
+            </code></pre>
+
+            <p>Should work.</p>
+            <p>If direct S3 works → it's NOT secure.</p>
+        </section>
+
+        <section>
+            <h2>🔐 Why OAC is Better Than OAI</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>OAI (Old)</th>
+                        <th>OAC (New)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Legacy</td>
+                        <td>Modern</td>
+                    </tr>
+                    <tr>
+                        <td>Basic IAM</td>
+                        <td>SigV4 signed</td>
+                    </tr>
+                    <tr>
+                        <td>Less granular</td>
+                        <td>More secure</td>
+                    </tr>
+                    <tr>
+                        <td>Being phased out</td>
+                        <td>Recommended by AWS</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🚀 Production-Level Hardening (What You Should Do)</h2>
+            <p>Since you're building production systems:</p>
+            <p>1️⃣ Enable CloudFront Security Headers</p>
+            <p>Add response headers policy:</p>
+            <ul>
+                <li>Strict-Transport-Security</li>
+                <li>X-Content-Type-Options</li>
+                <li>X-Frame-Options</li>
+                <li>Content-Security-Policy</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Enable WAF</h2>
+            <p>Attach:</p>
+            <p>AWS WAF</p>
+            <p>Protect against:</p>
+            <ul>
+                <li>SQL injection</li>
+                <li>XSS</li>
+                <li>Bots</li>
+                <li>Rate abuse</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Enable Logging</h2>
+            <p>Enable:</p>
+            <ul>
+                <li>CloudFront access logs</li>
+                <li>S3 access logs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Use Origin Shield (Optional for High Traffic)</h2>
+            <p>Improves cache efficiency.</p>
+        </section>
+
+        <section>
+            <h2>🔥 Enterprise-Level Setup (Best Practice)</h2>
+            <p>For something like TryCastanet:</p>
+            <ul>
+                <li>Private S3</li>
+                <li>CloudFront OAC</li>
+                <li>ACM SSL (us-east-1)</li>
+                <li>Route 53 alias</li>
+                <li>WAF</li>
+                <li>CI/CD auto invalidation</li>
+                <li>Cache-control headers for assets</li>
+                <li>Versioned build folders</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ Pro Tip for React Performance</h2>
+            <p>Set long cache headers for static files:</p>
+            <p>Example:</p>
+            <pre><code>
+/static/*.js → Cache 1 year
+index.html → No cache
+            </code></pre>
+            <p>This dramatically improves performance.</p>
+            <p>If you want next, I can show you:</p>
+            <ul>
+                <li>🔐 Exact Terraform config for OAC</li>
+                <li>⚡ How to automate CloudFront invalidation in CI</li>
+                <li>🌎 Multi-environment domain setup (dev.trycastanet.com)</li>
+                <li>🧠 Deep explanation of how CloudFront signs requests to S3 internally</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

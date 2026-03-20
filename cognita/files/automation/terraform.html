@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Terraform</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Terraform</h1>
+                    <p class="subtitle">
+                        Terraform is an Infrastructure as Code (IaC) tool created by HashiCorp that lets you define, provision, and manage cloud infrastructure using code instead of manual configuration. ☁️
+                        <p>It is widely used to automate infrastructure across platforms like Amazon Web Services, Microsoft Azure, and Google Cloud.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Core Idea</h2>
+            <p>Instead of manually creating servers, databases, networks, etc., you write configuration files describing the infrastructure. Terraform then builds and manages it automatically.</p>
+            <p>Example:</p>
+            <pre><code>
+provider "aws" {
+    region = "ap-southeast-1"
+}
+
+resource "aws_instance" "app_server" {
+    ami           = "ami-0abcdef12345"
+    instance_type = "t3.micro"
+}
+            </code></pre>
+            <p>This code tells Terraform to create an AWS EC2 server.</p>
+        </section>
+
+        <section>
+            <h2>How Terraform Works</h2>
+            <p>Terraform follows a simple workflow:</p>
+            <p>1️⃣ Write</p>
+            <p>You write infrastructure configuration using HCL (HashiCorp Configuration Language).</p>
+            <p>2️⃣ Plan</p>
+            <pre><code>
+terraform plan
+            </code></pre>
+            <p>Shows what Terraform will create, modify, or delete.</p>
+
+            <p>3️⃣ Apply</p>
+            <pre><code>
+terraform apply
+            </code></pre>
+            <p>Terraform creates the infrastructure.</p>
+
+            <p>4️⃣ Destroy (optional)</p>
+            <pre><code>
+terraform destroy
+            </code></pre>
+            <p>Removes everything defined in the config.</p>
+        </section>
+
+        <section>
+            <h2>Key Concepts</h2>
+            <p>Providers</p>
+            <p>Plugins that allow Terraform to interact with services.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>AWS</li>
+                <li>Azure</li>
+                <li>Google Cloud</li>
+                <li>Kubernetes</li>
+                <li>GitHub</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+provider "aws" {
+    region = "ap-southeast-1"
+}
+            </code></pre>
+
+            <p>Resources</p>
+            <p>Actual infrastructure objects.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>EC2</li>
+                <li>VPC</li>
+                <li>S3</li>
+                <li>Load Balancer</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+resource "aws_s3_bucket" "my_bucket" {
+    bucket = "my-app-storage"
+}
+            </code></pre>
+
+            <p>State File</p>
+            <p>Terraform stores infrastructure state in:</p>
+            <pre><code>
+terraform.tfstate
+            </code></pre>
+            <p>This file tracks what resources exist so Terraform knows what to change.</p>
+            <p>In teams, it’s stored remotely (like S3 + DynamoDB locking).</p>
+
+            <p>Modules</p>
+            <p>Reusable Terraform configurations.</p>
+            <p>Example structure:</p>
+            <pre><code>
+modules/
+   vpc/
+   ec2/
+   database/
+            </code></pre>
+            <p>Modules allow infrastructure reuse across projects.</p>
+        </section>
+
+        <section>
+            <h2>Why Companies Use Terraform</h2>
+            <p>Benefits:</p>
+            <p>✔ Multi-cloud support</p>
+            <p>✔ Infrastructure version control (Git)</p>
+            <p>✔ Automated provisioning</p>
+            <p>✔ Reproducible environments</p>
+            <p>✔ Scalable DevOps workflows</p>
+        </section>
+
+        <section>
+            <h2>Real Example Architecture</h2>
+            <p>For example, your AWS serverless backend (similar to what you're building) could use Terraform to create:</p>
+            <ul>
+                <li>API Gateway</li>
+                <li>Lambda</li>
+                <li>Cognito</li>
+                <li>S3</li>
+                <li>DynamoDB</li>
+                <li>VPC</li>
+            </ul>
+            <p>Instead of manually configuring everything in the AWS console.</p>
+        </section>
+
+        <section>
+            <h2>Terraform vs Other Tools</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Terraform</td>
+                        <td>Infrastructure provisioning</td>
+                    </tr>
+                    <tr>
+                        <td>Ansible</td>
+                        <td>Configuration management</td>
+                    </tr>
+                    <tr>
+                        <td>CloudFormation</td>
+                        <td>AWS-native IaC</td>
+                    </tr>
+                    <tr>
+                        <td>Pulumi</td>
+                        <td>IaC using programming languages</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Simple Terraform Commands</h2>
+            <pre><code>
+terraform init     # initialize project
+terraform plan     # preview changes
+terraform apply    # create/update infra
+terraform destroy  # delete infra
+            </code></pre>
+            <p>💡 For someone with your stack (AWS Lambda + API Gateway + MongoDB + Serverless), Terraform is commonly used to manage:</p>
+            <ul>
+                <li>AWS infrastructure</li>
+                <li>Networking</li>
+                <li>IAM roles</li>
+                <li>Databases</li>
+                <li>Kubernetes clusters</li>
+            </ul>
+            <p>✅ If you want, I can also show you:</p>
+            <ul>
+                <li>Terraform for AWS Lambda + API Gateway (real project example)</li>
+                <li>Terraform vs Serverless Framework (important for your setup)</li>
+                <li>Production Terraform project structure used by big companies.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

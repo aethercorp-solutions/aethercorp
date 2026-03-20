@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CI/CD explained</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">CI/CD explained</h1>
+                    <p class="subtitle">Here’s CI/CD explained in very beginner-friendly terms — no jargon first, then we add just a little structure 🙂</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What CI/CD means (very simply)</h2>
+            <p>CI/CD is an automatic helper for your code.</p>
+            <p>It:</p>
+            <ul>
+                <li>checks your work,</li>
+                <li>fixes small issues early,</li>
+                <li>and delivers your app to users without you doing everything by hand.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Break the words down</h2>
+            <p>CI — Continuous Integration</p>
+            <p>👉 “Always checking new code”</p>
+            <p>Every time you add or change code:</p>
+            <ul>
+                <li>it is combined with the existing code,</li>
+                <li>automatically checked to make sure nothing is broken.</li>
+            </ul>
+            <p>Think:</p>
+            <p>“Did my change break the app?”</p>
+            <p>CI answers that immediately.</p>
+        </section>
+
+        <section>
+            <h2>CD — Continuous Delivery / Deployment</h2>
+            <p>👉 “Automatically delivering the app”</p>
+            <p>Once the code is verified:</p>
+            <ul>
+                <li>it is prepared</li>
+                <li>and often sent live automatically</li>
+            </ul>
+            <p>Think:</p>
+            <p>“If it’s good, put it online.”</p>
+        </section>
+
+        <section>
+            <h2>3. Real-life analogy 🏭</h2>
+            <p>Factory example</p>
+            <ul>
+                <li>
+                    CI = quality inspection
+                    <p>Every part is checked before it’s assembled.</p>
+                </li>
+                <li>
+                    CD = delivery truck
+                    <p>If the product passes inspection, it’s shipped automatically.</p>
+                </li>
+            </ul>
+            <p>No waiting, no guessing.</p>
+        </section>
+
+        <section>
+            <h2>4. Without CI/CD (manual way 😓)</h2>
+            <ol>
+                <li>Write code</li>
+                <li>Run tests manually</li>
+                <li>Build the app manually</li>
+                <li>Upload files manually</li>
+                <li>Hope nothing breaks</li>
+            </ol>
+            <p>❌ Slow</p>
+            <p>❌ Error-prone</p>
+            <p>❌ Stressful</p>
+        </section>
+
+        <section>
+            <h2>5. With CI/CD (automated way 😌)</h2>
+            <ol>
+                <li>Write code</li>
+                <li>Push to GitHub</li>
+                <li>
+                    CI/CD automatically:
+                    <ul>
+                        <li>checks the code</li>
+                        <li>runs tests</li>
+                        <li>builds the app</li>
+                        <li>deploys it</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>✅ Fast</p>
+            <p>✅ Safe</p>
+            <p>✅ Reliable</p>
+        </section>
+
+        <section>
+            <h2>6. Simple flow (visual)</h2>
+            <pre><code>
+Write Code
+   ↓
+Push to GitHub
+   ↓
+CI: Test & Check
+   ↓
+CD: Build & Deploy
+   ↓
+App is live
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. What CI/CD actually does behind the scenes</h2>
+            <p>It can automatically:</p>
+            <ul>
+                <li>install dependencies</li>
+                <li>run tests</li>
+                <li>check code style</li>
+                <li>build the app</li>
+                <li>deploy to servers or cloud</li>
+            </ul>
+            <p>All triggered by events like:</p>
+            <ul>
+                <li>pushing code</li>
+                <li>opening a pull request</li>
+                <li>merging branches</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Tools that do CI/CD</h2>
+            <p>Some popular ones:</p>
+            <ul>
+                <li>GitHub Actions</li>
+                <li>GitLab CI</li>
+                <li>Jenkins</li>
+                <li>CircleCI</li>
+            </ul>
+            <p>(They all do the same idea — automate work.)</p>
+        </section>
+
+        <section>
+            <h2>9. One-sentence summary</h2>
+            <p>CI/CD means: every code change is automatically checked and safely delivered.</p>
+            <p>If you want, I can next:</p>
+            <ul>
+                <li>explain CI vs CD difference more clearly</li>
+                <li>show a real GitHub Actions CI/CD example</li>
+                <li>explain CI/CD for mobile apps, web apps, or AWS</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here’s a very simple GitHub Actions workflow, explained line by line like you’re brand new to it.</p>
+            <h2>1. What this workflow will do</h2>
+            <p>When you push code to GitHub, it will:</p>
+            <ul>
+                <li>Get your code</li>
+                <li>Install Node.js</li>
+                <li>Install dependencies</li>
+                <li>Run tests</li>
+            </ul>
+            <p>This is CI (Continuous Integration).</p>
+        </section>
+
+        <section>
+            <h2>2. File location (important)</h2>
+            <p>Create this file in your repository:</p>
+            <pre><code>
+.github/workflows/ci.yml
+            </code></pre>
+            <p>GitHub automatically detects it.</p>
+        </section>
+
+        <section>
+            <h2>3. Simple GitHub Actions workflow (Node.js)</h2>
+            <pre><code>
+name: Simple CI Workflow
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Explanation (line by line)</h2>
+            <p>Workflow name</p>
+            <pre><code>
+name: Simple CI Workflow
+            </code></pre>
+            <p>Just a label you’ll see in GitHub.</p>
+            <p>Trigger (WHEN it runs)</p>
+            <pre><code>
+on:
+  push:
+    branches: [ "main" ]
+            </code></pre>
+            <p>👉 Runs every time you push code to the main branch.</p>
+
+            <p>Job (WHAT machine to use)</p>
+            <pre><code>
+jobs:
+  build:
+    runs-on: ubuntu-latest
+            </code></pre>
+            <p>GitHub gives you a free Linux computer to run the steps.</p>
+
+            <p>Steps (WHAT actions happen)</p>
+            <p>1️⃣ Get your code</p>
+            <pre><code>
+- uses: actions/checkout@v4
+            </code></pre>
+            <p>Downloads your repository into the runner.</p>
+
+            <p>2️⃣ Install Node.js</p>
+            <pre><code>
+- uses: actions/setup-node@v4
+  with:
+    node-version: 18
+            </code></pre>
+            <p>Sets up Node.js version 18.</p>
+
+            <p>3️⃣ Install packages</p>
+            <pre><code>
+- run: npm install
+            </code></pre>
+            <p>Installs dependencies from package.json.</p>
+
+            <p>4️⃣ Run tests</p>
+            <pre><code>
+- run: npm test
+            </code></pre>
+            <p>Runs your test script.</p>
+        </section>
+
+        <section>
+            <h2>5. What happens when you push code</h2>
+            <ol>
+                <li>You push code</li>
+                <li>GitHub sees the workflow</li>
+                <li>GitHub Actions runs it</li>
+                <li>You see ✅ or ❌ in the Actions tab</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>6. If tests fail</h2>
+            <ul>
+                <li>Workflow turns ❌ red</li>
+                <li>GitHub tells you what broke</li>
+                <li>You fix it before deploying</li>
+            </ul>
+            <p>This is the main power of CI.</p>
+        </section>
+
+        <section>
+            <h2>7. Beginner tip</h2>
+            <p>If you don’t have tests yet, you can temporarily replace:</p>
+            <pre><code>
+- run: npm test
+            </code></pre>
+            <p>with:</p>
+            <pre><code>
+- run: echo "CI is working!"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. One-sentence summary</h2>
+            <p>This workflow automatically checks your code every time you push it.</p>
+            <p>If you want next, I can show:</p>
+            <ul>
+                <li>CI + automatic deployment (CD)</li>
+                <li>A React, Next.js, or React Native example</li>
+                <li>CI/CD for AWS / Firebase / Vercel</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Below is a beginner-friendly explanation of how CI/CD (with GitHub Actions) is used for React, Node.js, AWS, and mobile apps — using real-world flows, not buzzwords.</p>
+            <h2>Big Picture (One Idea)</h2>
+            <p>Write code → Push to GitHub → GitHub Actions checks it → App is built → App is deployed</p>
+            <p>The steps are similar for all platforms.</p>
+        </section>
+
+        <section>
+            <h2>1. React App (Web Frontend)</h2>
+            <p>Typical use</p>
+            <ul>
+                <li>Build a website</li>
+                <li>Deploy to Vercel, Netlify, AWS S3 + CloudFront</li>
+            </ul>
+
+            <p>CI/CD flow</p>
+            <pre><code>
+Push code
+↓
+Run tests
+↓
+Build React app
+↓
+Upload build to hosting
+↓
+Website updates
+            </code></pre>
+
+            <p>What GitHub Actions does</p>
+            <ul>
+                <li>npm install</li>
+                <li>npm test</li>
+                <li>npm run build</li>
+                <li>Uploads /build folder</li>
+            </ul>
+            <p>Simple example (concept)</p>
+            <pre><code>
+- run: npm run build
+- run: aws s3 sync build/ s3://my-react-site
+            </code></pre>
+            <p>📌 Result:</p>
+            <p>Every push updates your website automatically.</p>
+        </section>
+
+        <section>
+            <h2>2. Node.js App (Backend / API)</h2>
+            <p>Typical use</p>
+            <ul>
+                <li>REST API or GraphQL</li>
+                <li>Deploy to AWS Lambda, EC2, ECS, or Docker</li>
+            </ul>
+            <p>CI/CD flow</p>
+            <pre><code>
+Push code
+↓
+Run tests
+↓
+Package app
+↓
+Deploy API
+↓
+Backend updates
+            </code></pre>
+            <p>What GitHub Actions does</p>
+            <ul>
+                <li>Runs unit tests</li>
+                <li>Builds the app</li>
+                <li>Deploys to AWS</li>
+            </ul>
+
+            <p>Example targets</p>
+            <ul>
+                <li>AWS Lambda → zip + upload</li>
+                <li>EC2 → SSH + restart app</li>
+                <li>Docker → build image + push to ECR</li>
+            </ul>
+            <p>📌 Result:</p>
+            <p>Your API updates without manual uploading.</p>
+        </section>
+
+        <section>
+            <h2>3. AWS (Cloud Infrastructure + Apps)</h2>
+            <p>Typical use</p>
+            <ul>
+                <li>Hosting</li>
+                <li>APIs</li>
+                <li>Databases</li>
+                <li>Serverless apps</li>
+            </ul>
+            <p>CI/CD flow</p>
+            <pre><code>
+Push code
+↓
+Validate config
+↓
+Deploy to AWS
+↓
+Cloud updates
+            </code></pre>
+            <p>Tools used</p>
+            <ul>
+                <li>AWS CLI</li>
+                <li>Serverless Framework</li>
+                <li>AWS CDK</li>
+                <li>Terraform</li>
+            </ul>
+            <p>Example (serverless)</p>
+            <pre><code>
+- run: npm install -g serverless
+- run: serverless deploy
+            </code></pre>
+            <p>📌 Result:</p>
+            <p>Your cloud resources + code update automatically.</p>
+        </section>
+
+        <section>
+            <h2>4. Mobile Apps (React Native, iOS, Android)</h2>
+            <p>Mobile CI/CD focuses on building, not always auto-publishing.</p>
+            <p>React Native</p>
+            <p>CI flow</p>
+            <pre><code>
+Push code
+↓
+Install dependencies
+↓
+Run tests
+↓
+Build Android / iOS
+            </code></pre>
+            <p>What GitHub Actions does</p>
+            <ul>
+                <li>Runs npm install</li>
+                <li>Runs tests</li>
+                <li>Builds APK / IPA</li>
+            </ul>
+            <p>📌 Result:</p>
+            <p>You catch build errors before opening Android Studio or Xcode.</p>
+        </section>
+
+        <section>
+            <h2>Android (APK / AAB)</h2>
+            <p>CI/CD flow</p>
+            <pre><code>
+Push code
+↓
+Gradle build
+↓
+Generate APK / AAB
+↓
+Upload artifact
+            </code></pre>
+            <p>Artifacts can be:</p>
+            <ul>
+                <li>Downloaded</li>
+                <li>Sent to testers</li>
+                <li>Uploaded to Play Store (advanced)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>iOS (IPA)</h2>
+            <p>CI flow</p>
+            <pre><code>
+Push code
+↓
+Xcode build
+↓
+Sign app
+↓
+Create IPA
+            </code></pre>
+            <p>⚠️ iOS requires:</p>
+            <ul>
+                <li>Apple certificates</li>
+                <li>Provisioning profiles</li>
+                <li>More setup</li>
+            </ul>
+            <p>📌 Result:</p>
+            <p>Your iOS app builds without opening Xcode.</p>
+        </section>
+
+        <section>
+            <h2>5. One Table Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th>CI Checks</th>
+                        <th>CD Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>React</td>
+                        <td>Build + tests</td>
+                        <td>Website updated</td>
+                    </tr>
+                    <tr>
+                        <td>Node.js</td>
+                        <td>Tests + package</td>
+                        <td>API deployed</td>
+                    </tr>
+                    <tr>
+                        <td>AWS</td>
+                        <td>Config + deploy</td>
+                        <td>Cloud updated</td>
+                    </tr>
+                    <tr>
+                        <td>Mobile</td>
+                        <td>Build + tests</td>
+                        <td>APK/IPA ready</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>6. Why professionals use this</h2>
+            <p>✅ Faster releases</p>
+            <p>✅ Fewer bugs</p>
+            <p>✅ Same process every time</p>
+            <p>✅ Team-friendly</p>
+            <p>✅ Production confidence</p>
+        </section>
+
+        <section>
+            <h2>7. One-sentence takeaway</h2>
+            <p>CI/CD is the automation that builds, tests, and delivers your app across web, backend, cloud, and mobile.</p>
+            <p>If you want, I can next:</p>
+            <ul>
+                <li>Show a full React → AWS CI/CD workflow</li>
+                <li>Explain secrets & environment variables</li>
+                <li>Show mobile CI/CD step-by-step</li>
+                <li>Compare GitHub Actions vs other tools</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SwiftUI navigation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">SwiftUI navigation</h1>
+                    <p class="subtitle">SwiftUI navigation has evolved a lot, so I’ll walk you through it cleanly—from concept → old way → modern way → real patterns, with mental models that actually stick.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ What “navigation” means in SwiftUI</h2>
+            <p>Navigation in SwiftUI is state-driven.</p>
+            <p>You don’t say:</p>
+            <p>“Push this view now”</p>
+            <p>You say:</p>
+            <p>“When this state becomes true or this value exists, show that view”</p>
+            <p>SwiftUI watches state → updates UI → handles the transition.</p>
+            <p>This is the single most important mindset shift.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ The old world (iOS 13–15)</h2>
+            <p>NavigationView + NavigationLink</p>
+            <pre><code>
+NavigationView {
+    NavigationLink("Go to Details") {
+        DetailView()
+    }
+}                
+            </code></pre>
+            <p>Problems:</p>
+            <ul>
+                <li>Hard to control programmatically</li>
+                <li>Deep linking = painful</li>
+                <li>Weird behavior on iPad / split view</li>
+                <li>State & navigation tightly coupled to UI layout</li>
+            </ul>
+            <p>Apple deprecated this approach conceptually, though it still works.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ The modern system (iOS 16+)</h2>
+            <p>NavigationStack</p>
+            <p>This is the current, correct way.</p>
+            <pre><code>
+NavigationStack {
+    Text("Home")
+}                
+            </code></pre>
+
+            <p>Think of NavigationStack as:</p>
+            <p>A stack of data, not views</p>
+            <p>SwiftUI derives views from that data.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Push navigation (simple)</h2>
+            <pre><code>
+NavigationStack {
+    NavigationLink("Go to Details", value: "details")
+        .navigationDestination(for: String.self) { value in
+            DetailView(id: value)
+        }
+}                
+            </code></pre>
+            <p>What’s happening:</p>
+            <ul>
+                <li>value is pushed onto the stack</li>
+                <li>SwiftUI decides which screen to show</li>
+                <li>Navigation is type-safe</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5️⃣ Programmatic navigation (the big win)</h2>
+            <p>Using a path</p>
+            <pre><code>
+@State private var path = NavigationPath()
+
+NavigationStack(path: $path) {
+    Button("Go to Details") {
+        path.append("details")
+    }
+    .navigationDestination(for: String.self) { value in
+        DetailView(id: value)
+    }
+}
+            </code></pre>
+
+            <p>Now you can:</p>
+            <ul>
+                <li>Push</li>
+                <li>Pop</li>
+                <li>Reset navigation</li>
+            </ul>
+
+            <pre><code>
+path.removeLast()     // pop
+path = NavigationPath() // go back to root
+            </code></pre>
+            <p>This is how real apps navigate.</p>
+        </section>
+
+        <section>
+            <h2>6️⃣ Navigation with models (best practice)</h2>
+            <p>Instead of strings:</p>
+            <pre><code>
+struct User: Hashable {
+    let id: Int
+}                
+            </code></pre>
+
+            <pre><code>
+path.append(User(id: 42))
+            </code></pre>
+
+            <pre><code>
+.navigationDestination(for: User.self) { user in
+    UserProfileView(user: user)
+}                
+            </code></pre>
+
+            <p>Why this is powerful:</p>
+            <ul>
+                <li>Compile-time safety</li>
+                <li>Deep linking friendly</li>
+                <li>Serializable navigation state</li>
+                <li>Perfect for Redux / MVVM / TCA</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7️⃣ iPad & Mac: NavigationSplitView</h2>
+            <p>For sidebar layouts:</p>
+            <pre><code>
+NavigationSplitView {
+    SidebarView()
+} detail: {
+    DetailView()
+}                
+            </code></pre>
+            <p>This replaces the mess that NavigationView used to create.</p>
+        </section>
+
+        <section>
+            <h2>8️⃣ Toolbar & title (modern way)</h2>
+            <pre><code>
+.navigationTitle("Home")
+.toolbar {
+    ToolbarItem(placement: .navigationBarTrailing) {
+        Button("Add") {}
+    }
+}
+            </code></pre>
+            <p>No more navigationBarItems.</p>
+        </section>
+
+        <section>
+            <h2>9️⃣ Common mistakes (and how to avoid them)</h2>
+            <p>❌ Navigating inside onAppear</p>
+            <p>❌ Using Bool flags for every screen</p>
+            <p>❌ Embedding NavigationStack inside another</p>
+            <p>❌ Thinking imperatively (“push now”)</p>
+
+            <p>✅ Single root NavigationStack</p>
+            <p>✅ Navigate via data</p>
+            <p>✅ Centralize navigation state</p>
+            <p>✅ Let SwiftUI react to changes</p>
+        </section>
+
+        <section>
+            <h2>🔟 Mental model that clicks</h2>
+            <p>UIKit</p>
+            <p>ViewController pushes ViewController</p>
+
+            <p>SwiftUI</p>
+            <p>State changes → navigation updates → views appear</p>
+
+            <p>If navigation feels hard, it’s usually because:</p>
+            <p>You’re thinking like UIKit in a SwiftUI world</p>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Show MVVM navigation patterns</li>
+                <li>Do deep linking</li>
+                <li>Compare NavigationStack vs Coordinator</li>
+                <li>Show real production architecture</li>
+                <li>Explain why SwiftUI navigation breaks when misused</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Alright, let’s really unpack SwiftUI navigation, from the old world to the modern way, and explain what’s actually happening under the hood—not just “use this API” but why it works. 🧭</p>
+            <p>I’ll go bottom → top, because that’s how SwiftUI itself thinks.</p>
+
+            <h2>1. What “navigation” means in SwiftUI (conceptually)</h2>
+            <p>Navigation in SwiftUI is state-driven UI composition.</p>
+            <p>You don’t “push” or “pop” views.</p>
+            <p>You change state, and SwiftUI recomputes the view tree.</p>
+
+            <p>UIKit:</p>
+            <pre><code>
+navigationController.pushViewController(vc, animated: true)
+            </code></pre>
+
+            <p>SwiftUI:</p>
+            <pre><code>
+path.append(User(id: 1))
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. The view tree & identity (the real foundation)</h2>
+            <p>SwiftUI builds a view tree every time state changes.</p>
+            <p>Key ideas:</p>
+            <ul>
+                <li>Views are value types (struct)</li>
+                <li>Navigation state = data</li>
+                <li>Destination views are derived from that data</li>
+            </ul>
+            <p>If SwiftUI sees:</p>
+            <ul>
+                <li>same view type</li>
+                <li>
+                    same identity
+                    <p>➡️ it keeps the view alive</p>
+                    <p>Otherwise ➡️ it destroys and recreates it</p>
+                </li>
+            </ul>
+            <p>This is why Hashable & Identifiable matter so much in navigation.</p>
+        </section>
+
+        <section>
+            <h2>3. Old navigation (iOS 13–15): NavigationView</h2>
+            <p>Basic example</p>
+            <pre><code>
+NavigationView {
+    List {
+        NavigationLink("Go to Detail") {
+            DetailView()
+        }
+    }
+}                
+            </code></pre>
+
+            <p>How it works</p>
+            <ul>
+                <li>NavigationView wraps UIKit’s UINavigationController</li>
+                <li>
+                    NavigationLink is both:
+                    <ul>
+                        <li>a button</li>
+                        <li>a navigation instruction</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>Problems:</p>
+            <ul>
+                <li>Hard to programmatically navigate</li>
+                <li>iPad split-view bugs</li>
+                <li>State-driven navigation was clunky</li>
+                <li>No real stack control</li>
+            </ul>
+            <p>🚨 Apple now considers this legacy</p>
+        </section>
+
+        <section>
+            <h2>4. Bridge era (iOS 14–15): isActive & tag/selection</h2>
+            <p>Example:</p>
+            <pre><code>
+NavigationLink(
+    destination: DetailView(),
+    isActive: $isActive
+) {
+    Text("Go")
+}
+            </code></pre>
+
+            <p>This kind of introduced state-based navigation, but:</p>
+            <ul>
+                <li>You had to hide links</li>
+                <li>Logic leaked into UI</li>
+                <li>Multiple destinations = nightmare</li>
+            </ul>
+            <p>This pain led directly to…</p>
+        </section>
+
+        <section>
+            <h2>5. Modern SwiftUI (iOS 16+): NavigationStack</h2>
+            <p>This is the real SwiftUI navigation system.</p>
+            <pre><code>
+NavigationStack {
+    List(users) { user in
+        NavigationLink(value: user) {
+            Text(user.name)
+        }
+    }
+    .navigationDestination(for: User.self) { user in
+        UserDetailView(user: user)
+    }
+}                   
+            </code></pre>
+            <p>What changed?</p>
+            <p>Navigation is now:</p>
+            <ul>
+                <li>data-driven</li>
+                <li>type-safe</li>
+                <li>stack-based</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. NavigationStack under the hood</h2>
+            <p>The stack is just data</p>
+            <pre><code>
+@State private var path: [User] = []
+            </code></pre>
+
+            <p>Each element in path:</p>
+            <ul>
+                <li>Must conform to Hashable</li>
+                <li>Represents one screen</li>
+            </ul>
+
+            <p>SwiftUI does:</p>
+            <pre><code>
+[path] → destination resolver → view
+            </code></pre>
+
+            <p>No view pushing.</p>
+            <p>Just state → UI projection.</p>
+        </section>
+
+        <section>
+            <h2>7. NavigationPath (type-erased stacks)</h2>
+            <p>When you need multiple destination types:</p>
+            <pre><code>
+@State private var path = NavigationPath()
+            </code></pre>
+
+            <pre><code>
+path.append(User(id: 1))
+path.append(Settings())
+            </code></pre>
+
+            <p>And destinations:</p>
+            <pre><code>
+.navigationDestination(for: User.self) { user in
+    UserDetailView(user: user)
+}
+.navigationDestination(for: Settings.self) { _ in
+    SettingsView()
+}                
+            </code></pre>
+
+            <p>Why NavigationPath exists</p>
+            <ul>
+                <li>Allows heterogeneous navigation</li>
+                <li>Runtime flexibility</li>
+                <li>Serializable (for deep linking & state restoration)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Programmatic navigation (the clean way)</h2>
+            <p>Push</p>
+            <pre><code>
+path.append(user)
+            </code></pre>
+
+            <p>Pop one</p>
+            <pre><code>
+path.removeLast()
+            </code></pre>
+
+            <p>Pop to root</p>
+            <pre><code>
+path.removeLast(path.count)
+            </code></pre>
+
+            <p>Replace stack</p>
+            <pre><code>
+path = [home, profile]
+            </code></pre>
+            
+            <p>This is exactly how deep linking works.</p>
+        </section>
+
+        <section>
+            <h2>9. Navigation ≠ presentation</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Navigation</th>
+                        <th>Presentation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>NavigationStack</td>
+                        <td>sheet</td>
+                    </tr>
+                    <tr>
+                        <td>Push/pop</td>
+                        <td>Modal</td>
+                    </tr>
+                    <tr>
+                        <td>Back button</td>
+                        <td>Swipe-down</td>
+                    </tr>
+                    <tr>
+                        <td>Stack-based</td>
+                        <td>Overlay-based</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>SwiftUI keeps these strictly separate.</p>
+            <p>This separation allows:</p>
+            <ul>
+                <li>Predictable UI</li>
+                <li>Clear mental model</li>
+                <li>Less UIKit-style chaos</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. iPad & macOS: NavigationSplitView</h2>
+            <pre><code>
+NavigationSplitView {
+    Sidebar()
+} detail: {
+    DetailView()
+}                
+            </code></pre>
+
+            <p>This replaces:</p>
+            <ul>
+                <li>NavigationView + size classes</li>
+                <li>UIKit split view controllers</li>
+            </ul>
+
+            <p>SwiftUI automatically adapts:</p>
+            <ul>
+                <li>iPhone → stack</li>
+                <li>iPad → sidebar + detail</li>
+                <li>macOS → multi-column</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>11. Navigation bar customization</h2>
+            <pre><code>
+.navigationTitle("Users")
+.navigationBarTitleDisplayMode(.inline)
+.toolbar {
+    ToolbarItem(placement: .navigationBarTrailing) {
+        Button("Add") {}
+    }
+}
+            </code></pre>
+
+            <p>Important rule:</p>
+            <p>Navigation modifiers apply to the current level in the stack</p>
+        </section>
+
+        <section>
+            <h2>12. Deep linking (real-world example)</h2>
+            <pre><code>
+func handle(url: URL) {
+    path.removeLast(path.count)
+    path.append(User(id: url.userID))
+}                
+            </code></pre>
+
+            <p>This works because:</p>
+            <ul>
+                <li>Navigation is just data</li>
+                <li>Views are reconstructed automatically</li>
+            </ul>
+            <p>No manual controller juggling 🎉</p>
+        </section>
+
+        <section>
+            <h2>13. Common mistakes (and why they break)</h2>
+            <p>❌ Navigating with booleans everywhere</p>
+            <pre><code>
+@State var showDetail = false
+            </code></pre>
+
+            <p>➡️ Breaks with multiple destinations</p>
+            <p>❌ Putting logic in NavigationLink</p>
+            <p>NavigationLink should be dumb.</p>
+            <p>❌ Non-stable Hashable</p>
+            <p>If hashValue changes → SwiftUI thinks it’s a new screen.</p>
+        </section>
+
+        <section>
+            <h2>14. Mental model you should keep</h2>
+            <p>NavigationStack is a pure function</p>
+            <p>Screens = f(Path)</p>
+
+            <p>Change the data → SwiftUI handles the rest.</p>
+            <p>If you think like UIKit, SwiftUI navigation feels painful.</p>
+            <p>If you think like state → UI, it becomes elegant.</p>
+        </section>
+
+        <section>
+            <h2>15. When to use what (cheat sheet)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use case</th>
+                        <th>API</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Simple push/pop</td>
+                        <td>NavigationStack</td>
+                    </tr>
+                    <tr>
+                        <td>Multiple destination types</td>
+                        <td>NavigationPath</td>
+                    </tr>
+                    <tr>
+                        <td>iPad sidebar</td>
+                        <td>NavigationSplitView</td>
+                    </tr>
+                    <tr>
+                        <td>Modal flows</td>
+                        <td>sheet / fullScreenCover</td>
+                    </tr>
+                    <tr>
+                        <td>Legacy support</td>
+                        <td>NavigationView (avoid if possible)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>If you want, next we can:</p>
+            <ul>
+                <li>Build a real app flow (auth → home → detail)</li>
+                <li>Compare SwiftUI vs UIKit navigation internals</li>
+                <li>Explain static vs dynamic destinations</li>
+                <li>Show how navigation interacts with reducers / MVVM / TCA</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Perfect choice. Let’s build a real SwiftUI app flow the modern way:</p>
+            <p>Auth → Home → Detail</p>
+            <p>✅ state-driven</p>
+            <p>✅ deep-link ready</p>
+            <p>✅ no hidden NavigationLinks</p>
+            <p>✅ scales to real apps</p>
+            <p>I’ll explain architecture first, then code, then why this works.</p>
+        </section>
+
+        <section>
+            <h2>1. App flow as data (the key idea)</h2>
+            <p>We define what screen the app is on as state, not UI actions.</p>
+            <pre><code>
+enum AppRoute: Hashable {
+    case login
+    case home
+    case detail(Item)
+}                
+            </code></pre>
+            <p>This is your entire navigation model.</p>
+        </section>
+
+        <section>
+            <h2>2. App entry point (root coordinator)</h2>
+            <p>This replaces:</p>
+            <ul>
+                <li>AppDelegate routing</li>
+                <li>UIKit coordinators</li>
+                <li>“if user is logged in” hacks</li>
+            </ul>
+
+            <pre><code>
+@main
+struct MyApp: App {
+
+    @State private var path = NavigationPath()
+    @State private var isAuthenticated = false
+
+    var body: some Scene {
+        WindowGroup {
+            NavigationStack(path: $path) {
+                Group {
+                    if isAuthenticated {
+                        HomeView(path: $path)
+                    } else {
+                        LoginView(isAuthenticated: $isAuthenticated)
+                    }
+                }
+            }
+        }
+    }
+}
+            </code></pre>
+
+            <p>What’s happening</p>
+            <ul>
+                <li>Auth state decides the root</li>
+                <li>NavigationStack stays alive</li>
+                <li>No navigation glitches when login status changes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Login screen (auth → home)</h2>
+            <pre><code>
+struct LoginView: View {
+
+    @Binding var isAuthenticated: Bool
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Welcome")
+                .font(.largeTitle)
+
+            Button("Login") {
+                // simulate auth success
+                isAuthenticated = true
+            }
+        }
+    }
+}                
+            </code></pre>
+            <p>🔑 No navigation here</p>
+            <p>➡️ Auth success simply changes state</p>
+        </section>
+
+        <section>
+            <h2>4. Home screen (list → detail)</h2>
+            <pre><code>
+struct HomeView: View {
+
+    @Binding var path: NavigationPath
+
+    let items: [Item] = [
+        Item(id: 1, name: "Apple"),
+        Item(id: 2, name: "Banana")
+    ]
+
+    var body: some View {
+        List(items) { item in
+            NavigationLink(value: item) {
+                Text(item.name)
+            }
+        }
+        .navigationTitle("Home")
+        .navigationDestination(for: Item.self) { item in
+            DetailView(item: item, path: $path)
+        }
+    }
+}                
+            </code></pre>
+            <p>Why this is clean</p>
+            <ul>
+                <li>NavigationLink only describes intent</li>
+                <li>Actual destination is declared once</li>
+                <li>Easy to add more routes later</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Detail screen (pop / logout / deep logic)</h2>
+            <pre><code>
+struct DetailView: View {
+
+    let item: Item
+    @Binding var path: NavigationPath
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Text(item.name)
+                .font(.title)
+
+            Button("Go Back") {
+                path.removeLast()
+            }
+
+            Button("Pop to Root") {
+                path.removeLast(path.count)
+            }
+        }
+        .navigationTitle("Detail")
+    }
+}                
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Model (Hashable + Identifiable = stable navigation)</h2>
+            <pre><code>
+struct Item: Identifiable, Hashable {
+    let id: Int
+    let name: String
+}                
+            </code></pre>
+            <p>🔐 Why both?</p>
+            <ul>
+                <li>Identifiable → List diffing</li>
+                <li>Hashable → Navigation identity</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Logout flow (real-world important)</h2>
+            <p>Add logout anywhere:</p>
+            <pre><code>
+Button("Logout") {
+    path.removeLast(path.count)
+    isAuthenticated = false
+}                
+            </code></pre>
+            <p>This:</p>
+            <ol>
+                <li>Clears navigation stack</li>
+                <li>Returns to login</li>
+                <li>Avoids ghost screens</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>8. Deep linking ready (zero extra UI work)</h2>
+            <pre><code>
+func openItem(_ item: Item) {
+    path.removeLast(path.count)
+    path.append(item)
+}                
+            </code></pre>
+            <p>This works because:</p>
+            <ul>
+                <li>Navigation = data</li>
+                <li>SwiftUI rebuilds screens automatically</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Why this architecture scales</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Problem</th>
+                        <th>Old Way</th>
+                        <th>This Way</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Auth switch</td>
+                        <td>Replace root VC</td>
+                        <td>Flip a Bool</td>
+                    </tr>
+                    <tr>
+                        <td>Deep linking</td>
+                        <td>Manual push logic</td>
+                        <td>Modify path</td>
+                    </tr>
+                    <tr>
+                        <td>State restore</td>
+                        <td>Painful</td>
+                        <td>Built-in</td>
+                    </tr>
+                    <tr>
+                        <td>Testing</td>
+                        <td>Hard</td>
+                        <td>Pure data</td>
+                    </tr>
+                    <tr>
+                        <td>UIKit migration</td>
+                        <td>Heavy</td>
+                        <td>Minimal</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>10. Mental model to remember</h2>
+            <p>NavigationStack is a projection of state</p>
+            <p>Change the state → SwiftUI handles the UI</p>
+
+            <p>No coordinators.</p>
+            <p>No push/pop spaghetti.</p>
+            <p>No hidden links.</p>
+
+            <p>Want to go further?</p>
+            <p>Next natural upgrades:</p>
+            <ul>
+                <li>🔐 Firebase / Cognito auth</li>
+                <li>🧠 MVVM or TCA integration</li>
+                <li>🌍 Deep link from URL</li>
+                <li>📱 iPad split navigation</li>
+                <li>🔄 State restoration</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How browsers render HTML and Canvas</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How browsers render HTML and Canvas</h1>
+                    <p class="subtitle">Below is a clear, end-to-end explanation of how browsers render HTML and Canvas, from bytes → pixels, simplified but detailed.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>How Browsers Render HTML & Canvas</h2>
+            <p>Browsers have two main rendering paths:</p>
+            <ol>
+                <li>HTML / CSS rendering (DOM-based)</li>
+                <li>Canvas rendering (immediate-mode drawing)</li>
+            </ol>
+            <p>They share the GPU, but work very differently.</p>
+        </section>
+
+        <section>
+            <h2>PART 1: How Browsers Render HTML (DOM + CSS)</h2>
+            <p>High-Level Flow</p>
+            <pre><code>
+HTML → DOM
+CSS  → CSSOM
+DOM + CSSOM → Render Tree
+Render Tree → Layout
+Layout → Paint
+Paint → GPU → Screen
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>1. Download & Parse HTML</h2>
+            <p>Browser downloads HTML bytes and:</p>
+            <ul>
+                <li>Reads text top-to-bottom</li>
+                <li>Converts tags into nodes</li>
+            </ul>
+
+            <p>Result → DOM Tree</p>
+            <pre><code>
+&lt;div&gt;
+    &lt;p&gt;Hello&lt;/p&gt;
+&lt;/div&gt;                  
+            </code></pre>
+
+            <p>Becomes:</p>
+            <pre><code>
+DIV
+ └─ P
+     └─ "Hello"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Parse CSS → CSSOM</h2>
+            <p>CSS is parsed into rules:</p>
+            <pre><code>
+p {
+    color: red;
+    font-size: 16px;
+}                  
+            </code></pre>
+            <p>Becomes a CSS Object Model (CSSOM):</p>
+            <ul>
+                <li>Selectors</li>
+                <li>Properties</li>
+                <li>Values</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. DOM + CSSOM → Render Tree</h2>
+            <p>Browser combines:</p>
+            <ul>
+                <li>DOM (structure)</li>
+                <li>CSSOM (styles)</li>
+            </ul>
+            <p>Rules:</p>
+            <ul>
+                <li>Invisible elements (display:none) are removed</li>
+                <li>Only visible nodes remain</li>
+            </ul>
+            <p>📌 Render Tree knows:</p>
+            <ul>
+                <li>What to draw</li>
+                <li>How it should look</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Layout (Reflow)</h2>
+            <p>Browser calculates:</p>
+            <ul>
+                <li>Width / height</li>
+                <li>X / Y position</li>
+                <li>Box model (margin, border, padding)</li>
+            </ul>
+            <p>This step answers:</p>
+            <p>“Where does each element go on the screen?”</p>
+            <p>⚠️ Expensive operation</p>
+            <p>(Resizing window or changing layout causes reflow)</p>
+        </section>
+
+        <section>
+            <h2>5. Paint (Drawing Commands)</h2>
+            <p>Browser converts elements into draw commands:</p>
+            <ul>
+                <li>Text → glyphs</li>
+                <li>Borders → rectangles</li>
+                <li>Backgrounds → fills</li>
+                <li>Images → bitmaps</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+Draw rect at (x,y)
+Draw text at (x,y)
+Draw image at (x,y)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Layers & Compositing (GPU Acceleration)</h2>
+            <p>Some elements become layers:</p>
+            <ul>
+                <li>position: fixed</li>
+                <li>transform</li>
+                <li>opacity</li>
+                <li>video</li>
+                <li>canvas</li>
+            </ul>
+            <p>Each layer:</p>
+            <ul>
+                <li>Painted separately</li>
+                <li>Uploaded to GPU</li>
+            </ul>
+            <p>GPU:</p>
+            <ul>
+                <li>Composes layers</li>
+                <li>Applies transforms</li>
+                <li>Handles animations efficiently</li>
+            </ul>
+            <p>📌 This avoids full repaints.</p>
+        </section>
+
+        <section>
+            <h2>7. Final Display</h2>
+            <ul>
+                <li>GPU sends final frame to the screen</li>
+                <li>Happens ~60 times per second</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>PART 2: How Browsers Render Canvas</h2>
+            <p>Canvas is very different.</p>
+            <h2>Key Difference</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>HTML</th>
+                        <th>Canvas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Retained mode</td>
+                        <td>Immediate mode</td>
+                    </tr>
+                    <tr>
+                        <td>Browser remembers elements</td>
+                        <td>Browser forgets after draw</td>
+                    </tr>
+                    <tr>
+                        <td>DOM nodes</td>
+                        <td>Pixels only</td>
+                    </tr>
+                    <tr>
+                        <td>Easy interaction</td>
+                        <td>Manual interaction</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>1. Create a Canvas</h2>
+            <pre><code>
+&lt;canvas id="c" width="300" height="150"&gt;&lt;/canvas&gt;
+            </code></pre>
+
+            <p>Browser:</p>
+            <ul>
+                <li>Allocates a pixel buffer</li>
+                <li>Exposes drawing API</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. JavaScript Issues Draw Commands</h2>
+            <pre><code>
+ctx.fillStyle = "red";
+ctx.fillRect(10, 10, 100, 50);
+            </code></pre>
+            <p>This means:</p>
+            <p>“Paint these pixels right now”</p>
+        </section>
+
+        <section>
+            <h2>3. Immediate Mode Rendering</h2>
+            <p>Once drawn:</p>
+            <ul>
+                <li>Browser does not remember shapes</li>
+                <li>Only pixels exist</li>
+            </ul>
+            <p>To animate:</p>
+            <pre><code>
+ctx.clearRect(0,0,w,h);
+drawAgain();
+            </code></pre>
+            <p>You redraw everything every frame.</p>
+        </section>
+
+        <section>
+            <h2>4. Canvas Rendering Pipeline</h2>
+            <p>CPU Path (2D Canvas)</p>
+            <ul>
+                <li>JS → CPU rasterization</li>
+                <li>Writes pixels into bitmap</li>
+                <li>Bitmap uploaded to GPU</li>
+            </ul>
+            <p>GPU Path (WebGL / WebGPU)</p>
+            <ul>
+                <li>JS → GPU shaders</li>
+                <li>Same pipeline as games</li>
+                <li>Much faster for complex scenes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Canvas vs WebGL vs WebGPU</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tech</th>
+                        <th>How it works</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Canvas 2D</td>
+                        <td>CPU → bitmap</td>
+                    </tr>
+                    <tr>
+                        <td>WebGL</td>
+                        <td>OpenGL ES → GPU</td>
+                    </tr>
+                    <tr>
+                        <td>WebGPU</td>
+                        <td>Modern GPU API</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>PART 5: HTML vs Canvas — When to Use What</h2>
+            <p>Use HTML/CSS When:</p>
+            <ul>
+                <li>UI</li>
+                <li>Forms</li>
+                <li>Text</li>
+                <li>Accessibility</li>
+                <li>SEO</li>
+            </ul>
+            <p>Use Canvas When:</p>
+            <ul>
+                <li>Games</li>
+                <li>Charts</li>
+                <li>Image editing</li>
+                <li>Visualizations</li>
+                <li>Particle effects</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>PART 6: Mental Model</h2>
+            <p>HTML Rendering</p>
+            <p>“Describe what exists → browser figures out drawing”</p>
+            <p>Canvas Rendering</p>
+            <p>“Tell browser how to draw pixels → you manage everything”</p>
+        </section>
+
+        <section>
+            <h2>One-Sentence Summary</h2>
+            <p>HTML rendering is declarative and retained (DOM-based), while Canvas is imperative and immediate (pixel-based), both ultimately using the GPU to turn draw commands into pixels on your screen.</p>
+            <p>If you want next:</p>
+            <ul>
+                <li>🧠 Why reflow is expensive</li>
+                <li>🎮 WebGL pipeline explained</li>
+                <li>🚀 How WebGPU differs from WebGL</li>
+                <li>⚡ How React fits into browser rendering</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

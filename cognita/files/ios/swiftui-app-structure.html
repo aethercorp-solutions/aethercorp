@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SwiftUI app structure</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">SwiftUI app structure</h1>
+                    <p class="subtitle">Ah, this is a subtle but important part of SwiftUI app structure. Let’s break it down carefully.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ Scene in SwiftUI</h2>
+            <ul>
+                <li>A Scene represents a unit of UI that can appear on screen.</li>
+                <li>Think of it as a container for your app’s user interface that the system manages.</li>
+                <li>You can have multiple scenes in your app, e.g., multiple windows on iPad or macOS.</li>
+                <li>Every SwiftUI app starts with a Scene in the @main App struct.</li>
+            </ul>
+
+            <p>Example of a generic Scene:</p>
+            <pre><code>
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+            </code></pre>
+
+            <ul>
+                <li>
+                    Scene is protocol-based, so you can create different types:
+                    <ul>
+                        <li>WindowGroup → for normal app windows (iOS, iPadOS, macOS)</li>
+                        <li>DocumentGroup → for document-based apps</li>
+                        <li>Settings → for app settings on macOS</li>
+                        <li>MenuBarExtra → macOS menu bar apps</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ WindowGroup in SwiftUI</h2>
+            <ul>
+                <li>WindowGroup is a specific type of Scene.</li>
+                <li>It creates one or more windows that can each independently display the content you provide.</li>
+                <li>On iPhone, it usually results in one window, but on iPad and macOS, it allows multiple windows.</li>
+                <li>This is how SwiftUI apps support multi-window capabilities automatically.</li>
+            </ul>
+            <p>Example of WindowGroup:</p>
+            <pre><code>
+WindowGroup {
+    ContentView()
+}                
+            </code></pre>
+            <ul>
+                <li>Inside the closure, you put the root view for that window.</li>
+                <li>Each new window can have its own state independently.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Key Differences</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Scene</th>
+                        <th>WindowGroup</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Concept</td>
+                        <td>Abstract container for app UI</td>
+                        <td>Concrete scene type for windows</td>
+                    </tr>
+                    <tr>
+                        <td>Protocol/Type</td>
+                        <td>Scene protocol</td>
+                        <td>Struct conforming to Scene</td>
+                    </tr>
+                    <tr>
+                        <td>Multi-window support</td>
+                        <td>Can support multiple scenes</td>
+                        <td>Provides multi-window automatically</td>
+                    </tr>
+                    <tr>
+                        <td>Examples</td>
+                        <td>WindowGroup, DocumentGroup, Settings</td>
+                        <td>Only WindowGroup (for standard windows)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>✅ TL;DR:</h2>
+            <ul>
+                <li>Scene = abstract concept of a UI container in SwiftUI.</li>
+                <li>WindowGroup = concrete implementation of a Scene that manages app windows.</li>
+            </ul>
+            <p>Think:</p>
+            <p>Scene is the “idea” of a screen; WindowGroup is one “realization” of that idea.</p>
+            <p>If you want, I can also draw a diagram showing how App → Scene → WindowGroup → ContentView</p>
+            <p>flows, which makes it super clear visually.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

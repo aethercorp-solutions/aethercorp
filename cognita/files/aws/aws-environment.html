@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS environment</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS environment</h1>
+                    <p class="subtitle">
+                        An AWS environment is a logically separated setup of AWS resources used for a specific purpose, such as development, testing, or production.
+                        <p>Think of it as “a complete AWS workspace” where your app runs.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple definition</h2>
+            <p>AWS Environment = AWS account + region + configuration + resources</p>
+            <p>It defines where and how your application runs in AWS.</p>
+        </section>
+
+        <section>
+            <h2>Common AWS environments (real-world)</h2>
+            <p>Most teams use multiple environments:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Environment</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>dev</td>
+                        <td>Local development, experiments</td>
+                    </tr>
+                    <tr>
+                        <td>test / qa</td>
+                        <td>Automated testing</td>
+                    </tr>
+                    <tr>
+                        <td>staging</td>
+                        <td>Production-like testing</td>
+                    </tr>
+                    <tr>
+                        <td>prod</td>
+                        <td>Real users, real data</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Each environment is isolated to avoid breaking production.</p>
+        </section>
+
+        <section>
+            <h2>What makes an AWS environment different?</h2>
+            <p>1️⃣ AWS Account</p>
+            <ul>
+                <li>Strongest isolation</li>
+                <li>
+                    Recommended:
+                    <ul>
+                        <li>mycompany-dev</li>
+                        <li>mycompany-prod</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+Account A → dev
+Account B → prod
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2️⃣ AWS Region</h2>
+            <p>Physical location of resources.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>ap-southeast-1 (Singapore)</li>
+                <li>us-east-1 (Virginia)</li>
+            </ul>
+            <p>Why it matters:</p>
+            <ul>
+                <li>Latency</li>
+                <li>Legal/compliance</li>
+                <li>Cost</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ AWS Resources</h2>
+            <p>Each environment has its own:</p>
+            <ul>
+                <li>Lambda functions</li>
+                <li>API Gateway</li>
+                <li>EC2 / ECS</li>
+                <li>DynamoDB / RDS</li>
+                <li>S3 buckets</li>
+                <li>IAM roles</li>
+                <li>CloudWatch logs</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+my-api-dev-hello
+my-api-prod-hello
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4️⃣ Configuration & Secrets</h2>
+            <p>Each environment uses different values:</p>
+            <ul>
+                <li>Database URLs</li>
+                <li>API keys</li>
+                <li>OAuth credentials</li>
+                <li>Feature flags</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+DEV_DB_URL=mongodb://dev-db
+PROD_DB_URL=mongodb://prod-db
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>AWS environment vs Serverless stage</h2>
+            <p>They are related but not the same.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AWS Environment</td>
+                        <td>The actual AWS setup</td>
+                    </tr>
+                    <tr>
+                        <td>Stage (Serverless)</td>
+                        <td>A logical label inside AWS</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 A stage lives inside an AWS environment.</p>
+            <p>Example:</p>
+            <pre><code>
+AWS Account: mycompany
+Region: ap-southeast-1
+Stages: dev, prod
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Typical AWS environment setups</h2>
+            <p>✅ Small projects</p>
+            <pre><code>
+1 AWS Account
+├── dev stage
+└── prod stage
+            </code></pre>
+            <p>✅ Medium / enterprise (best practice)</p>
+            <pre><code>
+AWS Account (dev)
+└── dev stage
+
+AWS Account (prod)
+└── prod stage
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How this applies to Serverless Framework</h2>
+            <p>In your config:</p>
+            <pre><code>
+provider:
+  region: ap-southeast-1
+  stage: dev
+            </code></pre>
+            <p>This means:</p>
+            <ul>
+                <li>Deploy to Singapore region</li>
+                <li>Use dev environment configuration</li>
+                <li>Create dev AWS resources</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why AWS environments matter</h2>
+            <ul>
+                <li>🔒 Security isolation</li>
+                <li>💥 Prevent production outages</li>
+                <li>🧪 Safe testing</li>
+                <li>💰 Cost tracking per environment</li>
+                <li>🚀 Professional deployment pipelines</li>
+            </ul>
+            <p>If you want, I can explain:</p>
+            <ul>
+                <li>🔐 AWS profiles vs environments</li>
+                <li>🏗 Best environment structure for startups</li>
+                <li>⚙ How CI/CD deploys to different environments</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

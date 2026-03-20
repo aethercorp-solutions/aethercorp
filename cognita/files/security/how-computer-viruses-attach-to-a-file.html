@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How Computer Viruses Attach to a File</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How Computer Viruses Attach to a File</h1>
+                    <p class="subtitle">I’ll explain this from absolute beginner level, step by step, with very simple examples, then slowly go into more detail.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ First: What is a file and a program? (Very simple)</h2>
+            <ul>
+                <li>
+                    A file is something stored on your computer
+                    <p>👉 examples:</p>
+                    <ul>
+                        <li>photo.jpg (picture)</li>
+                        <li>song.mp3 (music)</li>
+                        <li>notes.txt (text)</li>
+                        <li>game.exe (program)</li>
+                    </ul>
+                </li>
+                <li>
+                    A program is a special kind of file that contains instructions for the computer to follow.
+                    <p>👉 examples:</p>
+                    <ul>
+                        <li>calculator.exe</li>
+                        <li>chrome.exe</li>
+                        <li>setup.exe</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>⚠️ Important:</p>
+            <p>Only program files can carry a traditional computer virus.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ What is a computer virus? (Beginner definition)</h2>
+            <p>A computer virus is:</p>
+            <p>A small malicious program that secretly adds itself to another program and runs when that program is opened.</p>
+            <p>Just like a biological virus, it:</p>
+            <ul>
+                <li>Needs a host (another program)</li>
+                <li>Spreads when the host is used</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Simple real‑world analogy 🦠</h2>
+            <p>Imagine:</p>
+            <ul>
+                <li>A sandwich = normal program</li>
+                <li>A virus = poison hidden inside the sandwich</li>
+            </ul>
+            <p>When someone eats the sandwich (runs the program):</p>
+            <ul>
+                <li>They also eat the poison (virus runs too)</li>
+            </ul>
+            <p>The sandwich looks normal from the outside.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Very simple example (Step by step)</h2>
+            <p>Example program (clean file)</p>
+            <p>Let’s say you have:</p>
+            <pre><code>
+game.exe
+            </code></pre>
+            <p>Inside game.exe (simplified):</p>
+            <pre><code>
+Start game
+Show menu
+Let user play
+Exit game
+            </code></pre>
+            <p>This is a clean program.</p>
+        </section>
+
+        <section>
+            <h2>Virus attaches itself</h2>
+            <p>A virus secretly adds its code to the program:</p>
+            <pre><code>
+[ Virus Code ]
+Start game
+Show menu
+Let user play
+Exit game
+            </code></pre>
+            <p>Now:</p>
+            <ul>
+                <li>The program still works</li>
+                <li>The user sees nothing suspicious</li>
+                <li>The virus runs first</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5️⃣ What happens when you open the infected file?</h2>
+            <p>When you double‑click game.exe:</p>
+            <ol>
+                <li>Computer loads the file into memory</li>
+                <li>Virus code runs before the game</li>
+                <li>
+                    Virus does bad things:
+                    <ul>
+                        <li>Copies itself to other programs</li>
+                        <li>Deletes files</li>
+                        <li>Records keystrokes</li>
+                        <li>Sends data to hackers</li>
+                    </ul>
+                </li>
+                <li>Game runs normally afterward</li>
+            </ol>
+            <p>👉 This is why viruses are hard to notice.</p>
+        </section>
+
+        <section>
+            <h2>6️⃣ How does the virus attach technically? (Still simple)</h2>
+            <p>Method 1: Appending (most common)</p>
+            <p>Virus:</p>
+            <ul>
+                <li>Opens the program file</li>
+                <li>Adds itself to the end or beginning of the file</li>
+            </ul>
+            <p>Before:</p>
+            <pre><code>
+[ Original Program ]
+            </code></pre>
+            <p>After:</p>
+            <pre><code>
+[ Virus ][ Original Program ]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Method 2: Injecting into program code</h2>
+            <p>Virus:</p>
+            <ul>
+                <li>Finds unused or weak parts of the program</li>
+                <li>Inserts its code inside</li>
+            </ul>
+            <p>Result:</p>
+            <pre><code>
+Start
+Run virus
+Continue program
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7️⃣ How does a virus spread to other files?</h2>
+            <p>When the infected program runs, the virus:</p>
+            <ol>
+                <li>Scans the computer for other programs (.exe)</li>
+                <li>Opens them silently</li>
+                <li>Copies its code into them</li>
+                <li>Saves them again</li>
+            </ol>
+            <p>Now:</p>
+            <ul>
+                <li>musicplayer.exe → infected</li>
+                <li>browser.exe → infected</li>
+                <li>game2.exe → infected</li>
+            </ul>
+            <p>This is why viruses spread automatically.</p>
+        </section>
+
+        <section>
+            <h2>8️⃣ Simple fake code example (for understanding only)</h2>
+            <p>⚠️ This is NOT real malware, just a teaching example.</p>
+            <pre><code>
+if program_is_running:
+    copy_me_into_other_programs()
+    show_original_program()
+            </code></pre>
+
+            <p>Meaning:</p>
+            <ul>
+                <li>“While the program is running, copy the virus”</li>
+                <li>“Then act normal so the user doesn’t notice”</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9️⃣ Why pictures and documents usually don’t have viruses</h2>
+            <p>Files like:</p>
+            <ul>
+                <li>.jpg</li>
+                <li>.png</li>
+                <li>.txt</li>
+                <li>.pdf</li>
+            </ul>
+            <p>❌ cannot run instructions by themselves</p>
+            <p>But:</p>
+            <ul>
+                <li>A fake file like photo.jpg.exe</li>
+                <li>Or a document with macros (Word/Excel)</li>
+            </ul>
+            <p>✅ CAN run malicious code</p>
+        </section>
+
+        <section>
+            <h2>🔟 Why viruses were common before, but rarer today</h2>
+            <p>Old days (1990s–2000s):</p>
+            <ul>
+                <li>Weak security</li>
+                <li>No automatic updates</li>
+                <li>People shared files via USB, floppy disks, CDs</li>
+            </ul>
+
+            <p>Today:</p>
+            <ul>
+                <li>Antivirus software</li>
+                <li>App sandboxing</li>
+                <li>OS protection (Windows Defender, macOS Gatekeeper)</li>
+            </ul>
+
+            <p>Modern malware now uses:</p>
+            <ul>
+                <li>Trojans</li>
+                <li>Ransomware</li>
+                <li>Phishing</li>
+                <li>Exploits</li>
+            </ul>
+            <p>Instead of classic file‑attaching viruses.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Final simple summary</h2>
+            <ul>
+                <li>A computer virus is a malicious program</li>
+                <li>It attaches itself to another program file</li>
+                <li>
+                    When you open the file:
+                    <ul>
+                        <li>Virus runs first</li>
+                        <li>Program runs normally after</li>
+                    </ul>
+                </li>
+                <li>Virus spreads by infecting other program files</li>
+            </ul>
+
+            <p>If you want, I can next explain:</p>
+            <ul>
+                <li>Difference between virus, worm, and trojan</li>
+                <li>ILOVEYOU virus example</li>
+                <li>Why modern malware no longer needs to attach to files</li>
+                <li>How antivirus detects infected files</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

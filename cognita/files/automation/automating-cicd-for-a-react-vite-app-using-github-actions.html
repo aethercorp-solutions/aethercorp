@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Automating CI/CD for a React (Vite) app using GitHub Actions, AWS S3, and CloudFront</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Automating CI/CD for a React (Vite) app using GitHub Actions, AWS S3, and CloudFront</h1>
+                    <p class="subtitle">
+                        Here’s a complete guide to automating CI/CD for a React (Vite) app using GitHub Actions, AWS S3, and CloudFront 🚀
+                        <p>This setup will:</p>
+                        <ul>
+                            <li>✅ Build your Vite React app on every push to main</li>
+                            <li>✅ Deploy to S3 automatically</li>
+                            <li>✅ Invalidate CloudFront cache</li>
+                            <li>✅ Serve your app globally via CDN</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🏗 Architecture Overview</h2>
+            <pre><code>
+GitHub Push → GitHub Actions → Build Vite App → Upload to S3 → Invalidate CloudFront → Live
+            </code></pre>
+            <p>Services used:</p>
+            <ul>
+                <li>GitHub</li>
+                <li>GitHub Actions</li>
+                <li>Amazon S3</li>
+                <li>Amazon CloudFront</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1️⃣ Prerequisites</h2>
+            <p>✅ 1. Create S3 Bucket</p>
+            <ul>
+                <li>Go to AWS → S3</li>
+                <li>Create bucket (example: my-react-app-prod)</li>
+                <li>Disable block public access (if static hosting)</li>
+                <li>Enable Static Website Hosting</li>
+                <li>Set index document:</li>
+            </ul>
+            <pre><code>
+index.html
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 2. Create CloudFront Distribution</h2>
+            <ul>
+                <li>Origin → Your S3 bucket</li>
+                <li>Default root object:
+                    <pre><code>
+index.html
+                    </code></pre>
+                </li>
+                <li>Enable:
+                    <ul>
+                        <li>Redirect HTTP → HTTPS</li>
+                    </ul>
+                </li>
+                <li>
+                    Copy:
+                    <ul>
+                        <li>Distribution ID</li>
+                        <li>CloudFront URL</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ 3. Create IAM User for GitHub</h2>
+            <p>Create an IAM user with programmatic access.</p>
+            <p>Attach policy:</p>
+            <pre><code>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Effect": "Allow",
+        "Action": [
+            "s3:*"
+        ],
+        "Resource": "arn:aws:s3:::my-react-app-prod/*"
+        },
+        {
+        "Effect": "Allow",
+        "Action": [
+            "cloudfront:CreateInvalidation"
+        ],
+        "Resource": "*"
+        }
+    ]
+}                  
+            </code></pre>
+            <p>Save:</p>
+            <ul>
+                <li>AWS_ACCESS_KEY_ID</li>
+                <li>AWS_SECRET_ACCESS_KEY</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Add GitHub Secrets</h2>
+            <p>Go to:</p>
+            <pre><code>
+Repo → Settings → Secrets and Variables → Actions
+            </code></pre>
+            <p>Add:</p>
+            <pre><code>
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION
+S3_BUCKET
+CLOUDFRONT_DISTRIBUTION_ID
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3️⃣ Create GitHub Actions Workflow</h2>
+            <p>Create:</p>
+            <pre><code>
+.github/workflows/deploy.yml
+            </code></pre>
+            <p>📄 deploy.yml</p>
+            <pre><code>
+name: Deploy React Vite to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync dist/ s3://${{ secrets.S3_BUCKET }} --delete
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4️⃣ Update Vite Config (Important)</h2>
+            <p>If using React Router:</p>
+            <p>vite.config.js</p>
+            <pre><code>
+export default defineConfig({
+    base: "/",
+});                  
+            </code></pre>
+            <p>And in S3 + CloudFront:</p>
+            <ul>
+                <li>Add custom error response:
+                    <ul>
+                        <li>404 → /index.html</li>
+                        <li>403 → /index.html</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>This prevents SPA routing issues.</p>
+        </section>
+
+        <section>
+            <h2>5️⃣ Optional Improvements (Production-Ready Setup)</h2>
+            <p>🔹 Use Cache Control Headers</p>
+            <p>Improve performance:</p>
+            <pre><code>
+aws s3 sync dist/ s3://bucket-name \
+  --delete \
+  --cache-control "public, max-age=31536000, immutable"
+            </code></pre>
+            <p>For index.html:</p>
+            <pre><code>
+aws s3 cp dist/index.html s3://bucket-name \
+  --cache-control "no-cache"
+            </code></pre>
+
+            <p>🔹 Use Separate Dev & Prod Deployments</p>
+            <p>Create:</p>
+            <ul>
+                <li>develop branch → deploy to dev S3</li>
+                <li>main branch → deploy to prod S3</li>
+            </ul>
+
+            <p>🔹 Add Build Caching (Faster CI)</p>
+            <pre><code>
+- uses: actions/cache@v3
+  with:
+    path: ~/.npm
+    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 Security Best Practice (Recommended)</h2>
+            <p>Instead of IAM user keys:</p>
+            <p>Use OIDC with GitHub → AWS role assumption (more secure, no stored secrets).</p>
+            <p>If you want, I can provide the OIDC version (enterprise-grade setup).</p>
+        </section>
+
+        <section>
+            <h2>🚀 Result</h2>
+            <p>Now every time you push:</p>
+            <pre><code>
+git push origin main
+            </code></pre>
+            <p>Your React Vite app:</p>
+            <ul>
+                <li>Builds automatically</li>
+                <li>Deploys to S3</li>
+                <li>Clears CloudFront cache</li>
+                <li>Goes live globally</li>   
+            </ul>
+
+            <p>If you’d like, I can also provide:</p>
+            <ul>
+                <li>✅ Terraform version (infrastructure as code)</li>
+                <li>✅ Full production enterprise CI/CD setup</li>
+                <li>✅ Multi-environment setup</li>
+                <li>✅ Custom domain + SSL with Route 53</li>
+                <li>✅ Docker + ECS instead of S3</li>
+                <li>✅ Blue/Green deployment strategy</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

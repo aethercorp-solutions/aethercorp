@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Summarize text using a free LLM framework</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Summarize text using a free LLM framework</h1>
+                    <p class="subtitle">Totally — if you want to summarize text using a free LLM framework, here are some great options you can run yourself or through hosted free tiers:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Free/Open-Source LLM Frameworks for Summarization</h2>
+            <p>🔹 Hugging Face Transformers</p>
+            <ul>
+                <li>What it is: Python library with tons of pretrained models (including summarization models like t5, bart, pegasus, etc.).</li>
+                <li>Why use it: Real summarization capabilities right out of the box.</li>
+                <li>
+                    How to use:
+                    <pre><code>
+from transformers import pipeline
+
+summarizer = pipeline("summarization")
+text = "Your long article text..."
+print(summarizer(text, max_length=130, min_length=30, do_sample=False))
+                    </code></pre>
+                </li>
+                <li>Free: Yes — models and library are open source.</li>
+
+            </ul>
+            <p>👉 Best if you want local inference or integrate into apps.</p>
+        </section>
+
+        <section>
+            <h2>🔹 LangChain</h2>
+            <ul>
+                <li>What it is: Framework for building LLM-powered apps (chains, agents, prompts).</li>
+                <li>Summarization: You can plug in free models (e.g., from Hugging Face) and build a summarize chain.</li>
+                <li>Great for: Pipelines + multi-step processing.</li>
+            </ul>
+            <p>Example sketch:</p>
+            <pre><code>
+from langchain.llms import HuggingFace
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+
+template = "Summarize this text:\n\n{text}"
+prompt = PromptTemplate(input_variables=["text"], template=template)
+
+llm = HuggingFace(model_name="t5-small")
+chain = LLMChain(llm=llm, prompt=prompt)
+
+print(chain.run(text="Your long text here"))
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Stanford Alpaca / Vicuna / LLaMA</h2>
+            <ul>
+                <li>Community LLMs trained from Meta’s LLaMA weights.</li>
+                <li>You can run smaller ones locally (e.g., Vicuna-7B) and prompt them to summarize.</li>
+                <li>Requires some HW (good CPU/RAM or GPU).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>☁️ Free Hosted Options (No Setup)</h2>
+            <p>These let you summarize via a free API or UI using open models:</p>
+            <p>🟢 OpenAI Free Tier</p>
+            <ul>
+                <li>You can call GPT (like gpt-4.1) to summarize text.</li>
+                <li>Limited free credits depending on your account.</li>
+                <li>Excellent quality.</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+const openai = new OpenAI();
+await openai.responses.create({
+  model: "gpt-4.1",
+  input: "Summarize this text..."
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🟢 Hugging Face Inference API (Free Tier)</h2>
+            <ul>
+                <li>Call models like facebook/bart-large-cnn directly via REST.</li>
+                <li>Free quota every month.</li>
+                <li>Good for prototyping.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Which Should You Choose?</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Best Option</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Local offline summarization</td>
+                        <td>Hugging Face Transformers</td>
+                    </tr>
+                    <tr>
+                        <td>Build summarization workflows</td>
+                        <td>LangChain</td>
+                    </tr>
+                    <tr>
+                        <td>Hosted with no server setup</td>
+                        <td>Hugging Face API / OpenAI Free Tier</td>
+                    </tr>
+                    <tr>
+                        <td>Custom fine-tuned summarizer</td>
+                        <td>Train with Transformers</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>📝 Quick Summary Example</h2>
+            <p>Code with Hugging Face (Python):</p>
+            <pre><code>
+from transformers import pipeline
+
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+text = """Your long document text goes here..."""
+summary = summarizer(text, max_length=150, min_length=40)[0]['summary_text']
+print(summary)
+            </code></pre>
+            <p>Want me to tailor this to a specific language (e.g., JavaScript, Node.js, React Native) or platform (local GPU vs cloud)?</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

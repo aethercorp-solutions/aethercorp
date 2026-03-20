@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Nodemon</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Nodemon</h1>
+                    <p class="subtitle">
+                        Nodemon is basically a watchdog for your Node.js app 🐶. It sits there, watches your files, and automatically restarts your server whenever something changes—so you don’t have to keep stopping and starting it manually.
+                        <p>Here’s how it works under the hood, step by step.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What problem Nodemon solves</h2>
+            <p>Normally, with plain Node.js:</p>
+            <pre><code>
+node app.js
+            </code></pre>
+
+            <p>If you edit app.js (or any required file), nothing happens.</p>
+            <p>You must stop the process and run it again.</p>
+            <p>Nodemon automates this loop:</p>
+            <p>Edit code → stop server → restart server ❌</p>
+            <p>Edit code → Nodemon restarts server ✅</p>
+        </section>
+
+        <section>
+            <h2>2. Core idea: file watching</h2>
+            <p>Nodemon watches your project files for changes.</p>
+            <p>Internally it uses file-system watchers:</p>
+            <ul>
+                <li>fs.watch</li>
+                <li>fs.watchFile</li>
+                <li>or efficient OS-level watchers (via libraries like chokidar)</li>
+            </ul>
+
+            <p>It listens for events like:</p>
+            <ul>
+                <li>file modified</li>
+                <li>file added</li>
+                <li>file deleted</li>
+            </ul>
+
+            <p>Example:</p>
+            <pre><code>
+src/server.js changed
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Process lifecycle (important part)</h2>
+            <p>When you run:</p>
+            <pre><code>
+nodemon app.js
+            </code></pre>
+            <p>This is what happens:</p>
+            <p>Step 1: Nodemon starts Node</p>
+            <p>Nodemon spawns a child process:</p>
+            <pre><code>
+nodemon
+ └── node app.js
+            </code></pre>
+            <p>Nodemon itself is not your server — it’s just the manager.</p>
+        </section>
+
+        <section>
+            <h2>Step 2: You edit a file</h2>
+            <p>You save a file Nodemon is watching (e.g. .js, .json).</p>
+        </section>
+
+        <section>
+            <h2>Step 3: Nodemon detects the change</h2>
+            <p>Nodemon:</p>
+            <ol>
+                <li>Receives a file change event</li>
+                <li>Debounces it (waits briefly so multiple saves don’t restart repeatedly)</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 4: Nodemon restarts the app</h2>
+            <p>It does this cleanly:</p>
+            <ol>
+                <li>
+                    Sends a termination signal to Node:
+                    <ul>
+                        <li>SIGUSR2 (default)</li>
+                        <li>or SIGTERM</li>
+                    </ul>
+                </li>
+                <li>Kills the current Node process</li>
+                <li>Spawns a new Node process</li>
+                <li>Runs the same command again</li>
+            </ol>
+            <pre><code>
+[nodemon] restarting due to changes...
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. What Nodemon watches by default</h2>
+            <p>By default Nodemon:</p>
+            <ul>
+                <li>Watches the current directory</li>
+                <li>
+                    Watches these extensions:
+                    <ul>
+                        <li>.js</li>
+                        <li>.json</li>
+                        <li>.mjs</li>
+                    </ul>
+                </li>
+                <li>
+                    Ignores:
+                    <ul>
+                        <li>node_modules</li>
+                        <li>.git</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>You can customize this.</p>
+        </section>
+
+        <section>
+            <h2>5. Configuration (nodemon.json)</h2>
+            <p>Example nodemon.json:</p>
+            <pre><code>
+{
+    "watch": ["src"],
+    "ext": "js,json",
+    "ignore": ["src/logs/*"],
+    "exec": "node src/server.js",
+    "delay": "300"
+}                  
+            </code></pre>
+            <p>This tells Nodemon:</p>
+            <ul>
+                <li>Watch only src</li>
+                <li>Restart only on .js and .json changes</li>
+                <li>Ignore logs</li>
+                <li>Restart after 300ms</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Signals & graceful shutdown (important in real apps)</h2>
+            <p>You can handle Nodemon restarts properly:</p>
+            <pre><code>
+process.on("SIGTERM", () => {
+    console.log("Shutting down...");
+    server.close(() => process.exit(0));
+});                  
+            </code></pre>
+            <p>This matters if you use:</p>
+            <ul>
+                <li>HTTP servers</li>
+                <li>DB connections (MongoDB, PostgreSQL)</li>
+                <li>AWS Lambda local emulation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Nodemon vs production</h2>
+            <p>🚨 Nodemon is for development only</p>
+            <p>Why?</p>
+            <ul>
+                <li>File watching costs resources</li>
+                <li>Restarting processes in prod is risky</li>
+                <li>
+                    Production uses:
+                    <ul>
+                        <li>pm2</li>
+                        <li>forever</li>
+                        <li>Docker health checks</li>
+                        <li>Kubernetes restarts</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Typical setup:</p>
+            <pre><code>
+"scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Mental model (simple analogy)</h2>
+            <p>Think of Nodemon as:</p>
+            <p>“A developer assistant that keeps one eye on your files and one hand on the restart button.”</p>
+            <p>You write code → Nodemon handles the boring part.</p>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>compare nodemon vs pm2</li>
+                <li>explain how nodemon differs from hot-reload</li>
+                <li>show how it behaves in serverless / Lambda setups (relevant to your AWS background)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

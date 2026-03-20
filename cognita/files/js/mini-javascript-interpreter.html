@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Mini JavaScript interpreter</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Mini JavaScript interpreter</h1>
+                    <p class="subtitle">
+                        Below is a beginner-friendly mini JavaScript interpreter you can build step by step.
+This is not a full JS engine, but it teaches the core ideas used by real interpreters (tokenizer → parser → evaluator).
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>We’ll support a very small language:</p>
+            <pre><code>
+let x = 5
+let y = 10
+print x + y
+            </code></pre>
+            <h2>1. What our mini interpreter will do</h2>
+            <p>Features</p>
+            <p>✔ Variables (let x = 5)</p>
+            <p>✔ Numbers</p>
+            <p>✔ Addition (+)</p>
+            <p>✔ Print statement</p>
+
+            <p>What it will NOT do (for simplicity)</p>
+            <p>✘ No loops</p>
+            <p>✘ No functions</p>
+            <p>✘ No strings</p>
+        </section>
+
+        <section>
+            <h2>2. Architecture (like real JS engines)</h2>
+            <pre><code>
+Code (string)
+   ↓
+Tokenizer (Lexer)
+   ↓
+Parser (AST)
+   ↓
+Interpreter (Evaluator)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Step 1 – Tokenizer (Lexer)</h2>
+            <p>The tokenizer breaks text into tokens.</p>
+            <p>tokenizer.js</p>
+            <pre><code>
+function tokenize(input) {
+    const tokens = [];
+    let current = 0;
+    
+    while (current < input.length) {
+        let char = input[current];
+    
+        // Skip spaces
+        if (char === ' ' || char === '\n') {
+        current++;
+        continue;
+        }
+    
+        // Numbers
+        if (/[0-9]/.test(char)) {
+        let value = '';
+        while (/[0-9]/.test(char)) {
+            value += char;
+            char = input[++current];
+        }
+        tokens.push({ type: 'NUMBER', value });
+        continue;
+        }
+    
+        // Identifiers (variables, keywords)
+        if (/[a-z]/i.test(char)) {
+        let value = '';
+        while (/[a-z]/i.test(char)) {
+            value += char;
+            char = input[++current];
+        }
+        tokens.push({ type: 'IDENTIFIER', value });
+        continue;
+        }
+    
+        // Operators
+        if (char === '+' || char === '=') {
+        tokens.push({ type: 'OPERATOR', value: char });
+        current++;
+        continue;
+        }
+    
+        throw new Error('Unknown character: ' + char);
+    }
+    
+    return tokens;
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Step 2 – Parser (AST Builder)</h2>
+            <p>The parser converts tokens into a tree structure.</p>
+            <p>parser.js</p>
+            <pre><code>
+function parse(tokens) {
+    let current = 0;
+    
+    function walk() {
+        let token = tokens[current];
+    
+        // Number
+        if (token.type === 'NUMBER') {
+        current++;
+        return { type: 'NumberLiteral', value: Number(token.value) };
+        }
+    
+        // Variable or keyword
+        if (token.type === 'IDENTIFIER') {
+        if (token.value === 'let') {
+            current++;
+            const name = tokens[current++].value; // variable name
+            current++; // skip =
+            const value = walk();
+            return { type: 'VariableDeclaration', name, value };
+        }
+    
+        if (token.value === 'print') {
+            current++;
+            const expression = walk();
+            return { type: 'PrintStatement', expression };
+        }
+    
+        current++;
+        return { type: 'Variable', name: token.value };
+        }
+    
+        // Binary expression
+        if (token.type === 'OPERATOR' && token.value === '+') {
+        current++;
+        return {
+            type: 'BinaryExpression',
+            operator: '+',
+            left: walk(),
+            right: walk()
+        };
+        }
+    
+        throw new Error('Unexpected token: ' + JSON.stringify(token));
+    }
+    
+    const ast = {
+        type: 'Program',
+        body: []
+    };
+    
+    while (current < tokens.length) {
+        ast.body.push(walk());
+    }
+    
+    return ast;
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Step 3 – Interpreter (Evaluator)</h2>
+            <p>This executes the AST.</p>
+            <p>interpreter.js</p>
+            <pre><code>
+function interpret(ast) {
+    const env = {}; // variable storage
+    
+    function evaluate(node) {
+        switch (node.type) {
+        case 'Program':
+            node.body.forEach(evaluate);
+            break;
+    
+        case 'NumberLiteral':
+            return node.value;
+    
+        case 'VariableDeclaration':
+            env[node.name] = evaluate(node.value);
+            break;
+    
+        case 'Variable':
+            if (!(node.name in env)) {
+            throw new Error(`Undefined variable ${node.name}`);
+            }
+            return env[node.name];
+    
+        case 'BinaryExpression':
+            return evaluate(node.left) + evaluate(node.right);
+    
+        case 'PrintStatement':
+            console.log(evaluate(node.expression));
+            break;
+    
+        default:
+            throw new Error('Unknown node type: ' + node.type);
+        }
+    }
+    
+    evaluate(ast);
+}                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Step 4 – Wire Everything Together</h2>
+            <p>main.js</p>
+            <pre><code>
+const code = `
+let x = 5
+let y = 10
+print x + y
+`;
+
+const tokens = tokenize(code);
+const ast = parse(tokens);
+interpret(ast);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Run it on Windows</h2>
+            <pre><code>
+node main.js
+            </code></pre>
+
+            <p>Output:</p>
+            <pre><code>
+15
+            </code></pre>
+            <p>🎉 You just built a mini JavaScript interpreter.</p>
+        </section>
+
+        <section>
+            <h2>8. How this matches real JavaScript engines</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Real JS Engine</th>
+                        <th>Your Mini Version</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lexer</td>
+                        <td>tokenize()</td>
+                    </tr>
+                    <tr>
+                        <td>Parser</td>
+                        <td>parse()</td>
+                    </tr>
+                    <tr>
+                        <td>AST</td>
+                        <td>JS object tree</td>
+                    </tr>
+                    <tr>
+                        <td>Interpreter</td>
+                        <td>interpret()</td>
+                    </tr>
+                    <tr>
+                        <td>Environment</td>
+                        <td>env object</td>
+                    </tr>
+                    <tr>
+                        <td>JIT Compiler</td>
+                        <td>❌ (skipped)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>9. Next upgrades (if you want)</h2>
+            <p>🔹 Add subtraction and multiplication</p>
+            <p>🔹 Add strings</p>
+            <p>🔹 Add if statements</p>
+            <p>🔹 Add functions</p>
+            <p>🔹 Add bytecode instead of AST execution</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

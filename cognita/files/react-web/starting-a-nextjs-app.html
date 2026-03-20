@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Starting a Next.js app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Starting a Next.js app</h1>
+                    <p class="subtitle">Starting a Next.js app is straightforward! I’ll give you a step-by-step guide from scratch, including both JavaScript and TypeScript options.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Install Node.js</h2>
+            <p>Make sure you have Node.js installed (version 18+ recommended). Check with:</p>
+            <pre><code>
+node -v
+npm -v
+            </code></pre>
+
+            <p>If you don’t have it, download from nodejs.org</p>
+        </section>
+
+        <section>
+            <h2>2. Create a New Next.js App</h2>
+            <p>Next.js now recommends using the create-next-app tool.</p>
+            <p>JavaScript version:</p>
+            <pre><code>
+npx create-next-app@latest my-next-app
+            </code></pre>
+
+            <p>TypeScript version:</p>
+            <pre><code>
+npx create-next-app@latest my-next-app --typescript
+            </code></pre>
+
+            <ul>
+                <li>my-next-app is the folder name for your project.</li>
+                <li>During setup, it may ask a few questions (like ESLint, Tailwind, etc.). You can choose defaults or customize.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Navigate to Your Project</h2>
+            <pre><code>
+cd my-next-app
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Run the Development Server</h2>
+            <pre><code>
+npm run dev
+            </code></pre>
+            <ul>
+                <li>This starts your app in development mode.</li>
+                <li>Open http://localhost:3000 to see your Next.js app running.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Project Structure Overview</h2>
+            <p>After setup, your folder looks like this:</p>
+            <pre><code>
+my-next-app/
+├─ app/ or pages/     # Your pages (depending on app router or pages router)
+├─ public/            # Static files (images, fonts)
+├─ styles/            # CSS or global styles
+├─ package.json       # Project dependencies and scripts
+            </code></pre>
+            <ul>
+                <li>app/ → New App Router (Next.js 13+)</li>
+                <li>pages/ → Traditional Pages Router</li>
+                <li>public/ → Static assets</li>
+                <li>styles/ → CSS modules or global styles</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Basic Page Example</h2>
+            <p>If using the App Router (app/), you can edit:</p>
+            <pre><code>
+// app/page.js
+export default function HomePage() {
+  return &lt;h1&gt;Hello Next.js!&lt;/h1&gt;;
+}
+            </code></pre>
+            <p>Then refresh your browser to see the changes instantly.</p>
+        </section>
+
+        <section>
+            <h2>7. Optional: Install Extra Packages</h2>
+            <p>You may want:</p>
+            <pre><code>
+npm install axios react-query tailwindcss
+            </code></pre>
+
+            <ul>
+                <li>axios → API calls</li>
+                <li>react-query → Data fetching</li>
+                <li>tailwindcss → Styling</li>
+            </ul>
+            <p>If you want, I can also give you a minimal boilerplate ready for TypeScript, Tailwind, and API routes, so you can start coding immediately.</p>
+        </section>
+
+        <section>
+            <p>Integrating a Next.js app with AWS CI/CD usually involves using AWS CodeCommit / CodePipeline / CodeBuild or GitHub + AWS CodePipeline for automated builds and deployments. I’ll give you a structured approach.</p>
+            <h2>1. Choose Your Deployment Target</h2>
+            <p>Next.js apps can be deployed in several ways on AWS:</p>
+            <ol>
+                <li>AWS Amplify – easiest for frontend apps, supports SSR and SSG.</li>
+                <li>AWS S3 + CloudFront – only for static apps (SSG, exported pages).</li>
+                <li>AWS Lambda + API Gateway – for SSR or API routes using Serverless Framework.</li>
+                <li>AWS Elastic Beanstalk / ECS – containerized deployment (full SSR support).</li>
+            </ol>
+            <p>For CI/CD, we’ll focus on AWS CodePipeline + CodeBuild with Lambda or Amplify deployment.</p>
+        </section>
+
+        <section>
+            <h2>2. Setup Source Repository</h2>
+            <p>You need a Git repo:</p>
+            <ul>
+                <li>Option A: AWS CodeCommit</li>
+            </ul>
+            <pre><code>
+aws codecommit create-repository --repository-name my-nextjs-app
+            </code></pre>
+            <ul>
+                <li>Option B: GitHub / GitLab (common setup)</li>
+            </ul>
+            <p>Push your Next.js code to the repository.</p>
+        </section>
+
+        <section>
+            <h2>3. Create Build Specification (buildspec.yml)</h2>
+            <p>CodeBuild uses this file to know how to build your project.</p>
+            <pre><code>
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - echo Installing dependencies...
+      - npm ci
+  build:
+    commands:
+      - echo Building Next.js app...
+      - npm run build
+  post_build:
+    commands:
+      - echo Build completed
+artifacts:
+  files:
+    - '**/*'
+  base-directory: .next
+            </code></pre>
+
+            <p>Note: Adjust base-directory depending on your deployment method.</p>
+            <p>For static export (SSG), run npm run export and use out folder.</p>
+        </section>
+
+        <section>
+            <h2>4. Setup CodePipeline</h2>
+            <ol>
+                <li>Source Stage → Connect your Git repo (CodeCommit or GitHub).</li>
+                <li>Build Stage → AWS CodeBuild project with your buildspec.yml.</li>
+                <li>
+                    Deploy Stage → Choose one:
+                    <ul>
+                        <li>S3 + CloudFront → For static export (npm run export).</li>
+                        <li>AWS Lambda / API Gateway → For SSR.</li>
+                        <li>AWS Amplify → Supports full Next.js apps with SSR.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>5. Deploy to AWS Amplify (Recommended for SSR)</h2>
+            <ol>
+                <li>Go to AWS Amplify <a href="https://console.aws.amazon.com/amplify/">Console</a>.</li>
+                <li>Connect your repository (GitHub, CodeCommit).</li>
+                <li>Amplify automatically detects it’s a Next.js app.</li>
+                <li>
+                    Configure build settings (Amplify will auto-generate amplify.yml). Example:
+                    <pre><code>
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+                    </code></pre>
+                </li>
+                <li>Amplify handles CI/CD automatically: push to main branch → build → deploy.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>6. Optional: Using Serverless Framework + Lambda</h2>
+            <p>If you want SSR on Lambda:</p>
+            <ol>
+                <li>
+                    Install serverless-next.js plugin:
+                    <pre><code>
+npm install serverless serverless-next.js --save-dev
+                    </code></pre>
+                </li>
+                <li>
+                    Create serverless.yml:
+                    <pre><code>
+service: nextjs-app
+provider:
+  name: aws
+  runtime: nodejs18.x
+plugins:
+  - serverless-next.js
+                    </code></pre>
+                </li>
+                <li>
+                    Deploy with:
+                    <pre><code>
+npx serverless
+                    </code></pre>
+                </li>
+            </ol>
+            <p>You can integrate this deployment with CodePipeline by having CodeBuild run npx serverless deploy</p>
+            <p>✅ Summary</p>
+            <ul>
+                <li>Static site: npm run build && npm run export → S3 + CloudFront → CodePipeline.</li>
+                <li>SSR site: Use Amplify or Lambda with Serverless → CodePipeline triggers build and deploy.</li>
+                <li>CI/CD flow: Commit → CodePipeline → CodeBuild → Deploy.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>
+                SSR on Lambda means running Server-Side Rendering (SSR) for a web application using AWS Lambda, Amazon’s serverless compute service.
+            </p>
+            <p>Let’s break it down:</p>
+
+            <h2>1️⃣ What is SSR (Server-Side Rendering)?</h2>
+            <p>SSR is when your web page HTML is generated on the server for each request, instead of in the browser.</p>
+            <p>Instead of:</p>
+            <ul>
+                <li>Sending an empty HTML shell</li>
+                <li>Letting JavaScript build the page in the browser (CSR)</li>
+            </ul>
+            <p>With SSR:</p>
+            <ul>
+                <li>The server generates the full HTML</li>
+                <li>The browser receives a ready-to-render page</li>
+            </ul>
+            <p>Frameworks that commonly use SSR:</p>
+            <ul>
+                <li><a href="https://nextjs.org/">Next.js</a></li>
+                <li><a href="https://nuxt.com/">Nuxt.js</a></li>
+                <li><a href="https://v17.angular.io/guide/ssr">Angular Universal</a></li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ What is AWS Lambda?</h2>
+            <p><a href="https://aws.amazon.com/pm/lambda/?trk=53cb614e-f419-42bf-9b63-6d77a9dbaa89&sc_channel=ps&gad_campaignid=23528572727&gbraid=0AAAAADjHtp91-ZvROPkPykHnnF7J7vuOD&gclid=Cj0KCQiA18DMBhDeARIsABtYwT2OMmbSFEV5VzyQ_FNoi1kiFKbFpf6x2T4c-NHS00TmgJ5d5Sp5pK0aAoa8EALw_wcB">AWS Lambda</a> is a serverless platform where:</p>
+            <ul>
+                <li>You upload your code</li>
+                <li>AWS runs it only when needed</li>
+                <li>You pay per execution</li>
+                <li>No server management required</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ So what does “SSR on Lambda” mean?</h2>
+            <p>It means:</p>
+            <p>Each page request triggers a Lambda function that renders the HTML on demand.</p>
+
+            <p>Typical flow:</p>
+            <ol>
+                <li>User requests /products/123</li>
+                <li>
+                    Request hits:
+                    <ul>
+                        <li>Amazon CloudFront (CDN)</li>
+                        <li>or Amazon API Gateway</li>
+                    </ul>
+                </li>
+                <li>That triggers a Lambda function</li>
+                <li>The Lambda runs your SSR framework (e.g., Next.js)</li>
+                <li>It generates HTML</li>
+                <li>HTML is returned to the user</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>4️⃣ When is SSR on Lambda useful?</h2>
+            <p>✅ SEO-critical websites</p>
+            <p>✅ E-commerce product pages</p>
+            <p>✅ Dynamic content per request</p>
+            <p>✅ Personalization</p>
+            <p>✅ Serverless architecture preference</p>
+        </section>
+
+        <section>
+            <h2>5️⃣ Pros and Cons</h2>
+            <p>✅ Advantages</p>
+            <ul>
+                <li>No server management</li>
+                <li>Auto-scaling</li>
+                <li>Cost-effective for low/medium traffic</li>
+                <li>Works great with CDN</li>
+            </ul>
+
+            <p>❌ Drawbacks</p>
+            <ul>
+                <li>Cold starts (slower first request)</li>
+                <li>Execution time limits</li>
+                <li>Memory limits</li>
+                <li>Can get expensive at very high traffic</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6️⃣ Example: Next.js on Lambda</h2>
+            <p>With Next.js:</p>
+            <ul>
+                <li>getServerSideProps() runs inside Lambda</li>
+                <li>Each request generates fresh HTML</li>
+                <li>
+                    Can be deployed using:
+                    <ul>
+                        <li>Vercel</li>
+                        <li>AWS Amplify</li>
+                        <li>Custom Lambda + CloudFront setup</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple Summary</h2>
+            <p>SSR on Lambda = Dynamic HTML rendering powered by serverless functions.</p>
+            <p>It combines:</p>
+            <ul>
+                <li>The SEO & performance benefits of SSR</li>
+                <li>The scalability & simplicity of serverless</li>
+            </ul>
+
+            <p>If you'd like, I can also explain:</p>
+            <ul>
+                <li>How it compares to static generation (SSG)</li>
+                <li>How cold starts affect performance</li>
+                <li>Whether it's a good fit for your specific project</li>
+                <li>Architecture diagram explanation</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

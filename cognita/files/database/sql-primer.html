@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is SQL?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is SQL?</h1>
+                    <p class="subtitle">
+                        Sure! Let’s go step by step and break down what a SQL Primer is. I’ll make it beginner-friendly.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is SQL?</h2>
+            <p>SQL (Structured Query Language) is the standard language used to communicate with databases. You use it to:</p>
+            <ul>
+                <li>Store data</li>
+                <li>Retrieve data</li>
+                <li>Update data</li>
+                <li>Delete data</li>
+            </ul>
+            <p>Think of it as the language that tells a database what to do.</p>
+        </section>
+
+        <section>
+            <h2>SQL Primer: Basic Concepts</h2>
+            <p>1. Database and Tables</p>
+            <ul>
+                <li>A database is like a digital filing cabinet.</li>
+                <li>A table is like a drawer in that cabinet where data is organized into rows and columns.</li>
+            </ul>
+
+            <p>Example table: Users</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Paul</td>
+                        <td>paul@email.com</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Alice</td>
+                        <td>alice@email.com</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>2. Basic SQL Statements</p>
+            <p>a. SELECT – Read data</p>
+            <pre><code>
+SELECT Name, Email
+FROM Users;
+            </code></pre>
+            <ul>
+                <li>SELECT chooses the columns</li>
+                <li>FROM chooses the table</li>
+            </ul>
+
+            <p>b. INSERT – Add data</p>
+            <pre><code>
+INSERT INTO Users (Name, Email)
+VALUES ('John', 'john@email.com');
+            </code></pre>
+
+            <p>c. UPDATE – Modify data</p>
+            <pre><code>
+UPDATE Users
+SET Email = 'newemail@email.com'
+WHERE ID = 1;
+            </code></pre>
+
+            <p>d. DELETE – Remove data</p>
+            <pre><code>
+DELETE FROM Users
+WHERE ID = 2;
+            </code></pre>
+
+            <p>3. Filtering Data</p>
+            <ul>
+                <li>
+                    WHERE helps you filter rows:
+                    <pre><code>
+SELECT * 
+FROM Users
+WHERE Name = 'Paul';
+                    </code></pre>
+                </li>
+                <li>You can use conditions like =, &gt;, &lt;, >=, &lt;=, LIKE (for patterns), IN, etc.</li>
+            </ul>
+
+            <p>4. Sorting Data</p>
+            <pre><code>
+SELECT * 
+FROM Users
+ORDER BY Name ASC; -- ASC = ascending, DESC = descending
+            </code></pre>
+
+            <p>5. Joining Tables</p>
+            <p>If you have multiple tables, you can combine them with JOIN:</p>
+            <pre><code>
+SELECT Orders.ID, Users.Name
+FROM Orders
+JOIN Users ON Orders.UserID = Users.ID;
+            </code></pre>
+
+            <p>6. Aggregating Data</p>
+            <ul>
+                <li>Use COUNT, SUM, AVG, MIN, MAX:</li>
+            </ul>
+            <pre><code>
+SELECT COUNT(*) AS TotalUsers
+FROM Users;
+            </code></pre>
+
+            <p>7. Other Useful Clauses</p>
+            <ul>
+                <li>GROUP BY – groups rows with the same value</li>
+                <li>HAVING – filters groups</li>
+                <li>LIMIT – limits number of rows returned</li>
+                <li>DISTINCT – returns unique values only</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operation</th>
+                        <th>SQL Example</th>
+                        <th>What it does</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Read data</td>
+                        <td>SELECT * FROM Users;</td>
+                        <td>Retrieves all users</td>
+                    </tr>
+                    <tr>
+                        <td>Add data</td>
+                        <td>INSERT INTO Users...</td>
+                        <td>Adds new user</td>
+                    </tr>
+                    <tr>
+                        <td>Update data</td>
+                        <td>UPDATE Users SET Email=...</td>
+                        <td>Changes data</td>
+                    </tr>
+                    <tr>
+                        <td>Delete data</td>
+                        <td>DELETE FROM Users WHERE ID=2;</td>
+                        <td>Removes a user</td>
+                    </tr>
+                    <tr>
+                        <td>Filter</td>
+                        <td>SELECT * FROM Users WHERE Name='Paul';</td>
+                        <td>Retrieves specific rows</td>
+                    </tr>
+                    <tr>
+                        <td>Sort</td>
+                        <td>SELECT * FROM Users ORDER BY Name ASC;</td>
+                        <td>Sorts data</td>
+                    </tr>
+                    <tr>
+                        <td>Join</td>
+                        <td>SELECT ... FROM Orders JOIN Users...</td>
+                        <td>Combines tables</td>
+                    </tr>
+                    <tr>
+                        <td>Aggregate</td>
+                        <td>SELECT COUNT(*) FROM Users;</td>
+                        <td>Counts rows</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>If you want, I can make a tiny SQL primer cheat sheet with all the most used SQL commands in one table—it’s perfect for beginners to reference quickly.</p>
+        </section>
+
+        <section>
+            <h2>COALESCE(Nickname, "") AS Nickname</h2>
+            <pre><code>
+COALESCE(Nickname, "") AS Nickname
+            </code></pre>
+            <p>What does this do?</p>
+            <ul>
+                <li>COALESCE() checks for NULL values</li>
+                <li>If Nickname is NULL, it returns an empty string ""</li>
+                <li>If Nickname has a value, it returns that value</li>
+            </ul>
+            <p>Why is this useful?</p>
+            <p>Without it, you might see NULL in the results, which can:</p>
+            <ul>
+                <li>Look messy</li>
+                <li>Cause issues in apps or reports</li>
+            </ul>
+            <p>Using AS Nickname just renames the output column to Nickname.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

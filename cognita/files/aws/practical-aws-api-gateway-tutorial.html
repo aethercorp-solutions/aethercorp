@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>practical AWS API Gateway tutorial</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">practical AWS API Gateway tutorial</h1>
+                    <p class="subtitle">Here’s a clear, practical AWS API Gateway tutorial—from basics to a real working example—tailored for developers who want to build serverless APIs (REST or HTTP) 🚀</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧭 What is AWS API Gateway?</h2>
+            <p>AWS API Gateway is a fully managed service that lets you:</p>
+            <ul>
+                <li>Create REST APIs and HTTP APIs</li>
+                <li>Secure endpoints (API keys, IAM, JWT, Cognito)</li>
+                <li>Connect to AWS Lambda, EC2, or other backends</li>
+                <li>Handle throttling, caching, monitoring, and versioning</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🆚 API Types (Choose First)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Best For</th>
+                        <th>Cost</th>
+                        <th>Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>HTTP API</td>
+                        <td>Simple, fast APIs</td>
+                        <td>Cheaper</td>
+                        <td>JWT auth, Lambda proxy</td>
+                    </tr>
+                    <tr>
+                        <td>REST API</td>
+                        <td>Complex APIs</td>
+                        <td>💲💲</td>
+                        <td>API keys, usage plans, caching</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 Recommendation: Start with HTTP API unless you need advanced REST features.</p>
+        </section>
+
+        <section>
+            <h2>🛠 Step-by-Step: Create an API Gateway + Lambda (HTTP API)</h2>
+            <p>1️⃣ Create a Lambda Function</p>
+            <ol>
+                <li>Open AWS Console → Lambda</li>
+                <li>Click Create function</li>
+                <li>Runtime: Node.js 18</li>
+                <li>Function name: hello-api</li>
+            </ol>
+            <pre><code>
+export const handler = async () => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Hello from API Gateway!" }),
+    };
+};                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2️⃣ Create an HTTP API</h2>
+            <ol>
+                <li>Go to API Gateway</li>
+                <li>Click Create API</li>
+                <li>Choose HTTP API</li>
+                <li>Select Add integration → Lambda</li>
+                <li>Pick hello-api</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>3️⃣ Create a Route</h2>
+            <ol>
+                <li>Method: GET</li>
+                <li>Path: /hello</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>4️⃣ Deploy (Auto for HTTP APIs)</h2>
+            <p>API Gateway automatically deploys.
+                You’ll get a URL like:</p>
+            
+            <pre><code>
+https://abc123.execute-api.ap-southeast-1.amazonaws.com/hello
+            </code></pre>
+            <p>🎉 Open it in a browser → Hello from API Gateway!</p>
+        </section>
+
+        <section>
+            <h2>🔐 Authentication Options</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Auth Type</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>JWT (Cognito / Auth0)</td>
+                        <td>Mobile & web apps</td>
+                    </tr>
+                    <tr>
+                        <td>IAM</td>
+                        <td>AWS-to-AWS</td>
+                    </tr>
+                    <tr>
+                        <td>API Key</td>
+                        <td>Metered public APIs</td>
+                    </tr>
+                    <tr>
+                        <td>Lambda Authorizer</td>
+                        <td>Custom logic</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Common choice:</p>
+            <p>👉 Amazon Cognito + JWT</p>
+        </section>
+
+        <section>
+            <h2>🔑 Example: Secure Route with JWT</h2>
+            <ol>
+                <li>Create a Cognito User Pool</li>
+                <li>
+                    In API Gateway:
+                    <ul>
+                        <li>Authorization → JWT</li>
+                        <li>Issuer: Cognito user pool URL</li>
+                        <li>Audience: App Client ID</li>
+                    </ul>
+                </li>
+                <li>Attach JWT auth to /hello</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>📊 Monitoring & Logs</h2>
+            <p>Enable logs:</p>
+            <ul>
+                <li>Amazon CloudWatch</li>
+                <li>API Gateway → Logs</li>
+                <li>Lambda → Logs</li>
+            </ul>
+
+            <p>You’ll see:</p>
+            <ul>
+                <li>Request latency</li>
+                <li>Errors (4xx / 5xx)</li>
+                <li>Throttling</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ Performance & Cost Tips</h2>
+            <p>✅ Prefer HTTP APIs</p>
+            <p>✅ Use Lambda proxy integration</p>
+            <p>✅ Enable throttling</p>
+            <p>✅ Avoid large payloads</p>
+            <p>✅ Use regional endpoints</p>
+            <p>💡 HTTP API is ~70% cheaper than REST API.</p>
+        </section>
+
+        <section>
+            <h2>🧱 Common Use Cases</h2>
+            <ul>
+                <li>Mobile app backend (React Native, Flutter)</li>
+                <li>Public REST APIs</li>
+                <li>Microservices</li>
+                <li>Webhooks</li>
+                <li>Serverless SaaS backends</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Next Steps (Advanced)</h2>
+            <p>If you want, I can guide you through:</p>
+            <ul>
+                <li>API Gateway + MongoDB</li>
+                <li>API Gateway + JWT Auth</li>
+                <li>Serverless Framework or SAM</li>
+                <li>Custom domain + HTTPS</li>
+                <li>Rate limiting & usage plans</li>
+                <li>gRPC via API Gateway</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

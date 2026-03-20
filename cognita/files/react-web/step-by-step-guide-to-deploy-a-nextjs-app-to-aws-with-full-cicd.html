@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>step-by-step guide to deploy a Next.js app to AWS with full CI/CD</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">step-by-step guide to deploy a Next.js app to AWS with full CI/CD</h1>
+                    <p class="subtitle">
+                        Here’s a step-by-step guide to deploy a Next.js app to AWS with full CI/CD, using:
+                        <ul>
+                            <li>Next.js</li>
+                            <li>Amazon EC2</li>
+                            <li>Amazon ECR</li>
+                            <li>Amazon ECS</li>
+                            <li>AWS CodePipeline</li>
+                            <li>AWS CodeBuild</li>
+                            <li>AWS CodeDeploy</li>
+                        </ul>
+                        <p>This is a production-ready containerized setup.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ Architecture Overview</h2>
+            <pre><code>
+GitHub
+   ↓
+CodePipeline
+   ↓
+CodeBuild (Build Docker image)
+   ↓
+Amazon ECR (Store image)
+   ↓
+Amazon ECS (Deploy container)
+   ↓
+Load Balancer → Public URL
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 1 — Create a Next.js App</h2>
+            <pre><code>
+npx create-next-app@latest my-app
+cd my-app
+            </code></pre>
+
+            <p>Update next.config.js (for standalone build)</p>
+            <pre><code>
+module.exports = {
+    output: "standalone",
+};                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 2 — Add Docker Support</h2>
+            <p>Create a Dockerfile:</p>
+            <pre><code>
+# Install dependencies
+FROM node:18-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Build app
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+# Production image
+FROM node:18-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
+EXPOSE 3000
+CMD ["node", "server.js"]
+            </code></pre>
+
+            <p>Test locally:</p>
+            <pre><code>
+docker build -t nextjs-app .
+docker run -p 3000:3000 nextjs-app
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 3 — Create Amazon ECR Repository</h2>
+            <p>Go to Amazon ECR → Create Repository</p>
+            <p>Example:</p>
+            <pre><code>
+Repository name: nextjs-app
+            </code></pre>
+
+            <p>Authenticate Docker:</p>
+            <pre><code>
+aws ecr get-login-password --region us-east-1 | \
+docker login --username AWS --password-stdin &lt;account-id&gt;.dkr.ecr.us-east-1.amazonaws.com
+            </code></pre>
+
+            <p>Tag and push:</p>
+            <pre><code>
+docker tag nextjs-app:latest &lt;account-id&gt;.dkr.ecr.us-east-1.amazonaws.com/nextjs-app
+docker push &lt;account-id&gt;.dkr.ecr.us-east-1.amazonaws.com/nextjs-app                    
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 4 — Create ECS Cluster</h2>
+            <p>Go to Amazon ECS → Create Cluster</p>
+            <p>Choose:</p>
+            <ul>
+                <li>Networking only (Fargate)</li>
+                <li>Cluster name: nextjs-cluster</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>STEP 5 — Create Task Definition</h2>
+            <ol>
+                <li>Launch type: Fargate</li>
+                <li>Task size: 0.5 vCPU / 1GB</li>
+                <li>
+                    Add container:
+                    <ul>
+                        <li>Image: ECR image URI</li>
+                        <li>Port mapping: 3000</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>STEP 6 — Create Service</h2>
+            <ol>
+                <li>Launch type: Fargate</li>
+                <li>Select cluster</li>
+                <li>Task definition: choose created one</li>
+                <li>Desired tasks: 1</li>
+                <li>Attach Application Load Balancer</li>
+                <li>Create target group (port 3000)</li>
+            </ol>
+            <p>After creation → you get a public Load Balancer URL 🎉</p>
+        </section>
+
+        <section>
+            <h2>STEP 7 — Setup CI/CD with AWS CodePipeline</h2>
+            <p>Now automate everything.</p>
+
+            <p>7.1 Create CodeBuild Project</p>
+            <p>Go to AWS CodeBuild → Create project</p>
+            <p>Environment:</p>
+            <ul>
+                <li>Managed image</li>
+                <li>Ubuntu</li>
+                <li>Privileged mode: ENABLED (required for Docker)</li>
+            </ul>
+            <p>Add buildspec.yml in your repo:</p>
+
+            <pre><code>
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/nextjs-app
+      - IMAGE_TAG=latest
+
+  build:
+    commands:
+      - echo Build started
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+  
+  post_build:
+    commands:
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - printf '[{"name":"nextjs-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
+            </code></pre>
+
+            <p>Add environment variables in CodeBuild:</p>
+            <pre><code>
+ACCOUNT_ID = your-aws-account-id
+AWS_DEFAULT_REGION = us-east-1
+            </code></pre>
+
+            <p>7.2 Create CodePipeline</p>
+            <p>Go to AWS CodePipeline → Create Pipeline</p>
+            <p>Steps:</p>
+            <p>1️⃣ Source</p>
+            <ul>
+                <li>Connect GitHub repo</li>
+                <li>Branch: main</li>
+            </ul>
+
+            <p>2️⃣ Build</p>
+            <ul>
+                <li>Select CodeBuild project</li>
+            </ul>
+
+            <p>3️⃣ Deploy</p>
+            <ul>
+                <li>Deploy provider: Amazon ECS</li>
+                <li>
+                    Select:
+                    <ul>
+                        <li>Cluster</li>
+                        <li>Service</li>
+                        <li>imagedefinitions.json</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>Now:</p>
+            <pre><code>
+Git Push → Auto Build → Auto Push to ECR → Auto Deploy to ECS
+            </code></pre>
+            <p>🎉 Fully automated CI/CD.</p>
+        </section>
+
+        <section>
+            <h2>OPTIONAL: Use EC2 Instead of ECS</h2>
+            <p>If you want simpler setup:</p>
+            <ol>
+                <li>Launch EC2 instance</li>
+                <li>Install Docker</li>
+                <li>Pull ECR image</li>
+                <li>Run container</li>
+                <li>Use CodeDeploy for automatic deployment</li>
+            </ol>
+            <p>But ECS Fargate is recommended for production.</p>
+        </section>
+
+        <section>
+            <h2>OPTIONAL PRODUCTION IMPROVEMENTS</h2>
+            <p>Add:</p>
+            <ul>
+                <li>Amazon CloudFront (CDN)</li>
+                <li>Amazon Route 53 (Domain)</li>
+                <li>AWS Certificate Manager (Free SSL)</li>
+                <li>Auto Scaling in ECS</li>
+                <li>Separate staging & production pipelines</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 Alternative (Much Easier Option)</h2>
+            <p>If you don’t need containers:</p>
+            <p>Use AWS Amplify</p>
+            <p>It provides:</p>
+            <ul>
+                <li>Automatic CI/CD</li>
+                <li>Preview environments</li>
+                <li>Zero server management</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <p>You now have:</p>
+            <p>✅ Dockerized Next.js app</p>
+            <p>✅ Pushed to ECR</p>
+            <p>✅ Running on ECS Fargate</p>
+            <p>✅ Auto CI/CD via CodePipeline</p>
+
+            <p>If you'd like, I can next provide:</p>
+            <ul>
+                <li>Terraform version of this setup</li>
+                <li>GitHub Actions instead of CodePipeline</li>
+                <li>Blue/Green deployment setup</li>
+                <li>Multi-environment (dev/staging/prod) setup</li>
+                <li>Or cost optimization guide</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

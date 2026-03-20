@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>end-to-end explanation of Apple’s code-signing tools</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">end-to-end explanation of Apple’s code-signing tools</h1>
+                    <p class="subtitle">
+                        Below is a clear, end-to-end explanation of Apple’s code-signing tools, how they work together, why each exists, and a practical example (from “no app” → “signed app ready to install”). I’ll keep it technical but structured so you can reason about it like a system.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🍎 Apple Code Signing — Complete Guide (Tools + Examples)</h2>
+            <p>Why Apple Requires Code Signing (Big Picture)</p>
+            <p>Apple code signing ensures:</p>
+            <ol>
+                <li>Identity – Who built this app?</li>
+                <li>Integrity – Has the app been modified?</li>
+                <li>Authorization – Is this app allowed to run on this device?</li>
+                <li>Entitlements – What is this app allowed to do?</li>
+            </ol>
+            <p>Every Apple platform app must be signed to run on a real device or be distributed.</p>
+        </section>
+
+        <section>
+            <h2>Core Code-Signing Components (Mental Model)</h2>
+            <p>Think of code signing as a chain of trust:</p>
+            <pre><code>
+Apple Root CA
+   ↓
+Apple Developer Certificate
+   ↓
+App Signature
+   ↓
+Device Trust (Provisioning Profile)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 1. Certificates (Identity)</h2>
+            <p>Tool: Keychain Access</p>
+            <p>(macOS GUI)</p>
+            <p>Certificates prove who you are.</p>
+            <p>Types of Apple Certificates</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Certificate Type</th>
+                        <th>Used For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Apple Development</td>
+                        <td>Running on devices</td>
+                    </tr>
+                    <tr>
+                        <td>Apple Distribution</td>
+                        <td>App Store / TestFlight</td>
+                    </tr>
+                    <tr>
+                        <td>Developer ID Application</td>
+                        <td>macOS apps outside App Store</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>📍 Stored in Keychain</p>
+
+            <p>Example: View Certificates</p>
+            <pre><code>
+security find-identity -v -p codesigning
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+1) XXXXXXXXXX "Apple Development: Paul Dionisio (ABCDE12345)"
+2) YYYYYYYYYY "Apple Distribution: Paul Dionisio (ABCDE12345)"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📄 2. App ID (Bundle Identity)</h2>
+            <p>Tool: Apple Developer Portal</p>
+            <p>An App ID is:</p>
+            <pre><code>
+TeamID + Bundle ID
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+ABCDE12345.com.trycastanet.app
+            </code></pre>
+            <p>This ID links:</p>
+            <ul>
+                <li>App</li>
+                <li>Entitlements</li>
+                <li>Provisioning profile</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 3. Provisioning Profiles (Permission Slip)</h2>
+            <p>Tool:</p>
+            <ul>
+                <li>Xcode</li>
+                <li>Apple Developer Portal</li>
+                <li>profiles (legacy)</li>
+                <li>Manual install: ~/Library/MobileDevice/Provisioning Profiles</li>
+            </ul>
+            <p>A provisioning profile says:</p>
+            <p>“This app, signed by this certificate, may run on these devices, with these entitlements.”</p>
+            <p>Types</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Profile Type</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Development</td>
+                        <td>Local testing</td>
+                    </tr>
+                    <tr>
+                        <td>Ad Hoc</td>
+                        <td>Limited external testing</td>
+                    </tr>
+                    <tr>
+                        <td>App Store</td>
+                        <td>App Store distribution</td>
+                    </tr>
+                    <tr>
+                        <td>Enterprise</td>
+                        <td>Internal company apps</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Inspect a Provisioning Profile</p>
+            <pre><code>
+security cms -D -i MyProfile.mobileprovision
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✍️ 4. Codesign Tool (The Signer)</h2>
+            <p>Tool: codesign</p>
+            <p>(CLI — core signing engine)</p>
+            <p>This tool:</p>
+            <ul>
+                <li>Hashes the app</li>
+                <li>Encrypts hash with your private key</li>
+                <li>Embeds entitlements</li>
+            </ul>
+            <p>Example: Sign an App Manually</p>
+            <pre><code>
+codesign \
+  --sign "Apple Development: Paul Dionisio (ABCDE12345)" \
+  --entitlements entitlements.plist \
+  --deep \
+  MyApp.app
+            </code></pre>
+            <p>Verify Signature</p>
+            <pre><code>
+codesign -dv --verbose=4 MyApp.app
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📜 5. Entitlements (Capabilities)</h2>
+            <p>Tool:</p>
+            <ul>
+                <li>Xcode</li>
+                <li>.entitlements file</li>
+            </ul>
+            <p>Entitlements are permissions like:</p>
+            <ul>
+                <li>Push notifications</li>
+                <li>iCloud</li>
+                <li>App Groups</li>
+                <li>Sign in with Apple</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+&lt;key&gt;com.apple.developer.push-notifications&lt;/key&gt;
+&lt;string&gt;development&lt;/string&gt;
+            </code></pre>
+            <p>Entitlements must match the provisioning profile.</p>
+        </section>
+
+        <section>
+            <h2>🛠 6. Xcode (Automation Layer)</h2>
+            <p>Xcode handles:</p>
+            <ul>
+                <li>Certificate creation</li>
+                <li>Profile generation</li>
+                <li>Signing</li>
+                <li>Entitlements</li>
+                <li>Device registration</li>
+            </ul>
+            <p>When you enable:</p>
+            <pre><code>
+Automatically manage signing ✅
+            </code></pre>
+            <p>Xcode silently does:</p>
+            <ul>
+                <li>codesign</li>
+                <li>profile matching</li>
+                <li>entitlement merging</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 7. xcodebuild (CI/CD Tool)</h2>
+            <p>Used in:</p>
+            <ul>
+                <li>GitHub Actions</li>
+                <li>Fastlane</li>
+                <li>Jenkins</li>
+            </ul>
+            <p>Example: Build + Sign from CLI</p>
+            <pre><code>
+xcodebuild \
+  -workspace MyApp.xcworkspace \
+  -scheme MyApp \
+  -configuration Release \
+  -archivePath build/MyApp.xcarchive \
+  archive
+            </code></pre>
+            <p>Then export:</p>
+            <pre><code>
+xcodebuild \
+  -exportArchive \
+  -archivePath build/MyApp.xcarchive \
+  -exportOptionsPlist ExportOptions.plist \
+  -exportPath build/
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📤 8. altool / notarytool (Distribution)</h2>
+            <p>Tool:</p>
+            <ul>
+                <li>notarytool (modern)</li>
+                <li>altool (legacy)</li>
+            </ul>
+            <p>Used for:</p>
+            <ul>
+                <li>App Store uploads</li>
+                <li>macOS notarization</li>
+            </ul>
+            <p>Example (macOS notarization):</p>
+            <pre><code>
+xcrun notarytool submit MyApp.zip \
+  --apple-id you@email.com \
+  --team-id ABCDE12345 \
+  --password app-specific-password
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔍 9. spctl (Gatekeeper Check)</h2>
+            <p>Tool: spctl</p>
+            <p>Checks if macOS trusts the app.</p>
+            <pre><code>
+spctl -a -vv MyApp.app
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 Full Practical Flow Example</h2>
+            <p>Goal: Run iOS App on iPhone</p>
+            <p>1️⃣ Create Apple Development Certificate</p>
+            <p>2️⃣ Create App ID</p>
+            <p>3️⃣ Register iPhone UDID</p>
+            <p>4️⃣ Create Development Provisioning Profile</p>
+            <p>5️⃣ Build app</p>
+            <p>6️⃣ codesign embeds certificate + entitlements</p>
+            <p>
+                7️⃣ iOS verifies:
+                <ul>
+                    <li>signature</li>
+                    <li>profile</li>
+                    <li>device</li>
+                    <ul>
+                        <li>8️⃣ App launches ✅</li>
+                    </ul>
+                </ul>
+            </p>
+        </section>
+
+        <section>
+            <h2>🧠 Common Errors Explained</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Error</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>No matching provisioning profiles</td>
+                        <td>Profile missing or wrong</td>
+                    </tr>
+                    <tr>
+                        <td>Code object is not signed</td>
+                        <td>codesign failed</td>
+                    </tr>
+                    <tr>
+                        <td>Entitlements mismatch</td>
+                        <td>App > Profile conflict</td>
+                    </tr>
+                    <tr>
+                        <td>A valid provisioning profile for this executable was not found</td>
+                        <td>Wrong cert/profile</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧩 Mental Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Tool</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Identity</td>
+                        <td>Certificate</td>
+                    </tr>
+                    <tr>
+                        <td>Permission</td>
+                        <td>Provisioning Profile</td>
+                    </tr>
+                    <tr>
+                        <td>Signature</td>
+                        <td>codesign</td>
+                    </tr>
+                    <tr>
+                        <td>Capabilities</td>
+                        <td>Entitlements</td>
+                    </tr>
+                    <tr>
+                        <td>Automation</td>
+                        <td>Xcode</td>
+                    </tr>
+                    <tr>
+                        <td>CI/CD</td>
+                        <td>xcodebuild</td>
+                    </tr>
+                    <tr>
+                        <td>Distribution</td>
+                        <td>notarytool / App Store</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Next (If You Want)</h2>
+            <p>I can:</p>
+            <ul>
+                <li>Explain code signing without Xcode (pure CLI)</li>
+                <li>Show Fastlane + GitHub Actions signing</li>
+                <li>Explain why CI breaks signing</li>
+                <li>Explain iOS vs macOS signing differences</li>
+                <li>Show real entitlements debugging</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

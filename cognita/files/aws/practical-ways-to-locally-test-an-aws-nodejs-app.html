@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>practical ways to locally test an AWS Node.js app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">practical ways to locally test an AWS Node.js app</h1>
+                    <p class="subtitle">Here are the practical ways to locally test an AWS Node.js app, depending on what you’re building (Lambda, API Gateway, Serverless, etc.).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ If you’re testing a plain Node.js app</h2>
+            <p>Nothing AWS-specific yet—just run it locally:</p>
+            <pre><code>
+node index.js
+            </code></pre>
+            <p>or with hot reload:</p>
+            <pre><code>
+npm install -g nodemon
+nodemon index.js
+            </code></pre>
+            <p>Good for business logic before wrapping it in Lambda.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Testing AWS Lambda locally (most common)</h2>
+            <p>✅ Option A: AWS SAM (recommended)</p>
+            <p>Best if you’re using Lambda + API Gateway.</p>
+            <p>Install</p>
+            <pre><code>
+brew install aws-sam-cli
+            </code></pre>
+
+            <p>Example Lambda handler</p>
+            <pre><code>
+exports.handler = async (event) => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Hello from Lambda" })
+    };
+};                  
+            </code></pre>
+
+            <p>Local invoke</p>
+            <pre><code>
+sam local invoke \
+  --event event.json
+            </code></pre>
+
+            <p>Local API Gateway</p>
+            <pre><code>
+sam local start-api
+            </code></pre>
+
+            <p>Then open:</p>
+            <pre><code>
+http://localhost:3000
+            </code></pre>
+            <p>💡 SAM uses Docker to mimic AWS runtime.</p>
+        </section>
+
+        <section>
+            <h2>✅ Option B: Serverless Framework</h2>
+            <p>Perfect if you’re already using serverless.yml.</p>
+            <p>Install</p>
+            <pre><code>
+npm install -g serverless
+npm install serverless-offline
+            </code></pre>
+
+            <p>serverless.yml</p>
+            <pre><code>
+plugins:
+  - serverless-offline
+            </code></pre>
+
+            <p>Run locally</p>
+            <pre><code>
+serverless offline
+            </code></pre>
+
+            <p>API runs at:</p>
+            <pre><code>
+http://localhost:3000
+            </code></pre>
+            <p>👉 This is very popular for Node.js + MongoDB + API Gateway setups.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Testing Lambda without any framework</h2>
+            <p>You can simulate Lambda calls manually:</p>
+            <pre><code>
+const { handler } = require("./index");
+
+handler({ key: "value" }, {}, console.log);
+            </code></pre>
+            <p>Great for unit tests.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Unit Testing (Jest / Mocha)</h2>
+            <p>Jest example</p>
+            <pre><code>
+                npm install --save-dev jest
+            </code></pre>
+
+            <pre><code>
+const { handler } = require("../index");
+
+test("Lambda returns 200", async () => {
+  const res = await handler({});
+  expect(res.statusCode).toBe(200);
+});
+            </code></pre>
+
+            <p>Run:</p>
+            <pre><code>
+npm test
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5️⃣ Mock AWS services locally (VERY useful)</h2>
+            <p>DynamoDB</p>
+            <pre><code>
+docker run -p 8000:8000 amazon/dynamodb-local
+            </code></pre>
+
+            <p>S3 / SNS / SQS</p>
+            <p>Use LocalStack:</p>
+            <pre><code>
+brew install localstack
+localstack start
+            </code></pre>
+
+            <p>Then point SDK to:</p>
+            <pre><code>
+http://localhost:4566
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6️⃣ Environment variables (like AWS)</h2>
+            <pre><code>
+export AWS_REGION=us-east-1
+export STAGE=dev
+            </code></pre>
+
+            <p>Or use .env:</p>
+            <pre><code>
+npm install dotenv
+            </code></pre>
+            <pre><code>
+require("dotenv").config();
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 Recommended combo (real-world)</h2>
+            <p>For serious development:</p>
+            <ul>
+                <li>Serverless Framework + serverless-offline</li>
+                <li>Jest for unit tests</li>
+                <li>LocalStack for AWS services</li>
+                <li>Docker installed</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

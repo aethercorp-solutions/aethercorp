@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CloudFormation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">CloudFormation</h1>
+                    <p class="subtitle">
+                        CloudFormation is AWS’s “infrastructure as code” service.
+                        <p>In simple terms:</p>
+                        <p>👉 You describe your cloud resources in a file, and AWS builds them for you automatically.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What it does</h2>
+            <p>Instead of clicking around the AWS console to create things like:</p>
+            <ul>
+                <li>EC2 instances</li>
+                <li>Lambda functions</li>
+                <li>API Gateway</li>
+                <li>S3 buckets</li>
+                <li>IAM roles</li>
+            </ul>
+
+            <p>You write a template (YAML or JSON) that says:</p>
+            <p>“I want this resource, with these settings, connected to those resources.”</p>
+        </section>
+
+        <section>
+            <h2>AWS CloudFormation then:</h2>
+            <ul>
+                <li>Creates everything in the right order</li>
+                <li>Updates resources safely</li>
+                <li>Deletes them cleanly if needed</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why people use it</h2>
+            <ul>
+                <li>Repeatable – same setup every time (no “works on my account” issues)</li>
+                <li>Version-controlled – templates live in Git</li>
+                <li>Automated – great for CI/CD</li>
+                <li>Rollback support – if something fails, AWS can undo changes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key concepts</h2>
+            <ul>
+                <li>Template – the YAML/JSON file you write</li>
+                <li>Stack – a running instance of that template</li>
+                <li>Change set – preview of what will change before applying</li>
+                <li>Resources – the AWS services you define</li>
+                <li>Parameters & Outputs – inputs and exported values</li>
+            </ul>
+            <p>Tiny example (YAML)</p>
+
+            <pre><code>
+Resources:
+  MyBucket:
+    Type: AWS::S3::Bucket
+            </code></pre>
+
+            <p>That’s it — deploy this, and AWS creates an S3 bucket.</p>
+            <p>How it compares (you’ll appreciate this)</p>
+            <ul>
+                <li>CloudFormation → native AWS, very powerful, verbose</li>
+                <li>SAM → CloudFormation + shortcuts for serverless (Lambda/API)</li>
+                <li>Serverless Framework → abstraction over CloudFormation</li>
+                <li>Terraform → multi-cloud alternative</li>
+            </ul>
+
+            <p>Since you’ve worked with AWS Lambda, API Gateway, Cognito, and Serverless Framework, CloudFormation is already under the hood of what you’re using.</p>
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Show how Serverless Framework maps to CloudFormation</li>
+                <li>Explain CloudFormation vs SAM vs Terraform</li>
+                <li>Walk through a real Lambda + API Gateway template</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Show how Serverless Framework maps to CloudFormation</h2>
+            <p>Perfect question — this is where the magic curtain gets pulled back 🪄</p>
+            <p>Since you’re already using Serverless Framework, here’s exactly how it maps to CloudFormation.</p>
+        </section>
+
+        <section>
+            <h2>Big picture</h2>
+            <p>Serverless Framework does NOT replace CloudFormation.</p>
+            <p>It GENERATES CloudFormation for you, then deploys it.</p>
+            <p>Think of it like this:</p>
+            <pre><code>
+serverless.yml
+      ↓
+Serverless Framework
+      ↓
+CloudFormation template (auto-generated)
+      ↓
+AWS creates/updates resources
+            </code></pre>
+
+            <p>When you run:</p>
+            <pre><code>
+serverless deploy
+            </code></pre>
+
+            <p>Serverless:</p>
+            <ol>
+                <li>Compiles serverless.yml</li>
+                <li>Generates a CloudFormation template</li>
+                <li>Creates or updates a CloudFormation stack</li>
+                <li>Uploads artifacts to S3</li>
+                <li>Calls CloudFormation to deploy</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Where the CloudFormation lives</h2>
+            <p>After deploy, check:</p>
+            <pre><code>
+.serverless/cloudformation-template-update-stack.json
+            </code></pre>
+            <p>That file is the CloudFormation template AWS actually used.</p>
+        </section>
+
+        <section>
+            <h2>1️⃣ Functions → Lambda + IAM + Logs</h2>
+            <p>serverless.yml</p>
+            <pre><code>
+functions:
+  hello:
+    handler: handler.hello
+            </code></pre>
+
+            <p>CloudFormation generated</p>
+            <pre><code>
+HelloLambdaFunction:
+  Type: AWS::Lambda::Function
+  Properties:
+    Handler: handler.hello
+    Runtime: nodejs18.x
+    Role:
+      Fn::GetAtt:
+        - IamRoleLambdaExecution
+        - Arn
+            </code></pre>
+
+            <p>Also auto-created:</p>
+            <ul>
+                <li>CloudWatch Log Group</li>
+                <li>Execution IAM Role</li>
+                <li>Permissions policies</li>
+            </ul>
+            <p>👉 One function = multiple CloudFormation resources</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Events → Event Source Mappings</h2>
+            <p>HTTP API example</p>
+            <pre><code>
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
+            </code></pre>
+
+            <p>CloudFormation generated</p>
+            <ul>
+                <li>AWS::ApiGateway::RestApi</li>
+                <li>AWS::ApiGateway::Method</li>
+                <li>AWS::ApiGateway::Resource</li>
+                <li>AWS::Lambda::Permission</li>
+            </ul>
+            <p>👉 Serverless wires API Gateway ↔ Lambda automatically.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Environment variables → Lambda properties</h2>
+            <p>serverless.yml</p>
+            <pre><code>
+provider:
+  environment:
+    TABLE_NAME: Users
+            </code></pre>
+            
+            <p>CloudFormation generated</p>
+            <pre><code>
+Environment:
+  Variables:
+    TABLE_NAME: Users
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4️⃣ IAM statements → IAM Role policies</h2>
+            <p>serverless.yml</p>
+            <pre><code>
+provider:
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: dynamodb:GetItem
+          Resource: "*"
+            </code></pre>
+
+            <p>CloudFormation generated</p>
+            <pre><code>
+IamRoleLambdaExecution:
+  Type: AWS::IAM::Role
+  Properties:
+    Policies:
+      - PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Action: dynamodb:GetItem
+              Resource: "*"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5️⃣ Custom resources → Raw CloudFormation</h2>
+            <p>This is where you drop down to pure CloudFormation.</p>
+            <p>serverless.yml</p>
+            <pre><code>
+resources:
+  Resources:
+    MyTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Users
+            </code></pre>
+
+            <p>Serverless:</p>
+            <ul>
+                <li>Injects this directly into the CloudFormation template</li>
+                <li>No abstraction — 1:1 mapping</li>
+            </ul>
+            <p>👉 This is how you handle anything Serverless doesn’t support</p>
+        </section>
+
+        <section>
+            <h2>6️⃣ Stages → CloudFormation stacks</h2>
+            <pre><code>
+serverless deploy --stage prod
+            </code></pre>
+
+            <p>Creates a stack like:</p>
+            <pre><code>
+my-service-prod
+            </code></pre>
+
+            <p>Each stage = separate CloudFormation stack</p>
+            <ul>
+                <li>Separate resources</li>
+                <li>Separate env vars</li>
+                <li>Separate IAM roles</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7️⃣ Rollbacks & failures</h2>
+            <p>Because CloudFormation is underneath:</p>
+            <ul>
+                <li>Failed deploy → automatic rollback</li>
+                <li>Partial resources cleaned up</li>
+                <li>Stack stays consistent</li>
+            </ul>
+            <p>Serverless just reports CloudFormation’s status.</p>
+        </section>
+
+        <section>
+            <h2>Mental model (important)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Serverless</th>
+                        <th>CloudFormation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>serverless.yml</td>
+                        <td>Template</td>
+                    </tr>
+                    <tr>
+                        <td>Service</td>
+                        <td>Stack</td>
+                    </tr>
+                    <tr>
+                        <td>Function</td>
+                        <td>Lambda + Role + Logs</td>
+                    </tr>
+                    <tr>
+                        <td>Event</td>
+                        <td>API / Trigger resources</td>
+                    </tr>
+                    <tr>
+                        <td>Stage</td>
+                        <td>Stack name suffix</td>
+                    </tr>
+                    <tr>
+                        <td>resources:</td>
+                        <td>Raw CF</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>When to think “CloudFormation” instead of “Serverless”</h2>
+            <p>You should drop to CF when:</p>
+            <ul>
+                <li>You need fine-grained IAM</li>
+                <li>You need VPC, custom networking</li>
+                <li>You need unsupported AWS services</li>
+                <li>You want cross-stack exports</li>
+            </ul>
+            <p>Serverless is convenience — CloudFormation is the engine.</p>
+        </section>
+
+        <section>
+            <h2>Pro tip (advanced, your level)</h2>
+            <p>You can reference Serverless-generated resources inside CloudFormation:</p>
+            <pre><code>
+Resources:
+  MyPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+        - Ref: IamRoleLambdaExecution
+            </code></pre>
+
+            <p>That role is created by Serverless.</p>
+            <p>If you want next:</p>
+            <ul>
+                <li>🔍 Walk through a real generated CloudFormation file</li>
+                <li>⚖️ Serverless vs SAM vs raw CloudFormation</li>
+                <li>🧠 Best practices for large serverless systems</li>
+                <li>🧪 Debugging failed CloudFormation stacks</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

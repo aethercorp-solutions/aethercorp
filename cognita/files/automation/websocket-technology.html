@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>WebSocket</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">WebSocket</h1>
+                    <p class="subtitle">
+                        WebSocket is a technology that lets a browser (or app) and a server talk to each other instantly, in both directions, over one persistent connection.
+                        <p>Let’s break it down simply, then go a bit deeper.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. The basic idea (very simple)</h2>
+            <p>Imagine a phone call instead of sending letters.</p>
+            <ul>
+                <li>
+                    HTTP (normal web) → sending letters
+                    <ul>
+                        <li>Client asks: “Any update?”</li>
+                        <li>Server replies: “No.”</li>
+                        <li>Client asks again… and again…</li>
+                    </ul>
+                </li>
+                <li>
+                    WebSocket → phone call
+                    <ul>
+                        <li>Client and server stay connected</li>
+                        <li>Either side can talk any time</li>
+                        <li>Messages arrive instantly</li>
+                    </ul>
+                </li>
+                <p>That’s WebSocket.</p>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Why HTTP is not enough</h2>
+            <p>With normal HTTP:</p>
+            <ul>
+                <li>The client always starts the conversation</li>
+                <li>The server cannot push data by itself</li>
+                <li>
+                    For real-time apps, clients must keep asking:
+                    <ul>
+                        <li>“New message?”</li>
+                        <li>“New data?”</li>
+                        <li>“New update?”</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>This is inefficient and slow.</p>
+        </section>
+
+        <section>
+            <h2>3. What WebSocket fixes</h2>
+            <p>WebSocket gives you:</p>
+            <p>✅ One long-lived connection</p>
+            <p>✅ Two-way communication</p>
+            <p>✅ Real-time data</p>
+            <p>✅ Low latency (very fast)</p>
+
+            <p>Once connected:</p>
+            <ul>
+                <li>Client → Server can send data anytime</li>
+                <li>Server → Client can send data anytime</li>
+            </ul>
+            <p>No repeated requests.</p>
+        </section>
+
+        <section>
+            <h2>4. How WebSocket works (step by step)</h2>
+            <p>Step 1: Starts as HTTP</p>
+            <p>The browser sends a normal HTTP request:</p>
+            <pre><code>
+GET /chat HTTP/1.1
+Upgrade: websocket
+            </code></pre>
+            <p>This says:</p>
+            <p>“Hey server, can we upgrade this connection to WebSocket?”</p>
+
+            <p>Step 2: Server agrees</p>
+            <p>Server responds:</p>
+            <pre><code>
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+            </code></pre>
+            <p>Now the connection is no longer HTTP.</p>
+
+            <p>Step 3: Persistent connection</p>
+            <ul>
+                <li>The connection stays open</li>
+                <li>Data flows back and forth as messages, not requests</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. How data is sent</h2>
+            <p>Instead of HTTP requests/responses:</p>
+            <ul>
+                <li>Data is sent as frames</li>
+                <li>Frames are small and efficient</li>
+                <li>
+                    Messages can be:
+                    <ul>
+                        <li>Text (JSON, strings)</li>
+                        <li>Binary (audio, video, game data)</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+{ "type": "message", "text": "Hello!" }
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Simple real-world example</h2>
+            <p>Chat app</p>
+            <p>Without WebSocket:</p>
+            <ul>
+                <li>
+                    App asks server every second:
+                    <ul>
+                        <li>“Any new messages?”</li>
+                    </ul>
+                </li>
+                <li>Wasteful and slow</li>
+            </ul>
+            <p>With WebSocket:</p>
+            <ul>
+                <li>
+                    Server instantly pushes:
+                    <ul>
+                        <li>“New message arrived!”</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Common use cases</h2>
+            <p>WebSocket is used when you need live updates:</p>
+            <ul>
+                <li>💬 Chat applications</li>
+                <li>📈 Live stock prices</li>
+                <li>🎮 Multiplayer games</li>
+                <li>🚕 Ride tracking (Uber-style)</li>
+                <li>📊 Dashboards (real-time metrics)</li>
+                <li>🔔 Notifications</li>
+                <li>🧠 AI streaming responses</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. WebSocket vs HTTP vs SSE (simple table)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>HTTP</th>
+                        <th>WebSocket</th>
+                        <th>SSE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Persistent connection</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Server → Client push</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Client → Server anytime</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Real-time</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>⚠️ limited</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>9. WebSocket in React Native / Web (simple code)</h2>
+            <p>Client</p>
+            <pre><code>
+const socket = new WebSocket("wss://example.com/socket");
+
+socket.onopen = () => {
+  socket.send("Hello server");
+};
+
+socket.onmessage = (event) => {
+  console.log("Received:", event.data);
+};
+            </code></pre>
+
+            <p>Server (Node.js)</p>
+            <pre><code>
+import WebSocket from "ws";
+
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on("connection", (ws) => {
+  ws.on("message", (msg) => {
+    ws.send(`Echo: ${msg}`);
+  });
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Important things to know</h2>
+            <p>⚠️ WebSocket connections:</p>
+            <ul>
+                <li>Stay open → use memory</li>
+                <li>Need reconnection logic</li>
+                <li>Can drop on network changes</li>
+                <li>Need authentication handling</li>
+            </ul>
+            <p>That’s why many apps combine:</p>
+            <ul>
+                <li>HTTP → login, fetch data</li>
+                <li>WebSocket → live updates</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>11. One-sentence summary</h2>
+            <p>WebSocket is a persistent, two-way communication channel that lets clients and servers exchange data instantly without repeatedly making requests.</p>
+            <p>If you want, I can also explain:</p>
+            <ul>
+                <li>WebSocket vs REST in real apps</li>
+                <li>WebSocket in AWS / Lambda</li>
+                <li>Why React Native sometimes uses a local WebSocket server</li>
+                <li>How WebSocket handles scaling</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

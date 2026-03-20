@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What a subnet is</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What a subnet is</h1>
+                    <p class="subtitle">I’ll explain subnets from the ground up, then tie it to AWS, since I know you’ve been deep in VPC / serverless land.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What a subnet is (plain English)</h2>
+            <p>A subnet (sub-network) is a smaller network carved out of a bigger network.</p>
+            <p>Think of a city 🏙️</p>
+            <ul>
+                <li>VPC = the whole city</li>
+                <li>Subnet = a neighborhood</li>
+                <li>IP address = a house address</li>
+            </ul>
+            <p>You divide the city into neighborhoods so you can:</p>
+            <ul>
+                <li>organize traffic</li>
+                <li>control access</li>
+                <li>reduce chaos</li>
+                <li>apply different rules</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Why subnets exist (the real reasons)</h2>
+            <p>Subnets solve 4 big problems:</p>
+            <p>1️⃣ IP address management</p>
+            <p>Instead of one giant pool of IPs, you divide them:</p>
+            <ul>
+                <li>Frontend servers</li>
+                <li>Backend servers</li>
+                <li>Databases</li>
+                <li>Internal services</li>
+            </ul>
+            <p>This avoids IP collisions and keeps things clean.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Security boundaries</h2>
+            <p>You can apply different rules per subnet:</p>
+            <ul>
+                <li>Public-facing things</li>
+                <li>Private internal things</li>
+                <li>Highly restricted data stores</li>
+            </ul>
+            <p>Security teams love subnets ❤️</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Traffic control & performance</h2>
+            <p>Broadcast traffic stays inside the subnet.</p>
+            <p>Less noise → better performance.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ High availability & fault isolation</h2>
+            <p>If one subnet (or zone) goes down, others stay alive.</p>
+        </section>
+
+        <section>
+            <h2>3. IP addressing basics (CIDR)</h2>
+            <p>Subnets are defined using CIDR notation:</p>
+            <pre><code>
+10.0.0.0/16
+            </code></pre>
+            <p>Breakdown:</p>
+            <ul>
+                <li>10.0.0.0 → network base address</li>
+                <li>/16 → how many bits are for the network</li>
+            </ul>
+            <p>What /16 means</p>
+            <ul>
+                <li>Total IPs: 2^(32-16) = 65,536</li>
+                <li>Range:</li>
+            </ul>
+            <pre><code>
+10.0.0.0 – 10.0.255.255
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Subnetting a network (real example)</h2>
+            <p>Start with a VPC</p>
+            <pre><code>
+VPC: 10.0.0.0/16
+            </code></pre>
+            <p>You split it into subnets:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subnet</th>
+                        <th>CIDR</th>
+                        <th>IP Range</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Subnet A</td>
+                        <td>10.0.1.0/24</td>
+                        <td>256 IPs</td>
+                    </tr>
+                    <tr>
+                        <td>Subnet B</td>
+                        <td>10.0.2.0/24</td>
+                        <td>256 IPs</td>
+                    </tr>
+                    <tr>
+                        <td>Subnet C</td>
+                        <td>10.0.3.0/24</td>
+                        <td>256 IPs</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Each /24:</p>
+            <ul>
+                <li>256 total IPs</li>
+                <li>~251 usable (some are reserved)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Public vs Private Subnets (VERY important)</h2>
+            <p>🚨 Myth</p>
+            <p>“Public subnet means publicly accessible”</p>
+            <p>❌ Wrong.</p>
+            <p>✅ Truth</p>
+            <p>A subnet is public ONLY if:</p>
+            <ul>
+                <li>It has a route to an Internet Gateway (IGW)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Public Subnet</h2>
+            <ul>
+                <li>
+                    Route table includes:
+                    <pre><code>
+0.0.0.0/0 → Internet Gateway
+                    </code></pre>
+                </li>
+                <li>
+                    Used for:
+                    <ul>
+                        <li>Load balancers</li>
+                        <li>Bastion hosts</li>
+                        <li>Public APIs</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Private Subnet</h2>
+            <ul>
+                <li>NO route to IGW</li>
+                <li>
+                    Often routes to:
+                    <pre><code>
+0.0.0.0/0 → NAT Gateway
+                    </code></pre>
+                </li>
+                <li>
+                    Used for:
+                    <ul>
+                        <li>Databases</li>
+                        <li>Backend services</li>
+                        <li>Lambdas in VPC</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. AWS-specific subnet rules (crucial)</h2>
+            <p>1️⃣ Subnet = ONE Availability Zone</p>
+            <p>You cannot span a subnet across AZs.</p>
+            <p>Example:</p>
+            <pre><code>
+Subnet 1 → ap-southeast-1a
+Subnet 2 → ap-southeast-1b
+            </code></pre>
+            <p>This is how AWS achieves fault tolerance.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Reserved IPs in AWS</h2>
+            <p>AWS reserves 5 IPs per subnet:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Address</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>.0</td>
+                        <td>Network address</td>
+                    </tr>
+                    <tr>
+                        <td>.1</td>
+                        <td>VPC router</td>
+                    </tr>
+                    <tr>
+                        <td>.2</td>
+                        <td>DNS</td>
+                    </tr>
+                    <tr>
+                        <td>.3</td>
+                        <td>Future use</td>
+                    </tr>
+                    <tr>
+                        <td>.255</td>
+                        <td>Broadcast</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>So /24 → 256 − 5 = 251 usable IPs</p>
+        </section>
+
+        <section>
+            <h2>7. Subnets + Route Tables (who can talk to whom)</h2>
+            <p>Subnets don’t route traffic by themselves.</p>
+            <p>They use Route Tables.</p>
+            <p>Example:</p>
+            <pre><code>
+Subnet A → Route Table A
+Subnet B → Route Table B
+            </code></pre>
+
+            <p>Routes decide:</p>
+            <ul>
+                <li>internet access</li>
+                <li>VPC-to-VPC</li>
+                <li>on-prem connections</li>
+                <li>NAT access</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Subnets + Security (layers matter)</h2>
+            <p>Layer 1: Network ACL (stateless)</p>
+            <ul>
+                <li>Attached to subnets</li>
+                <li>Allows / denies IP ranges</li>
+                <li>Inbound + outbound rules</li>
+            </ul>
+            <p>Layer 2: Security Groups (stateful)</p>
+            <ul>
+                <li>Attached to ENIs / EC2 / Lambda</li>
+                <li>Instance-level protection</li>
+            </ul>
+            <p>Both apply.</p>
+            <p>Traffic must pass NACL → SG.</p>
+        </section>
+
+        <section>
+            <h2>9. Subnets in serverless (Lambda, your world 😄)</h2>
+            <p>Since you’ve worked with:</p>
+            <ul>
+                <li>Lambda</li>
+                <li>API Gateway</li>
+                <li>MongoDB</li>
+                <li>Auth flows</li>
+            </ul>
+            <p>Here’s the key bit:</p>
+            <p>Lambda in a VPC</p>
+            <p>When you attach a Lambda to subnets:</p>
+            <ul>
+                <li>Lambda lives inside those subnets</li>
+                <li>It gets ENIs from the subnet IP pool</li>
+            </ul>
+            <p>👉 If the subnet runs out of IPs:</p>
+            <ul>
+                <li>Lambda fails to scale</li>
+            </ul>
+            <p>This is why people recommend:</p>
+            <ul>
+                <li>/24 or larger</li>
+                <li>multiple subnets across AZs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Common subnet design pattern (best practice)</h2>
+            <p>Typical AWS VPC layout</p>
+            <pre><code>
+VPC 10.0.0.0/16
+
+Public Subnets
+- 10.0.1.0/24 (AZ-a)
+- 10.0.2.0/24 (AZ-b)
+
+Private App Subnets
+- 10.0.11.0/24 (AZ-a)
+- 10.0.12.0/24 (AZ-b)
+
+Private DB Subnets
+- 10.0.21.0/24 (AZ-a)
+- 10.0.22.0/24 (AZ-b)
+            </code></pre>
+            <p>Each layer:</p>
+            <ul>
+                <li>isolated</li>
+                <li>scalable</li>
+                <li>secure</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>11. Mental model (remember this)</h2>
+            <p>A subnet is just an IP range + AZ + route table + network rules</p>
+            <p>That’s it.</p>
+            <p>Everything else (EC2, Lambda, RDS) just plugs into a subnet.</p>
+            <p>If you want, next we can:</p>
+            <ul>
+                <li>design a real VPC for your serverless + MongoDB setup</li>
+                <li>explain CIDR math visually</li>
+                <li>deep dive into why Lambdas “lose internet” in private subnets</li>
+                <li>or compare AWS subnets vs on-prem networking</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

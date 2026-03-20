@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GitHub Actions</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">GitHub Actions</h1>
+                    <p class="subtitle">Here’s a clear, practical GitHub Actions tutorial, from zero to real-world usage. I’ll keep it structured and hands-on.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is GitHub Actions?</h2>
+            <p>GitHub Actions is GitHub’s built-in CI/CD system.</p>
+            <p>It lets you:</p>
+            <ul>
+                <li>Automatically run tests</li>
+                <li>Build your app</li>
+                <li>Deploy to servers or cloud</li>
+                <li>
+                    Trigger workflows on events like:
+                    <ul>
+                        <li>push</li>
+                        <li>pull_request</li>
+                        <li>release</li>
+                        <li>schedule (cron)</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Everything is defined using YAML files inside your repo.</p>
+        </section>
+
+        <section>
+            <h2>2. Basic Concepts (Very Important)</h2>
+            <p>1️⃣ Workflow</p>
+            <ul>
+                <li>An automated process</li>
+                <li>Defined in .github/workflows/*.yml</li>
+            </ul>
+
+            <p>2️⃣ Event</p>
+            <ul>
+                <li>
+                    What triggers the workflow
+                    <p>Examples:</p>
+                    <pre><code>
+on: push
+on: pull_request
+on: [push, pull_request]
+                    </code></pre>
+                </li>
+            </ul>
+
+            <p>3️⃣ Job</p>
+            <ul>
+                <li>A set of steps that run on a runner</li>
+                <li>Jobs can run in parallel or sequentially</li>
+            </ul>
+
+            <p>4️⃣ Step</p>
+            <ul>
+                <li>Individual commands or actions</li>
+            </ul>
+
+            <p>5️⃣ Runner</p>
+            <ul>
+                <li>
+                    The machine running the job
+                    <p>Examples:</p>
+                </li>
+                <li>ubuntu-latest</li>
+                <li>macos-latest</li>
+                <li>windows-latest</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Folder Structure</h2>
+            <p>Inside your repo:</p>
+            <pre><code>
+.github/
+ └── workflows/
+      └── ci.yml
+            </code></pre>
+            <p>⚠️ The folder must be named .github/workflows</p>
+        </section>
+
+        <section>
+            <h2>4. Your First GitHub Action (Hello World)</h2>
+            <p>Create .github/workflows/hello.yml</p>
+            <pre><code>
+name: Hello World Workflow
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print message
+        run: echo "Hello from GitHub Actions!"
+            </code></pre>
+            <p>What happens?</p>
+            <ul>
+                <li>Every time you push to main</li>
+                <li>GitHub runs this workflow</li>
+                <li>You’ll see logs in GitHub → Actions tab</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Using Actions (Prebuilt Steps)</h2>
+            <p>GitHub provides reusable actions.</p>
+            <p>Checkout your repository</p>
+            <pre><code>
+- name: Checkout code
+  uses: actions/checkout@v4
+            </code></pre>
+            <p>This is required for almost every workflow.</p>
+        </section>
+
+        <section>
+            <h2>6. Node.js Project Example (CI)</h2>
+            <p>Install dependencies + run tests</p>
+            <pre><code>
+name: Node CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+            </code></pre>
+            <p>✔ Common for React, Node, Next.js, Lambda</p>
+        </section>
+
+        <section>
+            <h2>7. Environment Variables & Secrets</h2>
+            <p>GitHub Secrets</p>
+            <p>Go to:</p>
+            <pre><code>
+Repo → Settings → Secrets and variables → Actions
+            </code></pre>
+
+            <p>Add:</p>
+            <pre><code>
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+            </code></pre>
+
+            <p>Use secrets in workflow</p>
+            <pre><code>
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            </code></pre>
+            <p>⚠️ Secrets are masked in logs.</p>
+        </section>
+
+        <section>
+            <h2>8. Deploy Example (AWS / Serverless)</h2>
+            <pre><code>
+name: Deploy API
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install -g serverless
+      - run: npm install
+
+      - name: Deploy
+        run: serverless deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            </code></pre>
+
+            <p>Perfect for:</p>
+            <ul>
+                <li>AWS Lambda</li>
+                <li>API Gateway</li>
+                <li>Serverless Framework</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Multiple Jobs & Dependencies</h2>
+            <pre><code>
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Running tests"
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploying..."
+            </code></pre>
+            <p>✔ deploy runs only if test succeeds</p>
+        </section>
+
+        <section>
+            <h2>10. Matrix Builds (Multiple Versions)</h2>
+            <pre><code>
+strategy:
+  matrix:
+    node: [18, 20]
+
+steps:
+  - uses: actions/setup-node@v4
+    with:
+      node-version: ${{ matrix.node }}
+            </code></pre>
+            <p>✔ Test on multiple Node versions automatically</p>
+        </section>
+
+        <section>
+            <h2>11. Cron (Scheduled Jobs)</h2>
+            <pre><code>
+on:
+  schedule:
+    - cron: "0 0 * * *"
+            </code></pre>
+            <p>Runs daily at midnight UTC</p>
+        </section>
+
+        <section>
+            <h2>12. Debugging Tips</h2>
+            <ul>
+                <li>Check Actions tab</li>
+                <li>Expand step logs</li>
+                <li>
+                    Add debug prints:
+                    <pre><code>
+- run: env
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>13. Common Mistakes</h2>
+            <p>❌ Wrong folder name</p>
+            <p>❌ YAML indentation errors</p>
+            <p>❌ Forgetting actions/checkout</p>
+            <p>❌ Secrets not set</p>
+            <p>❌ Wrong branch name (main vs master)</p>
+        </section>
+
+        <section>
+            <h2>14. When to Use GitHub Actions</h2>
+            <p>✅ CI (tests, linting)</p>
+            <p>✅ CD (auto deploy)</p>
+            <p>✅ Mobile builds (iOS/Android)</p>
+            <p>✅ Scheduled jobs</p>
+            <p>✅ Infrastructure automation</p>
+        </section>
+
+        <section>
+            <h2>15. Want a Custom Example?</h2>
+            <p>I can give you:</p>
+            <ul>
+                <li>✅ React / Next.js</li>
+                <li>✅ Node + MongoDB</li>
+                <li>✅ AWS Lambda / Serverless</li>
+                <li>✅ React Native (Android/iOS)</li>
+                <li>✅ Docker builds</li>
+                <li>✅ Firebase / Vercel / AWS deploy</li>
+            </ul>
+            <p>Just tell me what project you’re working on and I’ll tailor the workflow.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

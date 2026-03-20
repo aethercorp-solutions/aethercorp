@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>YAML</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">YAML</h1>
+                    <p class="subtitle">
+                        YAML stands for “YAML Ain’t Markup Language.”
+                        <p>It’s a human-readable data format commonly used for configuration files.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>You’ll see it a lot in:</h2>
+            <ul>
+                <li>DevOps (Docker, Kubernetes, GitHub Actions)</li>
+                <li>Backend configs (Serverless Framework, CI/CD)</li>
+                <li>App settings and environment configs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Basic rules</h2>
+            <ul>
+                <li>Uses indentation (spaces, not tabs) to show structure</li>
+                <li>Key–value pairs</li>
+                <li>Very readable compared to JSON</li>
+            </ul>
+            <p>Simple example</p>
+            <pre><code>
+app:
+  name: TryCastanet
+  version: 1.0.0
+  debug: true
+
+server:
+  port: 3000
+  host: localhost
+            </code></pre>
+
+            <p>Lists</p>
+            <pre><code>
+languages:
+  - JavaScript
+  - Python
+  - Go
+            </code></pre>
+
+            <p>Objects inside lists</p>
+            <pre><code>
+users:
+  - name: Paul
+    role: admin
+  - name: Anna
+    role: editor
+            </code></pre>
+
+            <p>YAML vs JSON (quick vibe)</p>
+            <ul>
+                <li>YAML → more readable, less symbols</li>
+                <li>JSON → stricter, better for APIs</li>
+                <li>YAML → great for configs</li>
+                <li>JSON → great for data exchange</li>
+            </ul>
+
+            <p>If you want, tell me what you’re using YAML for (Serverless, Docker, Kubernetes, GitHub Actions, etc.) and I’ll tailor an example exactly for that. 🚀</p>
+        </section>
+
+        <section>
+            <h2>Gotcha — Serverless Framework + YAML 🔥</h2>
+            <p>This is the classic combo.</p>
+            <p>Here’s a clean, practical serverless.yml you’d actually use in production.</p>
+
+            <p>Basic serverless.yml structure</p>
+            <pre><code>
+service: trycastanet-api
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-1
+  stage: ${opt:stage, 'dev'}
+  timeout: 30
+  environment:
+    STAGE: ${self:provider.stage}
+    MONGODB_URI: ${env:MONGODB_URI}
+
+functions:
+  hello:
+    handler: src/handlers/hello.handler
+    events:
+      - httpApi:
+          path: /hello
+          method: get
+            </code></pre>
+
+            <p>Multiple functions (real-world style)</p>
+            <pre><code>
+functions:
+  createUser:
+    handler: src/users/create.handler
+    events:
+      - httpApi:
+          path: /users
+          method: post
+
+  getUsers:
+    handler: src/users/list.handler
+    events:
+      - httpApi:
+          path: /users
+          method: get
+            </code></pre>
+
+            <p>Environment-specific config (dev / prod)</p>
+            <pre><code>
+custom:
+  mongodb:
+    dev: mongodb://localhost:27017/devdb
+    prod: ${ssm:/trycastanet/prod/mongodb}
+
+provider:
+  environment:
+    MONGODB_URI: ${self:custom.mongodb.${self:provider.stage}}
+            </code></pre>
+
+            <p>IAM permissions (Lambda → AWS services)</p>
+            <pre><code>
+provider:
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+          Resource: "*"
+            </code></pre>
+
+            <p>Plugins (you’ve probably used these)</p>
+            <pre><code>
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+            </code></pre>
+
+            <p>Packaging (important for performance)</p>
+            <pre><code>
+package:
+  individually: true
+  patterns:
+    - '!node_modules/**'
+    - 'src/**'
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Pro tips (from painful experience 😅)</h2>
+            <ul>
+                <li>Indentation matters — 2 spaces only</li>
+                <li>Never use tabs</li>
+                <li>Use ${env:VAR} for secrets</li>
+                <li>Use ${ssm:/path} for prod secrets</li>
+                <li>Keep handlers small → faster cold starts</li>
+            </ul>
+            <p>Since you’ve worked with Serverless + Lambda + MongoDB + JWT, I can:</p>
+            <ul>
+                <li>Review your current serverless.yml</li>
+                <li>Optimize for cold starts</li>
+                <li>Fix IAM or deployment issues</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Ah nice — GitHub Actions + YAML ⚙️</h2>
+            <p>This is where Serverless + CI/CD really starts to feel pro.</p>
+            <p>Below is a clean, battle-tested GitHub Actions workflow for deploying a Serverless Framework app to AWS.</p>
+        </section>
+
+        <section>
+            <h2>Basic workflow: deploy Serverless on push</h2>
+            <p>.github/workflows/deploy.yml</p>
+            <pre><code>
+name: Deploy Serverless API
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy to AWS (prod)
+        run: npx serverless deploy --stage prod
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-southeast-1
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Deploy dev vs prod automatically</h2>
+            <pre><code>
+on:
+  push:
+    branches:
+      - main
+      - develop
+            </code></pre>
+
+            <pre><code>
+- name: Set stage
+  run: |
+    if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+      echo "STAGE=prod" >> $GITHUB_ENV
+    else
+      echo "STAGE=dev" >> $GITHUB_ENV
+    fi
+
+- name: Deploy
+  run: npx serverless deploy --stage $STAGE
+            </code></pre>
+
+            <p>Sure — let’s break this down in plain English 👇</p>
+            <p>This is a GitHub Actions workflow snippet that decides which environment (stage) to deploy to, and then runs a Serverless Framework deployment.</p>
+            <p>What’s happening here</p>
+            <ul>
+                <li>GITHUB_REF is a built-in GitHub Actions variable.</li>
+                <li>It contains the branch or tag that triggered the workflow.</li>
+            </ul>
+            <p>Examples:</p>
+            <ul>
+                <li>refs/heads/main → push to main branch</li>
+                <li>refs/heads/dev → push to dev branch</li>
+                <li>refs/pull/123/merge → pull request</li>
+            </ul>
+
+            <p>The logic</p>
+            <ul>
+                <li>
+                    ✅ If the workflow runs from main branch
+                    <p>→ set STAGE=prod</p>
+                </li>
+                <li>
+                    ❌ If it runs from any other branch
+                    <p>→ set STAGE=dev</p>
+                </li>
+            </ul>
+
+            <p>Why >> $GITHUB_ENV?</p>
+            <ul>
+                <li>Writing to $GITHUB_ENV makes STAGE available to all following steps in the job.</li>
+                <li>After this step, you can safely use $STAGE.</li>
+            </ul>
+
+            <p>2️⃣ “Deploy” step</p>
+            <pre><code>
+- name: Deploy
+  run: npx serverless deploy --stage $STAGE
+            </code></pre>
+
+            <p>What this does</p>
+            <ul>
+                <li>Runs Serverless Framework via npx</li>
+                <li>Deploys your service using the stage decided above</li>
+            </ul>
+            <p>So effectively:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Branch</th>
+                        <th>Command run</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>main</td>
+                        <td>serverless deploy --stage prod</td>
+                    </tr>
+                    <tr>
+                        <td>any other branch</td>
+                        <td>serverless deploy --stage dev</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>3️⃣ Why this is useful</p>
+            <p>This pattern lets you:</p>
+            <ul>
+                <li>🚀 Auto-deploy production only from main</li>
+                <li>🧪 Deploy dev/staging from feature branches</li>
+                <li>Keep one workflow instead of separate prod/dev pipelines</li>
+            </ul>
+            <p>Very common in AWS Lambda + Serverless setups 👍</p>
+
+            <p>4️⃣ How this maps to serverless.yml</p>
+            <p>Typically you’ll see something like:</p>
+            <pre><code>
+provider:
+  stage: ${opt:stage, 'dev'}
+            </code></pre>
+            <p>Then resources, env vars, and names change automatically:</p>
+            <ul>
+                <li>my-api-dev</li>
+                <li>my-api-prod</li>
+                <li>different DynamoDB tables</li>
+                <li>different environment variables</li>
+            </ul>
+            <p>If you want, I can also:</p>
+            <ul>
+                <li>hard-lock prod deploys to protected branches</li>
+                <li>map more stages (staging, qa</li>
+                <li>or show how to use this with Serverless Framework + AWS IAM roles</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Use AWS OIDC (recommended — no AWS keys 🔐)</h2>
+            <p>This is the modern + secure way.</p>
+            <pre><code>
+permissions:
+  id-token: write
+  contents: read
+            </code></pre>
+
+            <pre><code>
+- name: Configure AWS credentials
+  uses: aws-actions/configure-aws-credentials@v4
+  with:
+    role-to-assume: arn:aws:iam::123456789012:role/github-actions-serverless
+    aws-region: ap-southeast-1
+            </code></pre>
+            <p>No secrets. No leaked keys. Chef’s kiss 👌</p>
+
+            <p>Cache node_modules (faster builds)</p>
+            <pre><code>
+- uses: actions/cache@v4
+  with:
+    path: ~/.npm
+    key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Full minimal example (copy-paste ready)</h2>
+            <pre><code>
+name: Serverless CI/CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - run: npm ci
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/github-actions-serverless
+          aws-region: ap-southeast-1
+
+      - run: npx serverless deploy --stage prod
+            </code></pre>
+
+            <p>Nice, this is a clean, real-world GitHub Actions deploy job 👍</p>
+            <p>Let’s walk through it line by line and also talk about what actually happens when this runs.</p>
+            <p>High-level: what this workflow does</p>
+            <p>This job:</p>
+            <ul>
+              <li>Runs on GitHub-hosted Ubuntu</li>
+              <li>Checks out your repo</li>
+              <li>Sets up Node.js 18</li>
+              <li>Installs dependencies</li>
+              <li>Deploys your Serverless Framework app to AWS (prod stage)</li>
+              <li>Uses GitHub Secrets for AWS + MongoDB credentials</li>
+            </ul>
+            <p>In short:</p>
+            <p>👉 Every time this workflow runs, it deploys to AWS production.</p>
+
+            <p>Breakdown section by section</p>
+            <p>jobs:</p>
+            <pre><code>
+jobs:
+  deploy:
+            </code></pre>
+            <ul>
+              <li>Defines a job named deploy</li>
+              <li>A workflow can have multiple jobs; this one has just one</li>
+            </ul>
+
+            <p>runs-on</p>
+            <pre><code>
+runs-on: ubuntu-latest
+            </code></pre>
+
+            <ul>
+              <li>GitHub spins up a fresh Ubuntu VM</li>
+              <li>Nothing is cached by default (unless you add caching)</li>
+            </ul>
+
+            <p>steps:</p>
+            <p>Each step runs sequentially inside that VM.</p>
+            <p>1️⃣ Checkout repo</p>
+            <pre><code>
+- name: Checkout repo
+  uses: actions/checkout@v4
+            </code></pre>
+
+            <ul>
+              <li>Pulls your GitHub repository into the runner</li>
+              <li>Without this, the VM would be empty</li>
+              <li>Required for npm ci and serverless deploy</li>
+            </ul>
+
+            <p>2️⃣ Setup Node.js</p>
+            <pre><code>
+- name: Setup Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version: 18
+            </code></pre>
+
+            <ul>
+              <li>Installs Node.js v18</li>
+              <li>
+                Ensures:
+                <ul>
+                  <li>Same Node version every deploy</li>
+                  <li>Matches your local / Lambda runtime</li>
+                </ul>
+              </li>
+            </ul>
+            <p>💡 Good choice — Node 18 is stable and supported by AWS Lambda.</p>
+
+            <p>3️⃣ Install dependencies</p>
+            <pre><code>
+- name: Install dependencies
+  run: npm ci
+            </code></pre>
+
+            <ul>
+              <li>Installs dependencies from package-lock.json</li>
+              <li>Faster and more deterministic than npm install</li>
+              <li>Fails if package-lock.json is out of sync (good for CI)</li>
+            </ul>
+            <p>👉 This ensures reproducible builds</p>
+
+            <p>4️⃣ Deploy to AWS (prod)</p>
+            <pre><code>
+- name: Deploy to AWS (prod)
+  run: npx serverless deploy --stage prod
+            </code></pre>
+
+            <ul>
+              <li>Runs the Serverless Framework without global install</li>
+              <li>
+                --stage prod:
+                <ul>
+                  <li>Uses prod stage in serverless.yml</li>
+                  <li>
+                    Typically maps to:
+                    <ul>
+                      <li>prod Lambda functions</li>
+                      <li>prod API Gateway</li>
+                      <li>prod env vars</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <p>This command:</p>
+            <ul>
+              <li>Packages your Lambda</li>
+              <li>Uploads it to S3</li>
+              <li>Creates/updates CloudFormation</li>
+              <li>Deploys API Gateway + Lambdas</li>
+            </ul>
+
+            <p>🔐 Environment variables (VERY important)</p>
+            <pre><code>
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ap-southeast-1
+  MONGODB_URI: ${{ secrets.MONGODB_URI }}
+            </code></pre>
+            <p>These are injected only for this step.</p>
+            <p>AWS credentials</p>
+            <ul>
+              <li>
+                Used by:
+                <ul>
+                  <li>Serverless Framework</li>
+                  <li>AWS SDK</li>
+                  <li>CloudFormation</li>
+                </ul>
+              </li>
+            </ul>
+            <p>Best practice ✔️</p>
+            <p>(never hardcode these)</p>
+            <p>AWS_REGION</p>
+            <ul>
+              <li>Sets default AWS region</li>
+              <li>Matches your Lambda / API Gateway region</li>
+            </ul>
+
+            <p>MONGODB_URI</p>
+            <ul>
+              <li>Available during deploy</li>
+              <li>Typically used in serverless.yml, like:</li>
+            </ul>
+            <pre><code>
+provider:
+  environment:
+    MONGODB_URI: ${env:MONGODB_URI}
+            </code></pre>
+
+            <p>What triggers this job?</p>
+            <p>You didn’t show the on: block, but commonly this is used with:</p>
+            <pre><code>
+on:
+  push:
+    branches:
+      - main
+            </code></pre>
+
+            <p>If that’s the case:</p>
+            <ul>
+              <li>Every push to main deploys production</li>
+              <li>This is true CI/CD</li>
+            </ul>
+            <p>⚠️ If this is prod, be very sure you want automatic prod deploys.</p>
+
+            <p>Common improvements (optional but recommended)</p>
+            <p>1️⃣ Add stage safety (prevent accidental prod)</p>
+            <pre><code>
+if: github.ref == 'refs/heads/main'
+            </code></pre>
+
+            <p>2️⃣ Cache node_modules (faster builds)</p>
+            <pre><code>
+- uses: actions/cache@v4
+  with:
+    path: ~/.npm
+    key: npm-${{ hashFiles('package-lock.json') }}
+            </code></pre>
+
+            <p>3️⃣ Separate dev vs prod</p>
+            <p>Typical real setup:</p>
+            <ul>
+              <li>main → prod</li>
+              <li>develop → dev</li>
+            </ul>
+
+            <p>This workflow:</p>
+            <ul>
+              <li>Spins up Ubuntu</li>
+              <li>Installs Node 18</li>
+              <li>Installs dependencies</li>
+              <li>Uses Serverless Framework</li>
+              <li>Deploys directly to AWS production</li>
+              <li>Uses GitHub Secrets securely</li>
+            </ul>
+            <p>It’s a legit production CI/CD pipeline, not a toy example.</p>
+            <p>If you want, I can:</p>
+            <ul>
+              <li>Convert this to dev + prod stages</li>
+              <li>Add manual approval for prod</li>
+              <li>Wire it to Serverless + MongoDB Atlas properly</li>
+              <li>Or harden it like a “big company” pipeline 😄</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Common mistakes (heads-up)</h2>
+            <ul>
+                <li>❌ Missing permissions: id-token: write</li>
+                <li>❌ Tabs instead of spaces</li>
+                <li>❌ Wrong Node version vs Lambda runtime</li>
+                <li>❌ Forgetting env vars in GitHub Secrets</li>
+            </ul>
+            <p>If you want, you can:</p>
+            <ul>
+                <li>Paste your current workflow</li>
+                <li>Ask for monorepo setup</li>
+                <li>Add tests + lint before deploy</li>
+                <li>Auto-deploy only changed services</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

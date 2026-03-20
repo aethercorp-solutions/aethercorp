@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Understanding custom domains deeply will help you design production-ready systems</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Understanding custom domains deeply will help you design production-ready systems</h1>
+                    <p class="subtitle">
+                        Since you're working heavily with AWS (Lambda, API Gateway, Cognito, etc.), understanding custom domains deeply will help you design production-ready systems.
+                        <p>Let’s break this down clearly and practically.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔎 Big Picture: What Is a Custom Domain?</h2>
+            <p>Instead of:</p>
+            <p>https://d3k2abcxyz.cloudfront.net</p>
+            <p>You want:</p>
+            <p>https://api.trycastanet.com</p>
+            <p>To make that work in AWS using:</p>
+            <ul>
+                <li>Amazon Web Services</li>
+                <li>Amazon S3</li>
+                <li>Amazon CloudFront</li>
+                <li>Amazon Route 53</li>
+            </ul>
+            <p>You must connect 4 systems:</p>
+            <ol>
+                <li>DNS (Route 53)</li>
+                <li>CDN (CloudFront)</li>
+                <li>SSL Certificate (ACM)</li>
+                <li>Origin (S3 bucket)</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 How It Works (Conceptual Flow)</h2>
+            <p>When a user types:</p>
+            <p>https://app.trycastanet.com</p>
+            <p>Here’s what happens step by step:</p>
+            <ol>
+                <li>
+                    Browser asks DNS:
+                    <p>👉 “Where is app.trycastanet.com?”</p>
+                </li>
+                <li>
+                    Route 53 replies:
+                    <p>👉 “Go to CloudFront distribution XYZ.”</p>
+                </li>
+                <li>Browser connects to CloudFront over HTTPS.</li>
+                <li>
+                    CloudFront:
+                    <ul>
+                        <li>Uses SSL certificate (ACM)</li>
+                        <li>Fetches content from S3 bucket (origin)</li>
+                        <li>Caches and returns it</li>
+                    </ul>
+                </li>
+                <li>User sees your site.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🏗 Architecture Overview</h2>
+            <pre><code>
+User
+  ↓
+Route 53 (DNS)
+  ↓
+CloudFront (CDN + SSL)
+  ↓
+S3 Bucket (Static Website Files)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧱 Step-by-Step Setup (Detailed)</h2>
+            <p>STEP 1️⃣: Register or Have a Domain</p>
+            <p>Example:</p>
+            <p>trycastanet.com</p>
+            <p>You can:</p>
+            <ul>
+                <li>Register inside Route 53</li>
+                <li>Or use external registrar (GoDaddy, Namecheap, etc.)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>STEP 2️⃣: Create S3 Bucket</h2>
+            <p>Create bucket:</p>
+            <p>app.trycastanet.com</p>
+            <p>Important settings:</p>
+            <p>Enable:</p>
+            <ul>
+                <li>Static website hosting (optional but recommended for web apps)</li>
+                <li>
+                    Block public access → DISABLED (if directly public)
+                    <p>OR</p>
+                </li>
+                <li>Keep private (recommended) and use CloudFront OAC</li>
+            </ul>
+            <p>Upload:</p>
+            <ul>
+                <li>index.html</li>
+                <li>JS/CSS</li>
+                <li>React build files</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>STEP 3️⃣: Create SSL Certificate (VERY IMPORTANT)</h2>
+            <p>Go to:</p>
+            <p>👉 AWS Certificate Manager (ACM)</p>
+            <p>Request certificate for:</p>
+            <p>app.trycastanet.com</p>
+            <p>Validation:</p>
+            <ul>
+                <li>DNS validation (recommended)</li>
+                <li>Route 53 auto-creates validation record</li>
+            </ul>
+            <p>⚠ IMPORTANT:</p>
+            <p>Certificate MUST be created in:</p>
+            <p>us-east-1</p>
+            <p>Why?</p>
+            <p>Because CloudFront only reads certificates from us-east-1.</p>
+        </section>
+
+        <section>
+            <h2>STEP 4️⃣: Create CloudFront Distribution</h2>
+            <p>Origin:</p>
+            <p>S3 bucket</p>
+            <p>Settings:</p>
+            <ul>
+                <li>Viewer Protocol Policy → Redirect HTTP to HTTPS</li>
+                <li>
+                    Alternate Domain Name (CNAME):
+                    <p>app.trycastanet.com</p>
+                </li>
+                <li>Attach ACM certificate</li>
+            </ul>
+
+            <p>Security (Recommended):</p>
+            <ul>
+                <li>Use Origin Access Control (OAC)</li>
+                <li>Keep S3 bucket private</li>
+                <li>Allow only CloudFront to access bucket</li>
+            </ul>
+            <p>Now CloudFront gives you:</p>
+            <p>d123abcd.cloudfront.net</p>
+        </section>
+
+        <section>
+            <h2>STEP 5️⃣: Configure Route 53</h2>
+            <p>Go to:</p>
+            <p>Hosted Zones → trycastanet.com</p>
+            <p>Create Record:</p>
+            <p>Type:</p>
+            <p>A record</p>
+            <p>Enable:</p>
+            <p>Alias = Yes</p>
+            <p>Alias target:</p>
+            <p>→ Select CloudFront distribution</p>
+            <p>Now:</p>
+            <pre><code>
+app.trycastanet.com
+→ points to CloudFront
+→ which pulls from S3
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 HTTPS & SSL Flow Explained</h2>
+            <p>When user connects:</p>
+            <ol>
+                <li>Browser sends TLS handshake request</li>
+                <li>CloudFront presents ACM certificate</li>
+                <li>
+                    Browser verifies:
+                    <ul>
+                        <li>Certificate validity</li>
+                        <li>Domain match</li>
+                        <li>Trusted CA</li>
+                    </ul>
+                </li>
+                <li>Secure encrypted connection established</li>
+            </ol>
+            <p>Without ACM certificate:</p>
+            <ul>
+                <li>HTTPS won’t work</li>
+                <li>Browser shows "Not Secure"</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 What CloudFront Actually Does</h2>
+            <p>CloudFront is:</p>
+            <ul>
+                <li>CDN (global edge caching)</li>
+                <li>SSL terminator</li>
+                <li>DDoS protection layer</li>
+                <li>Performance optimizer</li>
+            </ul>
+            <p>If user is in Philippines:</p>
+            <p>→ Request served from nearest edge location</p>
+            <p>→ Faster than direct S3</p>
+        </section>
+
+        <section>
+            <h2>🔁 Full Request Lifecycle</h2>
+            <p>Let’s simulate:</p>
+            <p>User in Diliman opens:</p>
+            <p>https://app.trycastanet.com</p>
+            <p>1️⃣ DNS Resolution</p>
+            <p>Route 53 returns CloudFront IP</p>
+            <p>2️⃣ TLS Handshake</p>
+            <p>CloudFront uses ACM certificate</p>
+            <p>3️⃣ Cache Check</p>
+            <p>CloudFront checks edge cache</p>
+            <p>If cached:</p>
+            <p>→ Return instantly</p>
+            <p>If not cached:</p>
+            <p>→ Fetch from S3</p>
+            <p>→ Store in cache</p>
+            <p>→ Return to user</p>
+        </section>
+
+        <section>
+            <h2>1️⃣ What Is a Custom Domain (Architectural View)</h2>
+            <p>A custom domain is when users access your system using:</p>
+            <pre><code>
+https://yourdomain.com
+            </code></pre>
+            <p>Instead of:</p>
+            <pre><code>
+https://random-id.cloudfront.net
+https://bucket-name.s3.amazonaws.com
+https://xyz.execute-api.us-east-1.amazonaws.com
+            </code></pre>
+            <p>A custom domain gives you:</p>
+            <p>✅ Brand trust</p>
+            <p>✅ HTTPS security</p>
+            <p>✅ SEO benefits</p>
+            <p>✅ Multi-environment control (dev/staging/prod)</p>
+            <p>✅ TLS termination control</p>
+            <p>✅ Traffic routing flexibility</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Core AWS Services Involved</h2>
+            <p>In most production setups, these services work together:</p>
+            <ul>
+                <li>DNS → Amazon Route 53</li>
+                <li>SSL/TLS → AWS Certificate Manager</li>
+                <li>CDN → Amazon CloudFront</li>
+                <li>Static hosting → Amazon S3</li>
+                <li>API hosting → Amazon API Gateway</li>
+            </ul>
+            <p>Each plays a specific role in the request lifecycle.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ End-to-End Request Flow (Production Example)</h2>
+            <p>Let’s say a user visits:</p>
+            <pre><code>
+https://app.yourdomain.com
+            </code></pre>
+            <p>Here’s what happens:</p>
+            <p>Step 1: DNS Resolution</p>
+            <p>DNS is managed by Route 53.</p>
+            <p>It resolves:</p>
+            <pre><code>
+app.yourdomain.com → CloudFront Distribution
+            </code></pre>
+            <p>Technically:</p>
+            <ul>
+                <li>You create an A Record (Alias) in Route 53.</li>
+                <li>It points to CloudFront.</li>
+            </ul>
+
+            <p>Step 2: TLS/SSL Handshake</p>
+            <p>CloudFront needs a certificate.</p>
+            <p>You create it in:</p>
+            <p>👉 AWS Certificate Manager</p>
+            <p>Important:</p>
+            <ul>
+                <li>The certificate must be created in us-east-1 for CloudFront.</li>
+                <li>You validate ownership via DNS or email.</li>
+                <li>Route 53 can auto-create DNS validation records.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 3: CloudFront Behavior</h2>
+            <p>CloudFront then:</p>
+            <ul>
+                <li>Accepts HTTPS request</li>
+                <li>Terminates TLS</li>
+                <li>Caches content</li>
+                <li>Forwards to origin</li>
+            </ul>
+            <p>The origin could be:</p>
+            <ul>
+                <li>S3 (static frontend)</li>
+                <li>API Gateway (backend API)</li>
+                <li>Load Balancer</li>
+                <li>EC2</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 4: Origin Response</h2>
+            <p>Example:</p>
+            <ul>
+                <li>S3 returns React build files</li>
+                <li>API Gateway forwards to Lambda</li>
+                <li>CloudFront caches response</li>
+            </ul>
+            <p>Then response goes back to the user.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Production Architecture Patterns</h2>
+            <p>🔹 Static Website (React / Next.js Static Export)</p>
+            <p>User</p>
+            <p>→ Route 53</p>
+            <p>→ CloudFront</p>
+            <p>→ S3</p>
+            <p>Best practice:</p>
+            <ul>
+                <li>❌ Do NOT use S3 website endpoint in production</li>
+                <li>✅ Use S3 private bucket</li>
+                <li>✅ Use CloudFront Origin Access Control (OAC)</li>
+            </ul>
+            <p>This prevents direct S3 access.</p>
+        </section>
+
+        <section>
+            <h2>🔹 API Backend (Serverless)</h2>
+            <p>User</p>
+            <p>→ Route 53</p>
+            <p>→ CloudFront (optional)</p>
+            <p>→ API Gateway</p>
+            <p>→ Lambda</p>
+            <p>API Gateway supports custom domains directly too.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Full Production Setup</h2>
+            <pre><code>
+yourdomain.com
+│
+├── app.yourdomain.com → CloudFront → S3
+├── api.yourdomain.com → API Gateway → Lambda
+└── admin.yourdomain.com → ALB → EC2
+            </code></pre>
+
+            <p>This allows microservice separation.</p>
+        </section>
+
+        <section>
+            <h2>5️⃣ Why This Matters in Production</h2>
+            <p>✅ Security</p>
+            <ul>
+                <li>TLS termination at CloudFront</li>
+                <li>WAF support</li>
+                <li>DDoS protection via AWS Shield</li>
+                <li>Private S3 buckets</li>
+            </ul>
+
+            <p>✅ Scalability</p>
+            <p>CloudFront:</p>
+            <ul>
+                <li>Edge caching worldwide</li>
+                <li>Reduces backend load</li>
+                <li>Handles traffic spikes</li>
+            </ul>
+
+            <p>✅ Zero Downtime Deployments</p>
+            <p>You can:</p>
+            <ul>
+                <li>Swap CloudFront origins</li>
+                <li>Use weighted routing in Route 53</li>
+                <li>Blue/Green deployments</li>
+                <li>Canary releases</li>
+            </ul>
+
+            <p>✅ Environment Strategy</p>
+            <p>Production-grade teams use:</p>
+            <pre><code>
+dev.yourdomain.com
+staging.yourdomain.com
+api.yourdomain.com
+            </code></pre>
+            <p>All managed via Route 53 records.</p>
+        </section>
+
+        <section>
+            <h2>6️⃣ Common Mistakes in Custom Domain Setup</h2>
+            <p>❌ Creating certificate in wrong region</p>
+            <p>CloudFront requires ACM cert in us-east-1.</p>
+            <p>❌ Using S3 public bucket</p>
+            <p>Use OAC instead.</p>
+            <p>❌ Not using Alias records</p>
+            <p>Use Route 53 Alias → avoids extra DNS lookup cost.</p>
+            <p>❌ Mixing HTTP and HTTPS</p>
+            <p>Force redirect to HTTPS via CloudFront behavior.</p>
+        </section>
+
+        <section>
+            <h2>7️⃣ Deep DNS Concepts (Important for Architects)</h2>
+            <p>A Record vs CNAME</p>
+            <ul>
+                <li>A record → IP address</li>
+                <li>CNAME → another domain</li>
+                <li>Route 53 Alias → AWS resource (preferred)</li>
+            </ul>
+
+            <p>Propagation Time</p>
+            <p>DNS changes:</p>
+            <ul>
+                <li>TTL affects caching</li>
+                <li>Can take minutes to hours globally</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8️⃣ How This Connects to Production Readiness</h2>
+            <p>If you're building:</p>
+            <ul>
+                <li>Serverless APIs</li>
+                <li>React Native backend</li>
+                <li>SaaS platforms</li>
+                <li>Subscription systems</li>
+                <li>Multi-tenant systems</li>
+            </ul>
+            <p>Custom domains allow:</p>
+            <ul>
+                <li>Tenant-specific routing</li>
+                <li>Regional failover</li>
+                <li>Multi-region architecture</li>
+                <li>Disaster recovery</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9️⃣ Advanced Production Patterns</h2>
+            <p>🌍 Multi-Region Failover</p>
+            <p>Route 53 health checks:</p>
+            <ul>
+                <li>If primary region fails</li>
+                <li>Automatically routes to secondary</li>
+            </ul>
+            <p>🌍 Global Acceleration</p>
+            <p>You can also integrate:</p>
+            <ul>
+                <li>AWS Global Accelerator</li>
+            </ul>
+            <p>For ultra-low-latency TCP routing.</p>
+        </section>
+
+        <section>
+            <h2>🔥 Final Production-Ready Mental Model</h2>
+            <p>Think of it like this:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Responsibility</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Route 53</td>
+                        <td>DNS routing</td>
+                    </tr>
+                    <tr>
+                        <td>ACM</td>
+                        <td>TLS certificate</td>
+                    </tr>
+                    <tr>
+                        <td>CloudFront</td>
+                        <td>Edge caching + security</td>
+                    </tr>
+                    <tr>
+                        <td>Origin</td>
+                        <td>Actual app/API</td>
+                    </tr>
+                    <tr>
+                        <td>WAF</td>
+                        <td>Protection</td>
+                    </tr>
+                    <tr>
+                        <td>Shield</td>
+                        <td>DDoS defense</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>If you want, I can next explain:</p>
+            <ul>
+                <li>🔍 Blue/Green deployment using custom domains</li>
+                <li>🔐 Secure multi-tenant SaaS domain strategy</li>
+                <li>🚀 How to structure this in Serverless Framework</li>
+                <li>🏗 Enterprise-level AWS domain architecture</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

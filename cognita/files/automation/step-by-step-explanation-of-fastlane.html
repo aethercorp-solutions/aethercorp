@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>step-by-step explanation of Fastlane</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">step-by-step explanation of Fastlane</h1>
+                    <p class="subtitle">Below is a beginner-friendly, practical, step-by-step explanation of Fastlane, with a real example you can actually use, especially useful if you build iOS apps (or Android) and want to automate builds without opening Xcode every time.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ What is Fastlane? (Simple idea)</h2>
+            <p>Fastlane is an automation tool for mobile apps.</p>
+            <p>Instead of manually doing this every time:</p>
+            <ul>
+                <li>Open Xcode</li>
+                <li>Increase build number</li>
+                <li>Archive</li>
+                <li>Upload to TestFlight</li>
+                <li>Add release notes</li>
+            </ul>
+            <p>Fastlane lets you run one command:</p>
+            <pre><code>
+fastlane beta
+            </code></pre>
+            <p>And it does everything automatically.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ What Fastlane is usually used for</h2>
+            <p>Fastlane automates:</p>
+            <ul>
+                <li>✅ Build iOS / Android apps</li>
+                <li>✅ Upload to TestFlight / App Store / Play Store</li>
+                <li>✅ Increment version & build numbers</li>
+                <li>✅ Manage certificates & provisioning profiles</li>
+                <li>✅ Run tests</li>
+                <li>✅ Take screenshots</li>
+            </ul>
+            <p>Think of Fastlane as a robot assistant for app releases 🤖</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ Real beginner scenario (practical)</h2>
+            <p>👉 Scenario:</p>
+            <p>You have an iOS app, and you want to:</p>
+            <ul>
+                <li>Build it</li>
+                <li>Upload it to TestFlight</li>
+                <li>Do this by typing one command</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Installing Fastlane</h2>
+            <p>Step 1: Install Fastlane</p>
+            <p>On macOS:</p>
+            <pre><code>
+brew install fastlane
+            </code></pre>
+            <p>Check if installed:</p>
+            <pre><code>
+fastlane --version
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5️⃣ Setting up Fastlane in your project</h2>
+            <p>Go to your iOS project folder:</p>
+            <pre><code>
+cd ios
+            </code></pre>
+            <p>Then run:</p>
+            <pre><code>
+fastlane init
+            </code></pre>
+
+            <p>Fastlane will ask questions like:</p>
+            <ul>
+                <li>What platform? → iOS</li>
+                <li>What do you want to do? → Automate TestFlight</li>
+                <li>Apple ID? → your email</li>
+                <li>App identifier? → com.example.myapp</li>
+            </ul>
+            <p>After this, Fastlane creates:</p>
+            <pre><code>
+ios/
+ └── fastlane/
+     ├── Fastfile
+     ├── Appfile
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6️⃣ Understanding the Fastfile (MOST IMPORTANT)</h2>
+            <p>Open fastlane/Fastfile</p>
+            <p>You’ll see something like:</p>
+            <pre><code>
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    increment_build_number
+    build_app
+    upload_to_testflight
+  end
+end
+            </code></pre>
+            <p>Let’s explain this line by line 👇</p>
+
+            <p>🔹 lane :beta</p>
+            <p>A lane is a task you can run.</p>
+            <pre><code>
+fastlane beta
+            </code></pre>
+
+            <p>🔹 increment_build_number</p>
+            <p>Automatically increases build number</p>
+            <p>Example:</p>
+            <ul>
+                <li>Old build: 1.0 (3)</li>
+                <li>New build: 1.0 (4)</li>
+            </ul>
+            <p>No need to open Xcode.</p>
+
+            <p>🔹 build_app</p>
+            <p>This:</p>
+            <ul>
+                <li>Runs Xcode build</li>
+                <li>Creates .ipa</li>
+                <li>Uses correct signing automatically</li>
+            </ul>
+            <p>Equivalent to clicking Archive in Xcode.</p>
+
+            <p>🔹 upload_to_testflight</p>
+            <p>Uploads the app to:</p>
+            <ul>
+                <li>App Store Connect</li>
+                <li>TestFlight</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7️⃣ Running Fastlane (real use)</h2>
+            <p>Just run:</p>
+            <pre><code>
+fastlane beta
+            </code></pre>
+            <p>Fastlane will:</p>
+            <ol>
+                <li>Increase build number</li>
+                <li>Build app</li>
+                <li>Upload to TestFlight</li>
+            </ol>
+            <p>☕ You can literally grab coffee while it runs.</p>
+        </section>
+
+        <section>
+            <h2>8️⃣ Adding release notes (practical improvement)</h2>
+            <p>Update your lane:</p>
+            <pre><code>
+lane :beta do
+  increment_build_number
+  build_app
+  upload_to_testflight(
+    changelog: "Bug fixes and performance improvements"
+  )
+end
+            </code></pre>
+            <p>Now testers see release notes automatically.</p>
+        </section>
+
+        <section>
+            <h2>9️⃣ Using Fastlane WITHOUT opening Xcode</h2>
+            <p>Fastlane works perfectly with:</p>
+            <ul>
+                <li>GitHub Actions</li>
+                <li>CI/CD</li>
+                <li>Headless servers</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+fastlane ios beta
+            </code></pre>
+            <p>This is how companies build iOS apps on servers.</p>
+        </section>
+
+        <section>
+            <h2>🔟 Very common beginner mistakes</h2>
+            <p>❌ Apple ID 2FA not set → use App Store Connect API key</p>
+            <p>❌ Wrong bundle ID</p>
+            <p>❌ No certificates → use match later</p>
+            <p>❌ Spaces in scheme name</p>
+        </section>
+
+        <section>
+            <h2>1️⃣1️⃣ Android example (very short)</h2>
+            <pre><code>
+platform :android do
+  lane :beta do
+    gradle(task: "assembleRelease")
+    upload_to_play_store(track: "beta")
+  end
+end
+            </code></pre>
+            <p>Run:</p>
+            <pre><code>
+fastlane beta
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>1️⃣2️⃣ When SHOULD you use Fastlane?</h2>
+            <p>✅ You release often</p>
+            <p>✅ You hate repetitive steps</p>
+            <p>✅ You use CI/CD</p>
+            <p>✅ Team projects</p>
+            <p>❌ One-time hobby app (maybe overkill)</p>
+        </section>
+
+        <section>
+            <h2>1️⃣3️⃣ Mental model (easy to remember)</h2>
+            <p>Fastlane = Scripts + One Command = No Manual Release Work</p>
+        </section>
+
+        <section>
+            <h2>1️⃣4️⃣ Want next?</h2>
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Show Fastlane + GitHub Actions</li>
+                <li>Explain certificates & match simply</li>
+                <li>Show Fastlane for React Native</li>
+                <li>Create a real production Fastfile</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

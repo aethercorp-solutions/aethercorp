@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is a JOIN in databases?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is a JOIN in databases?</h1>
+                    <p class="subtitle">
+                        A JOIN is used in SQL to combine rows from two (or more) tables based on a related column between them.
+                        <p>You use a JOIN when data is split into multiple tables (to avoid duplication) but you want to view it together.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why JOIN is used</h2>
+            <ul>
+                <li>Keeps data organized and normalized</li>
+                <li>Avoids repeating the same data</li>
+                <li>Allows meaningful queries across related tables</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple real-world analogy</h2>
+            <p>Think of:</p>
+            <ul>
+                <li>Students table → student info</li>
+                <li>Courses table → course info</li>
+            </ul>
+            <p>A JOIN lets you answer:</p>
+            <p>“Which students are enrolled in which courses?”</p>
+        </section>
+
+        <section>
+            <h2>Simple example (very common scenario)</h2>
+            <p>Table 1: customers</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>customer_id</th>
+                        <th>name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Alice</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Bob</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Table 2: orders</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>order_id</th>
+                        <th>customer_id</th>
+                        <th>product</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>101</td>
+                        <td>1</td>
+                        <td>Laptop</td>
+                    </tr>
+                    <tr>
+                        <td>102</td>
+                        <td>1</td>
+                        <td>Phone</td>
+                    </tr>
+                    <tr>
+                        <td>103</td>
+                        <td>2</td>
+                        <td>Tablet</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>The common column is customer_id.</p>
+        </section>
+
+        <section>
+            <h2>INNER JOIN (most used)</h2>
+            <p>Returns only rows that match in both tables.</p>
+            <pre><code>
+SELECT customers.name, orders.product
+FROM customers
+INNER JOIN orders
+ON customers.customer_id = orders.customer_id;
+            </code></pre>
+
+            <p>Result:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>product</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Alice</td>
+                        <td>Laptop</td>
+                    </tr>
+                    <tr>
+                        <td>Alice</td>
+                        <td>Phone</td>
+                    </tr>
+                    <tr>
+                        <td>Bob</td>
+                        <td>Tablet</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 Only customers with orders appear.</p>
+        </section>
+
+        <section>
+            <h2>LEFT JOIN (very important)</h2>
+            <p>Returns all rows from the left table, even if there is no match in the right table.</p>
+            <pre><code>
+SELECT customers.name, orders.product
+FROM customers
+LEFT JOIN orders
+ON customers.customer_id = orders.customer_id;
+            </code></pre>
+            <p>If Bob had no orders, he would still appear with NULL for product.</p>
+        </section>
+
+        <section>
+            <h2>Visual explanation</h2>
+            <pre><code>
+customers        orders
+    |               |
+    | customer_id   |
+    +---------------+
+           JOIN
+            </code></pre>
+
+            <p>When to use JOIN</p>
+            <ul>
+                <li>Show customer names with their orders</li>
+                <li>Show employees with their departments</li>
+                <li>Show students with their grades</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key takeaway</h2>
+            <ul>
+                <li>JOIN connects tables</li>
+                <li>INNER JOIN → only matching data</li>
+                <li>LEFT JOIN → keep all rows from left table</li>
+            </ul>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Explain RIGHT JOIN & FULL JOIN</li>
+                <li>Show JOIN vs subquery</li>
+                <li>Explain JOIN step-by-step with diagrams</li>
+                <li>Show common JOIN mistakes beginners make</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Native functional component</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Native functional component</h1>
+                    <p class="subtitle">A React Native functional component is a JavaScript (or TypeScript) function that returns JSX to render UI in a React Native app. Since the introduction of Hooks in React (v16.8), functional components have become the standard way to build components instead of class components.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1️⃣ What Is a Functional Component?</h2>
+            <p>A functional component is simply a function that:</p>
+            <ul>
+                <li>Accepts props (input data)</li>
+                <li>Returns JSX (UI layout)</li>
+                <li>Can manage state and lifecycle using Hooks</li>
+            </ul>
+            <p>Basic Example</p>
+            <pre><code>
+import React from 'react';
+import { View, Text } from 'react-native';
+
+const Welcome = () => {
+  return (
+    &lt;View&gt;
+        &lt;Text&gt;Hello World&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default Welcome;
+            </code></pre>
+            <p>This renders “Hello World” on the screen.</p>
+        </section>
+
+        <section>
+            <h2>2️⃣ Functional Component with Props</h2>
+            <p>Props allow passing data from parent to child.</p>
+            <pre><code>
+const Welcome = ({ name }) => {
+    return (
+        &lt;View&gt;
+            &lt;Text&gt;Hello {name}&lt;/Text&gt;
+        &lt;/View&gt;
+    );
+};                  
+            </code></pre>
+
+            <p>Usage:</p>
+            <pre><code>
+&lt;Welcome name="John" /&gt;
+            </code></pre>
+
+            <p>Props are:</p>
+            <ul>
+                <li>Read-only</li>
+                <li>Passed from parent component</li>
+                <li>Used to customize component behavior</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ Using State in Functional Components (useState)</h2>
+            <p>Before Hooks, only class components could use state. Now we use useState.</p>
+            <pre><code>
+import React, { useState } from 'react';
+import { View, Text, Button } from 'react-native';
+
+const Counter = () => {
+    const [count, setCount] = useState(0);
+
+    return (
+        &lt;View&gt;
+            &lt;Text&lt;Count: {count}&lt;/Text&gt;
+            &lt;Button 
+                title="Increase"
+                onPress={() => setCount(count + 1)}
+            /&gt;
+        &lt;/View&gt;
+    );
+};
+            </code></pre>
+
+            <p>How useState works:</p>
+            <pre><code>
+const [stateVariable, setStateFunction] = useState(initialValue);
+            </code></pre>
+
+            <ul>
+                <li>count → current state value</li>
+                <li>setCount → function to update state</li>
+                <li>0 → initial value</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4️⃣ Side Effects (useEffect)</h2>
+            <p>useEffect replaces lifecycle methods like:</p>
+            <ul>
+                <li>componentDidMount</li>
+                <li>componentDidUpdate</li>
+                <li>componentWillUnmount</li>
+            </ul>
+            <pre><code>
+import React, { useEffect } from 'react';
+
+useEffect(() => {
+  console.log("Component mounted");
+
+  return () => {
+    console.log("Component unmounted");
+  };
+}, []);
+            </code></pre>
+
+            <p>Dependency Array:</p>
+            <ul>
+                <li>[] → runs once (on mount)</li>
+                <li>[count] → runs when count changes</li>
+                <li>no array → runs on every render</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5️⃣ Full Example (Realistic Component)</h2>
+            <pre><code>
+import React, { useState, useEffect } from &#39;react&#39;;
+import { View, Text, Button } from &#39;react-native&#39;;
+
+const Timer = () =&gt; {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() =&gt; {
+    const interval = setInterval(() =&gt; {
+      setSeconds(prev =&gt; prev + 1);
+    }, 1000);
+
+    return () =&gt; clearInterval(interval);
+  }, []);
+
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;Seconds: {seconds}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default Timer;
+            </code></pre>
+            <p>This:</p>
+            <ul>
+                <li>Starts a timer</li>
+                <li>Updates every second</li>
+                <li>Cleans up interval when component unmounts</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6️⃣ Why Functional Components Are Preferred</h2>
+            <p>Compared to class components:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Functional Components</th>
+                        <th>Class Components</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Less boilerplate</td>
+                        <td>More verbose</td>
+                    </tr>
+                    <tr>
+                        <td>Easier to read</td>
+                        <td>More complex</td>
+                    </tr>
+                    <tr>
+                        <td>Use Hooks</td>
+                        <td>Use lifecycle methods</td>
+                    </tr>
+                    <tr>
+                        <td>Better performance optimizations</td>
+                        <td>Slightly heavier</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Modern React Native development strongly favors functional components.</p>
+        </section>
+
+        <section>
+            <h2>7️⃣ Important Hooks in Functional Components</h2>
+            <p>Besides useState and useEffect, common hooks include:</p>
+            <ul>
+                <li>useContext → Access context</li>
+                <li>useRef → Access DOM/native elements or persist values</li>
+                <li>useMemo → Optimize expensive calculations</li>
+                <li>useCallback → Prevent unnecessary re-renders</li>
+                <li>useReducer → Manage complex state</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8️⃣ Best Practices</h2>
+            <p>✅ Keep components small</p>
+            <p>✅ Destructure props</p>
+            <p>✅ Use custom hooks for reusable logic</p>
+            <p>✅ Avoid inline functions in large lists</p>
+            <p>✅ Use React.memo() when needed</p>
+            <p>Example:</p>
+            <pre><code>
+export default React.memo(MyComponent);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9️⃣ Functional vs Class Component (Quick Comparison)</h2>
+            <p>Class Component</p>
+            <pre><code>
+class Example extends React.Component {
+    state = { count: 0 };
+    
+    render() {
+        return &lt;Text&gt;{this.state.count}&lt;/Text&gt;;
+    }
+}                  
+            </code></pre>
+            <p>Functional Component</p>
+            <pre><code>
+const Example = () => {
+    const [count] = useState(0);
+    return &lt;Text&gt;{count}&lt;/Text&gt;;
+};                  
+            </code></pre>
+            <p>Cleaner and simpler ✅</p>
+        </section>
+
+        <section>
+            <h2>🔟 Summary</h2>
+            <p>A React Native functional component:</p>
+            <ul>
+                <li>Is a JavaScript function</li>
+                <li>Returns JSX</li>
+                <li>Uses Hooks for state & lifecycle</li>
+                <li>Is the modern standard in React Native</li>
+            </ul>
+            <p>If you'd like, I can next explain:</p>
+            <ul>
+                <li>Custom hooks</li>
+                <li>Performance optimization</li>
+                <li>Functional component architecture for large apps</li>
+                <li>Real-world production patterns</li>
+                <li>TypeScript with React Native</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

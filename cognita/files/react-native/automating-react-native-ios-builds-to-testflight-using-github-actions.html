@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Automating React Native iOS builds to TestFlight using GitHub Actions</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Automating React Native iOS builds to TestFlight using GitHub Actions</h1>
+                    <p class="subtitle">
+                        Automating React Native iOS builds to TestFlight using GitHub Actions is a common CI/CD setup. The idea is:
+                        <ol>
+                            <li>Push code to GitHub</li>
+                            <li>GitHub Actions builds the iOS app</li>
+                            <li>Upload automatically to TestFlight through App Store Connect</li>
+                        </ol>
+                        <p>Below is a practical production setup used by many teams.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Requirements</h2>
+            <p>You need the following:</p>
+            <ul>
+                <li>Apple Developer account</li>
+                <li>App registered in App Store Connect</li>
+                <li>App Store Connect API Key</li>
+                <li>A Mac-based CI runner (GitHub provides macOS runners)</li>
+            </ul>
+
+            <p>Technologies used:</p>
+            <ul>
+                <li>GitHub Actions – CI/CD pipeline</li>
+                <li>Fastlane – handles iOS build + upload</li>
+                <li>TestFlight – distribution</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Install Fastlane in Your React Native Project</h2>
+            <p>Inside your iOS folder:</p>
+            <pre><code>
+cd ios
+bundle init
+bundle add fastlane
+bundle exec fastlane init
+            </code></pre>
+            <p>Choose:</p>
+            <pre><code>
+2) Automate beta distribution to TestFlight
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Create Fastlane Lane for TestFlight</h2>
+            <p>Edit:</p>
+            <pre><code>
+ios/fastlane/Fastfile
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+default_platform(:ios)
+
+platform :ios do
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    build_app(
+      scheme: "Castanet",
+      export_method: "app-store"
+    )
+
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true
+    )
+  end
+end
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Create App Store Connect API Key</h2>
+            <p>Go to:</p>
+            <p>Users and Access → Keys → App Store Connect API</p>
+            <p>Download:</p>
+            <pre><code>
+AuthKey_XXXX.p8
+            </code></pre>
+            <p>Save these values:</p>
+            <pre><code>
+KEY_ID
+ISSUER_ID
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Add GitHub Secrets</h2>
+            <p>Go to:</p>
+            <p>GitHub Repo → Settings → Secrets</p>
+            <p>Add:</p>
+            <pre><code>
+APP_STORE_CONNECT_API_KEY
+APP_STORE_CONNECT_KEY_ID
+APP_STORE_CONNECT_ISSUER_ID
+MATCH_PASSWORD (if using match)
+            </code></pre>
+            <p>Paste the .p8 contents into the API key secret.</p>
+        </section>
+
+        <section>
+            <h2>6. GitHub Actions Workflow</h2>
+            <p>Create:</p>
+            <pre><code>
+.github/workflows/ios-testflight.yml
+            </code></pre>
+            <p>Example pipeline:</p>
+            <pre><code>
+name: iOS TestFlight Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Install pods
+        run: |
+          cd ios
+          pod install
+
+      - name: Install Fastlane
+        run: |
+          cd ios
+          bundle install
+
+      - name: Build and upload to TestFlight
+        env:
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          cd ios
+          bundle exec fastlane beta
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. What Happens After Push</h2>
+            <p>When you push to main:</p>
+            <pre><code>
+git push origin main
+            </code></pre>
+            <p>GitHub Actions will:</p>
+            <ol>
+                <li>Start macOS runner</li>
+                <li>Install Node modules</li>
+                <li>Install CocoaPods</li>
+                <li>Build Xcode project</li>
+                <li>Upload IPA to TestFlight</li>
+                <li>TestFlight processes the build</li>
+            </ol>
+            <p>Then testers receive the build automatically.</p>
+        </section>
+
+        <section>
+            <h2>8. Optional Improvements (Recommended)</h2>
+            <p>Automatic Build Number</p>
+            <p>Fastlane can auto increment:</p>
+            <pre><code>
+increment_build_number
+            </code></pre>
+            <p>Slack Notification</p>
+            <pre><code>
+slack(
+  message: "New TestFlight build uploaded 🚀"
+)
+            </code></pre>
+            <p>Run Unit Tests</p>
+            <pre><code>
+scan(
+  scheme: "Castanet"
+)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Recommended Production Architecture</h2>
+            <pre><code>
+Developer
+   ↓ push
+GitHub Repo
+   ↓
+GitHub Actions (macOS runner)
+   ↓
+Fastlane
+   ↓
+Xcode build
+   ↓
+Upload IPA
+   ↓
+TestFlight
+   ↓
+Internal / External Testers
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Pro Tips for React Native CI/CD</h2>
+            <p>For React Native apps like your Castanet platform, add caching:</p>
+            <pre><code>
+node_modules
+Pods
+DerivedData
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+actions/cache
+            </code></pre>
+            <p>This reduces build time from 15 min → ~6 min.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

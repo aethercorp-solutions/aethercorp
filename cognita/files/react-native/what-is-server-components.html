@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Server Component</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Server Component</h1>
+                    <p class="subtitle">A Server Component is a type of UI component that runs on the server instead of in the browser.
+                        It’s most commonly used in modern React frameworks like Next.js (App Router).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple idea (1 sentence)</h2>
+            <p>👉 Server Components render on the server, send ready-made HTML to the browser, and never run JavaScript on the client.</p>
+        </section>
+
+        <section>
+            <h2>Why Server Components exist</h2>
+            <p>Traditional React apps:</p>
+            <ul>
+                <li>Run a lot of JavaScript in the browser</li>
+                <li>Fetch data after the page loads</li>
+                <li>Can be slow on first load</li>
+            </ul>
+
+            <p>Server Components:</p>
+            <ul>
+                <li>Fetch data on the server</li>
+                <li>Reduce JavaScript sent to the browser</li>
+                <li>Load faster and are more secure</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What Server Components can do</h2>
+            <p>✅ Access databases directly</p>
+            <p>✅ Call backend APIs securely</p>
+            <p>✅ Read environment variables</p>
+            <p>✅ Use server-only secrets</p>
+            <p>✅ Reduce bundle size</p>
+
+            <p>🚫 Cannot:</p>
+            <ul>
+                <li>Use useState, useEffect</li>
+                <li>Handle clicks or user events</li>
+                <li>Access window, document</li>
+                <li>Run in the browser</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example (Next.js Server Component)</h2>
+            <pre><code>
+// app/page.tsx
+export default async function Page() {
+  const users = await fetch("https://api.example.com/users").then(res => res.json());
+
+  return (
+    &lt;ul&gt;
+      {users.map(user => (
+        &lt;li key={user.id}&gt;{user.name}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+            </code></pre>
+
+            <ul>
+                <li>This runs only on the server</li>
+                <li>The browser receives HTML, not JS logic</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Client Component (for comparison)</h2>
+            <pre><code>
+"use client";
+
+import { useState, useEffect } from "react";
+
+export default function Page() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/users").then(res => res.json()).then(setUsers);
+  }, []);
+
+  return &lt;div&gt;{users.length}&lt;/div&gt;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Server vs Client Components</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Server Component</th>
+                        <th>Client Component</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Runs where</td>
+                        <td>Server</td>
+                        <td>Browser</td>
+                    </tr>
+                    <tr>
+                        <td>JavaScript sent</td>
+                        <td>❌ None</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Data fetching</td>
+                        <td>Before render</td>
+                        <td>After render</td>
+                    </tr>
+                    <tr>
+                        <td>Hooks</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Event handling</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td>✅ High</td>
+                        <td>❌ Lower</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>How they work together</h2>
+            <p>You usually combine them:</p>
+            <pre><code>
+// Server Component
+import Button from "./Button";
+
+export default function Page() {
+  return &lt;Button /&gt;;
+}
+            </code></pre>
+
+            <pre><code>
+// Client Component
+"use client";
+
+export default function Button() {
+  return &lt;button onClick={() => alert("Hi!")}&gt;Click me&lt;/button&gt;;
+}
+            </code></pre>
+            <p>➡ Server Component renders the page</p>
+            <p>➡ Client Component handles interaction</p>
+        </section>
+
+        <section>
+            <h2>When to use Server Components</h2>
+            <p>✔ Fetching data</p>
+            <p>✔ Rendering lists/pages</p>
+            <p>✔ SEO-critical content</p>
+            <p>✔ Performance optimization</p>
+        </section>
+
+        <section>
+            <h2>When to use Client Components</h2>
+            <p>✔ Forms</p>
+            <p>✔ Buttons</p>
+            <p>✔ Animations</p>
+            <p>✔ Modals</p>
+            <p>✔ User interaction</p>
+        </section>
+
+        <section>
+            <h2>One-line summary</h2>
+            <p>Server Components = fast, secure, zero-JS rendering on the server.</p>
+            <p>If you want, I can explain this using a real-world analogy, diagram, or compare it to AWS Lambda / backend rendering since you’re a full-stack dev.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Serverless Framework Stage</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Serverless Framework Stage</h1>
+                    <p class="subtitle">In Serverless Framework, stage represents the environment your service is deployed to.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>In your config:</p>
+            <pre><code>
+provider:
+  stage: dev
+            </code></pre>
+            <h2>What “stage” means (in simple terms)</h2>
+            <p>A stage is a named deployment environment, commonly used to separate:</p>
+            <ul>
+                <li>dev → development</li>
+                <li>test / qa → testing</li>
+                <li>staging → pre-production</li>
+                <li>prod → production</li>
+            </ul>
+            <p>Each stage is isolated in AWS.</p>
+        </section>
+
+        <section>
+            <h2>What changes when you change the stage?</h2>
+            <p>1. API Gateway URL</p>
+            <p>Each stage gets its own URL.</p>
+            <p>Example:</p>
+            <pre><code>
+https://abcd1234.execute-api.ap-southeast-1.amazonaws.com/dev/hello
+https://abcd1234.execute-api.ap-southeast-1.amazonaws.com/prod/hello
+            </code></pre>
+            <p>So dev and prod do NOT affect each other.</p>
+        </section>
+
+        <section>
+            <h2>2. Separate AWS Resources</h2>
+            <p>When you deploy with different stages, Serverless creates separate resources:</p>
+            <ul>
+                <li>Lambda functions</li>
+                <li>API Gateway stages</li>
+                <li>CloudWatch logs</li>
+                <li>(Optionally) DynamoDB tables, S3 buckets, etc.</li>
+            </ul>
+            <p>Example Lambda names:</p>
+            <pre><code>
+my-api-dev-hello
+my-api-prod-hello
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Environment-Specific Config</h2>
+            <p>You typically use stage for:</p>
+            <ul>
+                <li>Different databases</li>
+                <li>Different API keys</li>
+                <li>Different AWS accounts</li>
+                <li>Different feature flags</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+provider:
+  environment:
+    STAGE: ${self:provider.stage}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How to deploy different stages</h2>
+            <p>Default (uses dev)</p>
+            <pre><code>
+serverless deploy
+            </code></pre>
+
+            <p>Deploy to prod</p>
+            <pre><code>
+serverless deploy --stage prod
+            </code></pre>
+            <p>This creates a new, independent deployment.</p>
+        </section>
+
+        <section>
+            <h2>Common real-world setup</h2>
+            <pre><code>
+provider:
+  stage: ${opt:stage, 'dev'}
+            </code></pre>
+            <p>Now you can do:</p>
+            <pre><code>
+serverless deploy --stage dev
+serverless deploy --stage prod
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why stage is important</h2>
+            <p>Without stages:</p>
+            <ul>
+                <li>Dev bugs can break production</li>
+                <li>No safe testing environment</li>
+                <li>Hard to manage credentials</li>
+            </ul>
+            <p>With stages:</p>
+            <ul>
+                <li>Clean separation</li>
+                <li>Safer releases</li>
+                <li>Professional deployment workflow</li>
+            </ul>
+
+            <p>If you want, I can show:</p>
+            <ul>
+                <li>🔐 how to use different AWS profiles per stage</li>
+                <li>🗄 how to connect different MongoDB/DynamoDB per stage</li>
+                <li>🌍 how stage affects API Gateway & Lambda names</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>This is a Serverless Framework configuration snippet that defines an environment variable for your AWS Lambda functions.</p>
+            <pre><code>
+provider:
+  environment:
+    STAGE: ${self:provider.stage}
+            </code></pre>
+
+            <p>What it means</p>
+            <ul>
+                <li>
+                    provider.environment
+                    <p>Declares environment variables that will be injected into all Lambda functions in the service.</p>
+                </li>
+                <li>
+                    STAGE
+                    <p>The name of the environment variable available at runtime.</p>
+                </li>
+                <li>
+                    ${self:provider.stage}
+                    <p>A Serverless variable reference that resolves to the current deployment stage (e.g. dev, prod, staging).</p>
+                </li>
+            </ul>
+            <p>So if you deploy with:</p>
+            <pre><code>
+serverless deploy --stage dev
+            </code></pre>
+
+            <p>Then inside Lambda:</p>
+            <pre><code>
+process.env.STAGE === 'dev'
+            </code></pre>
+
+            <p>If you deploy with:</p>
+            <pre><code>
+serverless deploy --stage prod
+            </code></pre>
+
+            <p>Then:</p>
+            <pre><code>
+process.env.STAGE === 'prod'
+            </code></pre>
+
+            <p>Why this is useful</p>
+            <ul>
+                <li>Environment-specific logic (dev vs prod)</li>
+                <li>Selecting correct databases, API keys, or feature flags</li>
+                <li>Cleaner configs without hardcoding values</li>
+            </ul>
+
+            <p>Common pattern (recommended)</p>
+            <p>You’ll often see this combined with stage-based configs:</p>
+            <pre><code>
+custom:
+  dbName:
+    dev: myapp-dev-db
+    prod: myapp-prod-db
+
+provider:
+  environment:
+    STAGE: ${self:provider.stage}
+    DB_NAME: ${self:custom.dbName.${self:provider.stage}}
+            </code></pre>
+
+            <p>Then in Node.js Lambda:</p>
+            <pre><code>
+const stage = process.env.STAGE;
+const dbName = process.env.DB_NAME;
+            </code></pre>
+
+            <p>If you want, I can also show:</p>
+            <ul>
+                <li>How this maps to AWS Lambda → Configuration → Environment variables</li>
+                <li>How to override per-function</li>
+                <li>How to combine this with .env files or SSM Parameter Store</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>In the Serverless Framework, there is no built-in CLI command that directly lists all deployed stages for a service.</p>
+            <p>However, here are the correct and practical ways to see stages 👇</p>
+            <h2>1️⃣ Check deployed stages via CloudFormation stacks (recommended)</h2>
+            <p>Each stage = one CloudFormation stack.</p>
+            <pre><code>
+serverless info --verbose
+            </code></pre>
+            <p>This shows the currently selected stage and stack details.</p>
+            <p>To list all stages, use AWS CLI:</p>
+            <pre><code>
+aws cloudformation list-stacks \
+  --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE \
+  --query "StackSummaries[].StackName"
+            </code></pre>
+
+            <p>Then look for:</p>
+            <pre><code>
+your-service-name-dev
+your-service-name-prod
+your-service-name-staging
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2️⃣ List stages using Serverless variables (local config)</h2>
+            <p>Check what stage would be used:</p>
+            <pre><code>
+serverless print
+            </code></pre>
+            <p>or explicitly:</p>
+            <pre><code>
+serverless print --stage dev
+serverless print --stage prod
+            </code></pre>
+            <p>This prints the resolved configuration for that stage.</p>
+        </section>
+
+        <section>
+            <h2>3️⃣ See deployed endpoints per stage</h2>
+            <pre><code>
+serverless info --stage dev
+serverless info --stage prod
+            </code></pre>
+            <p>If the stage exists, you’ll see endpoints.</p>
+            <p>If not, it will fail.</p>
+        </section>
+
+        <section>
+            <h2>4️⃣ Quick one-liner to list stages (AWS CLI)</h2>
+            <pre><code>
+aws cloudformation describe-stacks \
+  --query "Stacks[].StackName" \
+  | grep your-service-name
+            </code></pre>
+            <p>Important note (common confusion)</p>
+            <p>serverless stage ❌ does NOT exist</p>
+            <p>Stages are not centrally stored—they’re inferred from:</p>
+            <ul>
+                <li>Stack names</li>
+                <li>Deployment history in AWS</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Pro tip (best practice)</h2>
+            <p>Define your stages explicitly to avoid guessing:</p>
+            <pre><code>
+custom:
+  stages:
+    - dev
+    - staging
+    - prod
+            </code></pre>
+            <p>Then enforce:</p>
+            <pre><code>
+serverless deploy --stage dev
+            </code></pre>
+            <p>If you want, I can give you:</p>
+            <ul>
+                <li>A bash script to list stages automatically</li>
+                <li>A Serverless plugin approach</li>
+                <li>How to detect stages programmatically inside Lambda</li>
+            </ul>
+        </section>
+
+        <section>
+            <pre><code>
+aws cloudformation list-stacks \
+  --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE \
+  --query "StackSummaries[].StackName"
+
+[
+    "castanet-api",
+    "awseb-e-mwzgqu4vr2-stack"
+]
+            </code></pre>
+
+            <p>That output simply means CloudFormation found two stacks in a “complete” state in your AWS account:</p>
+            <p>What each stack likely is</p>
+            <ol>
+                <li>
+                    castanet-api
+                    <ul>
+                        <li>This is almost certainly your own stack.</li>
+                        <li>Likely created via Serverless Framework, SAM, or a manual CloudFormation template.</li>
+                        <li>
+                            Contains resources like:
+                            <ul>
+                                <li>Lambda functions</li>
+                                <li>API Gateway</li>
+                                <li>IAM roles</li>
+                                <li>DynamoDB / other services (depending on your setup)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    awseb-e-mwzgqu4vr2-stack
+                    <ul>
+                        <li>This is an Elastic Beanstalk–managed CloudFormation stack</li>
+                        <li>awseb = AWS Elastic Beanstalk</li>
+                        <li>AWS creates and manages this automatically when you deploy an EB environment</li>
+                        <li>You generally do not edit this stack directly</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Useful next commands</h2>
+            <p>See full details of a stack</p>
+            <pre><code>
+aws cloudformation describe-stacks --stack-name castanet-api
+            </code></pre>
+
+            <p>List resources inside a stack</p>
+            <pre><code>
+aws cloudformation list-stack-resources --stack-name castanet-api
+            </code></pre>
+
+            <p>Check which service created it (tags help a lot)</p>
+            <pre><code>
+aws cloudformation describe-stacks \
+  --stack-name castanet-api \
+  --query "Stacks[0].Tags"
+            </code></pre>
+
+            <p>Delete a stack (⚠️ destructive)</p>
+            <pre><code>
+aws cloudformation delete-stack --stack-name castanet-api
+            </code></pre>
+
+            <p>Important notes</p>
+            <ul>
+                <li>✅ It’s safe to keep Elastic Beanstalk stacks unless you are deleting the EB environment</li>
+                <li>❌ Don’t manually modify awseb-* stacks</li>
+                <li>✅ Serverless Framework stacks are usually safe to redeploy or delete if you know the app lifecycle</li>
+            </ul>
+            <p>If you want, tell me:</p>
+            <ul>
+                <li>Which one you’re unsure about</li>
+                <li>Or whether this came from Serverless Framework, SAM, or Elastic Beanstalk</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>An AWS environment is a logically separated setup of AWS resources used for a specific purpose, such as development, testing, or production.</p>
+            <p>Think of it as “a complete AWS workspace” where your app runs.</p>
+            <p>Simple definition</p>
+            <p>AWS Environment = AWS account + region + configuration + resources</p>
+            <p>It defines where and how your application runs in AWS.</p>
+            <h2>Common AWS environments (real-world)</h2>
+            <p>Most teams use multiple environments:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Environment</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>dev</td>
+                        <td>Local development, experiments</td>
+                    </tr>
+                    <tr>
+                        <td>test / qa</td>
+                        <td>Automated testing</td>
+                    </tr>
+                    <tr>
+                        <td>staging</td>
+                        <td>Production-like testing</td>
+                    </tr>
+                    <tr>
+                        <td>prod</td>
+                        <td>Real users, real data</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Each environment is isolated to avoid breaking production.</p>
+        </section>
+
+        <section>
+            <h2>What makes an AWS environment different?</h2>
+        <p>1️⃣ AWS Account</p>
+        <ul>
+            <li>Strongest isolation</li>
+            <li>
+                Recommended:
+                <ul>
+                    <li>mycompany-dev</li>
+                    <li>mycompany-prod</li>
+                </ul>
+            </li>
+        </ul>
+        <p>Example:</p>
+        <pre><code>
+Account A → dev
+Account B → prod
+        </code></pre>
+        </section>
+
+        <section>
+            <h2>2️⃣ AWS Region</h2>
+            <p>Physical location of resources.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>ap-southeast-1 (Singapore)</li>
+                <li>us-east-1 (Virginia)</li>
+            </ul>
+            <p>Why it matters:</p>
+            <ul>
+                <li>Latency</li>
+                <li>Legal/compliance</li>
+                <li>Cost</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3️⃣ AWS Resources</h2>
+            <p>Each environment has its own:</p>
+            <ul>
+                <li>Lambda functions</li>
+                <li>API Gateway</li>
+                <li>EC2 / ECS</li>
+                <li>DynamoDB / RDS</li>
+                <li>S3 buckets</li>
+                <li>IAM roles</li>
+                <li>CloudWatch logs</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+my-api-dev-hello
+my-api-prod-hello
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4️⃣ Configuration & Secrets</h2>
+            <p>Each environment uses different values:</p>
+            <ul>
+                <li>Database URLs</li>
+                <li>API keys</li>
+                <li>OAuth credentials</li>
+                <li>Feature flags</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+DEV_DB_URL=mongodb://dev-db
+PROD_DB_URL=mongodb://prod-db
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>AWS environment vs Serverless stage</h2>
+            <p>They are related but not the same.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AWS Environment</td>
+                        <td>The actual AWS setup</td>
+                    </tr>
+                    <tr>
+                        <td>Stage (Serverless)</td>
+                        <td>A logical label inside AWS</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 A stage lives inside an AWS environment.</p>
+            <p>Example:</p>
+            <pre><code>
+AWS Account: mycompany
+Region: ap-southeast-1
+Stages: dev, prod
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Typical AWS environment setups</h2>
+            <p>✅ Small projects</p>
+            <pre><code>
+1 AWS Account
+├── dev stage
+└── prod stage
+            </code></pre>
+
+            <p>✅ Medium / enterprise (best practice)</p>
+            <pre><code>
+AWS Account (dev)
+└── dev stage
+
+AWS Account (prod)
+└── prod stage
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How this applies to Serverless Framework</h2>
+            <p>In your config:</p>
+            <pre><code>
+provider:
+  region: ap-southeast-1
+  stage: dev
+            </code></pre>
+            <p>This means:</p>
+            <ul>
+                <li>Deploy to Singapore region</li>
+                <li>Use dev environment configuration</li>
+                <li>Create dev AWS resources</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why AWS environments matter</h2>
+            <ul>
+                <li>🔒 Security isolation</li>
+                <li>💥 Prevent production outages</li>
+                <li>🧪 Safe testing</li>
+                <li>💰 Cost tracking per environment</li>
+                <li>🚀 Professional deployment pipelines</li>
+            </ul>
+            <p>If you want, I can explain:</p>
+            <ul>
+                <li>🔐 AWS profiles vs environments</li>
+                <li>🏗 Best environment structure for startups</li>
+                <li>⚙ How CI/CD deploys to different environments</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Yes — absolutely yes 👍</p>
+            <p>You can (and very often do) have multiple stages in a single AWS account.</p>
+            <p>This is actually very common, especially for small teams and startups.</p>
+            <p>Short answer</p>
+            <p>1 AWS account → many stages</p>
+            <p>Example:</p>
+            <pre><code>
+AWS Account: mycompany
+Region: ap-southeast-1
+Stages: dev, test, staging, prod
+            </code></pre>
+
+            <p>How this works in practice (Serverless Framework)</p>
+            <pre><code>
+provider:
+  name: aws
+  region: ap-southeast-1
+  stage: ${opt:stage, 'dev'}
+            </code></pre>
+            <p>Deploy:</p>
+            <pre><code>
+serverless deploy --stage dev
+serverless deploy --stage prod
+            </code></pre>
+            <p>Serverless creates separate resources per stage.</p>
+        </section>
+
+        <section>
+            <h2>What stays the same?</h2>
+            <ul>
+                <li>✅ AWS account</li>
+                <li>✅ AWS billing</li>
+                <li>✅ IAM users (unless you separate them)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What is different per stage?</h2>
+            <p>🔹 API Gateway</p>
+            <p>Different URLs:</p>
+            <pre><code>
+/dev/hello
+/prod/hello
+            </code></pre>
+
+            <p>🔹 Lambda functions</p>
+            <p>Different names:</p>
+            <pre><code>
+my-api-dev-hello
+my-api-prod-hello
+            </code></pre>
+
+            <p>🔹 Logs</p>
+            <p>Separate CloudWatch log groups:</p>
+            <pre><code>
+/aws/lambda/my-api-dev-hello
+/aws/lambda/my-api-prod-hello
+            </code></pre>
+
+            <p>🔹 Environment variables</p>
+            <pre><code>
+provider:
+  environment:
+    STAGE: ${self:provider.stage}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example: different DB per stage (same account)</h2>
+            <pre><code>
+custom:
+  db:
+    dev: mongodb://dev-db
+    prod: mongodb://prod-db
+
+provider:
+  environment:
+    DB_URL: ${self:custom.db.${self:provider.stage}}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Pros of single AWS account + multiple stages</h2>
+            <p>✅ Simple setup</p>
+            <p>✅ Lower overhead</p>
+            <p>✅ Easy to manage</p>
+            <p>✅ Perfect for:</p>
+            <ul>
+                <li>Solo devs</li>
+                <li>Startups</li>
+                <li>MVPs</li>
+                <li>Side projects</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Cons / risks ⚠️</h2>
+            <p>❌ Accidental prod deletion</p>
+            <p>❌ IAM permissions harder to lock down</p>
+            <p>❌ Dev bugs could affect prod if misconfigured</p>
+            <p>(Still manageable with good discipline.)</p>
+        </section>
+
+        <section>
+            <h2>When to use multiple AWS accounts instead</h2>
+            <p>Use separate AWS accounts when:</p>
+            <ul>
+                <li>You’re handling sensitive production data</li>
+                <li>You need strict security isolation</li>
+                <li>You have a large team</li>
+                <li>Compliance requirements exist</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Best-practice hybrid (very common)</h2>
+            <pre><code>
+AWS Account (dev)
+└── dev, test stages
+
+AWS Account (prod)
+└── prod stage
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Bottom line</h2>
+            <p>✔ Yes, multiple stages in one AWS account is totally fine</p>
+            <p>✔ Serverless Framework fully supports it</p>
+            <p>✔ Many production apps run this way</p>
+            <p>If you want, I can show:</p>
+            <ul>
+                <li>🔐 how to protect prod from accidental deploys</li>
+                <li>⚙ AWS profiles per stage</li>
+                <li>🚀 CI/CD setup for multi-stage deploys</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

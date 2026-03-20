@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Deep linking in SwiftUI</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Deep linking in SwiftUI</h1>
+                    <p class="subtitle">
+                        Deep linking in SwiftUI is how your app opens to a specific screen or state when it’s launched from outside the app—like a URL, email, push notification, QR code, or another app.
+                        <p>Think: “Don’t just open the app — open this exact page inside it.” 🔗</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What a deep link looks like</h2>
+            <p>Examples:</p>
+            <ul>
+                <li>myapp://profile/42</li>
+                <li>https://trycastanet.com/invite/abc123</li>
+                <li>Push notification → “Open message #99”</li>
+            </ul>
+            <p>All of those should land the user exactly where they expect, not just the home screen.</p>
+        </section>
+
+        <section>
+            <h2>How deep linking works in SwiftUI (high level)</h2>
+            <p>There are three layers:</p>
+            <ol>
+                <li>System – iOS hands your app a URL</li>
+                <li>App entry – SwiftUI receives the URL</li>
+                <li>Navigation – your app routes to the right screen</li>
+            </ol>
+            <p>SwiftUI gives you .onOpenURL and .scenePhase to catch the link.</p>
+        </section>
+
+        <section>
+            <h2>Basic deep link handling in SwiftUI</h2>
+            <p>1️⃣ Register a URL scheme (Info.plist)</p>
+<pre><code>
+&lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+&lt;array&gt;
+    &lt;dict&gt;
+    &lt;key&gt;CFBundleURLSchemes&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;myapp&lt;/string&gt;
+    &lt;/array&gt;
+    &lt;/dict&gt;
+&lt;/array&gt;
+</code></pre>
+        <p>Now myapp://something opens your app.</p>
+        
+        <p>Nice question — this is one of those iOS things that looks tiny but is actually doing a lot under the hood. Let’s peel it down to bare metal 🧠⚙️</p>
+        <p>What this snippet actually is</p>
+        <pre><code>
+&lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+&lt;array&gt;
+  &lt;dict&gt;
+    &lt;key&gt;CFBundleURLSchemes&lt;/key&gt;
+    &lt;array&gt;
+      &lt;string&gt;myapp&lt;/string&gt;
+    &lt;/array&gt;
+  &lt;/dict&gt;
+&lt;/array&gt;
+        </code></pre>
+
+        <p>This lives in Info.plist and tells iOS:</p>
+        <p>“This app claims ownership of the URL scheme myapp://”</p>
+        <p>Once installed, your app becomes a URL handler at the OS level.</p>
+
+        <p>Think in OS terms (not app terms)</p>
+        <p>Step 1: App installation</p>
+        <p>When your app is installed:</p>
+        <ol>
+            <li>iOS reads Info.plist</li>
+            <li>Extracts CFBundleURLTypes</li>
+            <li>Registers the scheme myapp in a system-wide URL dispatch table</li>
+        </ol>
+        <p>Conceptually (not literally):</p>
+        <pre><code>
+URL Scheme Registry:
+- myapp → com.yourcompany.yourapp
+        </code></pre>
+        <p>This registry lives in SpringBoard / LaunchServices, not your app.</p>
+
+        <p>Step 2: Someone opens a URL</p>
+        <p>Somewhere in the system:</p>
+        <pre><code>
+myapp://profile/123?tab=posts
+        </code></pre>
+
+        <p>This can come from:</p>
+        <ul>
+            <li>Safari</li>
+            <li>Messages</li>
+            <li>Mail</li>
+            <li>Another app</li>
+            <li>Terminal (simulator)</li>
+            <li>Universal link fallback</li>
+            <li>OAuth redirect (Google / Apple / Firebase)</li>
+        </ul>
+
+        <p>Step 3: URL resolution (kernel → system services)</p>
+        <ol>
+            <li>
+                The system parses the URL
+                <pre><code>
+scheme = myapp
+host   = profile
+path   = /123
+query  = tab=posts
+                </code></pre>
+            </li>
+            <li>
+                iOS asks:
+                <p>“Who owns the myapp scheme?”</p>
+                <pre><code>
+com.yourcompany.yourapp
+                </code></pre>
+            </li>
+            <li>
+                LaunchServices responds:
+            </li>
+        </ol>
+        </section>
+
+        <section>
+            <h2>Step 4: App launch mechanics</h2>
+            <p>If the app is NOT running</p>
+            <p>iOS:</p>
+            <ul>
+                <li>Forks a new process for your app</li>
+                <li>Loads the Mach-O binary</li>
+                <li>Initializes Objective-C / Swift runtime</li>
+                <li>Creates UIApplication</li>
+                <li>Calls app lifecycle hooks</li>
+            </ul>
+
+            <p>If the app IS running</p>
+            <ul>
+                <li>App stays alive</li>
+                <li>URL is delivered directly</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 5: URL delivery to your code</h2>
+            <p>UIKit (AppDelegate)</p>
+            <pre><code>
+func application(
+  _ app: UIApplication,
+  open url: URL,
+  options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+) -> Bool {
+    // You get the URL here
+    return true
+}
+            </code></pre>
+
+            <p>Scene-based apps (modern iOS)</p>
+            <pre><code>
+func scene(
+  _ scene: UIScene,
+  openURLContexts URLContexts: Set&lt;UIOpenURLContext&gt;
+) {
+    let url = URLContexts.first!.url
+}
+            </code></pre>
+            <p>This is the first moment your code touches the URL.</p>
+        </section>
+
+        <section>
+            <h2>What the system guarantees</h2>
+            <p>By the time your code runs:</p>
+            <ul>
+                <li>The app identity is verified</li>
+                <li>The scheme matches your Info.plist</li>
+                <li>The URL is syntactically valid</li>
+                <li>The caller is sandboxed (no shared memory)</li>
+                <li>Data is passed by value, not reference</li>
+            </ul>
+            <p>No app can “fake” being your app unless it owns the same bundle ID + signature.</p>
+
+            <p>Security model (important)</p>
+            <p>Custom URL schemes are:</p>
+            <p>❌ NOT exclusive</p>
+            <p>❌ NOT cryptographically verified</p>
+            <p>❌ NOT secure for secrets</p>
+            <p>Any app can also declare:</p>
+
+            <pre><code>
+&lt;string&gt;myapp&lt;/string&gt;
+            </code></pre>
+
+            <p>If two apps declare the same scheme:</p>
+            <ul>
+                <li>iOS picks one (undefined order)</li>
+                <li>You get scheme hijacking</li>
+            </ul>
+
+            <p>That’s why OAuth prefers:</p>
+            <ul>
+                <li>Universal Links</li>
+                <li>ASWebAuthenticationSession</li>
+            </ul>
+
+            <p>Why OAuth uses this anyway</p>
+            <p>Example Google Sign-In flow:</p>
+            <ol>
+                <li>
+                    App opens browser:
+                    <pre><code>
+https://accounts.google.com/...
+                    </code></pre>
+                </li>
+                <li>
+                    User logs in
+                </li>
+                <li>
+                    Google redirects:
+                    <pre><code>
+myapp://oauth?code=abc123
+                    </code></pre>
+                </li>
+                <li>
+                    iOS:
+                    <ul>
+                        <li>Resolves myapp</li>
+                        <li>Reopens your app</li>
+                        <li>Passes the auth code</li>
+                    </ul>
+                </li>
+                <li>
+                    App exchanges code → token securely over HTTPS
+                    <p>The URL itself carries no secrets, only short-lived codes.</p>
+                </li>
+            </ol>
+
+            <p>Bare-metal mental model</p>
+            <p>Think of it like:</p>
+            <pre><code>
+Interrupt vector table (but for URLs)
+
+URL scheme → App process
+            </code></pre>
+            <p>The OS:</p>
+            <ul>
+                <li>Owns the table</li>
+                <li>Dispatches events</li>
+                <li>Starts processes</li>
+                <li>Delivers structured data</li>
+            </ul>
+            <p>Your Info.plist entry is literally saying:</p>
+            <p>“Register an interrupt handler for scheme myapp”</p>
+
+            <p>Comparison to Universal Links</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Custom Scheme</th>
+                        <th>Universal Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OS-level routing</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Domain ownership</td>
+                        <td>❌</td>
+                        <td>✅ (SSL + apple-app-site-association)</td>
+                    </tr>
+                    <tr>
+                        <td>App exclusivity</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>OAuth recommended</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Simpler setup</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>TL;DR “Too Long; Didn’t Read.” (but still technical)</p>
+            <ul>
+                <li>CFBundleURLTypes registers a URL scheme handler at install time</li>
+                <li>iOS keeps a global scheme → app map</li>
+                <li>
+                    When myapp:// is opened, iOS:
+                    <ul>
+                        <li>Resolves the app</li>
+                        <li>Launches or resumes it</li>
+                        <li>Delivers the URL to lifecycle callbacks</li>
+                    </ul>
+                </li>
+                <li>This is OS-level dispatch, not app-to-app messaging</li>
+                <li>Powerful, simple, but not secure by itself</li>
+            </ul>
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Trace this through Mach-O → dyld → UIKit</li>
+                <li>Compare with Android intent filters</li>
+                <li>Show how Firebase / Google Sign-In wires this internally</li>
+                <li>Explain why Apple Review cares about this in sign-in flows</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2️⃣ Catch the URL in SwiftUI</h2>
+            <pre><code>
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .onOpenURL { url in
+                    print("Opened with URL:", url)
+                }
+        }
+    }
+}
+            </code></pre>
+            <p>At this point, you have the link, but you’re not navigating yet.</p>
+        </section>
+
+        <section>
+            <h2>Real deep linking = navigation</h2>
+            <p>SwiftUI deep linking usually works with NavigationStack + NavigationPath.</p>
+            <p>Central router pattern (recommended)</p>
+            <pre><code>
+final class AppRouter: ObservableObject {
+    @Published var path = NavigationPath()
+
+    func handle(url: URL) {
+        guard url.scheme == "myapp" else { return }
+
+        let components = url.pathComponents
+
+        if components.contains("profile"),
+            let id = components.last {
+            path.append(Route.profile(id: id))
+        }
+    }
+}                
+            </code></pre>
+
+            <p>Define routes:</p>
+            <pre><code>
+enum Route: Hashable {
+    case profile(id: String)
+}                
+            </code></pre>
+
+            <p>Hook it into the app</p>
+            <pre><code>
+@main
+struct MyApp: App {
+    @StateObject private var router = AppRouter()
+
+    var body: some Scene {
+        WindowGroup {
+            NavigationStack(path: $router.path) {
+                HomeView()
+                    .navigationDestination(for: Route.self) { route in
+                        switch route {
+                        case .profile(let id):
+                            ProfileView(userID: id)
+                        }
+                    }
+            }
+            .onOpenURL { url in
+                router.handle(url: url)
+            }
+        }
+    }
+}
+            </code></pre>
+
+            <p>Now:</p>
+            <ul>
+                <li>myapp://profile/42 → opens ProfileView(userID: "42")</li>
+            </ul>
+            <p>That’s real deep linking.</p>
+        </section>
+
+        <section>
+            <h2>Universal Links (production-grade)</h2>
+            <p>Instead of myapp://, you can use https links:</p>
+            <pre><code>
+https://trycastanet.com/invite/abc123
+            </code></pre>
+
+            <p>Benefits:</p>
+            <ul>
+                <li>Works even if the app is not installed</li>
+                <li>Opens website → App Store → app → correct screen</li>
+                <li>Required for many Apple Review flows</li>
+            </ul>
+
+            <p>You’ll need:</p>
+            <ul>
+                <li>Associated Domains capability</li>
+                <li>apple-app-site-association file on your server</li>
+            </ul>
+
+            <p>SwiftUI handling is the same — still .onOpenURL.</p>
+        </section>
+
+        <section>
+            <h2>Common deep link use cases</h2>
+            <ul>
+                <li>✅ Email verification</li>
+                <li>✅ Magic login links</li>
+                <li>✅ Invite links</li>
+                <li>✅ Push notification routing</li>
+                <li>✅ OAuth callbacks (Google / Apple / Azure AD 👀)</li>
+            </ul>
+            <p>(You’ve already brushed against this with Google Sign-In + Apple review.)</p>
+        </section>
+
+        <section>
+            <h2>SwiftUI gotchas (important)</h2>
+            <p>⚠️ App state matters</p>
+            <ul>
+                <li>Cold start vs background vs foreground</li>
+                <li>Auth not ready yet → store the deep link and replay after login</li>
+            </ul>
+
+            <p>⚠️ NavigationPath must be ready</p>
+            <ul>
+                <li>Don’t append before NavigationStack exists</li>
+            </ul>
+
+            <p>⚠️ Parsing URLs cleanly</p>
+            <ul>
+                <li>Prefer URLComponents over string parsing</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Mental model</h2>
+            <p>Deep linking = URL → Intent → Route → View</p>
+            <p>SwiftUI just gives you the hook — you decide how smart the routing is.</p>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Build a full auth → deep link → destination flow</li>
+                <li>Show push notification deep linking</li>
+                <li>Or wire this into your React Native + SwiftUI shell setup</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

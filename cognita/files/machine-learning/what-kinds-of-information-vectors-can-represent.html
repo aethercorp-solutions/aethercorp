@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What kinds of information vectors can represent</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What kinds of information vectors can represent</h1>
+                    <p class="subtitle">
+                        A vector is a way to represent information as an ordered list of numbers. Each number captures one feature (attribute, measurement, or aspect) of whatever you’re describing. Vectors show up everywhere because they’re compact, precise, and easy to work with mathematically.
+                        <p>Below I’ll walk through what kinds of information vectors can represent, with clear examples and detailed explanations.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Physical quantities (magnitude + direction)</h2>
+            <p>This is the classic meaning of a vector in physics.</p>
+            <p>Example: Velocity of a car</p>
+            <p>A car moving northeast at 60 km/h can be represented as:</p>
+            <pre><code>
+v = (42.4, 42.4)
+            </code></pre>
+            
+            <p>Explanation</p>
+            <ul>
+                <li>The first value = speed in the x-direction (east)</li>
+                <li>The second value = speed in the y-direction (north)</li>
+                <li>Together, they fully describe how fast and in what direction the car moves</li>
+            </ul>
+
+            <p>Why a vector?</p>
+            <ul>
+                <li>Speed alone (60 km/h) loses direction</li>
+                <li>The vector preserves both direction and magnitude</li>
+            </ul>
+
+            <p>Great question — this example is exactly where vectors start to feel real instead of abstract. Let’s break it down slowly and cleanly.</p>
+            <p><b>What does “60 km/h toward northeast” mean?</b></p>
+            <p>“Northeast” means the direction is halfway between east and north.</p>
+            <p>So the car is:</p>
+            <ul>
+                <li>moving east</li>
+                <li>and north</li>
+                <li>by the same amount</li>
+            </ul>
+            <p>That’s the key idea.</p>
+
+            <p>Step 1: Set up directions (x and y axes)</p>
+            <p>We choose a coordinate system:</p>
+            <ul>
+                <li>x-axis → East</li>
+                <li>y-axis → North</li>
+            </ul>
+            <p>So any velocity vector looks like:</p>
+            <pre><code>
+v = (vx​, vy)
+            </code></pre>
+
+            <p>where:</p>
+            <ul>
+                <li>vx = speed toward the east</li>
+                <li>vy = speed toward the north</li>
+            </ul>
+
+            <p>Step 2: Split the 60 km/h into components</p>
+            <p>The total speed is 60 km/h, but that speed is shared between east and north.</p>
+            <p>Because northeast is a 45° angle, the east and north components are equal.</p>
+            <p>We use trigonometry:</p>
+            <pre><code>
+vx = 60 cos(45deg)
+vy = 60 cos(45deg)
+            </code></pre>
+
+            <p>And since:</p>
+            cos(45 deg) = sin(45 deg) = sqrt(2)/2 == 0.707
+
+            <p>Step 3: Do the math</p>
+            vx = 60 x 0.707 == 42.4
+            vy = 60 x 0.707 == 42.4
+
+            <p>Final vector</p>
+            v = (42.4, 42.4)
+
+            <p>This means:</p>
+            <ul>
+                <li>The car moves 42.4 km/h east</li>
+                <li>and 42.4 km/h north</li>
+                <li>at the same time</li>
+            </ul>
+
+            <p>Together, those two components combine to give:</p>
+            <ul>
+                <li>total speed = 60 km/h</li>
+                <li>direction = northeast</li>
+            </ul>
+
+            <p>Quick check (why this works)</p>
+            <p>If you recombine the components:</p>
+            <pre><code>
+speed = sqrt(42.4^2 + 42.4^2) == sqrt(3600) == 60
+            </code></pre>
+            <p>So the math checks out perfectly.</p>
+
+            <p>Intuitive way to think about it</p>
+            <p>Imagine:</p>
+            <ul>
+                <li>1 hour passes</li>
+                <li>the car travels 42.4 km east</li>
+                <li>and 42.4 km north</li>
+            </ul>
+            <p>Draw that as a right triangle — the diagonal path is exactly 60 km toward northeast.</p>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Explain this visually with a coordinate diagram (step-by-step)</li>
+                <li>Show how it changes for northwest, southeast, or any angle</li>
+                <li>Explain why vectors are better than just saying “60 km/h”</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Position or location in space</h2>
+            <p>Vectors can describe where something is.</p>
+            <p>Example: Position on a map</p>
+            <p>If a point is 3 km east and 4 km north of a city center:</p>
+            <pre><code>
+p = (3, 4)
+            </code></pre>
+
+            <p>Explanation</p>
+            <ul>
+                <li>Each coordinate is a feature of position</li>
+                <li>In 3D space, you’d use three numbers: (x, y, z)</li>
+                <li>GPS coordinates are essentially vectors</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Objects with multiple attributes (data representation)</h2>
+            <p>Any object described by multiple properties can be turned into a vector.</p>
+            <p>Example: Student information</p>
+            <p>Suppose we track:</p>
+            <ul>
+                <li>Age</li>
+                <li>Years of education</li>
+                <li>GPA</li>
+            </ul>
+
+            <pre><code>
+Student = (20, 14, 3.8)
+            </code></pre>
+            <p>Explanation</p>
+            <ul>
+                <li>Each dimension represents one attribute</li>
+                <li>The vector becomes a compact numeric summary of the student</li>
+                <li>Many students → many vectors → a dataset</li>
+            </ul>
+            <p>This is the foundation of data science and machine learning.</p>
+        </section>
+
+        <section>
+            <h2>4. Images as vectors</h2>
+            <p>Computers represent images using vectors.</p>
+            <p>Example: Grayscale image</p>
+            <p>A 28×28 pixel image (like handwritten digits) becomes:</p>
+            <pre><code>
+x = (x1, x2, ..., x784)
+            </code></pre>
+
+            <p>Explanation</p>
+            <ul>
+                <li>Each pixel intensity is a number (0–255)</li>
+                <li>All pixel values are stacked into one long vector</li>
+                <li>Machine learning models “see” images as vectors, not pictures</li>
+            </ul>
+            <p>Color images just use more numbers (e.g., RGB values).</p>
+        </section>
+
+        <section>
+            <h2>5. Text and language (word vectors / embeddings)</h2>
+            <p>Words and sentences can also be vectors.</p>
+            <p>Example: Word embeddings</p>
+            <p>The word “king” might be represented as:</p>
+            <pre><code>
+k = (0.21, -0.34, 0.89, ...)
+            </code></pre>
+
+            <p>Explanation</p>
+            <ul>
+                <li>Each number captures a hidden linguistic feature</li>
+                <li>Similar words have similar vectors</li>
+                <li>Famous result:</li>
+            </ul>
+
+            <pre><code>
+king - man + woman == queen
+            </code></pre>
+            <p>This is how search engines, translators, and chatbots understand meaning.</p>
+        </section>
+
+        <section>
+            <h2>6. Preferences and behavior</h2>
+            <p>Vectors can model human choices.</p>
+            <p>Example: Movie preferences</p>
+            <p>A user rates genres from 0 to 5:</p>
+            <pre><code>
+v = (Action = 5, Comedy = 3, Drama = 1)
+            </code></pre>
+
+            <p>Explanation</p>
+            <ul>
+                <li>Each dimension = a preference</li>
+                <li>Recommendation systems compare vectors to find similar users</li>
+                <li>Netflix, Spotify, and Amazon rely heavily on this idea</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Time-based measurements</h2>
+            <p>Vectors can store measurements taken over time.</p>
+            <p>Example: Daily temperatures over a week</p>
+            <pre><code>
+t = (28, 30, 29, 31, 33, 32, 30)
+            </code></pre>
+
+            <p>Explanation</p>
+            <ul>
+                <li>Each element corresponds to a specific day</li>
+                <li>Useful for forecasting, pattern detection, and analysis</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why vectors are so powerful</h2>
+            <p>Vectors let us:</p>
+            <ul>
+                <li>Represent complex things numerically</li>
+                <li>Compare objects using distance or similarity</li>
+                <li>Perform calculations (dot product, norms, projections)</li>
+                <li>Feed real-world information into algorithms</li>
+            </ul>
+            <p>In short:</p>
+            <p>If something can be described using numbers, it can be represented as a vector.</p>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Explain vectors geometrically (with diagrams in mind)</li>
+                <li>Show how vectors are used in machine learning</li>
+                <li>Compare vectors vs matrices</li>
+                <li>Explain vector operations with real-life meaning</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

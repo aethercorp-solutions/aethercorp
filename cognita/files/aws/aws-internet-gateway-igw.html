@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Internet Gateway (IGW)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Internet Gateway (IGW)</h1>
+                    <p class="subtitle">
+                        An Internet Gateway (IGW) is an AWS VPC component that lets resources inside your Virtual Private Cloud (VPC) talk to the public internet — both outbound and inbound.
+                        <p>Think of it as the front door of your VPC to the internet 🌐🚪</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What an Internet Gateway actually does</h2>
+            <p>An IGW does two critical things:</p>
+            <p>1️⃣ Enables outbound internet access</p>
+            <p>It allows instances in a VPC (like EC2) to send traffic to the internet.</p>
+            <p>Example:</p>
+            <ul>
+                <li>EC2 → Google.com ✅</li>
+            </ul>
+            <p>2️⃣ Enables inbound internet access</p>
+            <p>It allows traffic from the internet to reach your VPC if routing + security rules allow it.</p>
+            <p>Example:</p>
+            <ul>
+                <li>User → EC2 public IP ✅ (only if security groups & NACLs permit)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>When an IGW is required</h2>
+            <p>You need an IGW if:</p>
+            <ul>
+                <li>Your EC2 instance has a public IPv4 address or Elastic IP</li>
+                <li>Your route table has a route like:</li>
+            </ul>
+            <pre><code>
+0.0.0.0/0 → Internet Gateway
+            </code></pre>
+            <p>Without an IGW:</p>
+            <p>❌ No internet access — even with a public IP</p>
+        </section>
+
+        <section>
+            <h2>How IGW fits into the VPC flow</h2>
+            <pre><code>
+EC2 (public subnet)
+   ↓
+Route Table (0.0.0.0/0 → IGW)
+   ↓
+Internet Gateway
+   ↓
+Internet
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Key properties of an Internet Gateway</h2>
+            <ul>
+                <li>✔️ Horizontally scalable (no bandwidth limits to configure)</li>
+                <li>✔️ Highly available (AWS-managed)</li>
+                <li>✔️ One IGW per VPC</li>
+                <li>✔️ Must be attached to a VPC</li>
+                <li>❌ Does NOT provide security (that’s Security Groups & NACLs)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Public subnet vs Private subnet (important!)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subnet Type</th>
+                        <th>Route to IGW</th>
+                        <th>Internet Access</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Public Subnet</td>
+                        <td>Yes</td>
+                        <td>✅ Direct</td>
+                    </tr>
+                    <tr>
+                        <td>Private Subnet</td>
+                        <td>No</td>
+                        <td>❌ Direct (uses NAT instead)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Private subnets use NAT Gateway, not IGW, for outbound internet.</p>
+        </section>
+
+        <section>
+            <h2>Common confusion cleared up</h2>
+            <p>❓ IGW vs NAT Gateway</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>IGW</th>
+                        <th>NAT Gateway</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Inbound + Outbound</td>
+                        <td>Outbound only</td>
+                    </tr>
+                    <tr>
+                        <td>Public subnets</td>
+                        <td>Private subnets</td>
+                    </tr>
+                    <tr>
+                        <td>Needs public IP</td>
+                        <td>No public IP on private instances</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Simple real-world analogy</h2>
+            <ul>
+                <li>VPC = Your office building</li>
+                <li>IGW = Main entrance door</li>
+                <li>Route table = Signboards telling traffic where to go</li>
+                <li>Security Group = Security guard checking who gets in</li>
+            </ul>
+            <p>If you want, I can explain:</p>
+            <ul>
+                <li>IGW vs NAT Gateway in a serverless/Lambda setup</li>
+                <li>Why Lambda in a VPC loses internet without NAT/IGW</li>
+                <li>How this applies to your AWS API Gateway + Lambda setup you’ve been working on</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>IGW vs NAT Gateway in a serverless/Lambda setup</h2>
+            <p>Great question — this is one of the most confusing parts of serverless on AWS, so let’s make it click 👌</p>
+            <p>IGW vs NAT Gateway in a Lambda (serverless) setup</p>
+            <p>(fast truth)</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Used by Lambda?</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Internet Gateway (IGW)</td>
+                        <td>❌ Directly</td>
+                        <td>Lets public subnets talk to the internet</td>
+                    </tr>
+                    <tr>
+                        <td>NAT Gateway</td>
+                        <td>✅</td>
+                        <td>Lets private subnets (Lambda) access the internet</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 Lambda never talks to the internet through an IGW directly.</p>
+        </section>
+
+        <section>
+            <h2>How Lambda networking actually works</h2>
+            <p>Case 1️⃣ Lambda NOT in a VPC (default)</p>
+            <pre><code>
+Lambda
+→ AWS-managed internet access
+→ Internet
+            </code></pre>
+            <ul>
+                <li>✅ Can access the internet automatically</li>
+                <li>❌ Cannot access VPC resources (RDS, EC2, Redis)</li>
+                <li>💡 Best for pure APIs, webhooks, 3rd-party calls</li>
+            </ul>
+            <p>No IGW. No NAT. AWS handles everything.</p>
+        </section>
+
+        <section>
+            <h2>Case 2️⃣ Lambda IN a VPC (this is where things break)</h2>
+            <pre><code>
+Lambda (private subnet)
+→ ? → Internet ❌
+            </code></pre>
+            <p>The moment you attach a Lambda to a VPC:</p>
+            <ul>
+                <li>❌ Internet access is lost</li>
+                <li>❌ Even axios, fetch, npm install, Stripe calls fail</li>
+            </ul>
+            <p>Why?</p>
+            <p>👉 Private subnets cannot use IGW</p>
+        </section>
+
+        <section>
+            <h2>Correct setup: Lambda + NAT Gateway</h2>
+            <p>Architecture</p>
+            <pre><code>
+Lambda (private subnet)
+→ Route Table (0.0.0.0/0 → NAT Gateway)
+→ NAT Gateway (public subnet)
+→ Internet Gateway
+→ Internet
+            </code></pre>
+
+            <p>What each piece does</p>
+            <p>🔹 NAT Gateway</p>
+            <ul>
+                <li>Used by private subnets</li>
+                <li>Allows outbound-only internet access</li>
+                <li>Lambda uses this, not IGW</li>
+            </ul>
+            <p>🔹 Internet Gateway</p>
+            <ul>
+                <li>Attached to the VPC</li>
+                <li>Used by the NAT Gateway, not Lambda</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why Lambda must be in a private subnet</h2>
+            <ul>
+                <li>Lambda never accepts inbound connections</li>
+                <li>It only makes outbound calls</li>
+                <li>Public IPs are useless for Lambda</li>
+                <li>Security best practice</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Common mistakes (🔥 very common)</h2>
+            <p>❌ “I attached an IGW but Lambda still can’t access internet”</p>
+            <p>✔️ Correct — Lambda can’t use IGW directly</p>
+
+            <p>❌ “I put Lambda in a public subnet”</p>
+            <p>✔️ Doesn’t matter — Lambda still has no public IP</p>
+
+            <p>❌ “I don’t want NAT to save money”</p>
+            <p>✔️ Then don’t put Lambda in a VPC</p>
+        </section>
+
+        <section>
+            <h2>Cost reality check 💸</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lambda NOT in VPC</td>
+                        <td>💸 $0</td>
+                    </tr>
+                    <tr>
+                        <td>NAT Gateway</td>
+                        <td>💸 ~$32/month + data</td>
+                    </tr>
+                    <tr>
+                        <td>VPC Endpoints</td>
+                        <td>💸 Cheaper (for AWS services only)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>💡 Use VPC Endpoints (S3, DynamoDB, Secrets Manager) to avoid NAT costs.</p>
+        </section>
+
+        <section>
+            <h2>Best practice summary</h2>
+            <p>✅ Use IGW when:</p>
+            <ul>
+                <li>You have EC2 in public subnets</li>
+                <li>You need inbound internet traffic</li>
+            </ul>
+
+            <p>✅ Use NAT Gateway when:</p>
+            <ul>
+                <li>Lambda is in a VPC</li>
+                <li>Lambda needs outbound internet access</li>
+            </ul>
+
+            <p>❌ Do NOT use anything when:</p>
+            <ul>
+                <li>Lambda does not need VPC access</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>One-sentence rule to remember</h2>
+            <p>IGW is for public resources.</p>
+            <p>NAT Gateway is for private resources like Lambda.</p>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Draw an exact Lambda + API Gateway diagram</li>
+                <li>Show Terraform / CloudFormation routes</li>
+                <li>Explain VPC endpoints vs NAT for Lambda cost-saving</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why Lambda in a VPC loses internet without NAT/IGW</h2>
+            <p>This happens because of how AWS isolates VPC networking, and it’s 100% by design (not a bug). Let’s walk it step-by-step so it really sticks.</p>
+            <p>Short answer (the core reason)</p>
+            <p>When you put a Lambda in a VPC, AWS removes its default internet access.
+                From that point on, the Lambda behaves like a private subnet resource and needs NAT + IGW to reach the internet.</p>
+        </section>
+
+        <section>
+            <h2>What Lambda has BEFORE VPC attachment</h2>
+            <p>Lambda not in a VPC (default)</p>
+            <pre><code>
+Lambda
+→ AWS-managed network
+→ Internet
+            </code></pre>
+            <ul>
+                <li>AWS gives Lambda implicit outbound internet</li>
+                <li>No routing tables</li>
+                <li>No subnets</li>
+                <li>No IGW / NAT needed</li>
+            </ul>
+            <p>This is why Stripe, SendGrid, Google APIs “just work”.</p>
+        </section>
+
+        <section>
+            <h2>What changes the moment you attach a VPC</h2>
+            <p>When you attach a Lambda to a VPC, AWS does three important things:</p>
+            <p>1️⃣ Lambda gets ENIs inside your VPC</p>
+            <ul>
+                <li>Elastic Network Interfaces are created in your subnets</li>
+                <li>Lambda now lives inside your VPC network</li>
+                <li>It follows your route tables, not AWS’s</li>
+            </ul>
+
+            <p>2️⃣ AWS removes the default internet path</p>
+            <p>AWS cuts off:</p>
+            <pre><code>
+Lambda → AWS-managed internet
+            </code></pre>
+            <p>Why?</p>
+            <p>👉 Security + isolation</p>
+            <ul>
+                <li>Your VPC must be fully controlled by you</li>
+                <li>AWS will not assume you want internet access</li>
+            </ul>
+
+            <p>3️⃣ Private subnets cannot talk to IGW</p>
+            <p>Even if:</p>
+            <ul>
+                <li>Subnet route = 0.0.0.0/0 → IGW</li>
+                <li>Lambda is in that subnet</li>
+            </ul>
+            <p>❌ Lambda still cannot use IGW</p>
+            <p>Because:</p>
+            <ul>
+                <li>Lambda never gets a public IP</li>
+                <li>IGW requires a public IP on the source</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why IGW alone does NOT fix it</h2>
+            <p>IGW works only if:</p>
+            <ul>
+                <li>Resource has a public IP</li>
+                <li>Resource is in a public subnet</li>
+            </ul>
+            <p>Lambda:</p>
+            <ul>
+                <li>❌ No public IP</li>
+                <li>❌ No inbound connections</li>
+                <li>❌ No direct IGW support</li>
+            </ul>
+            <p>So traffic dies here:</p>
+            <pre><code>
+Lambda → IGW ❌
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why NAT Gateway fixes everything</h2>
+            <p>Correct path</p>
+            <pre><code>
+Lambda (private subnet)
+→ Route Table (0.0.0.0/0 → NAT Gateway)
+→ NAT Gateway (public subnet)
+→ Internet Gateway
+→ Internet
+            </code></pre>
+            
+            <p>Why this works</p>
+            <ul>
+                <li>NAT Gateway has a public IP</li>
+                <li>NAT translates Lambda’s private IP → public IP</li>
+                <li>IGW allows NAT to reach internet</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Security reason AWS designed it this way 🔒</h2>
+            <p>If AWS allowed:</p>
+            <pre><code>
+Lambda in VPC → IGW
+            </code></pre>
+            <p>Then:</p>
+            <ul>
+                <li>Lambdas could become accidentally public</li>
+                <li>VPC isolation would be meaningless</li>
+                <li>Massive security foot-guns</li>
+            </ul>
+            <p>AWS forces you to explicitly choose internet access.</p>
+        </section>
+
+        <section>
+            <h2>Visual summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lambda State</th>
+                        <th>Internet Access</th>
+                        <th>Why</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Not in VPC</td>
+                        <td>✅ Yes</td>
+                        <td>AWS-managed networking</td>
+                    </tr>
+                    <tr>
+                        <td>In VPC, no NAT</td>
+                        <td>❌ No</td>
+                        <td>No route + no public IP</td>
+                    </tr>
+                    <tr>
+                        <td>In VPC + NAT</td>
+                        <td>✅ Yes</td>
+                        <td>NAT provides public egress</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Mental model to remember 🧠</h2>
+            <p>Attaching a Lambda to a VPC is like locking it inside a private room.
+                If you want it to call the outside world, you must build a controlled exit (NAT).</p>
+        </section>
+
+        <section>
+            <h2>Pro tip (important for your setups)</h2>
+            <p>If your Lambda only needs:</p>
+            <ul>
+                <li>DynamoDB</li>
+                <li>S3</li>
+                <li>Secrets Manager</li>
+                <li>SQS / SNS</li>
+            </ul>
+            <p>👉 Use VPC Endpoints instead of NAT</p>
+            <p>Cheaper, faster, more secure.</p>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Explain why API Gateway still works without NAT</li>
+                <li>Show real route tables</li>
+                <li>Help you remove NAT to save money in your stack</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>How this applies to your AWS API Gateway + Lambda setup you’ve been working on</h2>
+            <p>Alright, let’s map this directly to your typical API Gateway + Lambda setup, no theory fluff — just what actually happens and why it matters.</p>
+            <p>I’ll walk it in decision form, because this is usually where things break in real projects.</p>
+        </section>
+
+        <section>
+            <h2>Your common setup (API Gateway → Lambda)</h2>
+            <pre><code>
+Client (Web / Mobile)
+→ API Gateway (public)
+→ Lambda
+→ (DB / 3rd-party / AWS services)
+            </code></pre>
+            <p>API Gateway is always public.</p>
+            <p>Lambda may or may not be in a VPC — that’s the key fork.</p>
+        </section>
+
+        <section>
+            <h2>Scenario 1️⃣ Lambda NOT in a VPC (simplest & cheapest)</h2>
+            <p>Architecture</p>
+            <pre><code>
+Internet
+→ API Gateway
+→ Lambda (no VPC)
+→ Internet / AWS services
+            </code></pre>
+
+            <p>What works automatically</p>
+            <ul>
+                <li>✅ Stripe / PayPal / SendGrid</li>
+                <li>✅ External REST APIs</li>
+                <li>✅ npm packages calling the internet</li>
+                <li>✅ DynamoDB, S3, Secrets Manager</li>
+            </ul>
+
+            <p>What does NOT work</p>
+            <ul>
+                <li>❌ RDS</li>
+                <li>❌ EC2</li>
+                <li>❌ ElastiCache</li>
+                <li>❌ Private services</li>
+            </ul>
+
+            <p>When this is best</p>
+            <ul>
+                <li>Pure REST API</li>
+                <li>Serverless-first design</li>
+                <li>No legacy DB</li>
+                <li>Cost-sensitive (no NAT)</li>
+            </ul>
+            <p>👉 This is the best default unless you need VPC access.</p>
+        </section>
+
+        <section>
+            <h2>Scenario 2️⃣ Lambda IN a VPC (most production apps)</h2>
+            <p>Architecture</p>
+            <pre><code>
+Internet
+→ API Gateway
+→ Lambda (private subnet)
+→ RDS / MongoDB / Redis
+            </code></pre>
+
+            <p>What suddenly breaks</p>
+            <ul>
+                <li>❌ Stripe</li>
+                <li>❌ Firebase</li>
+                <li>❌ Google APIs</li>
+                <li>❌ Any external HTTPS call</li>
+            </ul>
+            <p>This is the “why is axios failing??” moment 😅</p>
+        </section>
+
+        <section>
+            <h2>Why API Gateway still works (important!)</h2>
+            <p>People ask this a lot:</p>
+            <p>“If Lambda has no internet, why can API Gateway reach it?”</p>
+            <p>Because:</p>
+            <ul>
+                <li>API Gateway runs outside your VPC</li>
+                <li>AWS connects API Gateway → Lambda via internal AWS networking</li>
+                <li>This path does NOT use IGW or NAT</li>
+            </ul>
+            <p>So this works even with zero internet:</p>
+            <pre><code>
+API Gateway → Lambda ✅
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Correct production setup (what you actually want)</h2>
+            <p>Full architecture</p>
+            <pre><code>
+Client
+→ API Gateway
+→ Lambda (private subnet)
+   → RDS / MongoDB
+   → NAT Gateway
+   → Internet (Stripe, Firebase, etc.)
+            </code></pre>
+
+            <p>Required components</p>
+            <p>✔️ VPC</p>
+            <p>✔️ Private subnets (for Lambda)</p>
+            <p>✔️ Public subnet (for NAT)</p>
+            <p>✔️ NAT Gateway</p>
+            <p>✔️ Internet Gateway (attached to VPC)</p>
+        </section>
+
+        <section>
+            <h2>Route tables (this is the critical part)</h2>
+            <p>Private subnet (Lambda)</p>
+            <pre><code>
+0.0.0.0/0 → NAT Gateway
+            </code></pre>
+            <p>Public subnet (NAT)</p>
+            <pre><code>
+0.0.0.0/0 → Internet Gateway
+            </code></pre>
+            <p>Miss any one of these → internet is dead.</p>
+        </section>
+
+        <section>
+            <h2>Cost-optimized version (VERY important)</h2>
+            <p>Instead of sending all traffic through NAT:</p>
+            <p>Use VPC Endpoints for AWS services</p>
+            <ul>
+                <li>DynamoDB</li>
+                <li>S3</li>
+                <li>Secrets Manager</li>
+                <li>SQS / SNS</li>
+            </ul>
+
+            <p>Then NAT is used only for:</p>
+            <ul>
+                <li>Stripe</li>
+                <li>Google</li>
+                <li>Firebase</li>
+                <li>External APIs</li>
+            </ul>
+            <p>💡 This can cut NAT costs by 60–80%.</p>
+        </section>
+
+        <section>
+            <h2>Your mental checklist when debugging 🔍</h2>
+            <p>If Lambda can’t reach the internet, check in this order:</p>
+            <ol>
+                <li>Is Lambda attached to a VPC?</li>
+                <li>Is it in a private subnet?</li>
+                <li>Does the private subnet route to NAT Gateway?</li>
+                <li>Is NAT in a public subnet?</li>
+                <li>Does public subnet route to IGW?</li>
+                <li>Are NACLs allowing outbound traffic?</li>
+            </ol>
+            <p>99% of issues are #3 or #4.</p>
+        </section>
+
+        <section>
+            <h2>One-line takeaway for your stack</h2>
+            <p>API Gateway doesn’t care about VPCs.</p>
+            <p>Lambda does.</p>
+            <p>Internet access only exists if you explicitly build it.</p>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Review a real route table you’re using</li>
+                <li>Help you decide which Lambdas should leave the VPC</li>
+                <li>Show a Serverless Framework / Terraform config tuned for your app</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

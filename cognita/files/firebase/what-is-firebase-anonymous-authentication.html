@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is Firebase Anonymous Authentication?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is Firebase Anonymous Authentication?</h1>
+                    <p class="subtitle">
+                        Firebase Anonymous Authentication is a feature of Firebase (part of Google) that allows users to sign in to your app without creating an account or providing credentials (no email, phone, or social login required).
+                        <p>It creates a temporary, unique user ID (UID) for the user so they can:</p>
+                        <ul>
+                            <li>Access authenticated features</li>
+                            <li>Read/write to Firestore or Realtime Database (based on rules)</li>
+                            <li>Save user-specific data (cart, preferences, progress, etc.)</li>
+                            <li>Upgrade later to a permanent account (email, Google, etc.)</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔎 Why Use Anonymous Authentication?</h2>
+            <p>✅ Common Use Cases</p>
+            <ul>
+                <li>Guest checkout in e-commerce apps</li>
+                <li>Try-before-signup experience</li>
+                <li>Saving game progress before registration</li>
+                <li>Temporary sessions for content apps</li>
+            </ul>
+            <p>✅ Benefits</p>
+            <ul>
+                <li>No friction for first-time users</li>
+                <li>You still get a Firebase UID</li>
+                <li>Can link to permanent account later</li>
+                <li>Works with Firestore security rules</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Important Things to Know</h2>
+            <ul>
+                <li>Anonymous accounts are real Firebase users</li>
+                <li>
+                    They persist until:
+                    <ul>
+                        <li>User logs out</li>
+                        <li>App deletes account</li>
+                        <li>You delete them manually</li>
+                    </ul>
+                </li>
+                <li>On paid Firebase plans, anonymous users count as MAU (Monthly Active Users)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Step-by-Step Setup in React Native</h2>
+            <p>Assuming you're using React Native CLI (not Expo managed).</p>
+            <p>We will use:</p>
+            <ul>
+                <li>@react-native-firebase/app</li>
+                <li>@react-native-firebase/auth</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1️⃣ Create Firebase Project</h2>
+            <ol>
+                <li>Go to: https://console.firebase.google.com</li>
+                <li>Click Add Project</li>
+                <li>Follow setup steps</li>
+                <li>
+                    Add:
+                    <ul>
+                        <li>Android app (download google-services.json)</li>
+                        <li>iOS app (download GoogleService-Info.plist)</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>2️⃣ Enable Anonymous Authentication</h2>
+            <ol>
+                <li>In Firebase Console</li>
+                <li>Go to Authentication</li>
+                <li>Click Sign-in method</li>
+                <li>Enable Anonymous</li>
+                <li>Save</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>3️⃣ Install React Native Firebase</h2>
+            <pre><code>
+npm install @react-native-firebase/app
+npm install @react-native-firebase/auth
+            </code></pre>
+
+            <p>iOS Only</p>
+            <pre><code>
+cd ios
+pod install
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4️⃣ Configure Android</h2>
+            <p>🔹 Add google-services.json</p>
+            <p>Place it inside:</p>
+            <pre><code>
+android/app/google-services.json
+            </code></pre>
+
+            <p>🔹 Update android/build.gradle</p>
+            <pre><code>
+buildscript {
+    dependencies {
+        classpath 'com.google.gms:google-services:4.3.15'
+    }
+}                  
+            </code></pre>
+
+            <p>🔹 Update android/app/build.gradle</p>
+            <pre><code>
+apply plugin: 'com.google.gms.google-services'
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5️⃣ Configure iOS</h2>
+            <ul>
+                <li>Add GoogleService-Info.plist into ios/YourProject</li>
+                <li>Make sure it's added to Xcode project</li>
+                <li>Run pod install</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6️⃣ Sign In Anonymously (React Native Code)</h2>
+            <pre><code>
+import auth from '@react-native-firebase/auth';
+
+const signInAnonymously = async () => {
+  try {
+    const userCredential = await auth().signInAnonymously();
+    console.log('User ID:', userCredential.user.uid);
+  } catch (error) {
+    console.log('Error:', error);
+  }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7️⃣ Check Current User</h2>
+            <pre><code>
+const user = auth().currentUser;
+
+if (user) {
+  console.log('User is signed in:', user.uid);
+} else {
+  console.log('No user signed in');
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8️⃣ Listen for Auth State Changes (Recommended)</h2>
+            <pre><code>
+useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(user => {
+        if (user) {
+        console.log('User logged in:', user.uid);
+        } else {
+        console.log('User logged out');
+        }
+    });
+    
+    return subscriber; // unsubscribe on unmount
+}, []);                  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔄 Upgrade Anonymous User to Permanent Account</h2>
+            <p>Very important feature!</p>
+            <p>Example: Link to Email & Password</p>
+            <pre><code>
+import auth from '@react-native-firebase/auth';
+
+const linkAccount = async () => {
+  const credential = auth.EmailAuthProvider.credential(
+    'test@email.com',
+    'password123'
+  );
+
+  await auth().currentUser.linkWithCredential(credential);
+};
+            </code></pre>
+            <p>This keeps:</p>
+            <ul>
+                <li>Same UID</li>
+                <li>Same Firestore data</li>
+                <li>Same user identity</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🗑 Delete Anonymous User</h2>
+            <pre><code>
+await auth().currentUser.delete();
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 Firestore Security Rule Example</h2>
+            <pre><code>
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+            </code></pre>
+            <p>Anonymous users will pass request.auth != null.</p>
+        </section>
+
+        <section>
+            <h2>📌 Best Practices</h2>
+            <p>✔ Automatically sign in anonymously on app start</p>
+            <p>✔ Store user data using UID</p>
+            <p>✔ Provide option to upgrade account</p>
+            <p>✔ Clean up unused anonymous accounts (via Cloud Functions if needed)</p>
+        </section>
+
+        <section>
+            <h2>🧠 Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>No signup required</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Creates UID</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Can access Firestore</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Can upgrade account</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Secure</td>
+                        <td>Yes (with rules)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>If you'd like, I can also show:</p>
+            <ul>
+                <li>🔥 Firestore example storing anonymous user data</li>
+                <li>🔥 Full working React Native example</li>
+                <li>🔥 How to handle anonymous auth in Expo</li>
+                <li>🔥 Production best practices</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Since you already have Google Sign-In working with Firebase Auth, adding Anonymous Sign-In is actually very simple. The important part is deciding how you want it to behave:</p>
+            <p>You have two common patterns:</p>
+            <ol>
+                <li>✅ Allow users to continue as Guest (anonymous)</li>
+                <li>✅ Automatically start as anonymous → later upgrade to Google (best UX)</li>
+            </ol>
+            <p>I’ll explain both clearly.</p>
+        </section>
+
+        <section>
+            <h2>✅ Step 1: Enable Anonymous in Firebase Console</h2>
+            <ol>
+                <li>Go to Firebase Console</li>
+                <li>Authentication → Sign-in method</li>
+                <li>Enable Anonymous</li>
+                <li>Save</li>
+            </ol>
+            <p>That’s it on the Firebase side.</p>
+        </section>
+
+        <section>
+            <h2>✅ Step 2: Add Anonymous Sign-In in React Native</h2>
+            <p>Since you're already using:</p>
+            <pre><code>
+@react-native-firebase/auth
+            </code></pre>
+
+            <p>Just add:</p>
+            <pre><code>
+import auth from '@react-native-firebase/auth';
+
+const signInAsGuest = async () => {
+  try {
+    const userCredential = await auth().signInAnonymously();
+    console.log('Guest UID:', userCredential.user.uid);
+  } catch (error) {
+    console.log(error);
+  }
+};
+            </code></pre>
+            <p>Done. 🎉</p>
+        </section>
+
+        <section>
+            <h2>🚀 Recommended Architecture (Best Practice)</h2>
+            <p>Instead of showing login immediately:</p>
+            <p>👉 On app start:</p>
+            <p>Automatically sign in anonymously if no user exists.</p>
+            <pre><code>
+useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(async (user) => {
+        if (!user) {
+        await auth().signInAnonymously();
+        }
+    });
+    
+    return subscriber;
+}, []);                  
+            </code></pre>
+            <p>Now every user has a UID from the beginning.</p>
+        </section>
+
+        <section>
+            <h2>🔥 Very Important: Linking Anonymous to Google</h2>
+            <p>If the user later chooses "Sign in with Google", you must LINK the account — not sign in normally.</p>
+            <p>Otherwise:</p>
+            <ul>
+                <li>Anonymous account gets lost</li>
+                <li>New UID is created</li>
+                <li>Firestore data breaks</li>
+            </ul>
+
+            <p>❌ Wrong Way (creates new user)</p>
+            <pre><code>
+auth().signInWithCredential(googleCredential);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Correct Way (link accounts)</h2>
+            <p>If current user is anonymous:</p>
+            <pre><code>
+import auth from '@react-native-firebase/auth';
+
+const signInWithGoogleAndLink = async (googleCredential) => {
+  const currentUser = auth().currentUser;
+
+  if (currentUser?.isAnonymous) {
+    await currentUser.linkWithCredential(googleCredential);
+    console.log('Anonymous account upgraded to Google');
+  } else {
+    await auth().signInWithCredential(googleCredential);
+  }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔎 How to Detect Anonymous User</h2>
+            <pre><code>
+const user = auth().currentUser;
+
+if (user?.isAnonymous) {
+  console.log('User is guest');
+} else {
+  console.log('User is permanent');
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 What Happens Internally</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>signInAnonymously()</td>
+                        <td>Creates temporary UID</td>
+                    </tr>
+                    <tr>
+                        <td>linkWithCredential()</td>
+                        <td>Converts to permanent</td>
+                    </tr>
+                    <tr>
+                        <td>signInWithCredential()</td>
+                        <td>Creates NEW user</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Best UX Flow (Recommended)</h2>
+            <ol>
+                <li>App opens</li>
+                <li>Auto anonymous login</li>
+                <li>User uses app normally</li>
+                <li>When needed → show "Continue with Google"</li>
+                <li>Link account</li>
+                <li>Same UID, same data, no loss</li>
+            </ol>
+            <p>This is how many production apps work.</p>
+        </section>
+
+        <section>
+            <h2>⚠️ Important Edge Case</h2>
+            <p>If user:</p>
+            <ul>
+                <li>Deletes app</li>
+                <li>Clears storage</li>
+                <li>Logs out manually</li>
+            </ul>
+            <p>Anonymous account is gone unless linked.</p>
+        </section>
+
+        <section>
+            <h2>🏁 Final Summary</h2>
+            <p>Since you already have Google Sign-In:</p>
+            <p>✔ Enable Anonymous in Firebase</p>
+            <p>✔ Add signInAnonymously()</p>
+            <p>✔ Link with linkWithCredential() when upgrading</p>
+            <p>✔ Never replace anonymous user with signInWithCredential()</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

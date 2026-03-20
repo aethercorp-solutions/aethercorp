@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>LLM-based summarization</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">LLM-based summarization</h1>
+                    <p class="subtitle">Absolutely! Let’s break down LLM-based summarization in detail, step by step, from concept to mechanisms. I’ll go as deep as possible without assuming prior knowledge.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is LLM Summarization?</h2>
+            <p>LLM summarization refers to the process of using Large Language Models (LLMs) — like GPT, LLaMA, or Falcon — to automatically create summaries of text. Instead of manually reading and condensing content, the LLM generates a concise version while attempting to retain key ideas.</p>
+            <ul>
+                <li>Input: Full text (article, report, transcript, etc.)</li>
+                <li>Output: Shorter version (summary) capturing main points</li>
+            </ul>
+            <p>Two main types of summarization:</p>
+
+            <ol>
+                <li>
+                    Extractive Summarization
+                    <ul>
+                        <li>Selects important sentences or phrases directly from the original text.</li>
+                        <li>Doesn’t generate new sentences; just extracts.</li>
+                        <li>Example: Picking 3–4 key sentences from a 10-paragraph article.</li>
+                        <li>Pros: Accurate, keeps original wording.</li>
+                        <li>Cons: Can be disjointed, may lack smooth flow.</li>
+                    </ul>
+                </li>
+                <li>
+                    Abstractive Summarization
+                    <ul>
+                        <li>Generates new sentences to convey the core meaning.</li>
+                        <li>Uses LLM’s natural language understanding to rephrase, simplify, or condense.</li>
+                        <li>Example: Turning a 2-page research article into a few sentences in your own words.</li>
+                        <li>Pros: Smooth, human-like, flexible.</li>
+                        <li>Cons: Risk of hallucination (LLM may add info not in the text).</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>LLMs excel at abstractive summarization, though they can do extractive too with proper prompting.</p>
+        </section>
+
+        <section>
+            <h2>2. How LLM Summarization Works (Conceptually)</h2>
+            <p>At a high level, LLM summarization is just language modeling + attention + context understanding:</p>
+            <ol>
+                <li>
+                    Tokenization
+                    <ul>
+                        <li>The input text is split into tokens (words, subwords, or characters depending on the model).</li>
+                        <li>Example: "Large language models are amazing." → ["Large", "language", "models", "are", "amazing", "."]</li>
+                    </ul>
+                </li>
+                <li>
+                    Encoding & Context Understanding
+                    <ul>
+                        <li>
+                            The LLM reads the tokens in context, using transformer architecture:
+                            <ul>
+                                <li>Self-Attention Mechanism: LLM learns which words in the text relate to each other.</li>
+                                <li>Contextual Embeddings: Each token gets a vector representation considering the entire text.</li>
+                            </ul>
+                        </li>
+                        <li>This allows the model to understand key ideas, relationships, and importance.</li>
+                    </ul>
+                </li>
+                <li>
+                    Importance Scoring (Internal)
+                    <ul>
+                        <li>
+                            LLM implicitly determines which parts of the text are “important” based on:
+                            <ul>
+                                <li>Frequency of concepts</li>
+                                <li>Relationships and dependencies</li>
+                                <li>Narrative or logical flow</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Unlike traditional extractive summarizers, this is learned from pretraining and fine-tuning on large corpora.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Summary Generation
+                    <ul>
+                        <li>
+                            For abstractive summarization, the LLM generates text token by token:
+                            <ul>
+                                <li>At each step, it predicts the next word that best continues the summary.</li>
+                                <li>It balances faithfulness to the original text and conciseness.</li>
+                            </ul>
+                        </li>
+                        <li>Sometimes special instructions or prompts are added to control length, style, or tone.</li>
+                    </ul>
+                </li>
+                <li>
+                    Decoding
+                    <ul>
+                        <li>Methods like greedy decoding, beam search, or nucleus sampling are used to generate coherent output.</li>
+                        <li>
+                            Example:
+                            <ul>
+                                <li>Greedy: Always pick the most likely next word.</li>
+                                <li>Beam Search: Consider multiple possibilities to choose the best overall sequence.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>3. Techniques to Enhance LLM Summarization</h2>
+            <ul>
+                <li>
+                    Prompt Engineering
+                    <ul>
+                        <li>Example prompt: "Summarize the following article in 3 sentences:"</li>
+                        <li>Can include constraints like “bullet points,” “simplified for 12-year-old,” or “formal tone.”</li>
+                    </ul>
+                </li>
+                <li>
+                    Fine-tuning
+                    <ul>
+                        <li>LLMs can be fine-tuned on paired datasets (document → summary).</li>
+                        <li>Popular datasets: CNN/DailyMail, XSum, Gigaword.</li>
+                    </ul>
+                </li>
+                <li>
+                    Reinforcement Learning from Human Feedback (RLHF)
+                    <ul>
+                        <li>Helps the model generate better, human-aligned summaries.</li>
+                        <li>Human evaluators rate summaries → model updates to maximize human approval.</li>
+                    </ul>
+                </li>
+                <li>
+                    Chunking for Long Documents
+                    <ul>
+                        <li>LLMs have context limits (e.g., 4k or 16k tokens).</li>
+                        <li>Long documents are split into chunks, summarized individually, then merged.</li>
+                    </ul>
+                </li>
+                <li>
+                    Hybrid Approaches
+                    <ul>
+                        <li>
+                            Combine extractive + abstractive summarization:
+                            <ul>
+                                <li>Extract key sentences.</li>
+                                <li>Feed to LLM for abstraction.</li>
+                            </ul>
+                        </li>
+                        <li>Balances accuracy + readability.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Challenges in LLM Summarization</h2>
+            <ol>
+                <li>
+                    Hallucination
+                    <ul>
+                        <li>LLM may introduce facts not in the original text.</li>
+                    </ul>
+                </li>
+                <li>
+                    Length Control
+                    <ul>
+                        <li>Very long summaries can lose focus; very short summaries may skip details.</li>
+                    </ul>
+                </li>
+                <li>
+                    Context Limitations
+                    <ul>
+                        <li>LLMs can only process text within their token limit.</li>
+                    </ul>
+                </li>
+                <li>
+                    Bias
+                    <ul>
+                        <li>LLMs may emphasize certain topics based on training data bias.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>5. Real-World Applications</h2>
+            <ul>
+                <li>News summarization</li>
+                <li>Meeting or lecture transcription summaries</li>
+                <li>Legal document or research paper condensation</li>
+                <li>Customer support: Summarizing tickets or chat logs</li>
+                <li>Social media content summarization</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Example Workflow (Abstractive Summarization)</h2>
+            <p>Input:</p>
+            <p>
+                "Large language models (LLMs) have revolutionized natural language processing (NLP) by enabling machines to understand and generate human-like text. They are pre-trained on massive datasets and fine-tuned for specific tasks, achieving state-of-the-art performance in summarization, translation, and question-answering."
+            </p>
+
+            <p>Prompt:</p>
+            <p>"Summarize the text in one sentence."</p>
+
+            <p>Output:</p>
+            <p>
+                "LLMs advance NLP by learning from large datasets to perform tasks like summarization and translation effectively."
+            </p>
+            <p>Notice how the model rephrased rather than copying sentences directly.</p>
+
+            <p>In short, LLM summarization is about teaching machines to “read like humans” and write concise, coherent summaries, combining the power of transformers, pretraining, and fine-tuning.</p>
+            <p>If you want, I can also draw a diagram showing how text flows through an LLM for summarization, including tokenization, attention, and output generation—it makes the concept much easier to visualize.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

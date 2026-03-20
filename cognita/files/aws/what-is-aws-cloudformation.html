@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS CloudFormation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS CloudFormation</h1>
+                    <p class="subtitle">
+                        AWS CloudFormation is AWS’s Infrastructure as Code (IaC) service.
+                        It lets you define, provision, and manage AWS resources using code instead of clicking around the AWS Console.
+                        <p>Think of it as “deploy your entire AWS infrastructure from a template.”</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Core Idea (Simple Explanation)</h2>
+            <p>Instead of manually creating:</p>
+            <ul>
+                <li>EC2 instances</li>
+                <li>Lambda functions</li>
+                <li>API Gateway</li>
+                <li>VPCs</li>
+                <li>IAM roles</li>
+                <li>Databases</li>
+            </ul>
+            <p>You write a CloudFormation template (YAML or JSON), and AWS:</p>
+            <ol>
+                <li>Reads the template</li>
+                <li>Creates all resources in the correct order</li>
+                <li>Manages updates, rollbacks, and deletions safely</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Key Concepts</h2>
+            <p>1. Template</p>
+            <p>A template is a file (YAML or JSON) that describes:</p>
+            <ul>
+                <li>What resources to create</li>
+                <li>How they are configured</li>
+                <li>How they relate to each other</li>
+            </ul>
+            <p>Example (very simple):</p>
+            <pre><code>
+Resources:
+  MyBucket:
+    Type: AWS::S3::Bucket
+            </code></pre>
+            <p>This creates an S3 bucket.</p>
+        </section>
+
+        <section>
+            <h2>2. Stack</h2>
+            <p>A stack is a running instance of a template.</p>
+            <ul>
+                <li>Template = blueprint</li>
+                <li>Stack = actual deployed infrastructure</li>
+            </ul>
+            <p>You can have:</p>
+            <ul>
+                <li>dev-stack</li>
+                <li>staging-stack</li>
+                <li>prod-stack</li>
+            </ul>
+            <p>All from the same template.</p>
+        </section>
+
+        <section>
+            <h2>3. Resources</h2>
+            <p>Resources are AWS services you define:</p>
+            <ul>
+                <li>AWS::Lambda::Function</li>
+                <li>AWS::EC2::Instance</li>
+                <li>AWS::DynamoDB::Table</li>
+                <li>AWS::IAM::Role</li>
+            </ul>
+            <p>CloudFormation figures out dependencies automatically.</p>
+        </section>
+
+        <section>
+            <h2>4. Parameters</h2>
+            <p>Parameters let you customize stacks without changing the template.</p>
+            <pre><code>
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+            </code></pre>
+
+            <p>Useful for:</p>
+            <ul>
+                <li>Environment names</li>
+                <li>Instance sizes</li>
+                <li>Region-specific values</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Outputs</h2>
+            <p>Outputs expose values after deployment.</p>
+            <pre><code>
+Outputs:
+  ApiUrl:
+    Value: !GetAtt ApiGateway.RestApiId
+            </code></pre>
+
+            <p>Useful for:</p>
+            <ul>
+                <li>Sharing values with other stacks</li>
+                <li>Showing important info after deploy</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What CloudFormation Does for You</h2>
+            <p>✅ Automatic Dependency Handling</p>
+            <p>If a Lambda needs an IAM role:</p>
+            <ul>
+                <li>CloudFormation creates the role first</li>
+                <li>Then attaches it to the Lambda</li>
+            </ul>
+            <p>No manual ordering required.</p>
+        </section>
+
+        <section>
+            <h2>✅ Safe Updates (Change Sets)</h2>
+            <p>Before updating:</p>
+            <ul>
+                <li>CloudFormation shows what will change</li>
+                <li>You can review before applying</li>
+            </ul>
+            <p>If something fails:</p>
+            <ul>
+                <li>Automatic rollback to last working state</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Repeatable & Consistent Deployments</h2>
+            <p>You get:</p>
+            <ul>
+                <li>Same infrastructure every time</li>
+                <li>No “works on my account” problems</li>
+            </ul>
+            <p>Perfect for teams and CI/CD.</p>
+        </section>
+
+        <section>
+            <h2>✅ Stack Deletion</h2>
+            <p>Delete the stack → AWS deletes all resources created by it
+                (no forgotten EC2s or leaked resources).</p>
+        </section>
+
+        <section>
+            <h2>CloudFormation vs AWS Serverless Framework (Important for You)</h2>
+            <p>Since you work heavily with AWS Lambda + API Gateway:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>CloudFormation</th>
+                        <th>Serverless Framework</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Level</td>
+                        <td>Low-level</td>
+                        <td>High-level</td>
+                    </tr>
+                    <tr>
+                        <td>Verbosity</td>
+                        <td>Very verbose</td>
+                        <td>Very concise</td>
+                    </tr>
+                    <tr>
+                        <td>Control</td>
+                        <td>Full AWS control</td>
+                        <td>Opinionated</td>
+                    </tr>
+                    <tr>
+                        <td>Uses CF under the hood</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Best for</td>
+                        <td>Core infra</td>
+                        <td>App-focused serverless</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 Serverless Framework actually generates CloudFormation templates behind the scenes.</p>
+        </section>
+
+        <section>
+            <h2>When to Use CloudFormation</h2>
+            <p>Use CloudFormation when:</p>
+            <ul>
+                <li>You need full control over AWS resources</li>
+                <li>You manage VPCs, IAM, networking</li>
+                <li>You build shared infra (base stacks)</li>
+                <li>You want AWS-native IaC (no third-party tools)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>When NOT to Use CloudFormation Directly</h2>
+            <p>You might prefer:</p>
+            <ul>
+                <li>Serverless Framework → serverless apps</li>
+                <li>AWS CDK → write infra using TypeScript/Python</li>
+                <li>Terraform → multi-cloud setups</li>
+            </ul>
+            <p>(These all eventually generate CloudFormation or API calls.)</p>
+        </section>
+
+        <section>
+            <h2>Simple Mental Model</h2>
+            <p>CloudFormation = AWS’s native way to describe infrastructure as code, deploy it safely, and manage its lifecycle.</p>
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Show a real Lambda + API Gateway CloudFormation example</li>
+                <li>Explain CloudFormation vs CDK vs Terraform</li>
+                <li>Break down how Serverless Framework maps to CloudFormation</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

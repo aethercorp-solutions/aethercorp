@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS CodeCommit</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS CodeCommit</h1>
+                    <p class="subtitle">
+                        AWS CodeCommit is a fully managed source control service provided by Amazon Web Services (AWS). It allows teams and developers to store, manage, and version their code securely in the cloud. Think of it like GitHub or GitLab, but fully integrated into the AWS ecosystem.
+                        <p>Here’s a breakdown of its key features and concepts:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Git-based Repository</h2>
+            <ul>
+                <li>CodeCommit uses Git, so any tool or workflow that works with Git works with CodeCommit.</li>
+                <li>You can clone, commit, push, and pull just like with GitHub or Bitbucket.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Fully Managed</h2>
+            <ul>
+                <li>AWS handles server maintenance, scaling, and backups.</li>
+                <li>No need to set up your own Git server.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Secure</h2>
+            <ul>
+                <li>Data is encrypted at rest and in transit by default.</li>
+                <li>Integrates with AWS Identity and Access Management (IAM) for fine-grained access control.</li>
+                <li>You can restrict who can read, write, or administer each repository.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Collaboration Features</h2>
+            <ul>
+                <li>Supports branches, pull requests, and code reviews.</li>
+                <li>Teams can collaborate effectively with notifications and triggers.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Integration with Other AWS Services</h2>
+            <ul>
+                <li>Works seamlessly with AWS CodePipeline, CodeBuild, and CodeDeploy for full CI/CD pipelines.</li>
+                <li>Can trigger AWS Lambda functions on repository events (like commits).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Scalability</h2>
+            <ul>
+                <li>Automatically scales with your team and project size.</li>
+                <li>No repository size limits for practical usage, though there are soft AWS service limits.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Use Cases</h2>
+            <ul>
+                <li>Hosting private Git repositories.</li>
+                <li>Continuous Integration and Deployment (CI/CD) pipelines on AWS.</li>
+                <li>Collaboration between distributed teams without managing servers.</li>
+            </ul>
+
+            <p>Example:</p>
+            <p>A developer can push their application code to CodeCommit, and then CodePipeline can automatically build and deploy it to an AWS Elastic Beanstalk or ECS environment whenever there’s a commit.</p>
+            <p>If you want, I can also compare CodeCommit vs GitHub vs GitLab, highlighting when CodeCommit is the better choice for AWS-centric projects. This helps clarify why you’d pick it over others.</p>
+        </section>
+
+        <section>
+            <p>Creating a repository in AWS CodeCommit through the AWS Management Console is straightforward.</p>
+            <p>Here’s a step-by-step guide:</p>
+
+            <h2>Step 1: Sign in to AWS</h2>
+            <ul>
+                <li>Go to the AWS Management <a href="https://aws.amazon.com/console/">Console</a>.</li>
+                <li>Make sure your user has IAM permissions for CodeCommit (codecommit:CreateRepository).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 2: Navigate to CodeCommit</h2>
+            <ol>
+                <li>In the console search bar, type CodeCommit.</li>
+                <li>Click on CodeCommit under Services.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 3: Create a Repository</h2>
+            <ol>
+                <li>Click Create repository.</li>
+                <li>
+                    Fill in the required fields:
+                    <ul>
+                        <li>Repository name: Choose a unique name (e.g., my-app-repo).</li>
+                        <li>Description (optional): Add a short description of the repo.</li>
+                    </ul>
+                </li>
+                <li>(Optional) Enable Tags if you want to categorize your repo.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 4: Advanced Options (Optional)</h2>
+            <ul>
+                <li>You can enable repository triggers now or later.</li>
+                <li>You can also choose default branch name (default is main).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 5: Create</h2>
+            <ul>
+                <li>Click Create repository.</li>
+                <li>After creation, AWS will show you the repository URL for Git access (HTTPS or SSH).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 6: Connect to Your Repo</h2>
+            <p>After the repo is created, you can clone it:</p>
+            <p>HTTPS Example:</p>
+            <pre><code>
+git clone https://git-codecommit.&lt;region&gt;.amazonaws.com/v1/repos/my-app-repo
+            </code></pre>
+
+            <p>SSH Example (requires setting up SSH keys in IAM):</p>
+            <pre><code>
+git clone ssh://git-codecommit.&lt;region&gt;.amazonaws.com/v1/repos/my-app-repo
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 7: Start Pushing Code</h2>
+            <pre><code>
+cd my-app-repo
+echo "# My App" >> README.md
+git add README.md
+git commit -m "Initial commit"
+git push origin main
+            </code></pre>
+            <p>💡 Tip: Make sure your AWS CLI credentials are configured for HTTPS access, or set up SSH keys in IAM for SSH access.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

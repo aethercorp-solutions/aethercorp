@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Transistor in a CPU</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Transistor in a CPU</h1>
+                    <p class="subtitle">
+                        A transistor in a CPU is basically a tiny electronic switch. Modern CPUs have billions of them, and everything a CPU does comes from turning these switches ON and OFF extremely fast.
+                        <p>I’ll explain this step by step, from simple → deeper, but still practical.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What a transistor is (CPU view)</h2>
+            <p>Inside a CPU, the main transistor type is a MOSFET.</p>
+            <p>A MOSFET has 3 parts:</p>
+            <ul>
+                <li>Gate → control (the switch handle)</li>
+                <li>Source → where electricity comes from</li>
+                <li>Drain → where electricity goes</li>
+            </ul>
+            <p>👉 The gate voltage decides whether electricity can flow from source → drain.</p>
+        </section>
+
+        <section>
+            <h2>2. ON vs OFF (the key idea)</h2>
+            <p>Think of it like a water valve:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Gate Voltage</th>
+                        <th>Transistor State</th>
+                        <th>Meaning in CPU</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>No voltage</td>
+                        <td>OFF</td>
+                        <td>Logic 0</td>
+                    </tr>
+                    <tr>
+                        <td>Voltage applied</td>
+                        <td>ON</td>
+                        <td>Logic 1</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <ul>
+                <li>OFF → no current flows</li>
+                <li>ON → current flows</li>
+            </ul>
+            <p>This ON/OFF behavior is how CPUs represent binary (0 and 1).</p>
+        </section>
+
+        <section>
+            <h2>3. Transistors don’t “compute” alone</h2>
+            <p>A single transistor only switches.</p>
+            <p>Computation happens when many transistors are combined into circuits.</p>
+            <p>Basic building blocks:</p>
+            <ul>
+                <li>NOT gate → flips 1 ↔ 0</li>
+                <li>AND gate → both must be 1</li>
+                <li>OR gate → either can be 1</li>
+            </ul>
+            <p>Example:</p>
+            <p>An AND gate may use 6–10 transistors.</p>
+        </section>
+
+        <section>
+            <h2>4. Example: Simple logic operation</h2>
+            <p>Let’s say the CPU evaluates:</p>
+            <pre><code>
+1 AND 0 = 0
+            </code></pre>
+            <p>What happens physically:</p>
+            <ol>
+                <li>Input transistors receive voltages (1 = voltage, 0 = no voltage)</li>
+                <li>Transistors either open or block current</li>
+                <li>
+                    The circuit layout ensures:
+                    <ul>
+                        <li>Current flows only if both inputs are ON</li>
+                    </ul>
+                </li>
+                <li>Output wire ends up with no voltage → 0</li>
+            </ol>
+            <p>⚡ That’s math using electricity.</p>
+        </section>
+
+        <section>
+            <h2>5. Transistors store temporary data (memory)</h2>
+            <p>Transistors also form storage:</p>
+            <p>Flip-flops / Registers</p>
+            <ul>
+                <li>Use feedback loops of transistors</li>
+                <li>Can “remember” a 0 or 1 as long as power is on</li>
+            </ul>
+            <p>Registers are:</p>
+            <ul>
+                <li>Extremely fast</li>
+                <li>Located inside the CPU</li>
+                <li>Made from thousands to millions of transistors</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. How transistors make addition (real CPU work)</h2>
+            <p>Example: Adding 2 + 3</p>
+            <ol>
+                <li>
+                    Numbers converted to binary
+                    <pre><code>
+2 = 10
+3 = 11
+                    </code></pre>
+                </li>
+                <li>
+                    Transistors form:
+                    <ul>
+                        <li>Half adders</li>
+                        <li>Full adders</li>
+                    </ul>
+                </li>
+                <li>
+                    These circuits:
+                    <ul>
+                        <li>Calculate sum bits</li>
+                        <li>Pass carry bits forward</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>All of this is just:</p>
+            <p>transistors switching ON and OFF in patterns</p>
+        </section>
+
+        <section>
+            <h2>7. Clock: why CPUs are “synchronized”</h2>
+            <p>CPUs use a clock signal:</p>
+            <ul>
+                <li>A regular ON/OFF pulse</li>
+                <li>Tells transistors when to switch</li>
+            </ul>
+            <p>Example:</p>
+            <ul>
+                <li>3 GHz CPU = 3 billion clock ticks per second</li>
+                <li>
+                    On each tick:
+                    <ul>
+                        <li>Data moves</li>
+                        <li>Transistors change state</li>
+                        <li>Instructions advance</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Why CPUs need billions of transistors</h2>
+            <p>Because CPUs must:</p>
+            <ul>
+                <li>Do math</li>
+                <li>Compare values</li>
+                <li>Move data</li>
+                <li>Predict branches</li>
+                <li>Cache memory</li>
+                <li>Run multiple cores</li>
+            </ul>
+            <p>Modern CPUs:</p>
+            <ul>
+                <li>~10–100 billion transistors</li>
+                <li>Each transistor is only a few nanometers wide</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Ultra-short summary</h2>
+            <ul>
+                <li>A transistor = electronic switch</li>
+                <li>Gate voltage controls ON/OFF</li>
+                <li>ON/OFF = binary 1/0</li>
+                <li>Groups of transistors form logic gates</li>
+                <li>Logic gates form adders, registers, CPUs</li>
+                <li>Billions switch every nanosecond</li>
+            </ul>
+            <p>If you want, next I can:</p>
+            <ul>
+                <li>Explain CMOS (why CPUs don’t melt)</li>
+                <li>Show how one ADD instruction flows through a CPU</li>
+                <li>Explain why smaller transistors are faster</li>
+                <li>Compare CPU vs GPU transistor usage</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What is Half adders in transistors</h2>
+            <p>A half adder is the simplest circuit that adds two binary bits, and it is built entirely from transistors.</p>
+            <p>Let’s go from concept → logic → transistor level.</p>
+        </section>
+
+        <section>
+            <h2>1. What a half adder does</h2>
+            <p>A half adder adds two 1-bit inputs:</p>
+            <ul>
+                <li>Input A</li>
+                <li>Input B</li>
+            </ul>
+
+            <p>It produces two outputs:</p>
+            <ul>
+                <li>Sum (S)</li>
+                <li>Carry (C)</li>
+            </ul>
+
+            <p>Truth table</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>Sum (S)</th>
+                        <th>Carry (C)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>2. Logic behind a half adder</h2>
+            <p>A half adder is made from two logic gates:</p>
+            <ul>
+                <li>Sum = A XOR B</li>
+                <li>Carry = A AND B</li>
+            </ul>
+            <p>So:</p>
+            <pre><code>
+A ──┐
+    ├─ XOR ── Sum
+B ──┘
+
+A ──┐
+    ├─ AND ── Carry
+B ──┘         
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Where transistors come in</h2>
+            <p>Logic gates are built from transistors</p>
+            <p>In CPUs, gates are built using CMOS technology:</p>
+            <ul>
+                <li>PMOS transistors (pull output UP to 1)</li>
+                <li>NMOS transistors (pull output DOWN to 0)</li>
+            </ul>
+            <p>Each gate uses multiple transistors.</p>
+        </section>
+
+        <section>
+            <h2>4. Transistor count (typical CMOS)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Gate</th>
+                        <th>Transistors</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>NOT</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>AND</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>OR</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>XOR</td>
+                        <td>8–12</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>So a half adder usually uses:</p>
+            <ul>
+                <li>XOR (≈10)</li>
+                <li>AND (≈6)</li>
+            </ul>
+            <p>👉 ~16 transistors total</p>
+        </section>
+
+        <section>
+            <h2>5. How the XOR works (transistor view)</h2>
+            <p>XOR outputs 1 only if inputs are different.</p>
+            <p>Transistors are arranged so that:</p>
+            <ul>
+                <li>If A = 1, B = 0 → current flows → output = 1</li>
+                <li>If A = 0, B = 1 → current flows → output = 1</li>
+                <li>If A = B → paths are blocked → output = 0</li>
+            </ul>
+            <p>This is done by carefully arranging NMOS and PMOS switches in series and parallel.</p>
+        </section>
+
+        <section>
+            <h2>6. How the AND works (transistor view)</h2>
+            <p>AND outputs 1 only if both inputs are 1.</p>
+            <ul>
+                <li>NMOS transistors are in series</li>
+                <li>If either input is 0 → path breaks → output = 0</li>
+                <li>Only when both are ON → output pulled HIGH</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Visual mental model (very simplified)</h2>
+            <pre><code>
+XOR (Sum):
+A ──┬──[transistor network]──► Sum
+B ──┘
+
+AND (Carry):
+A ──[NMOS]──[NMOS]──► Carry
+B ────────────────┘
+            </code></pre>
+            <p>Each [NMOS] is a transistor switch controlled by A or B.</p>
+        </section>
+
+        <section>
+            <h2>8. Why it’s called “half” adder</h2>
+            <p>Because:</p>
+            <ul>
+                <li>It cannot accept a carry-in</li>
+                <li>It only adds two bits</li>
+            </ul>
+            <p>A full adder:</p>
+            <ul>
+                <li>Adds A, B, and Carry-In</li>
+                <li>Is built using two half adders + OR gate</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Why half adders matter in CPUs</h2>
+            <p>Half adders are used in:</p>
+            <ul>
+                <li>Full adders</li>
+                <li>ALUs (Arithmetic Logic Units)</li>
+                <li>Adders for addresses, counters, timers</li>
+                <li>Even multipliers and dividers (as building blocks)</li>
+            </ul>
+            <p>Modern CPUs still use the same logic idea, just highly optimized.</p>
+        </section>
+
+        <section>
+            <h2>10. One-line summary</h2>
+            <p>A half adder is a small transistor circuit that adds two bits using an XOR gate for the sum and an AND gate for the carry, built from about 16 transistors.</p>
+        
+            <p>If you want next:</p>
+            <ul>
+                <li>Full adder at transistor level</li>
+                <li>How many adders in a 64-bit CPU</li>
+                <li>Why XOR is expensive in transistors</li>
+                <li>How addition happens in one clock cycle</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
