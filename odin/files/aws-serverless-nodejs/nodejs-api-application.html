@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Node.js API application</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Node.js API application</h1>
+                    <p class="subtitle">A Node.js API application is a backend service built using Node.js that exposes endpoints (URLs) for other applications (like mobile apps, web apps, or other services) to interact with.</p>
+                    <p>Think of it as a bridge between your frontend (React Native app, web app) and your database or business logic.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 What is a Node.js API?</h2>
+            <p>A Node.js API is typically a REST API (or sometimes GraphQL) that:</p>
+            <ul>
+                <li>Receives HTTP requests (GET, POST, PUT, DELETE)</li>
+                <li>Processes data (business logic)</li>
+                <li>Interacts with a database</li>
+                <li>Sends back a response (usually JSON)</li>
+            </ul>
+            <p>It’s often built using frameworks like Express.js.</p>
+        </section>
+
+        <section>
+            <h2>🧠 How It Works (Flow)</h2>
+            <p>Here’s the typical lifecycle of a request:</p>
+            <p>1. Client sends request</p>
+            <p>Example:</p>
+            <pre><code>
+POST /login
+            </code></pre>
+            <p>From:</p>
+            <ul>
+                <li>React Native app</li>
+                <li>Web frontend</li>
+                <li>Postman / curl</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. API Server receives it</h2>
+            <p>Your Node.js server (e.g., Express) listens for incoming requests:</p>
+            <pre><code>
+app.post('/login', (req, res) => {
+    // handle request
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Middleware runs (optional but common)</h2>
+            <p>Middleware functions handle:</p>
+            <ul>
+                <li>Authentication (JWT, OAuth)</li>
+                <li>Logging</li>
+                <li>Validation</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+app.use((req, res, next) => {
+    console.log("Incoming request");
+    next();
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Business Logic executes</h2>
+            <p>This is where your app does real work:</p>
+            <ul>
+                <li>Validate input</li>
+                <li>Call services</li>
+                <li>Apply rules</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+const user = await User.findOne({ email });
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Database interaction</h2>
+            <p>Common databases:</p>
+            <ul>
+                <li>MongoDB (NoSQL)</li>
+                <li>MySQL / PostgreSQL</li>
+            </ul>
+            <p>Using something like Mongoose:</p>
+            <pre><code>
+const user = await User.findOne({ email });
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Response is sent back</h2>
+            <p>Usually JSON:</p>
+            <pre><code>
+res.json({
+    success: true,
+    data: user
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🏗️ Basic Structure of a Node.js API</h2>
+            <p>Typical project layout:</p>
+            <pre><code>
+project/
+│
+├── routes/
+│   └── user.routes.js
+│
+├── controllers/
+│   └── user.controller.js
+│
+├── services/
+│   └── user.service.js
+│
+├── models/
+│   └── user.model.js
+│
+├── middleware/
+│   └── auth.js
+│
+├── app.js
+└── server.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔄 Example End-to-End Flow</h2>
+            <p>Example: Login API</p>
+            <p>Request:</p>
+            <pre><code>
+POST /login
+{
+  "email": "test@email.com",
+  "password": "123456"
+}
+            </code></pre>
+            <p>Flow:</p>
+            <ol>
+                <li>Route receives request</li>
+                <li>Middleware validates input</li>
+                <li>Controller handles logic</li>
+                <li>Service checks database</li>
+                <li>JWT token generated</li>
+                <li>Response returned</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚡ Why Node.js for APIs?</h2>
+            <p>✅ Advantages:</p>
+            <ul>
+                <li>Non-blocking (fast & scalable)</li>
+                <li>Great for real-time apps (chat, notifications)</li>
+                <li>Same language (JavaScript) frontend + backend</li>
+                <li>Huge ecosystem (npm)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔁 How It Fits Your Stack (Your Case)</h2>
+            <p>Since you're building:</p>
+            <ul>
+                <li>React Native app</li>
+                <li>AWS Lambda backend</li>
+                <li>MongoDB</li>
+            </ul>
+            <p>Your flow is:</p>
+            <pre><code>
+React Native App
+      ↓
+API Gateway (AWS)
+      ↓
+Lambda (Node.js API)
+      ↓
+MongoDB
+            </code></pre>
+            <p>Instead of a traditional server, your API runs as serverless functions.</p>
+        </section>
+
+        <section>
+            <h2>🧩 Key Concepts You Should Know</h2>
+            <ul>
+                <li>REST API</li>
+                <li>HTTP methods (GET, POST, PUT, DELETE)</li>
+                <li>JSON</li>
+                <li>Middleware</li>
+                <li>Authentication (JWT, OAuth, Firebase, Apple Sign-In)</li>
+                <li>Environment variables</li>
+                <li>Error handling</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Simple Example API</h2>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+app.get('/hello', (req, res) => {
+    res.json({ message: "Hello World" });
+});
+
+app.listen(3000, () => {
+    console.log("Server running on port 3000");
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Simple Analogy</h2>
+            <p>Think of a Node.js API like a restaurant waiter:</p>
+            <ul>
+                <li>Client = Customer</li>
+                <li>API = Waiter</li>
+                <li>Database = Kitchen</li>
+            </ul>
+            <p>Customer orders → Waiter processes → Kitchen prepares → Waiter returns food</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

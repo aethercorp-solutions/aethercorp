@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How ios uikit renders its views?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How ios uikit renders its views?</h1>
+                    <p class="subtitle">
+                        iOS UIKit rendering is a layered, highly optimized pipeline that turns your view hierarchy into pixels on screen. Under the hood, it’s not just UIKit—it heavily relies on Core Animation and the GPU.
+                        <p>Let’s break it down in a way that matches how you’d reason about performance as a developer 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧱 1. View Hierarchy (UIKit Level)</h2>
+            <p>At the top level, everything starts with UIView.</p>
+            <ul>
+                <li>
+                    You build a tree:
+                    <pre><code>
+UIWindow
+  └── UIView
+       ├── UILabel
+       ├── UIImageView
+       └── UIButton
+                    </code></pre>
+                </li>
+            </ul>
+            <p>Each UIView:</p>
+            <ul>
+                <li>Handles layout (layoutSubviews)</li>
+                <li>Handles drawing (drawRect: if needed)</li>
+                <li>Owns a backing CALayer</li>
+            </ul>
+            <p>👉 Important: UIKit itself does not render pixels directly.</p>
+        </section>
+
+        <section>
+            <h2>🎨 2. Backing Layer (Core Animation Bridge)</h2>
+            <p>Every UIView is backed by a CALayer (from Core Animation).</p>
+            <ul>
+                <li>UIView = high-level API (touch, layout, logic)</li>
+                <li>CALayer = rendering + animation</li>
+            </ul>
+            <p>Example mapping:</p>
+            <pre><code>
+view.backgroundColor → layer.backgroundColor
+view.frame           → layer.bounds + position
+view.alpha           → layer.opacity
+            </code></pre>
+            <p>👉 The real rendering happens at the layer level, not the view.</p>
+        </section>
+
+        <section>
+            <h2>🧠 3. Layout Pass (CPU)</h2>
+            <p>Before anything is drawn:</p>
+            <ol>
+                <li>Auto Layout / manual layout runs</li>
+                <li>
+                    Calls:
+                    <ul>
+                        <li>setNeedsLayout</li>
+                        <li>layoutIfNeeded</li>
+                        <li>layoutSubviews</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>This happens on the main thread (CPU).</p>
+        </section>
+
+        <section>
+            <h2>✏️ 4. Display Pass (CPU → Bitmap)</h2>
+            <p>If a view needs custom drawing:</p>
+            <ul>
+                <li>setNeedsDisplay → triggers drawRect:</li>
+                <li>Runs on CPU</li>
+                <li>Produces a bitmap (texture)</li>
+            </ul>
+            <p>For standard views:</p>
+            <ul>
+                <li>UIKit skips drawRect: and uses optimized layer properties</li>
+            </ul>
+            <p>👉 Key point:</p>
+            <ul>
+                <li>Custom drawing = CPU heavy</li>
+                <li>Layer properties (cornerRadius, shadow, etc.) = GPU friendly (usually)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 5. Layer Tree Commit</h2>
+            <p>After layout + display:</p>
+            <ul>
+                <li>UIKit builds a Layer Tree</li>
+                <li>This tree is sent to Core Animation Render Server</li>
+            </ul>
+            <p>This step is called:</p>
+            <p>“Commit Transaction”</p>
+            <p>👉 Happens at the end of the run loop.</p>
+        </section>
+
+        <section>
+            <h2>🚀 6. Render Server + GPU (Actual Rendering)</h2>
+            <p>Now we leave your app process.</p>
+            <p>Core Animation:</p>
+            <ul>
+                <li>Takes the layer tree</li>
+                <li>Sends it to the Render Server (separate process)</li>
+            </ul>
+            <p>GPU handles:</p>
+            <ul>
+                <li>Compositing layers</li>
+                <li>Applying transforms</li>
+                <li>Animations (smooth, 60fps / 120fps)</li>
+            </ul>
+            <p>👉 This is why animations are smooth even if CPU is busy.</p>
+        </section>
+
+        <section>
+            <h2>🔁 7. Double Buffering & VSync</h2>
+            <p>iOS uses:</p>
+            <ul>
+                <li>Double buffering</li>
+                <li>Synced with display refresh (VSync)</li>
+            </ul>
+            <p>Typical flow:</p>
+            <ol>
+                <li>Frame prepared offscreen</li>
+                <li>Swapped on screen at refresh tick</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚡ Rendering Pipeline Summary</h2>
+            <pre><code>
+UIView (UIKit)
+   ↓
+CALayer (Core Animation)
+   ↓
+Layout Pass (CPU)
+   ↓
+Display Pass (CPU → bitmap if needed)
+   ↓
+Layer Tree Commit
+   ↓
+Render Server
+   ↓
+GPU Compositing
+   ↓
+Screen
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 Key Performance Insights (VERY IMPORTANT)</h2>
+            <ol>
+                <li>
+                    Avoid unnecessary drawRect:
+                    <ul>
+                        <li>Expensive CPU work</li>
+                        <li>Prefer layer properties</li>
+                    </ul>
+                </li>
+                <li>
+                    Offscreen Rendering Triggers
+                    <p>Watch out for:</p>
+                    <ul>
+                        <li>cornerRadius + masksToBounds</li>
+                        <li>shadows</li>
+                        <li>group opacity</li>
+                    </ul>
+                </li>
+                <p>👉 These force extra GPU passes</p>
+                <li>
+                    Minimize View Hierarchy Depth
+                    <p>Too many nested views:</p>
+                    <ul>
+                        <li>More layout work</li>
+                        <li>More compositing cost</li>
+                    </ul>
+                </li>
+                <li>
+                    Use Rasterization Carefully
+                    <pre><code>
+layer.shouldRasterize = YES;
+                    </code></pre>
+                    <ul>
+                        <li>Good for static complex views</li>
+                        <li>Bad for dynamic content</li>
+                    </ul>
+                </li>
+                <li>
+                    Animations are GPU-driven
+                    <ul>
+                        <li>UIView.animate → actually Core Animation</li>
+                        <li>Doesn’t block main thread</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧩 Mental Model (Simple)</h2>
+            <p>Think of UIKit like this:</p>
+            <ul>
+                <li>UIView = declarative structure</li>
+                <li>CALayer = render instructions</li>
+                <li>Core Animation = frame scheduler</li>
+                <li>GPU = final painter</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🆚 UIKit vs React Native (since you're working with RN)</h2>
+            <ul>
+                <li>UIKit: immediate + layer-based rendering</li>
+                <li>
+                    React Native:
+                    <ul>
+                        <li>JS → Bridge → Native Views → UIKit → CALayer → GPU</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>👉 That bridge is why performance tuning matters in RN.</p>
+            <p>If you want, I can go deeper into:</p>
+            <ul>
+                <li>offscreen rendering debugging (Instruments / Core Animation tools)</li>
+                <li>how 120Hz ProMotion affects rendering</li>
+                <li>why some UI stutters even with simple layouts</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

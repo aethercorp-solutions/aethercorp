@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Practical breakdown of Amazon DynamoDB usage and implementation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Practical breakdown of Amazon DynamoDB usage and implementation</h1>
+                    <p class="subtitle">Here’s a clear, practical breakdown of Amazon DynamoDB usage and implementation, especially useful for your serverless Node.js + AWS Lambda setup.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🚀 What is Amazon DynamoDB?</h2>
+            <p>A fully managed NoSQL database from Amazon Web Services designed for:</p>
+            <ul>
+                <li>High performance (single-digit millisecond latency)</li>
+                <li>Massive scalability</li>
+                <li>Serverless architecture (no servers to manage)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📌 Common Use Cases</h2>
+            <p>DynamoDB is ideal for:</p>
+            <p>1. Serverless Applications</p>
+            <ul>
+                <li>Backend for AWS Lambda APIs</li>
+                <li>Event-driven systems</li>
+            </ul>
+
+            <p>2. Real-Time Apps</p>
+            <ul>
+                <li>Chat apps</li>
+                <li>Gaming leaderboards</li>
+                <li>IoT telemetry</li>
+            </ul>
+
+            <p>3. User Data / Auth Systems</p>
+            <ul>
+                <li>Store user profiles</li>
+                <li>Session storage</li>
+                <li>JWT refresh tokens (fits your current work)</li>
+            </ul>
+
+            <p>4. E-commerce</p>
+            <ul>
+                <li>Product catalogs</li>
+                <li>Orders</li>
+                <li>Inventory</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Core Concepts</h2>
+            <p>1. Table</p>
+            <p>Like a collection in MongoDB</p>
+            <pre><code>
+Users
+Orders
+Sessions
+            </code></pre>
+
+            <p>2. Primary Key (VERY IMPORTANT)</p>
+            <p>Two types:</p>
+            <ul>
+                <li>Partition Key (PK)</li>
+                <li>Partition + Sort Key (PK + SK)</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+{
+    "userId": "123",   // PK
+    "createdAt": "2026-04-13" // SK
+}
+            </code></pre>
+
+            <p>3. Items</p>
+            <p>Each row = JSON object</p>
+            <pre><code>
+{
+    "userId": "123",
+    "name": "Paul",
+    "email": "paul@email.com"
+}
+            </code></pre>
+
+            <p>4. Indexes</p>
+            <ul>
+                <li>GSI (Global Secondary Index) → query by other fields</li>
+                <li>LSI (Local Secondary Index) → alternate sort key</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ Implementation (Node.js + AWS SDK)</h2>
+            <p>1. Install SDK</p>
+            <pre><code>
+npm install @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb
+            </code></pre>
+
+            <p>2. Setup DynamoDB Client</p>
+            <pre><code>
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+
+const client = new DynamoDBClient({
+  region: "ap-southeast-1"
+});
+
+export const ddb = DynamoDBDocumentClient.from(client);
+            </code></pre>
+
+            <p>3. Create Item (Put)</p>
+            <pre><code>
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
+
+export const createUser = async () => {
+  await ddb.send(new PutCommand({
+    TableName: "Users",
+    Item: {
+      userId: "123",
+      name: "Paul",
+      email: "paul@email.com"
+    }
+  }));
+};
+            </code></pre>
+
+            <p>4. Get Item</p>
+            <pre><code>
+import { GetCommand } from "@aws-sdk/lib-dynamodb";
+
+export const getUser = async () => {
+  const result = await ddb.send(new GetCommand({
+    TableName: "Users",
+    Key: { userId: "123" }
+  }));
+
+  return result.Item;
+};
+            </code></pre>
+
+            <p>5. Query (Using Sort Key)</p>
+            <pre><code>
+import { QueryCommand } from "@aws-sdk/lib-dynamodb";
+
+export const getUserOrders = async () => {
+  const result = await ddb.send(new QueryCommand({
+    TableName: "Orders",
+    KeyConditionExpression: "userId = :uid",
+    ExpressionAttributeValues: {
+      ":uid": "123"
+    }
+  }));
+
+  return result.Items;
+};
+            </code></pre>
+
+            <p>6. Update Item</p>
+            <pre><code>
+import { UpdateCommand } from "@aws-sdk/lib-dynamodb";
+
+export const updateUser = async () => {
+  await ddb.send(new UpdateCommand({
+    TableName: "Users",
+    Key: { userId: "123" },
+    UpdateExpression: "set #n = :name",
+    ExpressionAttributeNames: {
+      "#n": "name"
+    },
+    ExpressionAttributeValues: {
+      ":name": "New Name"
+    }
+  }));
+};
+            </code></pre>
+
+            <p>7. Delete Item</p>
+            <pre><code>
+import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
+
+export const deleteUser = async () => {
+  await ddb.send(new DeleteCommand({
+    TableName: "Users",
+    Key: { userId: "123" }
+  }));
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 IAM Permissions (Important for your setup)</h2>
+            <p>Your Lambda role must allow:</p>
+            <pre><code>
+{
+    "Effect": "Allow",
+    "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:GetItem",
+        "dynamodb:Query",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem"
+    ],
+    "Resource": "*"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 Example Serverless Integration</h2>
+            <p>serverless.yml</p>
+            <pre><code>
+provider:
+  name: aws
+  runtime: nodejs20.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource: "*"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ Best Practices (VERY IMPORTANT)</h2>
+            <p>1. Design for Queries (Not Tables)</p>
+            <p>DynamoDB is query-first, unlike SQL.</p>
+            <p>👉 Ask:</p>
+            <p>"How will I query this data?"</p>
+
+            <p>2. Use Single Table Design (Advanced)</p>
+            <p>Instead of:</p>
+            <pre><code>
+Users table
+Orders table
+            </code></pre>
+            <p>Use:</p>
+            <pre><code>
+MainTable
+PK: USER#123
+SK: ORDER#456
+            </code></pre>
+
+            <p>3. Avoid Scans 🚫</p>
+            <pre><code>
+ScanCommand ❌ (slow & expensive)
+QueryCommand ✅ (fast)
+            </code></pre>
+
+            <p>4. Use TTL (Auto Delete)</p>
+            <p>Perfect for:</p>
+            <ul>
+                <li>Sessions</li>
+                <li>Refresh tokens</li>
+            </ul>
+            <pre><code>
+{
+    "ttl": 1710000000
+}
+            </code></pre>
+
+            <p>5. Use GSIs for Flexibility</p>
+            <p>Example:</p>
+            <ul>
+                <li>Query by email instead of userId</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 When to Use DynamoDB vs MongoDB</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>DynamoDB</th>
+                        <th>MongoDB</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Scaling</td>
+                        <td>Automatic</td>
+                        <td>Manual</td>
+                    </tr>
+                    <tr>
+                        <td>Serverless</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Flexibility</td>
+                        <td>Medium</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Joins</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>Ultra-fast</td>
+                        <td>Fast</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Real-World Architecture (Your Case)</h2>
+            <p>For your JWT auth system:</p>
+            <p>Table: Sessions</p>
+            <pre><code>
+{
+    "PK": "USER#123",
+    "SK": "SESSION#abc",
+    "refreshToken": "...",
+    "expiresAt": 1710000000
+}
+            </code></pre>
+            <p>✔ Fast lookup</p>
+            <p>✔ Auto-expire via TTL</p>
+            <p>✔ Scales easily</p>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <p>Use DynamoDB when you need:</p>
+            <ul>
+                <li>Serverless + AWS-native integration</li>
+                <li>High performance at scale</li>
+                <li>Simple key-based queries</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

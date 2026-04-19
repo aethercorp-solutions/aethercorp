@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>firebase-admin</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">firebase-admin</h1>
+                    <p class="subtitle">
+                        Firebase Admin SDK (commonly installed as firebase-admin) is a server-side library that lets you interact with Firebase services using admin privileges.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔥 What is firebase-admin?</h2>
+            <p>It’s the official SDK used in backend environments like:</p>
+            <ul>
+                <li>Node.js servers</li>
+                <li>AWS Lambda (your case)</li>
+                <li>Cloud Functions</li>
+            </ul>
+            <p>Unlike the client SDK (firebase), this one:</p>
+            <p>✅ Bypasses security rules</p>
+            <p>✅ Has full access to Firebase services</p>
+            <p>✅ Is meant for trusted environments only</p>
+        </section>
+
+        <section>
+            <h2>📦 Install</h2>
+            <pre><code>
+npm install firebase-admin
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 Basic Usage</h2>
+            <p>1. Import it</p>
+            <pre><code>
+const admin = require('firebase-admin');
+            </code></pre>
+
+            <p>2. Initialize it</p>
+            <pre><code>
+const serviceAccount = require('./serviceAccountKey.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+            </code></pre>
+
+            <p>🔑 What You Can Do With It</p>
+            <p>🔐 Authentication (most common for you)</p>
+            <pre><code>
+const decoded = await admin.auth().verifyIdToken(idToken);
+console.log(decoded.uid);
+            </code></pre>
+            <p>👉 Used to verify users from your React Native app</p>
+        </section>
+
+        <section>
+            <h2>🗄️ Firestore</h2>
+            <pre><code>
+const db = admin.firestore();
+const users = await db.collection('users').get();
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔔 Push Notifications (FCM)</h2>
+            <pre><code>
+await admin.messaging().send({
+    token: deviceToken,
+    notification: {
+        title: 'Hello',
+        body: 'World',
+    },
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📁 Storage</h2>
+            <pre><code>
+const bucket = admin.storage().bucket();
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚠️ Important (Common Mistakes)</h2>
+            <p>❌ Don’t use in frontend</p>
+            <ul>
+                <li>Never use firebase-admin in React Native or web apps</li>
+            </ul>
+            <p>❌ Missing credentials</p>
+            <p>Your earlier error:</p>
+            <pre><code>
+serviceAccountKey is not defined
+            </code></pre>
+            <p>✔ Fix:</p>
+            <pre><code>
+const serviceAccountKey = require('../config/firebase-service-account.json');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 In Your Architecture (AWS Lambda + React Native)</h2>
+            <p>Flow:</p>
+            <ol>
+                <li>User logs in (React Native using Firebase Auth)</li>
+                <li>App gets idToken</li>
+                <li>Sends token to your API</li>
+                <li>Backend uses firebase-admin:</li>
+            </ol>
+            <pre><code>
+await admin.auth().verifyIdToken(idToken);
+            </code></pre>
+            <p>👉 This ensures the user is legit and authenticated</p>
+        </section>
+
+        <section>
+            <h2>⚡ Pro Tip (Serverless Optimization)</h2>
+            <p>In AWS Lambda, initialize outside the handler:</p>
+            <pre><code>
+let adminApp;
+
+if (!admin.apps.length) {
+  adminApp = admin.initializeApp({
+    credential: admin.credential.cert(serviceAccountKey),
+  });
+}
+            </code></pre>
+            <p>👉 Prevents re-initialization on every invocation</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

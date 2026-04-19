@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Bitwise operations</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Bitwise operations</h1>
+                    <p class="subtitle">
+                        Bitwise operations are low-level tools that work directly on binary (0s and 1s). They’re extremely fast and commonly used in systems programming, embedded systems, networking, and performance-critical code.
+                        <p>Here are practical real-world use cases 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 1. Flags & Permissions (VERY common)</h2>
+            <p>Instead of using multiple booleans, you pack them into a single integer.</p>
+            <p>Example:</p>
+            <pre><code>
+#define READ  1 &lt;&lt; 0  // 0001
+#define WRITE 1 &lt;&lt; 1  // 0010
+#define EXEC  1 &lt;&lt; 2  // 0100
+
+int permission = READ | WRITE; // 0011
+            </code></pre>
+
+            <p>Check permission:</p>
+            <pre><code>
+if (permission & READ) {
+    // has read access
+}
+            </code></pre>
+            <p>👉 Used in:</p>
+            <ul>
+                <li>File systems (Linux permissions)</li>
+                <li>User roles (admin, editor, viewer)</li>
+                <li>Feature toggles</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 2. Embedded Systems / Microcontrollers</h2>
+            <p>You manipulate hardware registers directly using bitwise ops.</p>
+            <p>Example:</p>
+            <pre><code>
+PORTB |= (1 &lt;&lt; 3);  // Set pin HIGH
+PORTB &= ~(1 &lt;&lt; 3); // Set pin LOW
+            </code></pre>
+            <p>👉 Used in:</p>
+            <ul>
+                <li>GPIO control (LEDs, sensors)</li>
+                <li>Communication protocols (SPI, I2C)</li>
+                <li>Bare-metal programming</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 3. Performance Optimization</h2>
+            <p>Bitwise ops are faster than arithmetic operations.</p>
+            <p>Example:</p>
+            <pre><code>
+x &lt;&lt; 1  // same as x * 2
+x &gt;&gt; 1  // same as x / 2
+            </code></pre>
+            <p>👉 Used in:</p>
+            <ul>
+                <li>Game engines</li>
+                <li>Real-time systems</li>
+                <li>Competitive programming</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 4. Checking Odd or Even</h2>
+            <pre><code>
+if (x & 1) {
+    // odd
+} else {
+    // even
+}
+            </code></pre>
+            <p>👉 Faster than modulo % 2</p>
+        </section>
+
+        <section>
+            <h2>🔹 5. Swapping Values (no temp variable)</h2>
+            <pre><code>
+a ^= b;
+b ^= a;
+a ^= b;
+            </code></pre>
+            <p>👉 Used in low-memory environments (though less common today)</p>
+        </section>
+
+        <section>
+            <h2>🔹 6. Bit Masking (Extracting Data)</h2>
+            <p>Used to isolate specific bits.</p>
+            <p>Example:</p>
+            <pre><code>
+int value = 0b11010110;
+int result = value & 0b00001111; // get lower 4 bits
+            </code></pre>
+            <p>👉 Used in:</p>
+            <ul>
+                <li>Parsing network packets</li>
+                <li>Encoding/decoding protocols</li>
+                <li>Image processing</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 7. Networking / IP Addressing</h2>
+            <p>Bitwise ops help calculate subnets.</p>
+            <p>Example:</p>
+            <pre><code>
+network = ip & subnet_mask;
+            </code></pre>
+            <p>👉 Used in:</p>
+            <ul>
+                <li>Routers</li>
+                <li>Firewalls</li>
+                <li>Backend systems handling IP filtering</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 8. Cryptography & Hashing</h2>
+            <p>Bitwise ops are core to encryption algorithms.</p>
+            <p>👉 Used in:</p>
+            <ul>
+                <li>XOR encryption</li>
+                <li>Hash functions (MD5, SHA)</li>
+                <li>Blockchain systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 9. Game Development</h2>
+            <p>Compact state handling using bits.</p>
+            <p>Example:</p>
+            <pre><code>
+#define JUMP  1 &lt;&lt; 0
+#define RUN   1 &lt;&lt; 1
+
+playerState |= JUMP;
+            </code></pre>
+            <p>👉 Used for:</p>
+            <ul>
+                <li>Input systems</li>
+                <li>Physics flags</li>
+                <li>Collision states</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 10. Memory-efficient Data Storage</h2>
+            <p>Store multiple values in one integer.</p>
+            <p>👉 Example:</p>
+            <ul>
+                <li>8 boolean flags in 1 byte instead of 8 bytes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 When YOU (as a full-stack + embedded dev) will use it</h2>
+            <p>Given your background:</p>
+            <ul>
+                <li>AWS Lambda / Node.js → bit masks for permissions, feature flags</li>
+                <li>React Native → optimizing state flags or animations</li>
+                <li>Embedded / C/C++ → hardware control (most critical use)</li>
+                <li>Backend systems → encoding, compression, networking</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ Quick Mental Model</h2>
+            <ul>
+                <li>& → check</li>
+                <li>| → turn ON bits</li>
+                <li>^ → toggle bits</li>
+                <li>~ → invert bits</li>
+                <li>&lt;&lt; → shift left (multiply)</li>
+                <li>&gt;&gt; → shift right (divide)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

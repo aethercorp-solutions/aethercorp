@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Refresh Token</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Refresh Token</h1>
+                    <p class="subtitle">A refresh token is part of an authentication system (usually OAuth 2.0 / JWT-based) that lets a client obtain a new access token without forcing the user to log in again.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔑 Concept (simple view)</h2>
+            <ol>
+                <li>
+                    Access Token
+                    <ul>
+                        <li>Short-lived (e.g., 15 minutes)</li>
+                        <li>Used to access APIs</li>
+                        <li>Sent on every request</li>
+                    </ul>
+                </li>
+                <li>
+                    Refresh Token
+                    <ul>
+                        <li>Long-lived (e.g., days/weeks)</li>
+                        <li>Used only to get a new access token</li>
+                        <li>Stored securely (NOT sent on every request)</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔁 Flow</h2>
+            <ol>
+                <li>User logs in</li>
+                <li>
+                    <ul>
+                        <li>Access token (short-lived)</li>
+                        <li>Refresh token (long-lived)</li>
+                    </ul>
+                </li>
+                <li>Access token expires</li>
+                <li>Client sends refresh token to backend</li>
+                <li>Backend verifies it and issues a new access token</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 Why use refresh tokens?</h2>
+            <ul>
+                <li>Improves security (short-lived access tokens)</li>
+                <li>Improves UX (no frequent logins)</li>
+                <li>Enables session control (you can revoke refresh tokens)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ Implementing in AWS Serverless (Node.js)</h2>
+            <p>Typical stack:</p>
+            <ul>
+                <li>Amazon Web Services (AWS)</li>
+                <li>AWS Lambda</li>
+                <li>Amazon API Gateway</li>
+                <li>Amazon DynamoDB</li>
+                <li>Amazon Cognito (optional but recommended)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Option 1 (Recommended): Use Cognito (Built-in Refresh Tokens)</h2>
+            <p>If you use Amazon Cognito, it handles refresh tokens automatically.</p>
+            <p>Flow:</p>
+            <ul>
+                <li>
+                    User logs in → Cognito returns:
+                    <ul>
+                        <li>Access token</li>
+                        <li>ID token</li>
+                        <li>Refresh token</li>
+                    </ul>
+                </li>
+                <li>Use /oauth2/token endpoint to refresh tokens</li>
+            </ul>
+            <p>Node.js example:</p>
+            <pre><code>
+const axios = require("axios");
+
+async function refreshToken(refreshToken) {
+  const response = await axios.post(
+    "https://your-domain.auth.region.amazoncognito.com/oauth2/token",
+    new URLSearchParams({
+      grant_type: "refresh_token",
+      client_id: process.env.CLIENT_ID,
+      refresh_token: refreshToken,
+    }),
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+
+  return response.data; // new access token
+}
+            </code></pre>
+            <p>👉 Best for production apps (less custom security work)</p>
+        </section>
+
+        <section>
+            <h2>🧩 Option 2: Custom JWT + Refresh Token (Manual Implementation)</h2>
+            <p>If you're not using Cognito:</p>
+            <p>🗄️ Architecture</p>
+            <ul>
+                <li>Access token → JWT (signed)</li>
+                <li>Refresh token → random string (stored in DB like DynamoDB)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. Generate Tokens (Login Lambda)</h2>
+            <pre><code>
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+
+function generateTokens(userId) {
+  const accessToken = jwt.sign(
+    { userId },
+    process.env.ACCESS_SECRET,
+    { expiresIn: "15m" }
+  );
+
+  const refreshToken = crypto.randomBytes(64).toString("hex");
+
+  return { accessToken, refreshToken };
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Store Refresh Token (DynamoDB)</h2>
+            <p>Store:</p>
+            <ul>
+                <li>userId</li>
+                <li>refreshToken</li>
+                <li>expiration</li>
+                <li>device info (optional)</li>
+            </ul>
+            <p>Example item:</p>
+            <pre><code>
+{
+    "userId": "123",
+    "refreshToken": "abc123...",
+    "expiresAt": 1710000000
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Refresh Endpoint (Lambda)</h2>
+            <pre><code>
+const jwt = require("jsonwebtoken");
+
+exports.handler = async (event) => {
+  const { refreshToken } = JSON.parse(event.body);
+
+  // 1. Check DB
+  const record = await getTokenFromDB(refreshToken);
+
+  if (!record) {
+    return { statusCode: 401, body: "Invalid refresh token" };
+  }
+
+  // 2. Issue new access token
+  const newAccessToken = jwt.sign(
+    { userId: record.userId },
+    process.env.ACCESS_SECRET,
+    { expiresIn: "15m" }
+  );
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ accessToken: newAccessToken }),
+  };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Protect API (Middleware in Lambda)</h2>
+            <pre><code>
+function verifyAccessToken(token) {
+    try {
+        return jwt.verify(token, process.env.ACCESS_SECRET);
+    } catch (err) {
+        return null;
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 Security Best Practices</h2>
+            <p>✅ DO:</p>
+            <ul>
+                <li>Store refresh tokens in HTTP-only cookies</li>
+                <li>Rotate refresh tokens (issue a new one each refresh)</li>
+                <li>Set expiration (e.g., 7–30 days)</li>
+                <li>Use HTTPS only</li>
+                <li>Store hashed refresh tokens (like passwords)</li>
+            </ul>
+            <p>❌ DON'T:</p>
+            <ul>
+                <li>Store refresh tokens in localStorage (XSS risk)</li>
+                <li>Make refresh tokens never expire</li>
+                <li>Reuse refresh tokens indefinitely</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔄 Token Rotation (Important)</h2>
+            <p>Instead of reusing:</p>
+            <ol>
+                <li>Client sends refresh token</li>
+                <li>
+                    Server:
+                    <ul>
+                        <li>Deletes old refresh token</li>
+                        <li>Issues new refresh + access token</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>👉 Prevents token theft reuse</p>
+        </section>
+
+        <section>
+            <h2>🧱 Serverless Flow Summary</h2>
+            <ol>
+                <li>
+                    Login → Lambda:
+                    <ul>
+                        <li>Generate tokens</li>
+                        <li>Store refresh token in Amazon DynamoDB</li>
+                    </ul>
+                </li>
+                <li>
+                    API Request:
+                    <ul>
+                        <li>Verify access token in Lambda</li>
+                    </ul>
+                </li>
+                <li>
+                    Expired:
+                    <ul>
+                        <li>Call /refresh endpoint via Amazon API Gateway</li>
+                    </ul>
+                </li>
+                <li>
+                    Refresh Lambda:
+                    <ul>
+                        <li>Validate refresh token</li>
+                        <li>Issue new access token</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧭 When to Use What</h2>
+            <ul>
+                <li>
+                    Use Amazon Cognito if:
+                    <ul>
+                        <li>You want managed auth</li>
+                        <li>You don’t want to handle security complexity</li>
+                    </ul>
+                </li>
+                <li>
+                    Use custom solution if:
+                    <ul>
+                        <li>You need full control</li>
+                        <li>You already have your own auth system</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>Show a full AWS Serverless template (SAM/CDK)</li>
+                <li>Add middleware for API Gateway authorizers</li>
+                <li>Or design a production-ready token rotation system</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

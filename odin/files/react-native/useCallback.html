@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>useCallback</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">useCallback</h1>
+                    <p class="subtitle">
+                        useCallback is a React Hook that lets you memoize a function, meaning React will remember the same function instance between renders instead of creating a new one every time.
+                        <p>It is mainly used to optimize performance, especially when passing functions to child components.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 Simple definition</h2>
+            <p>useCallback = “keep the same function unless its dependencies change”</p>
+        </section>
+
+        <section>
+            <h2>🔹 Basic syntax</h2>
+            <pre><code>
+const memoizedFunction = useCallback(() => {
+    // your logic here
+}, [dependencies]);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Why it matters</h2>
+            <p>In React, every re-render creates new functions:</p>
+            <pre><code>
+const handleClick = () => {
+    console.log("clicked");
+};
+            </code></pre>
+            <p>Even if the logic is the same, React sees it as a new function every render.</p>
+            <p>This can cause:</p>
+            <ul>
+                <li>unnecessary re-renders in child components</li>
+                <li>performance issues in large apps</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Example with useCallback</h2>
+            <pre><code>
+import React, { useState, useCallback } from "react";
+
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = useCallback(() =&gt; {
+    console.log("Button clicked");
+  }, []);
+
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+        Increment {count}
+      &lt;/button&gt;
+      &lt;Child onClick={handleClick} /&gt;
+    &lt;/&gt;
+  );
+}
+
+const Child = React.memo(({ onClick }) =&gt; {
+  console.log("Child rendered");
+  return &lt;button onClick={onClick}&gt;Child Button&lt;/button&gt;;
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 What’s happening here</h2>
+            <ul>
+                <li>useCallback keeps handleClick the same between renders</li>
+                <li>React.memo prevents Child from re-rendering unnecessarily</li>
+                <li>Result: better performance</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 When to use useCallback</h2>
+            <p>Use it when:</p>
+            <ul>
+                <li>passing functions to memoized child components</li>
+                <li>optimizing expensive re-renders</li>
+                <li>working with dependency-heavy components</li>
+            </ul>
+            <p>Don’t use it everywhere—unnecessary usage can add complexity without benefit.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Related React concept</h2>
+            <p>React uses useCallback together with React.memo and useMemo for performance optimization in functional components.</p>
+        </section>
+
+        <section>
+            <h2>🔹 One-line summary</h2>
+            <p>useCallback is a React Hook that prevents a function from being recreated on every render unless its dependencies change.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Bare-metal programming</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Bare-metal programming</h1>
+                    <p class="subtitle">
+                        Bare-metal programming means writing code that runs directly on hardware without an operating system. A classic, practical example is blinking an LED on a microcontroller—this is usually the “Hello World” of embedded systems.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Example Use Case: LED Blinking on a Microcontroller</h2>
+            <p>💡 Scenario</p>
+            <p>You have a microcontroller (e.g., STM32, AVR, ESP32), and you want to:</p>
+            <ul>
+                <li>Turn an LED ON</li>
+                <li>Wait</li>
+                <li>Turn it OFF</li>
+                <li>Repeat forever</li>
+            </ul>
+            <p>No OS, no libraries—just direct register access.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Key Concept</h2>
+            <p>Bare metal = directly controlling hardware registers</p>
+            <p>Instead of:</p>
+            <pre><code>
+digitalWrite(LED_PIN, HIGH);
+            </code></pre>
+            <p>You do:</p>
+            <pre><code>
+GPIO_REGISTER |= (1 &lt;&lt; PIN);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧾 Example: Simple Bare-Metal C (Generic GPIO)</h2>
+            <pre><code>
+#define GPIO_BASE   0x40020000
+#define GPIO_MODER  (*(volatile unsigned int*)(GPIO_BASE + 0x00))
+#define GPIO_ODR    (*(volatile unsigned int*)(GPIO_BASE + 0x14))
+
+#define PIN         5
+
+void delay() {
+    for (volatile int i = 0; i &lt; 100000; i++);
+}
+
+int main(void) {
+    // Set PIN as output (01)
+    GPIO_MODER &= ~(3 &lt;&lt; (PIN * 2));   // Clear bits
+    GPIO_MODER |=  (1 &lt;&lt; (PIN * 2));   // Set as output
+
+    while (1) {
+        GPIO_ODR ^= (1 &lt;&lt; PIN); // Toggle LED
+        delay();
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ What’s Happening</h2>
+            <p>1. Memory-Mapped Registers</p>
+            <ul>
+                <li>Hardware registers live at fixed addresses (e.g., 0x40020000)</li>
+                <li>You access them like variables</li>
+            </ul>
+
+            <p>2. volatile</p>
+            <ul>
+                <li>Prevents compiler optimization</li>
+                <li>Ensures real hardware reads/writes</li>
+            </ul>
+
+            <p>3. Bit Manipulation</p>
+            <ul>
+                <li>|= → set bit</li>
+                <li>&= ~ → clear bit</li>
+                <li>^= → toggle bit</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Real-World Use Cases of Bare Metal</h2>
+            <p>🏭 1. Industrial Control Systems</p>
+            <ul>
+                <li>Control motors, sensors, PLC-like systems</li>
+                <li>Deterministic timing is critical</li>
+            </ul>
+
+            <p>🚗 2. Automotive Systems</p>
+            <ul>
+                <li>Engine control units (ECU)</li>
+                <li>Airbag systems (must respond instantly)</li>
+            </ul>
+
+            <p>🛰️ 3. IoT / Embedded Devices</p>
+            <ul>
+                <li>Smart locks, wearables</li>
+                <li>Low power + fast boot required</li>
+            </ul>
+
+            <p>🧪 4. Bootloaders</p>
+            <ul>
+                <li>First code that runs on a device</li>
+                <li>Initializes memory, clocks, peripherals</li>
+            </ul>
+
+            <p>🎮 5. High-performance peripherals</p>
+            <ul>
+                <li>Custom drivers (SPI, I2C, UART)</li>
+                <li>No OS overhead</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

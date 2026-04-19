@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Production-ready AWS Serverless Node.js + Express API</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Production-ready AWS Serverless Node.js + Express API</h1>
+                    <p class="subtitle">Here’s a step-by-step guide to create a production-ready AWS Serverless Node.js + Express API using AWS Lambda + API Gateway + Serverless Framework.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🚀 1. Prerequisites</h2>
+            <p>Install these first:</p>
+            <ul>
+                <li>Node.js (LTS)</li>
+                <li>
+                    AWS CLI → configure it
+                    <pre><code>
+aws configure
+                    </code></pre>
+                </li>
+                <li>
+                    Serverless Framework
+                    <pre><code>
+npm install -g serverless
+                    </code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📁 2. Create Project</h2>
+            <pre><code>
+mkdir serverless-express-api
+cd serverless-express-api
+npm init -y
+            </code></pre>
+            <p>Install dependencies:</p>
+            <pre><code>
+npm install express serverless-http
+            </code></pre>
+            <p>Install dev dependencies:</p>
+            <pre><code>
+npm install --save-dev serverless-offline
+npm install express
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 3. Project Structure</h2>
+            <pre><code>
+serverless-express-api/
+│── handler.js
+│── app.js
+│── serverless.yml
+│── package.json
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ 4. Create Express App (app.js)</h2>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+// Routes
+app.get('/', (req, res) => {
+    res.json({ message: 'Serverless Express API is running 🚀' });
+});
+
+app.get('/hello', (req, res) => {
+    res.json({ message: 'Hello from Lambda + Express!' });
+});
+
+module.exports = app;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ 5. Lambda Handler (handler.js)</h2>
+            <p>This connects Express to AWS Lambda:</p>
+            <pre><code>
+const serverless = require('serverless-http');
+const app = require('./app');
+
+module.exports.handler = serverless(app);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>☁️ 6. Serverless Configuration (serverless.yml)</h2>
+            <pre><code>
+service: serverless-express-api
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-1
+  memorySize: 128
+  timeout: 10
+
+functions:
+  api:
+    handler: handler.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+
+plugins:
+  - serverless-offline
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>▶️ 7. Run Locally</h2>
+            <pre><code>
+serverless offline
+            </code></pre>
+            <p>Then open:</p>
+            <pre><code>
+http://localhost:3000
+            </code></pre>
+            <p>Test:</p>
+            <ul>
+                <li>/</li>
+                <li>/hello</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 8. Deploy to AWS</h2>
+            <pre><code>
+serverless deploy
+            </code></pre>
+            <p>After deployment you’ll get:</p>
+            <pre><code>
+https://xxxx.execute-api.ap-southeast-1.amazonaws.com
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 9. Test Deployed API</h2>
+            <pre><code>
+curl https://xxxx.execute-api.ap-southeast-1.amazonaws.com/hello
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 10. Add Environment Variables (optional)</h2>
+            <p>In serverless.yml:</p>
+            <pre><code>
+provider:
+  environment:
+    DB_URL: mongodb+srv://...
+            </code></pre>
+            <p>Access in code:</p>
+            <pre><code>
+process.env.DB_URL
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🗄️ 11. Connect MongoDB (optional common setup)</h2>
+            <p>Install:</p>
+            <pre><code>
+npm install mongoose
+            </code></pre>
+            <p>Create db.js:</p>
+            <pre><code>
+const mongoose = require('mongoose');
+
+let conn = null;
+
+module.exports.connect = async () => {
+  if (conn) return conn;
+
+  conn = await mongoose.connect(process.env.DB_URL);
+  return conn;
+};
+            </code></pre>
+            <p>Use inside routes:</p>
+            <pre><code>
+const db = require('./db');
+
+app.get('/users', async (req, res) => {
+  await db.connect();
+  res.json({ message: 'DB connected' });
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ 12. Production Best Practices</h2>
+            <p>Add:</p>
+            <ul>
+                <li>JWT authentication</li>
+                <li>API Gateway authorizers</li>
+                <li>CORS config</li>
+                <li>DynamoDB or MongoDB Atlas</li>
+                <li>CloudWatch logging</li>
+                <li>Separate dev/staging/prod stages</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 13. Common Upgrade Architecture</h2>
+            <pre><code>
+Client (React Native / Web)
+        ↓
+API Gateway
+        ↓
+AWS Lambda (Express App)
+        ↓
+MongoDB / DynamoDB
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 If you want next step</h2>
+            <p>I can help you build:</p>
+            <p>🔐 Secure version</p>
+            <ul>
+                <li>JWT auth (Google / Apple / Cognito)</li>
+                <li>Middleware-based auth system</li>
+            </ul>
+            <p>🧱 Production architecture</p>
+            <ul>
+                <li>Multi-stage (dev/staging/prod)</li>
+                <li>CI/CD with GitHub Actions</li>
+            </ul>
+            <p>🗄️ Database layer</p>
+            <ul>
+                <li>MongoDB optimized for Lambda (important)</li>
+                <li>OR DynamoDB serverless pattern</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

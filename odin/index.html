@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Odin</title>
+  <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+  <link rel="stylesheet" href="odin.css" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="../assets/aether-logo.png" alt="Aether Logo" />
+      <h1>Odin</h1>
+    </div>
+
+    <input type="text" id="search" placeholder="Search..." />
+
+    <label>
+      <input type="checkbox" id="groupToggle" />
+      Group by category
+    </label>
+
+    <main>
+      <ul id="page-list"></ul>
+      <div id="pagination" class="pagination"></div>
+    </main>
+  </div>
+
+  <script>
+    const pathParts = window.location.pathname.split('/');
+    const repoName = pathParts[1] || '';
+    const isGitHubPages = window.location.hostname.includes('github.io');
+    const basePath = isGitHubPages ? `/${repoName}/cognitus/` : './';
+
+    // --- List of all HTML files ---
+    const htmlFiles = [
+      "files/aws-serverless-nodejs/json-web-token-jwt.html",
+      "files/aws-serverless-nodejs/json-web-token-authentication.html",
+      "files/aws-serverless-nodejs/middleware.html",
+      "files/aws-serverless-nodejs/nodejs-api-application.html",
+      "files/aws-serverless-nodejs/production-ready-project-structure-for-a-manual-refresh-token-system.html",
+      "files/aws-serverless-nodejs/production-style-manual-refresh-token-system.html",
+      "files/aws-serverless-nodejs/refresh-token.html",
+      "files/aws-serverless-nodejs/serverless-framework.html",
+      "files/aws-serverless-nodejs/step-by-step-guide-to-create-a-production-ready-aws-serverless-nodejs-and-express-api.html",
+      "files/c/bitwise-operations.html",
+      "files/c/microcontroller-bit-manipulation.html",
+      "files/electronics/electronic-switch.html",
+      "files/embedded-programming/bare-metal-programming.html",
+      "files/embedded-programming/difference-between-microcontroller-and-embedded-programming.html",
+      "files/full-stack-development/modern-full-stack-development.html",
+      "files/full-stack-development/smarter-backend.html",
+      "files/machine/engine.html",
+      "files/react-native/expo.html",
+      "files/react-native/expo-react-native.html",
+      "files/react-native/functional-components.html",
+      "files/react-native/react-hook.html",
+      "files/react-native/javascript-xml.html",
+      "files/react-native/jsx-memoization.html",
+      "files/security/custom-api-registration.html",
+      "files/security/what-is-an-authentication-system.html",
+      "files/react-native/useCallback.html",
+      "files/react-native/useEffect.html",
+    ];
+
+    const htmlFilesWithBase = htmlFiles.map(file => basePath + file);
+
+    // --- Sort all files alphabetically by filename ---
+    htmlFilesWithBase.sort((a, b) => {
+      const nameA = a.split("/").pop().toLowerCase();
+      const nameB = b.split("/").pop().toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
+
+    const searchInput = document.getElementById('search');
+    const groupToggle = document.getElementById('groupToggle');
+    const listElement = document.getElementById('page-list');
+    const paginationElement = document.getElementById('pagination');
+
+    const itemsPerPage = 20;
+    let currentPage = 1;
+    let currentFiles = [...htmlFilesWithBase];
+
+    function getDisplayName(filename) {
+      return filename
+        .replace('.html', '')
+        .split('-')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+    }
+
+    function groupFiles(files) {
+      const grouped = {};
+
+      files.forEach(file => {
+        const parts = file.replace(basePath, '').split('/');
+        const folder = parts[1];
+        if (!grouped[folder]) grouped[folder] = [];
+        grouped[folder].push(file);
+      });
+
+      // --- Sort files inside each group alphabetically ---
+      Object.keys(grouped).forEach(folder => {
+        grouped[folder].sort((a, b) => {
+          const nameA = a.split('/').pop().toLowerCase();
+          const nameB = b.split('/').pop().toLowerCase();
+          return nameA.localeCompare(nameB);
+        });
+      });
+
+      return grouped;
+    }
+
+    function displayList(files, grouped, page = 1) {
+      listElement.innerHTML = '';
+
+      const pageFiles = grouped
+        ? files // Show all files when grouped
+        : files.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+      if (grouped) {
+        const groupedFiles = groupFiles(pageFiles);
+
+        // --- Sort categories alphabetically ---
+        Object.keys(groupedFiles)
+          .sort((a, b) => a.localeCompare(b))
+          .forEach(folder => {
+            const fileList = groupedFiles[folder];
+
+            const section = document.createElement('section');
+            section.className = 'group';
+
+            const heading = document.createElement('h2');
+            heading.textContent = folder
+              .replace(/-/g, ' ')
+              .replace(/\b\w/g, c => c.toUpperCase());
+            heading.addEventListener('click', () => {
+              section.classList.toggle('collapsed');
+            });
+
+            section.appendChild(heading);
+
+            const ul = document.createElement('ul');
+
+            fileList.forEach(file => {
+              const li = document.createElement('li');
+              const link = document.createElement('a');
+              link.href = file;
+              link.textContent = getDisplayName(file.split('/').pop());
+              li.appendChild(link);
+              ul.appendChild(li);
+            });
+
+            section.appendChild(ul);
+
+            const wrapperLi = document.createElement('li');
+            wrapperLi.appendChild(section);
+            listElement.appendChild(wrapperLi);
+          });
+
+        paginationElement.style.display = 'none';
+      } else {
+        pageFiles.forEach(file => {
+          const li = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = file;
+          link.textContent = getDisplayName(file.split('/').pop());
+          li.appendChild(link);
+          listElement.appendChild(li);
+        });
+
+        paginationElement.style.display = '';
+        renderPagination(files);
+      }
+
+      if (files.length === 0) {
+        listElement.innerHTML = '<li>No results found.</li>';
+        paginationElement.style.display = 'none';
+      }
+    }
+
+    function renderPagination(files) {
+      paginationElement.innerHTML = '';
+      const pageCount = Math.ceil(files.length / itemsPerPage);
+
+      for (let i = 1; i <= pageCount; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        if (i === currentPage) btn.classList.add('active');
+        btn.addEventListener('click', () => {
+          currentPage = i;
+          displayList(currentFiles, false, currentPage);
+        });
+        paginationElement.appendChild(btn);
+      }
+    }
+
+    function filterFiles() {
+      const query = searchInput.value.trim().toLowerCase();
+      const keywords = query.split(/\s+/).filter(Boolean);
+      const regex = new RegExp(keywords.map(k => `(?=.*${k})`).join(''), 'i');
+
+      currentFiles = htmlFilesWithBase.filter(file => {
+        const fileName = file.split('/').pop().replace('.html', '').toLowerCase();
+        return regex.test(fileName);
+      });
+
+      currentPage = 1;
+      displayList(currentFiles, groupToggle.checked, currentPage);
+    }
+
+    searchInput.addEventListener('input', filterFiles);
+    groupToggle.addEventListener('change', () => {
+      currentPage = 1;
+      displayList(currentFiles, groupToggle.checked, currentPage);
+    });
+
+    displayList(currentFiles, groupToggle.checked, currentPage);
+  </script>
+</body>
+
+</html>

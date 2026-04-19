@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JSON Web Token (JWT)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JSON Web Token (JWT)</h1>
+                    <p class="subtitle">
+                        A JSON Web Token (JWT) is a compact, URL-safe way to securely transmit information between two parties—most commonly used for authentication and authorization in APIs.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔐 What JWT is (simple idea)</h2>
+            <p>Think of a JWT like a digitally signed ID card:</p>
+            <ul>
+                <li>The server issues it after login</li>
+                <li>The client (mobile/web app) stores it</li>
+                <li>The client sends it back on every request</li>
+                <li>The server verifies it instead of asking for login again</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 Structure of a JWT</h2>
+            <p>A JWT has 3 parts, separated by dots:</p>
+            <pre><code>
+header.payload.signature
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+.
+eyJ1c2VySWQiOjEyMywiZXhwIjoxNzAwMDAwMDAwfQ
+.
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            </code></pre>
+
+            <p>1. Header</p>
+            <p>Contains metadata:</p>
+            <pre><code>
+{
+    "alg": "HS256",
+    "typ": "JWT"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Payload (the data)</h2>
+            <p>Contains claims (information):</p>
+            <pre><code>
+{
+    "userId": 123,
+    "email": "user@example.com",
+    "exp": 1700000000
+}
+            </code></pre>
+            <p>Types of claims:</p>
+            <ol>
+                <li>Registered: exp (expiry), iat, iss</li>
+                <li>Public: shared standard fields</li>
+                <li>Private: your custom data (e.g. userId)</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>3. Signature (security)</h2>
+            <p>Created using:</p>
+            <pre><code>
+HMACSHA256(
+  base64UrlEncode(header) + "." + base64UrlEncode(payload),
+  secret
+)
+            </code></pre>
+            <p>This ensures:</p>
+            <ul>
+                <li>Token is not tampered</li>
+                <li>Token is issued by trusted server</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔄 How JWT works (flow)</h2>
+            <p>1. User logs in</p>
+            <ul>
+                <li>Sends username/password to server</li>
+            </ul>
+            <p>2. Server validates</p>
+            <ul>
+                <li>If valid → creates JWT</li>
+            </ul>
+            <p>3. Server returns JWT</p>
+            <pre><code>
+{
+    "token": "eyJhbGciOiJIUzI1NiIs..."
+}
+            </code></pre>
+            <p>4. Client stores token</p>
+            <ul>
+                <li>Local storage / Secure storage (React Native)</li>
+            </ul>
+            <p>5. Client sends token in requests</p>
+            <pre><code>
+Authorization: Bearer &lt;token&gt;
+            </code></pre>
+            <p>6. Server verifies token</p>
+            <ul>
+                <li>If valid → allow access</li>
+                <li>If expired/invalid → reject</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ Why use JWT</h2>
+            <ul>
+                <li>Stateless (no session storage on server)</li>
+                <li>Fast for serverless (like AWS Lambda — relevant to your setup)</li>
+                <li>Works well with APIs and mobile apps</li>
+                <li>Scalable across microservices</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Important considerations</h2>
+            <ul>
+                <li>Do NOT store sensitive data in payload (it's only encoded, not encrypted)</li>
+                <li>Always use HTTPS</li>
+                <li>Use short expiration (exp)</li>
+                <li>Use refresh tokens for long sessions</li>
+                <li>Keep your secret key secure</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 In your context (AWS + React Native)</h2>
+            <p>JWT is typically used with:</p>
+            <ul>
+                <li>API Gateway + Lambda (custom authorizer or middleware)</li>
+                <li>Stored in React Native (SecureStore / Keychain)</li>
+                <li>Sent via Authorization header</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

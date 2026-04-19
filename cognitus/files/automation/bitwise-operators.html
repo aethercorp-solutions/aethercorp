@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Bitwise operators</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Bitwise operators</h1>
+                    <p class="subtitle">
+                        Bitwise operators are one of those things that feel low-level… until you realize they solve very real, practical problems efficiently—especially in systems, performance-critical code, and even app development.
+                        <p>Here are the most useful real-world use cases (with examples):</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 1. Flags / Permissions (VERY common)</h2>
+            <p>Instead of multiple booleans, you store everything in a single number.</p>
+            <p>Example</p>
+            <pre><code>
+const READ = 1 &lt;&lt; 0;   // 0001
+const WRITE = 1 &lt;&lt; 1;  // 0010
+const EXEC = 1 &lt;&lt; 2;   // 0100
+
+let permission = READ | WRITE; // 0011
+            </code></pre>
+
+            <p>Check permission</p>
+            <pre><code>
+if (permission & READ) {
+    console.log("Can read");
+}
+            </code></pre>
+
+            <p>Why this matters</p>
+            <ul>
+                <li>Saves memory</li>
+                <li>Fast checks</li>
+                <li>
+                    Used in:
+                    <ul>
+                        <li>File systems</li>
+                        <li>Role-based access</li>
+                        <li>Feature toggles</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 2. Toggling States (On/Off switches)</h2>
+            <p>Great for UI or feature flags.</p>
+            <pre><code>
+let darkMode = 0;
+
+// Turn ON
+darkMode |= 1;
+
+// Turn OFF
+darkMode &= ~1;
+
+// Toggle
+darkMode ^= 1;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 3. Efficient Storage (Bit Packing)</h2>
+            <p>Store multiple values in a single integer.</p>
+            <p>Example (RGB color)</p>
+            <pre><code>
+let color = (red &lt;&lt; 16) | (green &lt;&lt; 8) | blue;
+            </code></pre>
+
+            <p>Extract values</p>
+            <pre><code>
+let red   = (color >> 16) & 0xFF;
+let green = (color >> 8) & 0xFF;
+let blue  = color & 0xFF;
+            </code></pre>
+
+            <p>Used in:</p>
+            <ul>
+                <li>Graphics</li>
+                <li>Game dev</li>
+                <li>Image processing</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 4. Fast Math Operations</h2>
+            <p>Bitwise ops are faster than normal math in some cases.</p>
+            <p>Multiply / Divide by 2</p>
+            <pre><code>
+x &lt;&lt; 1  // x * 2
+x &gt;&gt; 1  // x / 2
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 5. Checking Even / Odd</h2>
+            <pre><code>
+if (x & 1) {
+    console.log("Odd");
+} else {
+    console.log("Even");
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 6. Swapping Values (without temp variable)</h2>
+            <pre><code>
+a ^= b;
+b ^= a;
+a ^= b;
+            </code></pre>
+            <p>(Not commonly used now, but classic interview trick)</p>
+        </section>
+
+        <section>
+            <h2>🔹 7. Clearing / Masking Bits</h2>
+            <p>Used when you only want certain bits.</p>
+            <pre><code>
+let value = 0b1101;
+
+// Clear 2nd bit
+value &= ~(1 &lt;&lt; 1);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 8. Hashing / Encryption / Low-level Systems</h2>
+            <p>Bitwise ops are heavily used in:</p>
+            <ul>
+                <li>Cryptography</li>
+                <li>Hash functions</li>
+                <li>Compression algorithms</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 9. Performance-sensitive code</h2>
+            <p>In:</p>
+            <ul>
+                <li>Game engines</li>
+                <li>Embedded systems</li>
+                <li>Networking protocols</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 10. Working with Binary Protocols</h2>
+            <p>Example: parsing headers in networking</p>
+            <pre><code>
+let version = (packet >> 4) & 0xF;
+let type = packet & 0xF;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 When YOU should use it (practical advice)</h2>
+            <p>Use bitwise operators when:</p>
+            <ul>
+                <li>You need compact state storage (flags)</li>
+                <li>You want high performance</li>
+                <li>You're dealing with binary data / protocols</li>
+                <li>You're building low-level or system-heavy logic</li>
+            </ul>
+            <p>Avoid when:</p>
+            <ul>
+                <li>Readability is more important</li>
+                <li>Team is not familiar with bitwise logic</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💡 Real-world example (your context – backend / mobile)</h2>
+            <p>For your scheduling app:</p>
+            <p>You could store schedule options like:</p>
+            <pre><code>
+const DAILY = 1 &lt;&lt; 0;
+const WEEKLY = 1 &lt;&lt; 1;
+const MONTHLY = 1 &lt;&lt; 2;
+
+let scheduleType = DAILY | WEEKLY;
+            </code></pre>
+
+            <p>Instead of:</p>
+            <pre><code>
+{ daily: true, weekly: true, monthly: false }
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

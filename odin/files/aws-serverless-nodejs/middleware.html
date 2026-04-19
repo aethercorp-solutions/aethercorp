@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Middleware</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Middleware</h1>
+                    <p class="subtitle">
+                        Middleware is one of the most important concepts in a Node.js API—especially when using Express.js.
+                        <p>Instead of jumping straight to the answer, think of middleware as a pipeline that every request passes through before reaching your main logic.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 What is Middleware?</h2>
+            <p>Middleware = a function that runs between the request and the response</p>
+            <p>It has access to:</p>
+            <pre><code>
+(req, res, next)
+            </code></pre>
+            <ul>
+                <li>req → incoming request</li>
+                <li>res → response object</li>
+                <li>next() → passes control to the next middleware</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔄 Full Middleware Flow (Step-by-Step)</h2>
+            <p>Let’s say you call:</p>
+            <pre><code>
+GET /profile
+            </code></pre>
+            <p>Here’s what happens internally:</p>
+            <pre><code>
+Client Request
+      ↓
+[Middleware 1] → Logging
+      ↓
+[Middleware 2] → Authentication
+      ↓
+[Middleware 3] → Validation
+      ↓
+[Route Handler] → Business Logic
+      ↓
+Response Sent Back
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔧 Example Flow in Code</h2>
+            <pre><code>
+app.get(
+  '/profile',
+  logMiddleware,
+  authMiddleware,
+  validateMiddleware,
+  (req, res) => {
+    res.json({ message: "User profile data" });
+  }
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔍 Each Step Explained</h2>
+            <p>1. Logging Middleware</p>
+            <pre><code>
+function logMiddleware(req, res, next) {
+    console.log(`${req.method} ${req.url}`);
+    next(); // move to next
+}
+            </code></pre>
+            <p>👉 Runs first</p>
+            <p>👉 Does not stop the request</p>
+        </section>
+
+        <section>
+            <h2>2. Authentication Middleware</h2>
+            <pre><code>
+function authMiddleware(req, res, next) {
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // validate token here
+    next();
+}
+            </code></pre>
+            <p>👉 Can stop the flow if invalid</p>
+            <p>👉 If valid → continues</p>
+        </section>
+
+        <section>
+            <h2>3. Validation Middleware</h2>
+            <pre><code>
+function validateMiddleware(req, res, next) {
+    if (!req.query.id) {
+        return res.status(400).json({ message: "Missing ID" });
+    }
+
+    next();
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Final Route Handler</h2>
+            <pre><code>
+(req, res) => {
+    res.json({ message: "Success" });
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ Key Concept: next()</h2>
+            <p>This is the most important part.</p>
+            <ul>
+                <li>next() → go to next middleware</li>
+                <li>No next() → request gets stuck</li>
+                <li>return res... → stops everything</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧱 Types of Middleware</h2>
+            <p>1. Application-level</p>
+            <p>Runs on all routes:</p>
+            <pre><code>
+app.use(express.json());
+            </code></pre>
+
+            <p>2. Route-level</p>
+            <p>Runs only on specific routes:</p>
+            <pre><code>
+app.get('/profile', authMiddleware, handler);
+            </code></pre>
+
+            <p>3. Global Middleware</p>
+            <pre><code>
+app.use((req, res, next) => {
+    console.log("Runs for every request");
+    next();
+});
+            </code></pre>
+
+            <p>4. Error Middleware</p>
+            <pre><code>
+app.use((err, req, res, next) => {
+    res.status(500).json({ error: err.message });
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔁 Real Flow (Your AWS Serverless Setup)</h2>
+            <p>In your case (Lambda + API Gateway):</p>
+            <pre><code>
+API Gateway
+     ↓
+Lambda Handler
+     ↓
+Middleware (auth, headers, logging)
+     ↓
+Controller
+     ↓
+MongoDB
+            </code></pre>
+            <p>Even in serverless, middleware still works—you just structure it manually or with frameworks.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Simple Analogy</h2>
+            <p>Middleware is like security checkpoints at an airport:</p>
+            <ul>
+                <li>ID check (auth middleware)</li>
+                <li>Bag scan (validation middleware)</li>
+                <li>Boarding gate (controller)</li>
+            </ul>
+            <p>Fail any step → you don’t proceed</p>
+        </section>
+
+        <section>
+            <h2>🚨 Common Mistakes</h2>
+            <ul>
+                <li>❌ Forgetting next()</li>
+                <li>❌ Sending response twice</li>
+                <li>❌ Blocking request unintentionally</li>
+                <li>❌ Putting heavy logic in middleware</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Best Practices</h2>
+            <ul>
+                <li>Keep middleware small and reusable</li>
+                <li>Separate concerns (auth, validation, logging)</li>
+                <li>Always handle errors</li>
+                <li>Use async/await properly</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Example (Clean Structure)</h2>
+            <pre><code>
+app.use(logMiddleware);
+
+app.get('/profile', authMiddleware, async (req, res) => {
+    const user = await getUser(req.user.id);
+    res.json(user);
+});
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

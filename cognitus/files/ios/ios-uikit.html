@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>UIKit</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">UIKit</h1>
+                    <p class="subtitle">
+                        UIKit is Apple’s high-level UI framework for iOS, but under the hood it’s really a carefully layered system built on top of lower-level technologies like Core Animation, Core Graphics, and the Objective-C runtime (even if you’re writing in Swift).
+                        <p>Let’s break it down in a way that actually shows what’s happening internally.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. The Core Architecture (MVC + Responder Chain)</h2>
+            <p>UIKit is fundamentally:</p>
+            <ul>
+                <li>Object-oriented</li>
+                <li>Based on Model–View–Controller (MVC)</li>
+                <li>Event-driven via the Responder Chain</li>
+            </ul>
+
+            <p>Key objects:</p>
+            <ul>
+                <li>UIApplication → the app singleton (event dispatcher)</li>
+                <li>UIWindow → root container</li>
+                <li>UIView → visual building blocks</li>
+                <li>UIViewController → manages views and lifecycle</li>
+            </ul>
+
+            <p>Under the hood:</p>
+            <ul>
+                <li>UIKit keeps a tree of UIViews</li>
+                <li>
+                    Each view:
+                    <ul>
+                        <li>Has a backing CALayer (Core Animation layer)</li>
+                        <li>Knows its parent and children</li>
+                    </ul>
+                </li>
+                <li>This forms a hierarchical scene graph</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. UIView = Thin Wrapper Over CALayer</h2>
+            <p>Every UIView is backed by a CALayer.</p>
+            <p>What this means:</p>
+            <p>When you do:</p>
+            <pre><code>
+view.backgroundColor = .red
+            </code></pre>
+            <p>UIKit:</p>
+            <ol>
+                <li>Translates it into layer properties</li>
+                <li>
+                    Sets:
+                    <pre><code>
+layer.backgroundColor = CGColor
+                    </code></pre>
+                </li>
+            </ol>
+            <p>Key insight:</p>
+            <p>👉 UIView does NOT render pixels directly</p>
+            <p>👉 CALayer does</p>
+        </section>
+
+        <section>
+            <h2>3. Rendering Pipeline (What Actually Draws the UI)</h2>
+            <p>This is where things get interesting.</p>
+            <p>Step-by-step rendering:</p>
+            <ol>
+                <li>
+                    You modify a view
+                    <pre><code>
+view.frame = ...
+view.setNeedsLayout()
+view.setNeedsDisplay()
+                    </code></pre>
+                </li>
+                <li>UIKit marks the view as dirty</li>
+                <li>
+                    At the end of the run loop:
+                    <ul>
+                        <li>UIKit batches updates</li>
+                        <li>
+                            Calls:
+                            <ul>
+                                <li>layoutSubviews</li>
+                                <li>drawRect: (if needed)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Drawing happens:
+                    <ul>
+                        <li>
+                            Either via:
+                            <ul>
+                                <li>Core Graphics (CPU)</li>
+                                <li>Or pre-rendered content</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>The view’s CALayer is updated</li>
+                <li>
+                    Core Animation:
+                    <ul>
+                        <li>Composes all layers</li>
+                        <li>Sends them to the GPU</li>
+                    </ul>
+                </li>
+                <li>GPU renders final pixels to screen</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Important concept:</h2>
+            <p>👉 UIKit = CPU-side logic</p>
+            <p>👉 Core Animation = GPU-side rendering</p>
+        </section>
+
+        <section>
+            <h2>4. Run Loop (Why UI Feels “Live”)</h2>
+            <p>UIKit is driven by the main run loop.</p>
+            <p>The loop does:</p>
+            <ul>
+                <li>Processes touch events</li>
+                <li>Handles timers</li>
+                <li>Executes layout & drawing</li>
+                <li>Commits animations</li>
+            </ul>
+            <p>Cycle:</p>
+            <pre><code>
+Input → Update → Layout → Render → Sleep → Repeat
+            </code></pre>
+            <p>UIKit hooks into:</p>
+            <ul>
+                <li>CFRunLoop (Core Foundation)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Event Handling (Touch System)</h2>
+            <p>Touches don’t go directly to views randomly.</p>
+            <p>Flow:</p>
+            <ol>
+                <li>Hardware → iOS</li>
+                <li>iOS → UIApplication</li>
+                <li>UIApplication → UIWindow</li>
+                <li>UIWindow performs hit-testing</li>
+                <li>Finds the target view</li>
+            </ol>
+            <p>Hit-testing:</p>
+            <pre><code>
+hitTest:withEvent:
+            </code></pre>
+            <p>Traverses view tree:</p>
+            <ul>
+                <li>From top → down</li>
+                <li>Finds deepest interactive view</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Responder Chain (Hidden Power Feature)</h2>
+            <p>After a view gets an event:</p>
+            <p>If it doesn’t handle it → passes up chain:</p>
+            <pre><code>
+UIView → Superview → UIViewController → UIWindow → UIApplication
+            </code></pre>
+            <p>This enables:</p>
+            <ul>
+                <li>Event bubbling</li>
+                <li>Menu actions</li>
+                <li>Keyboard handling</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Auto Layout Engine (Constraint Solver)</h2>
+            <p>UIKit uses a constraint-based layout system.</p>
+            <p>Under the hood:</p>
+            <ul>
+                <li>Auto Layout is a linear equation solver</li>
+                <li>Based on Cassowary algorithm</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+viewA.width = viewB.width * 0.5 + 20
+            </code></pre>
+            <p>System builds equations and solves them:</p>
+            <ul>
+                <li>Variables = view attributes</li>
+                <li>Constraints = equations</li>
+                <li>Priority system resolves conflicts</li>
+            </ul>
+            <p>When it runs:</p>
+            <ul>
+                <li>Before rendering</li>
+                <li>During layout pass</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Animation System (Core Animation Magic)</h2>
+            <p>When you write:</p>
+            <pre><code>
+UIView.animate(withDuration: 0.3) {
+    view.alpha = 0
+}
+            </code></pre>
+            <p>What actually happens:</p>
+            <ol>
+                <li>
+                    UIKit:
+                    <ul>
+                        <li>Wraps changes in a CATransaction</li>
+                    </ul>
+                </li>
+                <li>
+                    Instead of changing immediately:
+                    <ul>
+                        <li>It records start + end values</li>
+                    </ul>
+                </li>
+                <li>
+                    Core Animation:
+                    <ul>
+                        <li>Interpolates values over time</li>
+                        <li>Runs on GPU (not blocking main thread)</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Key insight:</h2>
+            <p>👉 Animations are not frame-by-frame in your code</p>
+            <p>👉 They are declarative state transitions</p>
+        </section>
+
+        <section>
+            <h2>9. Memory & Performance Internals</h2>
+            <p>View lifecycle:</p>
+            <ul>
+                <li>Lazy loading (loadView)</li>
+                <li>Retained in hierarchy</li>
+                <li>Deallocated when removed and unreferenced</li>
+            </ul>
+            <p>Performance tricks:</p>
+            <ul>
+                <li>View flattening</li>
+                <li>Layer rasterization</li>
+                <li>Offscreen rendering optimization</li>
+            </ul>
+            <p>Common bottlenecks:</p>
+            <ul>
+                <li>Too many views</li>
+                <li>Complex Auto Layout</li>
+                <li>Offscreen rendering (shadows, masks)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Threading Model</h2>
+            <p>UIKit is NOT thread-safe.</p>
+            <p>
+                Rules:
+                <ul>
+                    <li>All UI work → main thread only</li>
+                </ul>
+            </p>
+            <p>Why?</p>
+            <p>Because:</p>
+            <ul>
+                <li>View hierarchy is shared mutable state</li>
+                <li>Run loop synchronization required</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>11. Bridging to Lower Layers</h2>
+            <p>UIKit sits on top of:</p>
+            <ul>
+                <li>Core Animation → compositing + animations</li>
+                <li>Core Graphics → drawing</li>
+                <li>Metal (indirectly) → GPU rendering</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>12. Why UIKit Feels Fast</h2>
+            <p>Because:</p>
+            <ul>
+                <li>Uses retained mode rendering</li>
+                <li>Batches updates</li>
+                <li>Offloads work to GPU</li>
+                <li>Uses layer tree diffing</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 Mental Model (Best Way to Think About It)</h2>
+            <p>Think of UIKit as:</p>
+            <pre><code>
+A state description system for UI
+that converts your code into a layer tree,
+which is then rendered efficiently by the GPU.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>If You Want to Go Even Deeper</h2>
+            <p>We can dive into:</p>
+            <ul>
+                <li>How CALayer tree vs presentation tree works</li>
+                <li>Offscreen rendering internals</li>
+                <li>UIKit vs SwiftUI architecture differences</li>
+                <li>Event loop internals (CFRunLoop deep dive)</li>
+                <li>How scrolling (UIScrollView) is optimized</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

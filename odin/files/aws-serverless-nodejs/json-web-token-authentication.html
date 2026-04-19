@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JSON Web Token</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JSON Web Token</h1>
+                    <p class="subtitle">
+                        To add authentication to your Express API, the most common and production-ready approach is JWT (JSON Web Token) authentication.
+                        <p>I'll show you a clean setup that works well with your AWS serverless backend.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ 1. Install dependencies</h2>
+            <pre><code>
+npm install jsonwebtoken
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 2. Create Auth Middleware</h2>
+            <p>Create a file: middleware/auth.js</p>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+module.exports = function (req, res, next) {
+  try {
+    const token = req.headers['authorization'];
+
+    if (!token) {
+      return res.status(401).json({
+        status: false,
+        message: 'No token provided'
+      });
+    }
+
+    // Remove "Bearer "
+    const bearerToken = token.split(' ')[1];
+
+    const decoded = jwt.verify(bearerToken, process.env.JWT_SECRET);
+
+    req.user = decoded; // attach user data
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      status: false,
+      message: 'Invalid or expired token'
+    });
+  }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 3. Add a Login Route (Generate Token)</h2>
+            <p>Example: routes/auth.js</p>
+            <pre><code>
+const express = require('express');
+const jwt = require('jsonwebtoken');
+
+const router = express.Router();
+
+// Dummy login (replace with DB check)
+router.post('/login', async (req, res) => {
+  const { email } = req.body;
+
+  // TODO: validate user from DB
+  const user = { id: 1, email };
+
+  const token = jwt.sign(user, process.env.JWT_SECRET, {
+    expiresIn: '7d'
+  });
+
+  res.json({
+    status: true,
+    token
+  });
+});
+
+module.exports = router;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 4. Protect Your Routes</h2>
+            <p>Update your main app:</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+const authMiddleware = require('./middleware/auth');
+const authRoutes = require('./routes/auth');
+
+app.use(express.json());
+
+// Public route
+app.get('/', (req, res) => {
+  res.json({ message: 'aethercorp api is running 🚀' });
+});
+
+// Auth routes
+app.use('/auth', authRoutes);
+
+// Protected route
+app.get('/secure', authMiddleware, (req, res) => {
+  res.json({
+    message: 'Secure data 🔐',
+    user: req.user
+  });
+});
+
+module.exports = app;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 5. Add Environment Variable</h2>
+            <pre><code>
+JWT_SECRET=supersecretkey
+            </code></pre>
+            <p>(For AWS Lambda → use environment variables in Serverless Framework)</p>
+            <p>You should add JWT_SECRET under the provider.environment section in your serverless.yml.</p>
+            <p>Here’s the correct way to do it 👇</p>
+            <p>updated serverless.yml</p>
+            <pre><code>
+service: serverless-express-api
+
+provider:
+    name: aws
+    runtime: nodejs24.x
+    region: ap-southeast-1
+    memorySize: 128
+    timeout: 10
+
+    environment:
+    JWT_SECRET: ${env:JWT_SECRET}
+
+functions:
+    api:
+    handler: handler.handler
+    events:
+        - httpApi:
+            path: /{proxy+}
+            method: ANY
+
+plugins:
+    - serverless-offline
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 6. How It Works (Flow)</h2>
+            <ol>
+                <li>Client logs in → /auth/login</li>
+                <li>Server returns JWT token</li>
+                <li>
+                    Client sends token in header:
+                    <pre><code>
+Authorization: Bearer &lt;your_token_here&gt;
+                    </code></pre>
+                </li>
+                <li>Middleware verifies token</li>
+                <li>If valid → access granted</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔥 Pro Tips (Important for your setup)</h2>
+            <p>Since you're already working with:</p>
+            <ul>
+                <li>AWS Lambda</li>
+                <li>API Gateway</li>
+                <li>MongoDB</li>
+            </ul>
+            <p>You can later upgrade this to:</p>
+            <ul>
+                <li>✅ Refresh tokens</li>
+                <li>✅ Cognito integration</li>
+                <li>✅ Role-based access (RBAC)</li>
+                <li>✅ Device-based auth (you already use device_id)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Test API</h2>
+            <p>1. First: Get a real token</p>
+            <p>Call your login endpoint:</p>
+            <pre><code>
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com"}'
+            </code></pre>
+            <p>You’ll get something like:</p>
+            <pre><code>
+{
+    "status": true,
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+            </code></pre>
+
+            <p>2. Use that token</p>
+            <pre><code>
+curl http://localhost:3000/secure \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

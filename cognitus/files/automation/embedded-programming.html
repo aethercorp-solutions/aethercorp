@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Embedded programming</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Embedded programming</h1>
+                    <p class="subtitle">
+                        For embedded programming (microcontrollers, RTOS, bare-metal), you don’t need all of C/C++—you need a focused subset + hardware-aware features. The key is control, predictability, and efficiency.
+                        <p>Here’s a practical breakdown 👇</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Core C Features (Must-Have)</h2>
+            <p>These are the foundation of almost all embedded systems:</p>
+            1. Pointers & Memory Access
+            <ul>
+                <li>Direct memory manipulation (critical for registers)</li>
+                <li>Pointer arithmetic</li>
+                <li>Function pointers (callbacks, ISR handlers)</li>
+            </ul>
+            <p>👉 Example:</p>
+            <pre><code>
+#define GPIOA_ODR (*(volatile uint32_t*)0x48000014)
+GPIOA_ODR |= (1 &lt;&lt; 5);
+            </code></pre>
+
+            2. volatile Keyword
+            <ul>
+                <li>Prevents compiler optimizations on hardware registers or shared memory</li>
+                <li>
+                    Essential for:
+                    <ul>
+                        <li>Peripheral registers</li>
+                        <li>Interrupt flags</li>
+                    </ul>
+                </li>
+            </ul>
+
+            3. Bitwise Operations
+            <ul>
+                <li>
+                    Used for register configuration and flags
+                    <pre><code>
+reg |= (1 &lt;&lt; 3);   // set bit
+reg &= ~(1 &lt;&lt; 3);  // clear bit
+                    </code></pre>
+                </li>
+            </ul>
+
+            4. Structs & Unions
+            <ul>
+                <li>
+                    Map hardware registers cleanly
+                    <pre><code>
+typedef struct {
+    volatile uint32_t MODER;
+    volatile uint32_t ODR;
+} GPIO_TypeDef;
+                    </code></pre>
+                </li>
+            </ul>
+
+            5. Preprocessor Macros
+            <ul>
+                <li>Hardware abstraction</li>
+                <li>Compile-time configuration</li>
+            </ul>
+            <pre><code>
+#define LED_PIN 5
+#define SET_BIT(x, b) ((x) |= (1 &lt;&lt; (b)))
+            </code></pre>
+
+            6. Interrupt Handling (ISR)
+            <ul>
+                <li>Writing interrupt service routines</li>
+                <li>Understanding stack + context switching</li>
+            </ul>
+
+            7. Static & Global Memory
+            <ul>
+                <li>No dynamic allocation (or very limited)</li>
+                <li>
+                    Use:
+                    <ul>
+                        <li>static</li>
+                        <li>fixed buffers</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ Important Embedded C Concepts</h2>
+            <p>1. Memory Layout Awareness</p>
+            <ul>
+                <li>Stack vs heap vs data segment</li>
+                <li>Linker scripts (advanced but important)</li>
+            </ul>
+
+            <p>2. Bare-Metal Programming</p>
+            <ul>
+                <li>No OS</li>
+                <li>Startup code (main() is not first thing running)</li>
+            </ul>
+
+            <p>3. Deterministic Timing</p>
+            <ul>
+                <li>Avoid unpredictable operations</li>
+                <li>No heavy recursion or blocking calls</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 C++ Features (Selective Use Only)</h2>
+            <p>Modern embedded systems (like ARM Cortex-M) can use C++, but carefully.</p>
+            <p>✅ Safe & Commonly Used</p>
+            <p>1. Classes & Encapsulation</p>
+            <ul>
+                <li>
+                    Clean hardware abstraction (HAL)
+                    <pre><code>
+class GPIO {
+    public:
+        void set() { /* write register */ }
+};
+                    </code></pre>
+                </li>
+            </ul>
+
+            <p>2. Constructors / RAII (Limited)</p>
+            <ul>
+                <li>Initialize peripherals safely</li>
+            </ul>
+
+            <p>3. Templates (Zero-cost abstraction)</p>
+            <ul>
+                <li>
+                    Compile-time optimization
+                    <pre><code>
+template&lt;int PIN&gt;
+    class LED { /* compile-time pin */ };
+                    </code></pre>
+                </li>
+            </ul>
+
+            <p>4. constexpr</p>
+            <ul>
+                <li>Compute values at compile time</li>
+                <li>Great for configuration</li>
+            </ul>
+
+            <p>5. Namespaces</p>
+            <ul>
+                <li>Avoid naming conflicts</li>
+            </ul>
+
+            <p>6. Inline Functions</p>
+            <ul>
+                <li>Replace macros safely</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Use Carefully or Avoid</h2>
+            <p>❌ Dynamic Memory (new, malloc)</p>
+            <ul>
+                <li>Causes fragmentation</li>
+                <li>Unpredictable</li>
+            </ul>
+
+            <p>❌ Exceptions</p>
+            <ul>
+                <li>Adds overhead</li>
+                <li>Often disabled</li>
+            </ul>
+
+            <p>❌ RTTI (dynamic_cast, typeid)</p>
+            <ul>
+                <li>Increases binary size</li>
+            </ul>
+
+            <p>❌ STL (partially)</p>
+            <ul>
+                <li>
+                    Some parts OK:
+                    <ul>
+                        <li>std::array ✅</li>
+                    </ul>
+                </li>
+                <li>
+                    Avoid:
+                    <ul>
+                        <li>std::vector ❌ (unless controlled allocator)</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔧 Embedded-Specific Skills</h2>
+            <p>Beyond language features, you also need:</p>
+            <p>1. Hardware Register Programming</p>
+            <ul>
+                <li>Datasheet reading (VERY important)</li>
+            </ul>
+
+            <p>2. Peripheral Interfaces</p>
+            <ul>
+                <li>UART, SPI, I2C, CAN</li>
+            </ul>
+
+            <p>3. RTOS Concepts (if used)</p>
+            <ul>
+                <li>Tasks / threads</li>
+                <li>Queues</li>
+                <li>Semaphores</li>
+            </ul>
+            <p>Examples:</p>
+            <ul>
+                <li>FreeRTOS</li>
+                <li>Zephyr</li>
+            </ul>
+
+            <p>4. Debugging Tools</p>
+            <ul>
+                <li>JTAG / SWD</li>
+                <li>Logic analyzers</li>
+                <li>Oscilloscope</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Real-World Embedded Stack</h2>
+            <p>Typical embedded developer uses:</p>
+            <ul>
+                <li>C (80–90%)</li>
+                <li>C++ (for abstraction layers)</li>
+                <li>Assembly (for startup / critical code)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 What Actually Matters Most</h2>
+            <p>If you want to be strong in embedded:</p>
+            <ol>
+                <li>Memory control > fancy syntax</li>
+                <li>Predictability > abstraction</li>
+                <li>Hardware understanding > language mastery</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚡ Quick Checklist</h2>
+            <p>If you know these, you're solid:</p>
+            <p>✔ pointers + volatile</p>
+            <p>✔ bitwise ops</p>
+            <p>✔ structs for registers</p>
+            <p>✔ ISR basics</p>
+            <p>✔ memory layout</p>
+            <p>✔ no dynamic allocation mindset</p>
+            <p>✔ basic C++ (classes + templates)</p>
+            <p>If you want, I can map this to STM32 / ESP32 / Arduino / RTOS and show real production patterns (like HAL design, drivers, ISR-safe code).</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

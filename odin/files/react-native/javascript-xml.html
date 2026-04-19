@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JSX</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JSX</h1>
+                    <p class="subtitle">
+                        JSX stands for JavaScript XML. It’s a syntax used in React and React Native that lets you write UI in a way that looks like HTML, but is actually JavaScript.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 Simple Definition</h2>
+            <p>JSX = JavaScript + HTML-like syntax</p>
+            <p>It allows you to describe your UI inside your JavaScript code.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Example</h2>
+            <p>JSX version (what you wrote):</p>
+            <pre><code>
+return (
+  &lt;View&gt;
+    &lt;Text&gt;Hello World&lt;/Text&gt;
+  &lt;/View&gt;
+);
+            </code></pre>
+
+            <p>What it actually becomes under the hood:</p>
+            <pre><code>
+return React.createElement(
+  View,
+  null,
+  React.createElement(Text, null, 'Hello World')
+);
+            </code></pre>
+            <p>👉 JSX is just syntactic sugar for React.createElement(...).</p>
+        </section>
+
+        <section>
+            <h2>🔹 Why JSX is useful</h2>
+            <p>Without JSX, UI code becomes messy and hard to read. JSX makes it:</p>
+            <ul>
+                <li>✅ More readable</li>
+                <li>✅ Easier to structure UI</li>
+                <li>✅ Closer to how you think about layouts</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Important Rules in JSX</h2>
+            <p>1. Must return a single parent element</p>
+            <p>❌ Wrong:</p>
+            <pre><code>
+return (
+  &lt;Text&gt;Hello&lt;/Text&gt;
+  &lt;Text&gt;World&lt;/Text&gt;
+);
+            </code></pre>
+
+            <p>✅ Correct:</p>
+            <pre><code>
+return (
+  &lt;View&gt;
+    &lt;Text&gt;Hello&lt;/Text&gt;
+    &lt;Text&gt;World&lt;/Text&gt;
+  &lt;/View&gt;
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Use {} to run JavaScript inside JSX</h2>
+            <pre><code>
+const name = "Paul";
+
+return &lt;Text&gt;Hello {name}&lt;/Text&gt;
+            </code></pre>
+            <p>👉 Output: Hello Paul</p>
+        </section>
+
+        <section>
+            <h2>3. JSX is NOT exactly HTML</h2>
+            <p>In React Native, you don’t use HTML tags like &lt;div&gt; or &lt;p&gt;.</p>
+            <p>Instead:</p>
+            <p>&lt;View&gt; → like &lt;/div&gt;</p>
+            <p>&lt;Text&gt; → for &lt;text/&gt;<p>
+            <p>&lt;Image&gt; → for &lt;images/&gt;<p>
+        </section>
+
+        <section>
+            <h2>4. Props look like HTML attributes</h2>
+            <pre><code>
+&lt;Text style={{ color: 'blue' }}&gt;Hi&lt/Text&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Think of JSX Like This</h2>
+            <p>Instead of doing:</p>
+            <pre><code>
+buildUIManually();
+            </code></pre>
+
+            <p>You declare:</p>
+            <pre><code>
+&lt;View&gt;
+    &lt;Text&gt;Hello&lt;/Text&gt;
+&lt;/View&gt;
+            </code></pre>
+            <p>👉 It’s declarative UI</p>
+        </section>
+
+        <section>
+            <h2>🔹 In Your Case (React Native)</h2>
+            <p>JSX is what makes this possible:</p>
+            <pre><code>
+&lt;View style={styles.container}&gt;
+    &lt;Text&lt;Open up App.tsx&lt;/Text&gt;
+&lt;/View&gt;
+            </code></pre>
+            <p>You're describing what the UI should look like, not how to build it step-by-step.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Quick Analogy</h2>
+            <ul>
+                <li>JavaScript → logic (brain)</li>
+                <li>JSX → UI structure (body)</li>
+            </ul>
+            <p>If you want, I can show you how JSX connects to state, props, and re-rendering, which is where it becomes really powerful.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

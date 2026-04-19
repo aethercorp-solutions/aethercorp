@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>functional components</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">functional components</h1>
+                    <p class="subtitle">In React, functional components are the modern, preferred way to build UI using JSX (JavaScript XML). They’re just plain JavaScript functions that return JSX, which describes what the UI should look like.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 What is a Functional Component?</h2>
+            <p>A functional component is simply a function that returns JSX:</p>
+            <pre><code>
+function MyComponent() {
+    return &lt;h1&gt;Hello, world!&lt;/h1&gt;
+}
+            </code></pre>
+
+            <p>Or using arrow function syntax:</p>
+            <pre><code>
+const MyComponent = () => {
+    return &lt;h1&gt;Hello, world!&lt;/h1&gt;
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 What is JSX?</h2>
+            <p>JSX is a syntax that looks like HTML but is actually JavaScript:</p>
+            <pre><code>
+const element = &lt;h1&gt;Hello, JSX!&lt;/h1&gt;
+            </code></pre>
+            <p>Under the hood, React converts JSX into React.createElement(...).</p>
+        </section>
+
+        <section>
+            <h2>🔹 Functional Component with Props</h2>
+            <p>Props let you pass data into components:</p>
+            <pre><code>
+const Greeting = ({ name }) => {
+    return &lt;h1&gt;Hello, {name}!&lt;/h1&gt;
+};
+    
+// Usage
+&lt;Greeting name="Paul" /&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Using Hooks in Functional Components</h2>
+            <p>Functional components can manage state and side effects using hooks like useState and useEffect.</p>
+            <p>Example with state:</p>
+            <pre><code>
+import React, { useState } from &quot;react&quot;;
+
+const Counter = () =&gt; {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Count: {count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+        Increment
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 JSX Rules to Remember</h2>
+            <p>1. Single parent element</p>
+            <pre><code>
+&lt;pre&gt;&lt;code&gt;
+return (
+  &lt;div&gt;
+    &lt;h1&gt;Hello&lt;/h1&gt;
+    &lt;p&gt;World&lt;/p&gt;
+  &lt;/div&gt;
+);
+&lt;/code&gt;&lt;/pre&gt;
+            </code></pre>
+
+            <p>2. Use className instead of class</p>
+            <pre><code>
+&lt;div className="container"&gt;&lt;/div&gt;
+            </code></pre>
+
+            <p>3. JavaScript inside {}</p>
+            <pre><code>
+const name = "Paul";
+&lt;h1&gt;Hello, {name}&lt;/h1&gt;
+            </code></pre>
+
+            <p>Self-closing tags</p>
+            <pre><code>
+&lt;img src="image.png" /&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Functional vs Class Components (Quick View)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Functional Component</th>
+                        <th>Class Component</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Syntax</td>
+                        <td>Simple</td>
+                        <td>More complex</td>
+                    </tr>
+                    <tr>
+                        <td>State</td>
+                        <td>useState hook</td>
+                        <td>this.state</td>
+                    </tr>
+                    <tr>
+                        <td>Lifecycle</td>
+                        <td>useEffect hook</td>
+                        <td>lifecycle methods</td>
+                    </tr>
+                    <tr>
+                        <td>Recommended</td>
+                        <td>✅ Yes</td>
+                        <td>❌ Legacy</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔹 Best Practices</h2>
+            <ul>
+                <li>Use arrow functions for cleaner syntax</li>
+                <li>Use React.memo for performance optimization</li>
+                <li>Keep components small and reusable</li>
+                <li>Use custom hooks for logic reuse</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Production-style manual refresh token system</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Production-style manual refresh token system</h1>
+                    <p class="subtitle">
+                        Alright—let’s build a clean, production-style manual refresh token system in an AWS serverless Node.js app. I’ll show you a practical structure, not just snippets, so you can drop it into a real project.
+                        <p>We’ll use:</p>
+                        <ul>
+                            <li>AWS Lambda</li>
+                            <li>Amazon API Gateway</li>
+                            <li>Amazon DynamoDB</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧱 1. Architecture Overview</h2>
+            <p>Endpoints:</p>
+            <pre><code>
+POST /login
+POST /refresh
+POST /logout
+GET  /protected
+            </code></pre>
+            <p>Flow:</p>
+            <ul>
+                <li>/login → returns access + refresh token</li>
+                <li>/protected → requires access token</li>
+                <li>/refresh → rotates refresh token + returns new access token</li>
+                <li>/logout → invalidates refresh token</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🗄️ 2. DynamoDB Table Design</h2>
+            <p>Table: refresh_tokens</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>userId</td>
+                        <td>PK</td>
+                        <td>string</td>
+                    </tr>
+                    <tr>
+                        <td>tokenId</td>
+                        <td>SK</td>
+                        <td>string (UUID)</td>
+                    </tr>
+                    <tr>
+                        <td>hashedToken</td>
+                        <td>string</td>
+                        <td>store hashed version</td>
+                    </tr>
+                    <tr>
+                        <td>expiresAt</td>
+                        <td>number</td>
+                        <td>TTL</td>
+                    </tr>
+                    <tr>
+                        <td>createdAt</td>
+                        <td>number</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>device</td>
+                        <td>string</td>
+                        <td>optional</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 Enable TTL on expiresAt</p>
+        </section>
+
+        <section>
+            <h2>📦 3. Dependencies</h2>
+            <pre><code>
+npm install jsonwebtoken uuid crypto
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔑 4. Token Utilities</h2>
+            <pre><code>
+// utils/tokens.js
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const { v4: uuidv4 } = require("uuid");
+
+const ACCESS_EXPIRY = "15m";
+const REFRESH_EXPIRY_DAYS = 7;
+
+function generateAccessToken(userId) {
+  return jwt.sign({ userId }, process.env.ACCESS_SECRET, {
+    expiresIn: ACCESS_EXPIRY,
+  });
+}
+
+function generateRefreshToken() {
+  const rawToken = crypto.randomBytes(64).toString("hex");
+  const tokenId = uuidv4();
+
+  return { rawToken, tokenId };
+}
+
+function hashToken(token) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+function getExpiryTimestamp(days) {
+  return Math.floor(Date.now() / 1000) + days * 24 * 60 * 60;
+}
+
+module.exports = {
+  generateAccessToken,
+  generateRefreshToken,
+  hashToken,
+  getExpiryTimestamp,
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 5. Login Lambda</h2>
+            <pre><code>
+// handlers/login.js
+const {
+  generateAccessToken,
+  generateRefreshToken,
+  hashToken,
+  getExpiryTimestamp,
+} = require("../utils/tokens");
+
+const AWS = require("aws-sdk");
+const db = new AWS.DynamoDB.DocumentClient();
+
+exports.handler = async (event) => {
+  const { username, password } = JSON.parse(event.body);
+
+  // TODO: validate user
+  const userId = "user-123";
+
+  const accessToken = generateAccessToken(userId);
+  const { rawToken, tokenId } = generateRefreshToken();
+
+  const hashed = hashToken(rawToken);
+
+  await db.put({
+    TableName: "refresh_tokens",
+    Item: {
+      userId,
+      tokenId,
+      hashedToken: hashed,
+      expiresAt: getExpiryTimestamp(7),
+      createdAt: Date.now(),
+    },
+  }).promise();
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      accessToken,
+      refreshToken: `${tokenId}.${rawToken}`, // combine
+    }),
+  };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔁 6. Refresh Token Lambda (Rotation)</h2>
+            <pre><code>
+// handlers/refresh.js
+const AWS = require("aws-sdk");
+const db = new AWS.DynamoDB.DocumentClient();
+
+const {
+  generateAccessToken,
+  generateRefreshToken,
+  hashToken,
+  getExpiryTimestamp,
+} = require("../utils/tokens");
+
+exports.handler = async (event) => {
+  const { refreshToken } = JSON.parse(event.body);
+
+  const [tokenId, rawToken] = refreshToken.split(".");
+  const hashed = hashToken(rawToken);
+
+  // 1. Find token
+  const result = await db.query({
+    TableName: "refresh_tokens",
+    IndexName: "tokenId-index", // create GSI
+    KeyConditionExpression: "tokenId = :tid",
+    ExpressionAttributeValues: {
+      ":tid": tokenId,
+    },
+  }).promise();
+
+  const record = result.Items?.[0];
+
+  if (!record || record.hashedToken !== hashed) {
+    return { statusCode: 401, body: "Invalid token" };
+  }
+
+  // 2. DELETE old token (rotation)
+  await db.delete({
+    TableName: "refresh_tokens",
+    Key: {
+      userId: record.userId,
+      tokenId: record.tokenId,
+    },
+  }).promise();
+
+  // 3. ISSUE new tokens
+  const accessToken = generateAccessToken(record.userId);
+  const { rawToken: newRaw, tokenId: newId } = generateRefreshToken();
+
+  await db.put({
+    TableName: "refresh_tokens",
+    Item: {
+      userId: record.userId,
+      tokenId: newId,
+      hashedToken: hashToken(newRaw),
+      expiresAt: getExpiryTimestamp(7),
+      createdAt: Date.now(),
+    },
+  }).promise();
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      accessToken,
+      refreshToken: `${newId}.${newRaw}`,
+    }),
+  };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚪 7. Logout Lambda</h2>
+            <pre><code>
+exports.handler = async (event) => {
+    const { refreshToken } = JSON.parse(event.body);
+    
+    const [tokenId] = refreshToken.split(".");
+    
+    await db.delete({
+        TableName: "refresh_tokens",
+        Key: {
+        userId: "user-123", // derive properly
+        tokenId,
+        },
+    }).promise();
+    
+    return { statusCode: 200, body: "Logged out" };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🛡️ 8. Protected Route (JWT Check)</h2>
+            <pre><code>
+// middleware/auth.js
+const jwt = require("jsonwebtoken");
+
+function verifyToken(event) {
+  const token = event.headers.Authorization?.split(" ")[1];
+
+  if (!token) throw new Error("No token");
+
+  return jwt.verify(token, process.env.ACCESS_SECRET);
+}
+
+module.exports = { verifyToken };
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 9. Critical Security Upgrades (Don’t Skip)</h2>
+            <p>✅ Token Rotation</p>
+            <p>Already implemented:</p>
+            <ul>
+                <li>Old refresh token is deleted immediately</li>
+            </ul>
+
+            <p>✅ Hash Refresh Tokens</p>
+            <p>You NEVER store raw tokens (like passwords)</p>
+
+            <p>✅ Use HTTP-only Cookies (Frontend)</p>
+            <p>Instead of returning refresh token in JSON:</p>
+
+            <pre><code>
+Set-Cookie: refreshToken=xxx; HttpOnly; Secure; SameSite=Strict
+            </code></pre>
+
+            <p>✅ Add Device Tracking</p>
+            <p>Add:</p>
+            <pre><code>
+device: event.headers["user-agent"]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Detect Token Reuse Attack</h2>
+            <p>If a deleted token is reused:</p>
+            <p>→ invalidate ALL sessions for user</p>
+        </section>
+
+        <section>
+            <h2>⚠️ Common Mistakes</h2>
+            <ul>
+                <li>❌ Storing refresh tokens in localStorage</li>
+                <li>❌ Not rotating refresh tokens</li>
+                <li>❌ Not hashing tokens</li>
+                <li>❌ Using long-lived access tokens</li>
+                <li>❌ Not setting TTL in Amazon DynamoDB</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧭 Final Flow Recap</h2>
+            <ol>
+                <li>Login → issue tokens → store hashed refresh token</li>
+                <li>Access API → verify JWT</li>
+                <li>Expired → call /refresh</li>
+                <li>Refresh → rotate token + issue new pair</li>
+                <li>Logout → delete refresh token</li>
+            </ol>
+            <p>If you want next steps, I can:</p>
+            <ul>
+                <li>Convert this into Serverless Framework / SAM template</li>
+                <li>Add API Gateway authorizer (JWT middleware at gateway level)</li>
+                <li>Show multi-device session management (like Google login)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

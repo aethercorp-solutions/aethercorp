@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Custom API Registration</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Custom API Registration</h1>
+                    <p class="subtitle">
+                        Right now your API can log users in without actually creating or validating them—so “registration” is the missing piece before this becomes a real auth system.
+                        <p>Let’s wire that in properly.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>✅ What you need to add</h2>
+            <ol>
+                <li>A register route</li>
+                <li>Password hashing (never store plain passwords)</li>
+                <li>(Optional but recommended) simple in-memory DB or real DB</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔧 Step 1: Install bcrypt</h2>
+            <pre><code>
+npm install bcrypt
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔧 Step 2: Update your authRoutes</h2>
+            <p>Here’s a clean version with register + login (with password validation):</p>
+            <pre><code>
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+
+const router = express.Router();
+
+// TEMP: Fake DB (replace with MongoDB later)
+const users = [];
+
+/**
+ * REGISTER
+ */
+router.post('/register', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Basic validation
+    if (!email || !password) {
+      return res.status(400).json({
+        status: false,
+        message: 'Email and password are required'
+      });
+    }
+
+    // Check if user exists
+    const existingUser = users.find(u => u.email === email);
+    if (existingUser) {
+      return res.status(400).json({
+        status: false,
+        message: 'User already exists'
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = {
+      id: users.length + 1,
+      email,
+      password: hashedPassword
+    };
+
+    users.push(newUser);
+
+    res.json({
+      status: true,
+      message: 'User registered successfully'
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: 'Server error'
+    });
+  }
+});
+
+
+/**
+ * LOGIN
+ */
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = users.find(u => u.email === email);
+
+    if (!user) {
+      return res.status(400).json({
+        status: false,
+        message: 'Invalid credentials'
+      });
+    }
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        status: false,
+        message: 'Invalid credentials'
+      });
+    }
+
+    // Create JWT
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      status: true,
+      token
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: 'Server error'
+    });
+  }
+});
+
+module.exports = router;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 What changed (important)</h2>
+            <ul>
+                <li>✔ Added /register</li>
+                <li>✔ Password is hashed using bcrypt</li>
+                <li>✔ Login now validates password</li>
+                <li>✔ JWT only includes safe fields (no password)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Important Reality Check</h2>
+            <p>This works, but:</p>
+            <ul>
+                <li>❌ In-memory users[] resets on restart</li>
+                <li>❌ Not scalable</li>
+                <li>❌ No email verification</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 What you should do next (based on your stack)</h2>
+            <p>Since you're already using:</p>
+            <ul>
+                <li>AWS Lambda</li>
+                <li>MongoDB (Mongoose)</li>
+            </ul>
+            <p>Upgrade this to:</p>
+            <ol>
+                <li>Replace users[] with MongoDB model</li>
+                <li>
+                    Add:
+                    <ul>
+                        <li>email validation</li>
+                        <li>password rules</li>
+                        <li>rate limiting</li>
+                    </ul>
+                </li>
+                <li>Store JWT secret in AWS Secrets Manager</li>
+            </ol>
+        </section>
+
+        <section>
+            <p>Here’s how you can test your API using curl step by step.</p>
+            <h2>✅ 1. Test server is running</h2>
+            <pre><code>
+curl http://localhost:3000/
+            </code></pre>
+            <p>Expected:</p>
+            <pre><code>
+{ "message": "aethercorp api is running 🚀" }
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 2. Register a user</h2>
+            <pre><code>
+curl -X POST http://localhost:3000/auth/register \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "test@email.com",
+  "password": "123456"
+}'
+            </code></pre>
+            <p>Expected:</p>
+            <pre><code>
+{
+    "status": true,
+    "message": "User registered successfully"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ 3. Login (get JWT token)</h2>
+            <pre><code>
+curl -X POST http://localhost:3000/auth/login \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "test@email.com",
+  "password": "123456"
+}'
+            </code></pre>
+            <p>Expected:</p>
+            <pre><code>
+{
+    "status": true,
+    "token": "YOUR_JWT_TOKEN"
+}
+            </code></pre>
+            <p>👉 Copy the token.</p>
+        </section>
+
+        <section>
+            <h2>✅ 4. Access protected route</h2>
+            <p>Replace YOUR_JWT_TOKEN:</p>
+            <pre><code>
+curl http://localhost:3000/secure \
+-H "Authorization: Bearer YOUR_JWT_TOKEN"
+            </code></pre>
+            <p>Expected:</p>
+            <pre><code>
+{
+    "message": "Secure data 🔐",
+    "user": {
+        "id": 1,
+        "email": "test@email.com",
+        "iat": ...,
+        "exp": ...
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>❌ Common errors (quick debug)</h2>
+            <p>401 No token</p>
+            <pre><code>
+{ "message": "No token provided" }
+            </code></pre>
+            <p>➡️ You forgot the Authorization header</p>
+            <p>401 Invalid token</p>
+            <pre><code>
+{ "message": "Invalid or expired token" }
+            </code></pre>
+            <p>➡️ Token is wrong or expired</p>
+            <p>400 Invalid credentials</p>
+            <p>➡️ Email/password mismatch</p>
+        </section>
+
+        <section>
+            <h2>⚡ Pro tip (faster testing)</h2>
+            <p>Store token in a variable:</p>
+            <pre><code>
+TOKEN="paste_your_token_here"
+
+curl http://localhost:3000/secure \
+-H "Authorization: Bearer $TOKEN"
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

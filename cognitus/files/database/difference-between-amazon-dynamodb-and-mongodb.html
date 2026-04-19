@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Difference between Amazon DynamoDB and MongoDB</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Difference between Amazon DynamoDB and MongoDB</h1>
+                    <p class="subtitle">
+                        The difference between Amazon DynamoDB and MongoDB comes down to architecture, control, scalability model, and use cases. Both are NoSQL, but they behave quite differently in real-world systems.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔑 Core Difference (Simple View)</h2>
+            <ul>
+                <li>DynamoDB → Fully managed, serverless NoSQL by Amazon</li>
+                <li>MongoDB → Document database you manage (or use managed via Atlas)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ 1. Architecture</h2>
+            <p>DynamoDB</p>
+            <ul>
+                <li>Serverless (no servers to manage)</li>
+                <li>Key-value + document store</li>
+                <li>Tables with primary keys only</li>
+                <li>No joins</li>
+            </ul>
+
+            <p>MongoDB</p>
+            <ul>
+                <li>Document-oriented (JSON/BSON)</li>
+                <li>Flexible schema</li>
+                <li>Supports rich queries, aggregations, joins ($lookup)</li>
+            </ul>
+            <p>👉 MongoDB feels closer to traditional databases; DynamoDB is more “cloud-native strict.”</p>
+        </section>
+
+        <section>
+            <h2>🚀 2. Scalability</h2>
+            <p>DynamoDB</p>
+            <ul>
+                <li>Auto-scales instantly</li>
+                <li>Handles massive traffic without configuration</li>
+                <li>Designed for millions of requests/sec</li>
+            </ul>
+
+            <p>MongoDB</p>
+            <ul>
+                <li>
+                    Scales via:
+                    <ul>
+                        <li>Sharding (manual or managed)</li>
+                    </ul>
+                </li>
+                <li>Requires planning for scaling</li>
+            </ul>
+            <p>👉 DynamoDB = hands-off scaling</p>
+            <p>👉 MongoDB = more control, more responsibility</p>
+        </section>
+
+        <section>
+            <h2>🧠 3. Query Flexibility</h2>
+            <p>DynamoDB</p>
+            <ul>
+                <li>
+                    Query by:
+                    <ul>
+                        <li>Primary key</li>
+                        <li>Secondary indexes (GSI/LSI)</li>
+                    </ul>
+                </li>
+                <li>Limited filtering</li>
+                <li>No complex queries</li>
+            </ul>
+
+            <p>MongoDB</p>
+            <ul>
+                <li>
+                    Rich queries:
+                    <ul>
+                        <li>Filtering</li>
+                        <li>Aggregations</li>
+                        <li>Text search</li>
+                        <li>Geospatial queries</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>👉 MongoDB is far more flexible for querying</p>
+        </section>
+
+        <section>
+            <h2>💰 4. Pricing Model</h2>
+            <p>DynamoDB</p>
+            <ul>
+                <li>Pay per request (read/write units)</li>
+                <li>Can get expensive with poor design</li>
+                <li>No infrastructure cost</li>
+            </ul>
+
+            <p>MongoDB</p>
+            <ul>
+                <li>
+                    Pay for:
+                    <ul>
+                        <li>Server (CPU, RAM, storage)</li>
+                    </ul>
+                </li>
+                <li>Predictable pricing</li>
+            </ul>
+            <p>👉 DynamoDB = usage-based</p>
+            <p>👉 MongoDB = resource-based</p>
+        </section>
+
+        <section>
+            <h2>🔐 5. Performance</h2>
+            <p>DynamoDB</p>
+            <ul>
+                <li>Extremely fast (single-digit ms latency)</li>
+                <li>Optimized for predictable access patterns</li>
+            </ul>
+
+            <p>MongoDB</p>
+            <ul>
+                <li>
+                    Fast, but depends on:
+                    <ul>
+                        <li>Indexing</li>
+                        <li>Query complexity</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>👉 DynamoDB is faster if your access pattern is well-designed</p>
+        </section>
+
+        <section>
+            <h2>🧩 6. Schema Design</h2>
+            <p>DynamoDB</p>
+            <ul>
+                <li>Requires access-pattern-first design</li>
+                <li>Denormalization is mandatory</li>
+                <li>Harder to change later</li>
+            </ul>
+
+            <p>MongoDB</p>
+            <ul>
+                <li>Flexible schema</li>
+                <li>Easier to evolve</li>
+            </ul>
+            <p>👉 MongoDB is more developer-friendly</p>
+        </section>
+
+        <section>
+            <h2>🧪 7. Transactions</h2>
+            <p>DynamoDB</p>
+            <ul>
+                <li>Supports transactions (limited compared to SQL)</li>
+            </ul>
+            <p>MongoDB</p>
+            <ul>
+                <li>Full ACID transactions (multi-document)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🏗️ When to Use Each</h2>
+            <p>✅ Use DynamoDB if:</p>
+            <ul>
+                <li>You're building on AWS (like your Lambda setup)</li>
+                <li>
+                    You need:
+                    <ul>
+                        <li>Massive scale</li>
+                        <li>Low latency</li>
+                        <li>Serverless simplicity</li>
+                    </ul>
+                </li>
+                <li>
+                    Example:
+                    <ul>
+                        <li>Auth systems (JWT sessions)</li>
+                        <li>Event logging</li>
+                        <li>IoT data</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Use MongoDB if:</h2>
+            <ul>
+                <li>You need flexible queries</li>
+                <li>Your data structure changes often</li>
+                <li>You want easier development</li>
+                <li>
+                    Example:
+                    <ul>
+                        <li>Social apps</li>
+                        <li>CMS</li>
+                        <li>Complex APIs</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚖️ Quick Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>DynamoDB</th>
+                        <th>MongoDB</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Type</td>
+                        <td>Key-value / document</td>
+                        <td>Document</td>
+                    </tr>
+                    <tr>
+                        <td>Management</td>
+                        <td>Fully managed</td>
+                        <td>Self / managed</td>
+                    </tr>
+                    <tr>
+                        <td>Scaling</td>
+                        <td>Automatic</td>
+                        <td>Manual / auto (Atlas)</td>
+                    </tr>
+                    <tr>
+                        <td>Query Power</td>
+                        <td>Limited</td>
+                        <td>Rich</td>
+                    </tr>
+                    <tr>
+                        <td>Schema</td>
+                        <td>Rigid design upfront</td>
+                        <td>Flexible</td>
+                    </tr>
+                    <tr>
+                        <td>Best For</td>
+                        <td>High-scale serverless apps</td>
+                        <td>Complex data applications</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>💡 For YOU (based on your AWS + serverless work)</h2>
+            <p>Since you're building:</p>
+            <ul>
+                <li>AWS Lambda</li>
+                <li>API Gateway</li>
+                <li>JWT auth systems</li>
+            </ul>
+            <p>👉 DynamoDB fits naturally (less ops, scalable)</p>
+            <p>But if your app:</p>
+            <ul>
+                <li>Needs complex queries</li>
+                <li>Uses Mongoose already</li>
+            </ul>
+            <p>👉 Stick with MongoDB</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Hook</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Hook</h1>
+                    <p class="subtitle">
+                        A React Hook is a special function in React that lets you “hook into” React features—like state, lifecycle behavior, context—inside function components.
+                        <p>Before hooks existed, only class components could manage things like state and lifecycle methods. Hooks changed that, allowing function components to do the same things in a cleaner way.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 Simple idea</h2>
+            <p>A React Hook lets you:</p>
+            <ul>
+                <li>store and update state</li>
+                <li>run side effects (like API calls)</li>
+                <li>share logic between components</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Common React Hooks</h2>
+            <h2>1. useState – state management</h2>
+            <p>Lets you store data inside a component.</p>
+            <pre><code>
+import { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;button onClick={() => setCount(count + 1)}&gt;
+      Count: {count}
+    &lt;/button&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. useEffect – side effects</h2>
+            <p>Runs code after rendering (e.g. API calls, subscriptions).</p>
+            <pre><code>
+import { useEffect } from "react";
+
+useEffect(() => {
+  console.log("Component mounted or updated");
+}, []);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. useMemo – memoizing values</h2>
+            <p>Optimizes performance by caching computed values.</p>
+        </section>
+
+        <section>
+            <h2>4. useCallback – memoizing functions</h2>
+            <p>Prevents functions from being recreated unnecessarily.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Why Hooks are useful</h2>
+            <ul>
+                <li>Cleaner and shorter code than classes</li>
+                <li>Easier to reuse logic</li>
+                <li>Better separation of concerns</li>
+                <li>More readable functional components</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 React (context)</h2>
+            <p>React is the library that introduced Hooks in version 16.8 to improve functional component capabilities.</p>
+        </section>
+
+        <section>
+            <h2>🔹 In one sentence</h2>
+            <p>A React Hook is a function that allows functional components to use React features like state and lifecycle behavior.</p>
+        </section>
+        
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

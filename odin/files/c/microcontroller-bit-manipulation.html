@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>embedded C / microcontroller bit manipulation</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">embedded C / microcontroller bit manipulation</h1>
+                    <p class="subtitle">That line is classic embedded C / microcontroller bit manipulation. Let’s break it down:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>The code</h2>
+            <pre><code>
+PORTB |= (1 &lt;&lt; 3);  // Set pin HIGH
+            </code></pre>
+            <p>What it does</p>
+            <p>It sets bit 3 of PORTB to 1, which typically means:</p>
+            <p>👉 Turn ON / set HIGH the pin PB3 (Pin 3 of Port B)</p>
+        </section>
+
+        <section>
+            <h2>Step-by-step explanation</h2>
+            <ol>
+                <li>
+                    (1 &lt;&lt; 3)
+                    <ul>
+                        <li>This is a bitwise left shift</li>
+                        <li>1 &lt;&lt; 3 = 00001000 (binary)</li>
+                        <li>You're creating a mask where only bit 3 is 1</li>
+                    </ul>
+                </li>
+                <li>
+                    PORTB |= ...
+                    <ul>
+                        <li>|= is a bitwise OR assignment</li>
+                        <li>
+                            It keeps all existing bits the same except:
+                            <ul>
+                                <li>Bit 3 becomes 1</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+            <p>So effectively:</p>
+            <pre><code>
+PORTB = PORTB | 0b00001000;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Result</h2>
+            <ul>
+                <li>Pin PB3 → HIGH (1)</li>
+                <li>Other pins in PORTB → unchanged</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why use this?</h2>
+            <p>This is used in microcontroller programming (like Arduino, AVR, PIC, etc.) to:</p>
+            <ul>
+                <li>Control GPIO pins directly</li>
+                <li>Avoid affecting other pins</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example (before & after)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Opposite operation (for reference)</p>
+            <p>To set the pin LOW:</p>
+            <pre><code>
+PORTB &= ~(1 &lt;&lt; 3);
+            </code></pre>
+            <p>If you want, I can map this to Arduino (digitalWrite) vs bare metal so you see how this translates across platforms 👍</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

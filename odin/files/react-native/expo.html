@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Expo</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Expo</h1>
+                    <p class="subtitle">
+                        Expo is a toolchain and platform that makes it easier to build React Native apps—especially if you want to avoid dealing with complex native setup (iOS/Android configuration).
+                        <p>Think of it as a shortcut layer on top of React Native.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 What Expo does</h2>
+            <p>Expo simplifies mobile development by giving you:</p>
+            <ul>
+                <li>A pre-configured environment (no need to install Xcode/Android Studio initially)</li>
+                <li>
+                    Ready-to-use APIs for common features:
+                    <ul>
+                        <li>Camera</li>
+                        <li>Location</li>
+                        <li>Notifications</li>
+                        <li>Sensors</li>
+                    </ul>
+                </li>
+                <li>Fast development tools like live reload and QR code testing</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 How it works</h2>
+            <p>Instead of writing native code, you:</p>
+            <ol>
+                <li>Write JavaScript/TypeScript (React)</li>
+                <li>Run your app using the Expo Go app on your phone</li>
+                <li>Scan a QR code → your app runs instantly</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 Two main workflows</h2>
+            <ol>
+                <li>
+                    Managed Workflow (easy mode)
+                    <ul>
+                        <li>No native code</li>
+                        <li>Expo handles everything</li>
+                        <li>
+                            Best for:
+                            <ul>
+                                <li>MVPs</li>
+                                <li>Prototypes</li>
+                                <li>Standard apps</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Bare Workflow (advanced)
+                    <ul>
+                        <li>You can access native code (like normal React Native)</li>
+                        <li>Still use Expo tools if needed</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔹 Example</h2>
+            <p>Instead of manually linking native modules in React Native, with Expo you can just do:</p>
+            <pre><code>
+npx create-expo-app myApp
+cd myApp
+npm start
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Pros</h2>
+            <ul>
+                <li>Fast setup (minutes)</li>
+                <li>Great for beginners and rapid dev</li>
+                <li>Built-in APIs (no need for many third-party libs)</li>
+                <li>OTA (over-the-air) updates</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Cons</h2>
+            <ul>
+                <li>Limited access to custom native code (in managed mode)</li>
+                <li>Some libraries not supported without ejecting</li>
+                <li>Slightly larger app size</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Expo vs React Native CLI</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Expo</th>
+                        <th>React Native CLI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Setup</td>
+                        <td>Very easy</td>
+                        <td>Complex</td>
+                    </tr>
+                    <tr>
+                        <td>Native code</td>
+                        <td>Limited (unless ejected)</td>
+                        <td>Full control</td>
+                    </tr>
+                    <tr>
+                        <td>Speed of development</td>
+                        <td>Faster</td>
+                        <td>Slower initially</td>
+                    </tr>
+                    <tr>
+                        <td>Flexibility</td>
+                        <td>Medium</td>
+                        <td>High</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔹 When YOU should use Expo (based on your background)</h2>
+            <p>Since you're already working with:</p>
+            <ul>
+                <li>React Native</li>
+                <li>AWS serverless</li>
+                <li>Advanced integrations (auth, gRPC, etc.)</li>
+            </ul>
+            <p>👉 Use Expo if:</p>
+            <ul>
+                <li>You want faster iteration / prototyping</li>
+                <li>Your app doesn’t need heavy native customization</li>
+            </ul>
+            <p>👉 Stick to React Native CLI if:</p>
+            <ul>
+                <li>You need deep native integrations</li>
+                <li>You’re doing complex SDK integrations (e.g., custom auth flows, low-level device APIs)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ How to force a blank template</h2>
+            <p>Use the --template flag explicitly:</p>
+            <p>JavaScript blank app</p>
+            <pre><code>
+npx create-expo-app myApp --template blank
+            </code></pre>
+            <p>TypeScript blank app</p>
+
+            <pre><code>
+npx create-expo-app myApp --template blank-typescript
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

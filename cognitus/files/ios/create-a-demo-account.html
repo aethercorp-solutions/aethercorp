@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Create a Demo Account</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Create a Demo Account</h1>
+                    <p class="subtitle">Got it! You want to let Apple reviewers log in to your app without needing their own Apple ID or triggering 2FA/OTP, while still using your Firebase + Google Sign-In + React Native setup. I’ll break it step by step for a demo/test account.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Step 1: Create a Demo Account in Firebase</h2>
+            <ol>
+                <li>Go to Firebase Console → Authentication → Users.</li>
+                <li>
+                    Click Add User.
+                    <ul>
+                        <li>Email: apple-reviewer@example.com (any email you choose)</li>
+                        <li>Password: DemoPassword123 (use something simple)</li>
+                    </ul>
+                </li>
+                <li>Optionally, fill in display name, photo URL, etc., to make it realistic.</li>
+                <li>Save the user.</li>
+            </ol>
+            <p>✅ This is your “Apple reviewer” demo account. No OTP or Google Sign-In is needed for this account.</p>
+        </section>
+
+        <section>
+            <h2>Step 2: Create a “Demo Login” API Endpoint in Node.js</h2>
+            <p>Your AWS Lambda backend likely has an endpoint for authentication with Firebase. Add a special endpoint for the demo account:</p>
+            <pre><code>
+// AWS Lambda / Node.js example
+const admin = require("firebase-admin");
+
+// Initialize Firebase Admin SDK if not already done
+// admin.initializeApp();
+
+exports.handler = async (event) => {
+  try {
+    const { demo } = JSON.parse(event.body);
+
+    if (demo === true) {
+      // Demo account credentials
+      const email = "apple-reviewer@example.com";
+      const password = "DemoPassword123";
+
+      // Authenticate demo user using Firebase Admin
+      const user = await admin.auth().getUserByEmail(email);
+
+      // Create a custom token for client
+      const token = await admin.auth().createCustomToken(user.uid);
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ token }),
+      };
+    }
+
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: "Not a demo login request" }),
+    };
+  } catch (error) {
+    console.error(error);
+    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+  }
+};
+            </code></pre>
+            <p>✅ This returns a Firebase custom token for the demo account.</p>
+        </section>
+
+        <section>
+            <h2>Step 3: Modify React Native App for Demo Login</h2>
+            <p>In your app, provide a hidden button or special path that Apple reviewers can use.</p>
+            <pre><code>
+import auth from "@react-native-firebase/auth";
+
+async function loginDemoAccount() {
+  try {
+    const response = await fetch("https://your-api.com/demo-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ demo: true }),
+    });
+
+    const data = await response.json();
+
+    // Sign in to Firebase using the custom token
+    await auth().signInWithCustomToken(data.token);
+
+    console.log("Logged in as demo user");
+  } catch (error) {
+    console.error("Demo login failed", error);
+  }
+}
+            </code></pre>
+            <ul>
+                <li>You can hide this button in a debug/test screen so only Apple reviewers know about it.</li>
+                <li>No OTP or Apple ID required.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 4: Provide Demo Credentials to Apple Reviewer</h2>
+            <ol>
+                <li>
+                    In App Store Connect → App Review Information → Demo Account, enter:
+                    <ul>
+                        <li>Username: apple-reviewer@example.com</li>
+                        <li>Password: DemoPassword123</li>
+                        <li>Optional notes: “Press ‘Demo Login’ button on login screen.”</li>
+                    </ul>
+                </li>
+                <li>Ensure this account bypasses any 2FA or Google Sign-In flow.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 5: Optional: Skip Social Login for Demo</h2>
+            <p>If your app forces Google Sign-In normally:</p>
+            <ul>
+                <li>Add a conditional flag to skip social login for demo account.</li>
+                <li>Example:</li>
+            </ul>
+            <pre><code>
+if (isAppleReviewer) {
+    // Show demo login button
+} else {
+    // Normal Google Sign-In flow
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Summary</h2>
+            <ol>
+                <li>Create Firebase demo account.</li>
+                <li>Add a secure demo-login API endpoint returning a Firebase custom token.</li>
+                <li>In React Native, call that endpoint to sign in.</li>
+                <li>Hide the demo login button from normal users.</li>
+                <li>Provide credentials to Apple reviewer in App Store Connect.</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

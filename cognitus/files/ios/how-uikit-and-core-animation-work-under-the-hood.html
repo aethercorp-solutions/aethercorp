@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How UIKit and Core Animation work under the hood</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How UIKit and Core Animation work under the hood</h1>
+                    <p class="subtitle">Great question—this goes right into how UIKit and Core Animation work under the hood.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Big Picture</h2>
+            <p>When you build UI in UIKit, you’re working with UIView objects.</p>
+            <p>But the screen is NOT rendered using views directly.</p>
+            <p>👉 UIKit converts your views into a layer tree (CALayer objects)</p>
+            <p>👉 Then Core Animation renders that layer tree on the GPU</p>
+        </section>
+
+        <section>
+            <h2>🧱 What is the Layer Tree?</h2>
+            <p>Every UIView has a backing CALayer.</p>
+            <p>So when you create a hierarchy like:</p>
+            <pre><code>
+UIView
+ ├── UILabel
+ └── UIImageView
+            </code></pre>
+            <p>UIKit builds a parallel structure:</p>
+            <pre><code>
+CALayer
+ ├── CALayer (text)
+ └── CALayer (image)
+            </code></pre>
+            <p>👉 This is called the Layer Tree</p>
+        </section>
+
+        <section>
+            <h2>⚙️ What is “Layer Tree Commit”?</h2>
+            <p>A layer tree commit is when UIKit/Core Animation:</p>
+            <p>✅ Takes all your UI changes</p>
+            <p>✅ Packages them into the layer tree</p>
+            <p>✅ Sends them to the rendering engine (GPU)</p>
+        </section>
+
+        <section>
+            <h2>🔄 Full Rendering Pipeline (Simplified)</h2>
+            <ol>
+                <li>
+                    You change UI
+                    <pre><code>
+view.backgroundColor = .red
+label.text = "Hello"
+                    </code></pre>
+                </li>
+                <li>
+                    UIKit marks views as “dirty”
+                    <ul>
+                        <li>setNeedsLayout()</li>
+                        <li>setNeedsDisplay()</li>
+                    </ul>
+                    <p>👉 No drawing yet — just flags</p>
+                </li>
+                <li>
+                    Layout pass
+                    <p>UIKit computes:</p>
+                    <ul>
+                        <li>frames</li>
+                        <li>constraints</li>
+                    </ul>
+                </li>
+                <li>
+                    Display pass
+                    <p>UIKit prepares content:</p>
+                    <ul>
+                        <li>text rendering</li>
+                        <li>images</li>
+                        <li>drawing (drawRect)</li>
+                    </ul>
+                </li>
+                <li>
+                    🧩 Build Layer Tree
+                    <p>UIKit updates each UIView's CALayer:</p>
+                    <ul>
+                        <li>position</li>
+                        <li>bounds</li>
+                        <li>backgroundColor</li>
+                        <li>contents</li>
+                    </ul>
+                </li>
+                <li>
+                    🚀 Layer Tree Commit (IMPORTANT)
+                    <p>This is the step you're asking about:</p>
+                    <p>👉 UIKit hands the updated layer tree to Core Animation</p>
+                    <ul>
+                        <li>Happens at end of run loop</li>
+                        <li>Batched (efficient)</li>
+                        <li>Not immediate per change</li>
+                    </ul>
+                </li>
+                <li>
+                    Rendering (GPU)
+                    <p>Core Animation:</p>
+                    <ul>
+                        <li>rasterizes layers</li>
+                        <li>composites them</li>
+                        <li>sends final pixels to screen</li>
+                    </ul>
+                </li>
+                <li>
+                    📦 Why “Commit” Exists
+                    <p>Instead of rendering immediately on every change:</p>
+                    <p>❌ Bad:</p>
+                    <pre><code>
+change → draw → change → draw → change → draw
+                    </code></pre>
+                    <p>✅ Good:</p>
+                    <pre><code>
+change → change → change → COMMIT ONCE → draw
+                    </code></pre>
+                    <p>👉 This batching = smooth 60fps / 120fps performance</p>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 Key Insight</h2>
+            <p>👉 UIKit is a model layer (UIView)</p>
+            <p>👉 Core Animation is a rendering engine (CALayer)</p>
+            <p>Layer Tree Commit = bridge between them</p>
+        </section>
+
+        <section>
+            <h2>🧩 Important Detail (Advanced)</h2>
+            <p>Core Animation actually manages 3 trees:</p>
+            <ol>
+                <li>
+                    Model Tree
+                    <ul>
+                        <li>What you modify (layer.position = ...)</li>
+                    </ul>
+                </li>
+                <li>
+                    Presentation Tree
+                    <ul>
+                        <li>What’s currently on screen (animated state)</li>
+                    </ul>
+                </li>
+                <li>
+                    Render Tree
+                    <ul>
+                        <li>Private, used by GPU</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>👉 The commit copies:</p>
+            <pre><code>
+Model Tree → Render Tree
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ Real Example</h2>
+            <pre><code>
+UIView.animate(withDuration: 1.0) {
+    view.frame.origin.x += 100
+}
+            </code></pre>
+            <p>What happens:</p>
+            <ol>
+                <li>You update the model (UIView)</li>
+                <li>UIKit updates the layer</li>
+                <li>On commit → Core Animation creates animation</li>
+                <li>GPU animates smoothly (no CPU redraw each frame)</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 Summary</h2>
+            <p>UIKit builds a layer tree because:</p>
+            <ul>
+                <li>Views are high-level objects</li>
+                <li>Layers are optimized for rendering</li>
+            </ul>
+            <p>Layer Tree Commit means:</p>
+            <p>“Send all UI updates to Core Animation for rendering”</p>
+            <p>If you want, I can go deeper into:</p>
+            <ul>
+                <li>RunLoop timing of commits</li>
+                <li>How CATransaction works</li>
+                <li>Debugging dropped frames / jank (very useful for React Native too)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

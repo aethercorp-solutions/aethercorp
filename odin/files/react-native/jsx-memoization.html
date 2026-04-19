@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JSX memoization</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JSX memoization</h1>
+                    <p class="subtitle">
+                        JSX memoization is about avoiding unnecessary re-renders of JSX output in a React (or React Native) component. Instead of recomputing the same UI every render, you cache it and reuse it when inputs haven’t changed.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 Why it matters</h2>
+            <p>In React, every state or prop change triggers a re-render. That means:</p>
+            <ul>
+                <li>JSX gets recalculated</li>
+                <li>Child components may re-render</li>
+                <li>Performance can degrade (especially in large trees or lists)</li>
+            </ul>
+            <p>Memoization helps you skip work when nothing actually changed.</p>
+        </section>
+
+        <section>
+            <h2>🔹 1. Memoizing JSX with useMemo</h2>
+            <p>useMemo caches a computed value so it doesn’t recalculate on every render.</p>
+            <p>✅ Example: Expensive Calculation</p>
+            <pre><code>
+import React, { useState, useMemo } from 'react';
+
+function App() {
+  const [count, setCount] = useState(0);
+  const [text, setText] = useState('');
+
+  // Expensive function
+  const expensiveCalculation = (num) =&gt; {
+    console.log('Calculating...');
+    for (let i = 0; i &lt; 1000000000; i++) {} // simulate heavy work
+    return num * 2;
+  };
+
+  // Memoized value
+  const result = useMemo(() =&gt; {
+    return expensiveCalculation(count);
+  }, [count]); // only runs when `count` changes
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Result: {result}&lt;/h2&gt;
+
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+        Increment Count
+      &lt;/button&gt;
+
+      &lt;input
+        value={text}
+        onChange={(e) =&gt; setText(e.target.value)}
+        placeholder="Type something"
+      /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+            </code></pre>
+            <p>🔍 What’s happening?</p>
+            <ul>
+                <li>When you click Increment Count → calculation runs ✅</li>
+                <li>When you type in input → calculation does NOT run ❌</li>
+                <li>Without useMemo, it would run every render</li>
+            </ul>
+
+            <p>🧠 Key takeaway</p>
+            <p>Use useMemo when:</p>
+            <ul>
+                <li>A calculation is expensive</li>
+                <li>You want to avoid unnecessary recomputation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 2. Memoizing Components with React.memo</h2>
+            <p>Instead of memoizing JSX manually, you can memoize the entire component.</p>
+            <pre><code>
+import React from 'react';
+import { Text } from 'react-native';
+
+const Item = React.memo(({ name }) => {
+  console.log('Rendering Item:', name);
+  return &lt;Text&gt;{name}&lt;/Text&gt;;
+});
+            </code></pre>
+            <p>Usage:</p>
+            <p>✅ What happens</p>
+            <ul>
+                <li>Component only re-renders if props change</li>
+                <li>Prevents unnecessary updates automatically</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 3. When to use JSX memoization</h2>
+            <p>Use it when:</p>
+            <ul>
+                <li>Rendering large lists</li>
+                <li>Expensive computations inside JSX</li>
+                <li>Components re-render frequently with same props</li>
+                <li>Performance optimization in React Native (important for smooth UI)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 When NOT to use it</h2>
+            <p>Don’t overuse it:</p>
+            <ul>
+                <li>Small/simple components → no benefit</li>
+                <li>Cheap calculations → adds unnecessary complexity</li>
+                <li>Premature optimization</li>
+            </ul>
+            <p>Memoization itself has a cost.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Common mistake</h2>
+            <pre><code>
+const list = useMemo(() => items.map(...), []);
+            </code></pre>
+            <p>❌ Wrong: dependency array is empty</p>
+            <p>👉 This freezes the value forever (stale UI)</p>
+        </section>
+
+        <section>
+            <h2>🔹 Practical mental model</h2>
+            <ul>
+                <li>useMemo → cache values / JSX</li>
+                <li>React.memo → cache components</li>
+                <li>useCallback → cache functions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Real-world React Native tip</h2>
+            <p>If you're rendering a FlatList, prefer:</p>
+            <ul>
+                <li>React.memo for item components</li>
+                <li>keyExtractor</li>
+                <li>getItemLayout (if possible)</li>
+            </ul>
+            <p>This usually gives better performance than memoizing JSX manually.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Production-ready project structure for a manual refresh token system</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Production-ready project structure for a manual refresh token system</h1>
+                    <p class="subtitle">
+                        Here’s a complete, production-ready project structure for a manual refresh token system using:
+                        <ul>
+                            <li>AWS Lambda</li>
+                            <li>Amazon API Gateway</li>
+                            <li>Express.js</li>
+                            <li>Amazon DynamoDB</li>
+                        </ul>
+                        <p>This setup uses Express inside Lambda (via a wrapper like serverless-http) so you can build like a normal Node.js API.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>📁 Project Structure</h2>
+            <pre><code>
+auth-serverless-app/
+│
+├── src/
+│   ├── app.js
+│   ├── server.js
+│   │
+│   ├── config/
+│   │   ├── db.js
+│   │   └── env.js
+│   │
+│   ├── routes/
+│   │   ├── auth.routes.js
+│   │   └── user.routes.js
+│   │
+│   ├── controllers/
+│   │   ├── auth.controller.js
+│   │   └── user.controller.js
+│   │
+│   ├── services/
+│   │   ├── auth.service.js
+│   │   └── token.service.js
+│   │
+│   ├── repositories/
+│   │   └── token.repository.js
+│   │
+│   ├── middleware/
+│   │   ├── auth.middleware.js
+│   │   └── error.middleware.js
+│   │
+│   ├── utils/
+│   │   ├── jwt.js
+│   │   ├── crypto.js
+│   │   └── response.js
+│   │
+│   └── models/
+│       └── token.model.js
+│
+├── serverless.yml
+├── package.json
+└── README.md
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔌 Key Endpoints (as requested)</h2>
+            <pre><code>
+POST   /auth/login
+POST   /auth/refresh
+POST   /auth/logout
+GET    /user/profile
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ Core Files Explained</h2>
+        </section>
+
+        <section>
+            <h2>🧠 src/app.js (Express App)</h2>
+            <pre><code>
+const express = require("express");
+const authRoutes = require("./routes/auth.routes");
+const userRoutes = require("./routes/user.routes");
+const errorMiddleware = require("./middleware/error.middleware");
+
+const app = express();
+
+app.use(express.json());
+
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
+
+app.use(errorMiddleware);
+
+module.exports = app;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 src/server.js (Lambda Handler)</h2>
+            <pre><code>
+const serverless = require("serverless-http");
+const app = require("./app");
+
+module.exports.handler = serverless(app);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🛣️ routes/auth.routes.js</h2>
+            <pre><code>
+const express = require("express");
+const router = express.Router();
+const controller = require("../controllers/auth.controller");
+
+router.post("/login", controller.login);
+router.post("/refresh", controller.refresh);
+router.post("/logout", controller.logout);
+
+module.exports = router;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🎮 controllers/auth.controller.js</h2>
+            <pre><code>
+const authService = require("../services/auth.service");
+
+exports.login = async (req, res) => {
+  const data = await authService.login(req.body);
+  res.json(data);
+};
+
+exports.refresh = async (req, res) => {
+  const data = await authService.refresh(req.body.refreshToken);
+  res.json(data);
+};
+
+exports.logout = async (req, res) => {
+  await authService.logout(req.body.refreshToken);
+  res.json({ message: "Logged out" });
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 services/auth.service.js</h2>
+            <pre><code>
+const tokenService = require("./token.service");
+
+exports.login = async ({ username, password }) => {
+  // TODO: validate user
+  const userId = "user-123";
+
+  return tokenService.generateAuthTokens(userId);
+};
+
+exports.refresh = async (refreshToken) => {
+  return tokenService.rotateRefreshToken(refreshToken);
+};
+
+exports.logout = async (refreshToken) => {
+  return tokenService.deleteRefreshToken(refreshToken);
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔑 services/token.service.js</h2>
+            <pre><code>
+const {
+    signAccessToken,
+    generateRefreshToken,
+    hashToken,
+    } = require("../utils/jwt");
+    
+    const repo = require("../repositories/token.repository");
+    
+    exports.generateAuthTokens = async (userId) => {
+    const accessToken = signAccessToken(userId);
+    const { tokenId, rawToken } = generateRefreshToken();
+    
+    await repo.save({
+        userId,
+        tokenId,
+        hashedToken: hashToken(rawToken),
+    });
+    
+    return {
+        accessToken,
+        refreshToken: `${tokenId}.${rawToken}`,
+    };
+    };
+    
+    exports.rotateRefreshToken = async (refreshToken) => {
+    const [tokenId, rawToken] = refreshToken.split(".");
+    
+    const record = await repo.findByTokenId(tokenId);
+    
+    if (!record || record.hashedToken !== hashToken(rawToken)) {
+        throw new Error("Invalid refresh token");
+    }
+    
+    await repo.delete(record.userId, tokenId);
+    
+    return exports.generateAuthTokens(record.userId);
+    };
+    
+    exports.deleteRefreshToken = async (refreshToken) => {
+    const [tokenId] = refreshToken.split(".");
+    const record = await repo.findByTokenId(tokenId);
+    
+    if (record) {
+        await repo.delete(record.userId, tokenId);
+    }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🗄️ repositories/token.repository.js</h2>
+            <pre><code>
+const AWS = require("aws-sdk");
+const db = new AWS.DynamoDB.DocumentClient();
+
+const TABLE = "refresh_tokens";
+
+exports.save = async (item) => {
+  return db.put({
+    TableName: TABLE,
+    Item: {
+      ...item,
+      expiresAt: Math.floor(Date.now() / 1000) + 7 * 86400,
+    },
+  }).promise();
+};
+
+exports.findByTokenId = async (tokenId) => {
+  const res = await db.query({
+    TableName: TABLE,
+    IndexName: "tokenId-index",
+    KeyConditionExpression: "tokenId = :tid",
+    ExpressionAttributeValues: {
+      ":tid": tokenId,
+    },
+  }).promise();
+
+  return res.Items?.[0];
+};
+
+exports.delete = async (userId, tokenId) => {
+  return db.delete({
+    TableName: TABLE,
+    Key: { userId, tokenId },
+  }).promise();
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 middleware/auth.middleware.js</h2>
+            <pre><code>
+const jwt = require("jsonwebtoken");
+
+module.exports = (req, res, next) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
+
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(401).json({ message: "Unauthorized" });
+  }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>👤 routes/user.routes.js</h2>
+            <pre><code>
+const express = require("express");
+const router = express.Router();
+const auth = require("../middleware/auth.middleware");
+
+router.get("/profile", auth, (req, res) => {
+  res.json({ userId: req.user.userId });
+});
+
+module.exports = router;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔧 serverless.yml</h2>
+            <pre><code>
+service: auth-serverless
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  environment:
+    ACCESS_SECRET: your-secret
+
+functions:
+  app:
+    handler: src/server.handler
+    events:
+      - httpApi: "*"
+
+resources:
+  Resources:
+    RefreshTokensTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: refresh_tokens
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: tokenId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: tokenId
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: tokenId-index
+            KeySchema:
+              - AttributeName: tokenId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        TimeToLiveSpecification:
+          AttributeName: expiresAt
+          Enabled: true
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 How Everything Connects</h2>
+            <ul>
+                <li>Amazon API Gateway → receives HTTP request</li>
+                <li>→ routes to AWS Lambda</li>
+                <li>→ Express handles routing</li>
+                <li>→ Services handle logic</li>
+                <li>→ Tokens stored in Amazon DynamoDB</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧭 Optional Enhancements</h2>
+            <ul>
+                <li>Add cookie-based refresh tokens</li>
+                <li>Add multi-device sessions</li>
+                <li>Add token reuse detection (security upgrade)</li>
+                <li>Add API Gateway JWT authorizer (skip middleware)</li>
+            </ul>
+            <p>If you want next, I can:</p>
+            <ul>
+                <li>Add secure HTTP-only cookie implementation (very important in real apps)</li>
+                <li>Show frontend integration (React / mobile)</li>
+                <li>Or upgrade this to enterprise-level auth (RBAC + sessions + audit logs)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

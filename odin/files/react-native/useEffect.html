@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>useEffect</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">useEffect</h1>
+                    <p class="subtitle">The useEffect hook in React lets your functional components handle side effects—things that happen outside the normal rendering process.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 What counts as a “side effect”?</h2>
+            <p>Anything like:</p>
+            <ul>
+                <li>Fetching data from an API</li>
+                <li>Subscribing to events</li>
+                <li>Updating the DOM manually</li>
+                <li>Timers (setTimeout, setInterval)</li>
+                <li>Logging</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Basic Syntax</h2>
+            <pre><code>
+useEffect(() => {
+    // side effect code here
+    
+    return () => {
+        // cleanup (optional)
+    };
+}, [dependencies]);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 Simple Example</h2>
+            <pre><code>
+import React, { useEffect } from "react";
+
+const Example = () => {
+  useEffect(() => {
+    console.log("Component mounted");
+  }, []);
+
+  return &lt;h1&gt;Hello&lt;/h1&gt;
+};
+            </code></pre>
+            <p>👉 Runs only once when the component mounts.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Dependency Array Behavior</h2>
+            <p>1. Run once (on mount)</p>
+            <pre><code>
+useEffect(() => {
+    console.log("Run once");
+}, []);
+            </code></pre>
+
+            <p>2. Run when dependency changes</p>
+            <pre><code>
+useEffect(() => {
+    console.log("Count changed");
+}, [count]);
+            </code></pre>
+            <p>👉 Runs every time count changes.</p>
+
+            <p>3. Run on every render</p>
+            <pre><code>
+useEffect(() => {
+    console.log("Runs every render");
+});
+            </code></pre>
+            <p>⚠️ Usually not recommended unless needed.</p>
+        </section>
+
+        <section>
+            <h2>🔹 Cleanup Function</h2>
+            <p>Used to prevent memory leaks (important in React Native too):</p>
+            <pre><code>
+useEffect(() => {
+    const interval = setInterval(() => {
+        console.log("Running...");
+    }, 1000);
+    
+    return () => {
+        clearInterval(interval); // cleanup
+    };
+}, []);
+            </code></pre>
+            <p>👉 Cleanup runs when:</p>
+            <ul>
+                <li>Component unmounts</li>
+                <li>Before the effect runs again</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Real-World Example (API Call)</h2>
+            <pre><code>
+import React, { useState, useEffect } from &quot;react&quot;;
+
+const Users = () =&gt; {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() =&gt; {
+    fetch(&quot;https://jsonplaceholder.typicode.com/users&quot;)
+      .then(res =&gt; res.json())
+      .then(data =&gt; setUsers(data));
+  }, []);
+
+  return (
+    &lt;ul&gt;
+      {users.map(user =&gt; (
+        &lt;li key={user.id}&gt;{user.name}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+};
+            </code></pre>
+        </section>
+        
+        <section>
+            <h2>🔹 Common Mistakes</h2>
+            <p>❌ Missing dependencies</p>
+            <pre><code>
+useEffect(() => {
+    console.log(count);
+}, []); // wrong if count is used
+            </code></pre>
+
+            <p>❌ Infinite loop</p>
+            <pre><code>
+useEffect(() => {
+    setCount(count + 1);
+}, [count]); // keeps updating forever
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔹 When to Use useEffect</h2>
+            <p>Use it when:</p>
+            <ul>
+                <li>You need to sync with external systems</li>
+                <li>You want to run code after render</li>
+                <li>You need lifecycle behavior (like componentDidMount)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Quick Mental Model</h2>
+            <p>Think of useEffect as:</p>
+            <p>👉 “Run this code after React renders”</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

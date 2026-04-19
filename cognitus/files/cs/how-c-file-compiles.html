@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How .c file compiles</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How .c file compiles</h1>
+                    <p class="subtitle">
+                        A .c file goes through a few simple steps before it becomes a program your computer can run. Think of it like cooking a meal from a recipe.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. You write the code (.c file)</h2>
+            <p>This is your recipe, written in C language:</p>
+            <pre><code>
+#include &lt;stdio.h&gt;
+
+int main() {
+    printf("Hello");
+    return 0;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Preprocessing (cleaning the recipe)</h2>
+            <p>The preprocessor runs first.</p>
+            <p>It:</p>
+            <ul>
+                <li>Handles #include</li>
+                <li>Expands macros like #define</li>
+                <li>Removes comments</li>
+            </ul>
+            <p>So this line:</p>
+            <pre><code>
+#include &lt;stdio.h&gt;
+            </code></pre>
+            <p>gets replaced with the actual contents of that file.</p>
+            <p>👉 Output: a “cleaned” version of your code (still not machine code)</p>
+        </section>
+
+        <section>
+            <h2>3. Compilation (translating to assembly)</h2>
+            <p>Now the compiler (like Clang or GCC) converts the cleaned C code into assembly language.</p>
+            <p>Assembly is a low-level human-readable form closer to CPU instructions.</p>
+            <p>👉 Output: .s file (assembly)</p>
+        </section>
+
+        <section>
+            <h2>4. Assembling (machine code)</h2>
+            <p>The assembler converts assembly into machine code (binary 0s and 1s).</p>
+            <p>👉 Output: .o file (object file)</p>
+            <p>This file is not runnable yet—it’s like puzzle pieces.</p>
+        </section>
+
+        <section>
+            <h2>5. Linking (putting everything together)</h2>
+            <p>The linker combines:</p>
+            <ul>
+                <li>Your .o file</li>
+                <li>System libraries (like printf)</li>
+                <li>Other object files</li>
+            </ul>
+            <p>It resolves references like “where is printf located?”</p>
+            <p>👉 Output: final executable (like a.out or .exe)</p>
+        </section>
+
+        <section>
+            <h2>Final result</h2>
+            <p>Now you can run your program:</p>
+            <pre><code>
+Hello
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Simple flow summary</h2>
+            <pre><code>
+.c file
+  ↓ (preprocessor)
+clean code
+  ↓ (compiler)
+assembly
+  ↓ (assembler)
+machine code (.o)
+  ↓ (linker)
+executable program
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Clang</h2>
+            <p>Clang is a compiler front-end for programming languages like C, C++, and Objective-C.</p>
+            <p>In simple terms: it turns your human-written code into machine code that a computer can run.</p>
+        </section>
+
+        <section>
+            <h2>🧠 How Clang fits in the big picture</h2>
+            <p>Clang is part of a larger system called LLVM:</p>
+            <ul>
+                <li>Clang (front-end) → reads your code (C/C++/Obj-C)</li>
+                <li>LLVM (back-end) → converts it into optimized machine code</li>
+            </ul>
+            <p>So the flow looks like:</p>
+            <pre><code>
+Your code (.c / .cpp)
+        ↓
+Clang (parses & checks code)
+        ↓
+LLVM (optimizes & generates machine code)
+        ↓
+Executable program
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ What Clang actually does</h2>
+            <p>Clang is responsible for:</p>
+            <ul>
+                <li>Parsing your source code</li>
+                <li>Checking syntax errors (like missing semicolons)</li>
+                <li>Checking type errors (like assigning string to int)</li>
+                <li>Translating code into an intermediate form (LLVM IR)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Why Clang is popular</h2>
+            <ul>
+                <li>⚡ Very fast compilation</li>
+                <li>🧹 Clear and helpful error messages</li>
+                <li>🧩 Modular design (part of LLVM ecosystem)</li>
+                <li>🍎 Used by Apple for iOS/macOS development (Xcode uses Clang)</li>
+                <li>🧪 Great tooling support (like static analysis tools)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📌 Example</h2>
+            <p>If you write:</p>
+            <pre><code>
+int main() {
+    printf("Hello");
+    return 0;
+}
+            </code></pre>
+            <p>Clang:</p>
+            <ul>
+                <li>checks if syntax is correct</li>
+                <li>ensures printf is valid</li>
+                <li>converts it into low-level machine instructions via LLVM</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Clang and GCC are both C/C++ compilers, but they differ a lot in design, speed, tooling, and ecosystem.</p>
+            <p>Here’s a clear comparison:</p>
+            <h2>⚔️ Clang vs GCC (simple view)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Clang (LLVM)</th>
+                        <th>GCC (GNU Compiler Collection)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🧠 Architecture</td>
+                        <td>Modular (front-end + LLVM back-end)</td>
+                        <td>Monolithic (tightly integrated pipeline)</td>
+                    </tr>
+                    <tr>
+                        <td>⚡ Compilation speed</td>
+                        <td>Usually faster</td>
+                        <td>Slightly slower in many cases</td>
+                    </tr>
+                    <tr>
+                        <td>🧾 Error messages</td>
+                        <td>Very clear & readable</td>
+                        <td>More technical / harder to read</td>
+                    </tr>
+                    <tr>
+                        <td>🧪 Tooling</td>
+                        <td>Excellent (sanitizers, static analysis, IDE support)</td>
+                        <td>Good but less modern tooling</td>
+                    </tr>
+                    <tr>
+                        <td>🍎 Platform usage</td>
+                        <td>Default in Apple ecosystem (iOS/macOS)</td>
+                        <td>Default in Linux world</td>
+                    </tr>
+                    <tr>
+                        <td>🔧 Extensibility</td>
+                        <td>Easier to build tools on top of LLVM</td>
+                        <td>More complex internals</td>
+                    </tr>
+                    <tr>
+                        <td>📦 Language support</td>
+                        <td>C, C++, Objective-C (plus others via LLVM ecosystem)</td>
+                        <td>C, C++, Fortran, Go (and more via GCC suite)</td>
+                    </tr>
+                    <tr>
+                        <td>🧱 License</td>
+                        <td>Apache 2.0 (more permissive)</td>
+                        <td>GPL (copyleft license)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Key conceptual difference</h2>
+            <p>🔵 Clang (LLVM-based)</p>
+            <p>Think of Clang like:</p>
+            <p>A modern compiler built like Lego blocks (modular pieces)</p>
+            <p>Flow:</p>
+            <pre><code>
+C/C++ code → Clang parser → LLVM IR → LLVM optimizer → machine code
+            </code></pre>
+            <p>Because it's modular, tools like:</p>
+            <ul>
+                <li>sanitizers (memory leak detection)</li>
+                <li>static analyzers</li>
+                <li>IDE features (autocomplete, diagnostics)</li>
+            </ul>
+            <p>are easier to build.</p>
+        </section>
+
+        <section>
+            <h2>🔴 GCC</h2>
+            <p>Think of GCC like:</p>
+            <p>A powerful all-in-one engine that evolved over decades</p>
+            <p>Flow:</p>
+            <pre><code>
+C/C++ code → GCC front-end → internal optimizers → machine code
+            </code></pre>
+            <p>GCC is extremely mature and heavily optimized, especially for:</p>
+            <ul>
+                <li>Linux systems</li>
+                <li>embedded systems</li>
+                <li>older hardware support</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ Real-world differences</h2>
+            <p>📱 Apple/iOS/macOS</p>
+            <ul>
+                <li>Uses Clang</li>
+                <li>Xcode = Clang + LLVM</li>
+            </ul>
+            <p>🐧 Linux servers</p>
+            <ul>
+                <li>Often uses GCC</li>
+                <li>Very stable for production systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 Error message difference (important)</h2>
+            <p>Clang:</p>
+            <pre><code>
+error: use of undeclared identifier 'pritnf'; did you mean 'printf'?
+            </code></pre>
+
+            <p>GCC:</p>
+            <pre><code>
+error: 'pritnf' undeclared (first use in this function)
+            </code></pre>
+
+            <p>👉 Clang tries to help you fix it, GCC is more literal.</p>
+        </section>
+
+        <section>
+            <h2>🚀 When to use what?</h2>
+            <ul>
+                <li>
+                    Use Clang if:
+                    <ul>
+                        <li>You work on iOS/macOS</li>
+                        <li>You want better debugging tools</li>
+                        <li>You care about modern tooling</li>
+                    </ul>
+                </li>
+                <li>
+                    Use GCC if:
+                    <ul>
+                        <li>You work on Linux servers</li>
+                        <li>You need maximum compatibility</li>
+                        <li>You work with embedded systems</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
