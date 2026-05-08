@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Implement Firebase Analytics</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Implement Firebase Analytics</h1>
+                    <p class="subtitle">
+                        To implement Firebase Analytics with an AWS serverless Node.js backend and a React Native app, the common architecture is:
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Architecture</h2>
+
+            <ul>
+                <li>
+                    React Native App
+                    <ul>
+                        <li>Collects analytics events using Firebase SDK</li>
+                        <li>Sends custom backend-tracked events to AWS Lambda if needed</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul>
+                <li>
+                    AWS Serverless Backend
+                    <ul>
+                        <li>Receives API requests</li>
+                        <li>Logs server-side analytics/events</li>
+                        <li>Optionally forwards events to Firebase using GA4 Measurement Protocol</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <pre><code>
+React Native App
+   |
+   | Firebase Analytics SDK
+   |
+Firebase Analytics Dashboard
+
+React Native App
+   |
+   | HTTPS API
+   v
+AWS API Gateway
+   |
+AWS Lambda (Node.js)
+   |
+MongoDB / DynamoDB
+   |
+Optional:
+Send backend events to Firebase Analytics
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>1. Setup Firebase Project</h2>
+            <p>Go to:</p>
+            <p>Firebase Console</p>
+            <p>Create:</p>
+            <ul>
+                <li>Android app</li>
+                <li>iOS app</li>
+            </ul>
+            <p>Enable:</p>
+            <ul>
+                <li>Google Analytics</li>
+            </ul>
+            <p>Download:</p>
+            <ul>
+                <li>google-services.json (Android)</li>
+                <li>GoogleService-Info.plist (iOS)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Install React Native Firebase Analytics</h2>
+            <p>Official library:</p>
+            <p>React Native Firebase</p>
+            <p>Install:</p>
+            <pre><code>
+npm install @react-native-firebase/app
+npm install @react-native-firebase/analytics
+            </code></pre>
+            <p>iOS:</p>
+            <pre><code>
+cd ios && pod install
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Android Configuration</h2>
+            <p>Add to:</p>
+            <p>android/build.gradle</p>
+            <pre><code>
+classpath 'com.google.gms:google-services:4.4.0'
+            </code></pre>
+
+            <p>Add to:</p>
+            <p>android/app/build.gradle</p>
+            <pre><code>
+apply plugin: 'com.google.gms.google-services'
+            </code></pre>
+
+            <p>Put:</p>
+            <ul>
+                <li>google-services.json</li>
+            </ul>
+
+            <p>inside:</p>
+            <pre><code>
+android/app/
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. iOS Configuration</h2>
+            <p>Add:</p>
+            <ul>
+                <li>GoogleService-Info.plist</li>
+            </ul>
+            <p>inside Xcode project.</p>
+        </section>
+
+        <section>
+            <h2>5. Basic Analytics Tracking</h2>
+            <p>App Open</p>
+            <pre><code>
+import analytics from '@react-native-firebase/analytics';
+
+await analytics().logAppOpen();
+            </code></pre>
+
+            <p>Screen Tracking</p>
+            <pre><code>
+await analytics().logScreenView({
+    screen_name: 'HomeScreen',
+    screen_class: 'HomeScreen',
+});
+            </code></pre>
+
+
+            <p>Custom Events</p>
+            <pre><code>
+await analytics().logEvent('contact_created', {
+    method: 'manual',
+    platform: 'ios',
+});
+            </code></pre>
+
+            <p>For your TryCastanet app, examples:</p>
+            <pre><code>
+await analytics().logEvent('lead_saved');
+
+await analytics().logEvent('contact_shared');
+
+await analytics().logEvent('subscription_started');
+
+await analytics().logEvent('business_card_scanned');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. User Identification</h2>
+            <pre><code>
+await analytics().setUserId(user.id);
+
+await analytics().setUserProperty('plan', 'premium');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. AWS Lambda Analytics Logging</h2>
+            <p>Backend analytics are useful for:</p>
+            <ul>
+                <li>API usage</li>
+                <li>Fraud detection</li>
+                <li>Feature usage</li>
+                <li>Admin dashboards</li>
+                <li>Billing</li>
+                <li>Server-side conversions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example Lambda Handler</h2>
+            <pre><code>
+// handler.js
+
+module.exports.trackEvent = async (event) => {
+  try {
+    const body = JSON.parse(event.body);
+
+    console.log('Analytics Event:', body);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        success: true,
+      }),
+    };
+  } catch (err) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: err.message,
+      }),
+    };
+  }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Serverless Framework Example</h2>
+            <pre><code>
+functions:
+  trackEvent:
+    handler: handler.trackEvent
+    events:
+      - http:
+          path: analytics
+          method: post
+          cors: true
+            </code></pre>
+            <p>Deploy:</p>
+            <pre><code>
+serverless deploy
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. React Native → AWS Analytics API</h2>
+            <pre><code>
+await fetch('https://api.example.com/analytics', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        event: 'contact_created',
+        userId: user.id,
+        timestamp: Date.now(),
+        platform: Platform.OS,
+    }),
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Send Backend Events to Firebase Analytics</h2>
+            <p>Firebase Analytics itself runs mainly on client devices.</p>
+            <p>For backend/server events:</p>
+            <ul>
+                <li>Use GA4 Measurement Protocol</li>
+            </ul>
+            <p>Documentation:</p>
+            <p>Google Analytics Measurement Protocol</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

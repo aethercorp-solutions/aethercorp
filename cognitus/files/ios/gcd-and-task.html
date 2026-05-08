@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GCD and Task both deal with concurrency</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">GCD and Task both deal with concurrency</h1>
+                    <p class="subtitle">
+                        In Swift (especially iOS/macOS development), GCD and Task both deal with concurrency, but they come from different eras and have different philosophies.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧵 GCD (Grand Central Dispatch)</h2>
+            <p>Grand Central Dispatch</p>
+            <p>GCD is the older, lower-level API introduced by Apple to manage concurrent code using queues.</p>
+            <p>Key ideas:</p>
+            <ul>
+                <li>You manually dispatch work to queues (DispatchQueue)</li>
+                <li>Uses closures for async work</li>
+                <li>
+                    You control things like:
+                    <ul>
+                        <li>serial vs concurrent queues</li>
+                        <li>sync vs async execution</li>
+                    </ul>
+                </li>
+                <li>No built-in awareness of structured concurrency or async/await</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+DispatchQueue.global().async {
+    // background work
+    DispatchQueue.main.async {
+        // update UI
+    }
+}
+            </code></pre>
+            <p>Pros:</p>
+            <ul>
+                <li>Very powerful and flexible</li>
+                <li>Works on older iOS versions</li>
+            </ul>
+            <p>Cons:</p>
+            <ul>
+                <li>Easy to make mistakes (race conditions, callback hell)</li>
+                <li>Harder to read and maintain</li>
+                <li>No automatic cancellation or error propagation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Task (Swift Concurrency)</h2>
+            <p>Swift Concurrency</p>
+            <p>Task is part of Swift’s modern concurrency system (introduced in Swift 5.5).</p>
+            <p>Key ideas:</p>
+            <ul>
+                <li>Built around async/await</li>
+                <li>Structured concurrency (tasks form a hierarchy)</li>
+                <li>Safer and easier to reason about</li>
+                <li>
+                    Supports:
+                    <ul>
+                        <li>cancellation</li>
+                        <li>priorities</li>
+                        <li>error handling with try/await</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+Task {
+    let data = await fetchData()
+    await MainActor.run {
+        // update UI
+    }
+}
+            </code></pre>
+            <p>Pros:</p>
+            <ul>
+                <li>Cleaner, more readable code</li>
+                <li>Built-in cancellation and error handling</li>
+                <li>Prevents many concurrency bugs</li>
+            </ul>
+            <p>Cons:</p>
+            <ul>
+                <li>Requires newer OS versions</li>
+                <li>Less low-level control than GCD</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚖️ Main Differences</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>GCD</th>
+                        <th>Task</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Style</td>
+                        <td>Closure-based</td>
+                        <td>async/await</td>
+                    </tr>
+                    <tr>
+                        <td>Level</td>
+                        <td>Low-level</td>
+                        <td>High-level</td>
+                    </tr>
+                    <tr>
+                        <td>Structure</td>
+                        <td>Unstructured</td>
+                        <td>Structured concurrency</td>
+                    </tr>
+                    <tr>
+                        <td>Error handling</td>
+                        <td>Manual</td>
+                        <td>Built-in (try/await)</td>
+                    </tr>
+                    <tr>
+                        <td>Cancellation</td>
+                        <td>Manual</td>
+                        <td>Built-in</td>
+                    </tr>
+                    <tr>
+                        <td>Readability</td>
+                        <td>Harder</td>
+                        <td>Easier</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 When to use what?</h2>
+            <ul>
+                <li>Use Task / async-await → for most modern Swift code (recommended)</li>
+                <li>
+                    Use GCD → when:
+                    <ul>
+                        <li>working with legacy code</li>
+                        <li>you need fine-grained queue control</li>
+                        <li>interacting with APIs that still use it</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔑 Simple analogy</h2>
+            <ul>
+                <li>GCD = “manually scheduling jobs on threads”</li>
+                <li>Task = “describing what should happen, and Swift handles scheduling safely”</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>In Swift, Task and async/await are part of its modern concurrency system—they help you write asynchronous (non-blocking) code in a way that’s much easier to read and reason about than older callback-based approaches.</p>
+            <p>Let’s break it down simply:</p>
+            <h2>🧵 async/await — writing async code like normal code</h2>
+            <p>When a function is marked async, it means:</p>
+            <ul>
+                <li>It can pause (without blocking the thread)</li>
+                <li>It might take time (e.g., network request, file read)</li>
+            </ul>
+            <p>You use await to call it.</p>
+            <p>Example:</p>
+            <pre><code>
+func fetchData() async -> String {
+    return "Data loaded"
+}
+
+func load() async {
+    let result = await fetchData()
+    print(result)
+}
+            </code></pre>
+            <p>👉 Think of await as: “pause here until the result is ready, but don’t freeze the app.”</p>
+            <p>This is part of the broader idea of Asynchronous Programming.</p>
+        </section>
+
+        <section>
+            <h2>🚀 Task — creating a unit of async work</h2>
+            <p>A Task is like a lightweight thread that runs async code.</p>
+            <p>You use it when you want to:</p>
+            <ul>
+                <li>Start async work from non-async code</li>
+                <li>Run something in the background</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+Task {
+    let result = await fetchData()
+    print(result)
+}
+            </code></pre>
+            <p>👉 This creates a new concurrent task and runs it immediately.</p>
+        </section>
+
+        <section>
+            <h2>🔗 How they work together</h2>
+            <ul>
+                <li>async/await = how you write asynchronous functions</li>
+                <li>Task = how you start and manage them</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Why this matters</h2>
+            <p>Before async/await, Swift used:</p>
+            <ul>
+                <li>Completion handlers (nested callbacks 😵)</li>
+                <li>Harder-to-read code</li>
+            </ul>
+            <p>Now you get:</p>
+            <ul>
+                <li>Cleaner, linear-looking code</li>
+                <li>Easier error handling (try await)</li>
+                <li>Better performance with structured concurrency</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ Quick analogy</h2>
+            <ul>
+                <li>async function = a recipe that takes time</li>
+                <li>await = waiting for a step without blocking the kitchen</li>
+                <li>Task = assigning someone to cook the recipe</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

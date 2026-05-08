@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Express.js middleware</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Express.js middleware</h1>
+                    <p class="subtitle">This function is an Express.js middleware that handles Google OAuth login using an authorization code. Let’s walk through what it actually does step by step.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔑 High-level purpose</h2>
+            <p>It:</p>
+            <ol>
+                <li>Receives a Google OAuth authorization code from the request headers</li>
+                <li>Exchanges that code for an access token (via GoogleService)</li>
+                <li>Converts it into a usable token format</li>
+                <li>Passes control to another function (signInWithGoogleToken) to complete login</li>
+            </ol>
+
+            <p>The Google authorization code is a temporary, one-time code used in the OAuth 2.0 flow—specifically in the Authorization Code Grant.</p>
+            <p>Think of it as a short-lived “ticket” that proves a user successfully logged in with Google, which your backend can exchange for actual tokens.</p>
+            <p>🧠 Simple idea</p>
+            <p>It’s a two-step exchange:</p>
+            <ol>
+                <li>The user logs in → you get a temporary code</li>
+                <li>Your backend swaps that code → for real tokens</li>
+            </ol>
+
+            <p>🔁 Flow (clean breakdown)</p>
+            <p>1. Redirect user to Google login</p>
+            <p>Your app opens something like:</p>
+            <pre><code>
+https://accounts.google.com/o/oauth2/v2/auth?
+  client_id=...
+  redirect_uri=...
+  response_type=code
+  scope=openid email profile
+            </code></pre>
+
+            <p>2. User logs in & approves</p>
+            <p>Google authenticates the user.</p>
+
+            <p>3. Google returns an authorization code</p>
+            <p>Redirect:</p>
+            <pre><code>
+yourapp://callback?code=AUTH_CODE
+            </code></pre>
+            <p>This is the Authorization Code Grant part—you now have the code.</p>
+
+            <p>4. Backend exchanges the code</p>
+            <p>Your server (e.g., AWS Lambda) sends:</p>
+            <pre><code>
+POST https://oauth2.googleapis.com/token
+            </code></pre>
+            <p>With:</p>
+            <ul>
+                <li>code</li>
+                <li>client_id</li>
+                <li>client_secret</li>
+                <li>redirect_uri</li>
+                <li>grant_type=authorization_code</li>
+            </ul>
+
+            <p>5. Google returns tokens</p>
+            <p>You get:</p>
+            <ul>
+                <li>access_token → call APIs</li>
+                <li>id_token → user identity (JWT)</li>
+                <li>refresh_token → long-term access</li>
+            </ul>
+
+            <p>🔐 Why this flow is important</p>
+            <p>Compared to simpler flows, Authorization Code Grant:</p>
+            <ul>
+                <li>Keeps client_secret only on backend</li>
+                <li>Prevents tokens from being exposed to the frontend</li>
+                <li>Supports refresh tokens</li>
+                <li>
+                    Is recommended for:
+                    <ul>
+                        <li>Mobile apps (with PKCE)</li>
+                        <li>Web apps</li>
+                        <li>Server-side apps</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>🔒 Modern version: PKCE</p>
+            <p>For mobile apps like your React Native setup, you should use:</p>
+            <p>👉 Authorization Code Grant + PKCE (Proof Key for Code Exchange)</p>
+            <p>This adds:</p>
+            <ul>
+                <li>code_verifier</li>
+                <li>code_challenge</li>
+            </ul>
+            <p>So even if someone steals the authorization code, they can’t exchange it without the verifier.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Step-by-step breakdown</h2>
+            <h2>1. Check if code exists</h2>
+            <pre><code>
+if (req.headers.code)
+            </code></pre>
+            <ul>
+                <li>The client (your React Native app) must send a Google authorization code in headers.</li>
+                <li>If missing → throws error via next().</li>
+            </ul>
+
+            <p>🆚 Quick comparison</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Flow</th>
+                        <th>Security</th>
+                        <th>Use case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Authorization Code Grant</td>
+                        <td>✅ High</td>
+                        <td>Web + mobile (best practice)</td>
+                    </tr>
+                    <tr>
+                        <td>Authorization Code + PKCE</td>
+                        <td>🔐 Highest</td>
+                        <td>Mobile / public clients</td>
+                    </tr>
+                    <tr>
+                        <td>Implicit Flow</td>
+                        <td>❌ Deprecated</td>
+                        <td>Avoid</td>
+                    </tr>
+                    <tr>
+                        <td>Client Credentials</td>
+                        <td>🔧 Server-to-server</td>
+                        <td>No user</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>🧩 In your architecture</p>
+            <p>Given your:</p>
+            <ul>
+                <li>React Native frontend</li>
+                <li>AWS Lambda backend</li>
+            </ul>
+            <p>You should be using:</p>
+            <p>👉 Authorization Code Grant with PKCE</p>
+            <p>Flow:</p>
+            <pre><code>
+React Native → get code
+→ send to Lambda
+→ Lambda exchanges code
+→ Lambda returns your own JWT
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Exchange code for token</h2>
+            <pre><code>
+let token = await GoogleService.instance.exchangeToken(req.headers.code)
+            </code></pre>
+            <ul>
+                <li>Calls your custom service that hits Google OAuth endpoint.</li>
+                <li>Converts the authorization code → access token + refresh token.</li>
+            </ul>
+            <p>If it fails:</p>
+            <pre><code>
+next(new ApplicationError(err.message, err.response.status))
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Add expiration date (⚠️ BUG here)</h2>
+            <pre><code>
+token.expiration_date = new Date(now + token.expires_in * (1000 * 1000)).toISOString();
+            </code></pre>
+            <ul>
+                <li>expires_in is already in seconds</li>
+                <li>Correct conversion should be:</li>
+            </ul>
+            <pre><code>
+token.expiration_date = new Date(now + token.expires_in * 1000).toISOString();
+            </code></pre>
+            <p>👉 Your code multiplies by 1000 * 1000 (1,000,000), which makes the expiration 1000× longer than it should be.</p>
+        </section>
+
+        <section>
+            <h2>4. Attach token to request</h2>
+            <pre><code>
+req.headers.token = token;
+            </code></pre>
+            <ul>
+                <li>Stores the token in headers (not ideal — better to use req.auth or req.user).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Continue login flow</h2>
+            <pre><code>
+await signInWithGoogleToken(req, res, next);
+            </code></pre>
+            <ul>
+                <li>
+                    This likely:
+                    <ul>
+                        <li>Verifies token with Google</li>
+                        <li>Extracts user profile</li>
+                        <li>Creates/fetches user in DB</li>
+                        <li>Generates your app JWT</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Handle invalid token</h2>
+            <pre><code>
+res.status(403).send({ status: false, message: 'Invalid code.' });
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚠️ Key issues / improvements</h2>
+            <p>❌ 1. Wrong expiration math</p>
+            <p>Fix:</p>
+            <pre><code>
+token.expiration_date = new Date(now + token.expires_in * 1000).toISOString();
+            </code></pre>
+
+            <p>❌ 2. Using headers for sensitive data</p>
+            <p>Headers are not meant for internal mutation.</p>
+            <p>Better:</p>
+            <pre><code>
+req.googleToken = token;
+            </code></pre>
+
+            <p>❌ 3. Missing return after next()</p>
+            <p>You should stop execution:</p>
+            <pre><code>
+return next(new ApplicationError(...));
+            </code></pre>
+
+            <p>❌ 4. OAuth compliance issue</p>
+            <p>Google expects:</p>
+            <ul>
+                <li>POST request</li>
+                <li>application/x-www-form-urlencoded</li>
+            </ul>
+            <p>Make sure your exchangeToken() follows proper OAuth 2.0 flow.</p>
+        </section>
+
+        <section>
+            <h2>✅ Cleaned-up version</h2>
+            <pre><code>
+exports.signInWithGoogleCode = async (req, res, next) => {
+    try {
+        const code = req.headers.code;
+        if (!code) {
+            return next(new ApplicationError('Params not found.'));
+        }
+
+        const token = await GoogleService.instance.exchangeToken(code);
+
+        if (!token) {
+            return res.status(403).json({
+                status: false,
+                message: 'Invalid code.',
+                data: []
+            });
+        }
+
+        token.expiration_date = new Date(
+            Date.now() + token.expires_in * 1000
+        ).toISOString();
+
+        req.googleToken = token;
+
+        return await signInWithGoogleToken(req, res, next);
+
+    } catch (err) {
+        return next(new ApplicationError(err.message, err.response?.status || 500));
+    }
+};
+            </code></pre>
+
+            <p>🧩 In your architecture (React Native + AWS Lambda)</p>
+            <p>This flow is:</p>
+            <ol>
+                <li>React Native → gets authorization_code via Google login</li>
+                <li>Sends code → your Lambda API</li>
+                <li>This function → exchanges code for tokens</li>
+                <li>Backend → issues your JWT</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

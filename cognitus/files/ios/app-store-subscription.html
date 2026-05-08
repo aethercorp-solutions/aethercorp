@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>App Store subscription</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">App Store subscription</h1>
+                    <p class="subtitle">
+                        In the Apple Inc. ecosystem, the terms “App Store subscription” and “in-app subscription” are often used interchangeably—but technically, there’s a distinction worth understanding (especially since you’re building apps).
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔹 1. In-App Subscription (correct technical term)</h2>
+            <p>This is the actual feature you implement using StoreKit.</p>
+            <p>What it means:</p>
+            <ul>
+                <li>A subscription sold inside your app</li>
+                <li>Managed through Apple’s In-App Purchase (IAP) system</li>
+                <li>Users subscribe without leaving the app</li>
+            </ul>
+            <p>Examples:</p>
+            <ul>
+                <li>Monthly premium access in your React Native app</li>
+                <li>SaaS-style features (e.g., AI tools, content unlocks)</li>
+            </ul>
+            <p>Types:</p>
+            <ul>
+                <li>Auto-renewable subscriptions (most common)</li>
+                <li>Non-renewing subscriptions (manual renewal)</li>
+            </ul>
+            <p>👉 This is what you implement using:</p>
+            <ul>
+                <li>react-native-iap</li>
+                <li>StoreKit APIs</li>
+                <li>App Store Connect subscription products</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 2. App Store Subscription (user-facing concept)</h2>
+            <p>This refers to how subscriptions are presented and managed in the App Store ecosystem.</p>
+            <p>What it means:</p>
+            <ul>
+                <li>Subscriptions listed in the App Store</li>
+                <li>
+                    Managed via:
+                    <ul>
+                        <li>iPhone Settings → Apple ID → Subscriptions</li>
+                        <li>App Store UI</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Example:</p>
+            <p>A user sees:</p>
+            <p>“Your subscriptions: Netflix, Spotify, YourApp”</p>
+            <p>Even though they subscribed inside the app, Apple surfaces it as an App Store subscription.</p>
+        </section>
+
+        <section>
+            <h2>🔥 Key Difference (simple view)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Focus</th>
+                        <th>Who uses it</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>In-App Subscription</td>
+                        <td>Implementation (developer side)</td>
+                        <td>You (developer)</td>
+                    </tr>
+                    <tr>
+                        <td>App Store Subscription</td>
+                        <td>Management & billing UI</td>
+                        <td>User / Apple</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>💡 For your use case (React Native + react-native-iap)</h2>
+            <p>You should think in terms of:</p>
+            <ul>
+                <li>✅ In-App Subscription (IAP) → what you build</li>
+                <li>
+                    ✅ Apple handles:
+                    <ul>
+                        <li>billing</li>
+                        <li>renewal</li>
+                        <li>receipts</li>
+                        <li>subscription lifecycle</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Important rules (Apple)</h2>
+            <ul>
+                <li>Must use IAP for digital goods/services</li>
+                <li>
+                    Apple takes:
+                    <ul>
+                        <li>30% (year 1)</li>
+                        <li>15% (after 1 year or small business program)</li>
+                    </ul>
+                </li>
+                <li>Cannot bypass with external payments (except special cases)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Practical takeaway</h2>
+            <p>If you’re implementing subscriptions in your app:</p>
+            <p>You are building an In-App Subscription,</p>
+            <p>which becomes an App Store Subscription from the user’s perspective.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Simple explanation</h2>
+            <p>The In-App Purchase (IAP) system is the framework provided by Apple Inc. that lets you sell digital products and subscriptions inside your app, with Apple handling payments, security, and user billing.</p>
+            <p>It’s built using StoreKit.</p>
+            <p>Think of IAP as:</p>
+            <p>A built-in payment system for apps</p>
+            <p>where users can buy things without leaving your app</p>
+        </section>
+
+        <section>
+            <h2>🔹 What you can sell with IAP</h2>
+            <p>Only digital goods/services, like:</p>
+            <ul>
+                <li>Premium features (unlock pro tools)</li>
+                <li>Subscriptions (monthly/yearly plans)</li>
+                <li>Virtual items (coins, credits)</li>
+                <li>Content (ebooks, courses, media)</li>
+            </ul>
+            <p>🚫 Not allowed:</p>
+            <ul>
+                <li>Physical goods (use external payments)</li>
+                <li>Real-world services (e.g., ride booking, food delivery)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 How it works (end-to-end flow)</h2>
+            <p>1. You define products</p>
+            <p>In App Store Connect, you create:</p>
+            <ul>
+                <li>Product IDs (e.g., com.trycastanet.premium.monthly)</li>
+                <li>Pricing</li>
+                <li>Subscription duration</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. User initiates purchase</h2>
+            <p>Inside your app:</p>
+            <ul>
+                <li>Tap “Subscribe” or “Buy”</li>
+                <li>You call StoreKit (react-native-iap in your case)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Apple handles payment</h2>
+            <ul>
+                <li>Uses Apple ID (Face ID / Touch ID / password)</li>
+                <li>Charges the user</li>
+                <li>Handles taxes, currency, receipts</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. You receive a receipt</h2>
+            <ul>
+                <li>Apple returns a purchase receipt</li>
+                <li>Your app/backend validates it</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Unlock content</h2>
+            <ul>
+                <li>If valid → grant access (premium features, etc.)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. Consumables</h2>
+            <p>🔹 Types of In-App Purchases</p>
+            <ul>
+                <li>Used once, can buy again</li>
+                <li>Example: coins, credits</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Non-consumables</h2>
+            <ul>
+                <li>One-time purchase, permanent</li>
+                <li>Example: remove ads, lifetime unlock</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Subscriptions (most important today)</h2>
+            <ul>
+                <li>Auto-renewable</li>
+                <li>Example: Netflix-style access</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Why Apple enforces IAP</h2>
+            <p>Apple controls:</p>
+            <ul>
+                <li>Payments (security & fraud prevention)</li>
+                <li>User trust</li>
+                <li>Revenue share (commission)</li>
+            </ul>
+            <p>💰 Fees:</p>
+            <ul>
+                <li>30% standard</li>
+                <li>15% after 1 year (subscriptions)</li>
+                <li>15% if enrolled in Small Business Program</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔹 Developer architecture (your stack)</h2>
+            <p>Since you’re using:</p>
+            <ul>
+                <li>React Native (react-native-iap)</li>
+                <li>AWS Lambda backend</li>
+            </ul>
+            <p>Your real-world flow should be:</p>
+            <ol>
+                <li>App → request purchase</li>
+                <li>Apple → returns receipt</li>
+                <li>App → send receipt to backend</li>
+                <li>Backend → verify with Apple servers</li>
+                <li>Backend → update MongoDB user subscription</li>
+                <li>App → unlock features</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔥 Key insight (important)</h2>
+            <p>IAP is not just a payment button —</p>
+            <p>it’s a full lifecycle system:</p>
+            <ul>
+                <li>Purchase</li>
+                <li>Renewal</li>
+                <li>Expiration</li>
+                <li>Refunds</li>
+                <li>Subscription status</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Common mistake</h2>
+            <p>Many devs think:</p>
+            <p>“I’ll just trust the app response”</p>
+            <p>Bad idea.</p>
+            <p>👉 Always verify receipts on the backend</p>
+            <p>Otherwise users can fake purchases.</p>
+        </section>
+
+        <section>
+            <h2>💡 Bottom line</h2>
+            <p>In-App Purchase (IAP) =</p>
+            <p>Apple’s secure payment + subscription system for digital products inside apps</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

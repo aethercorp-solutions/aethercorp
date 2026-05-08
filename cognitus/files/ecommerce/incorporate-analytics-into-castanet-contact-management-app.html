@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Incorporate analytics into your Castanet (TryCastanet) contact management app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Incorporate analytics into your Castanet (TryCastanet) contact management app</h1>
+                    <p class="subtitle">
+                        To incorporate analytics into your Castanet (TryCastanet) contact management app, you want to treat it as an event-driven system layered on top of your existing React Native + AWS serverless + MongoDB architecture.
+                        <p>Here’s a practical, production-ready way to do it.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Define what you actually want to measure</h2>
+            <p>For a contact management app, analytics usually falls into 4 buckets:</p>
+            <p>📊 Product usage</p>
+            <ul>
+                <li>Number of contacts created/edited/deleted</li>
+                <li>Contact import/export usage</li>
+                <li>Search usage frequency</li>
+                <li>Tagging / grouping usage</li>
+            </ul>
+            <p>👤 User behavior</p>
+            <ul>
+                <li>Daily/weekly active users (DAU/WAU)</li>
+                <li>Session duration</li>
+                <li>Feature adoption (e.g., “AI contact enrichment used”)</li>
+            </ul>
+            <p>⚙️ Feature performance</p>
+            <ul>
+                <li>API latency per action</li>
+                <li>Sync success/failure rate</li>
+                <li>Crash/error tracking</li>
+            </ul>
+            <p>💼 Business metrics</p>
+            <ul>
+                <li>Free vs paid users</li>
+                <li>Subscription conversion rate (important since you’re doing IAP)</li>
+                <li>Retention (D1, D7, D30)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Instrument your app with event tracking</h2>
+            <p>You don’t track screens only—you track events.</p>
+            <p>Example event model</p>
+            <pre><code>
+{
+    "event": "contact_created",
+    "userId": "user_123",
+    "timestamp": 1710000000,
+    "properties": {
+        "source": "manual",
+        "hasEmail": true,
+        "hasPhone": true
+    }
+}
+            </code></pre>
+            <p>Key events for Castanet</p>
+            <ul>
+                <li>contact_created</li>
+                <li>contact_updated</li>
+                <li>contact_deleted</li>
+                <li>contact_viewed</li>
+                <li>contact_search_used</li>
+                <li>import_contacts</li>
+                <li>export_contacts</li>
+                <li>login</li>
+                <li>logout</li>
+                <li>subscription_started</li>
+                <li>subscription_cancelled</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Where to collect analytics (recommended architecture)</h2>
+            <p>Since you're using AWS serverless:</p>
+            <p>Option A (Best fit for you): AWS-native analytics pipeline</p>
+            <p>React Native App</p>
+            <p>→ sends events via HTTPS</p>
+            <p>→ API Gateway</p>
+            <p>→ Lambda (analytics ingest)</p>
+            <p>→ stores in:</p>
+            <ul>
+                <li>MongoDB (raw events) OR</li>
+                <li>DynamoDB (fast ingestion) OR</li>
+                <li>S3 (best for analytics history)</li>
+            </ul>
+            <p>Then process with:</p>
+            <ul>
+                <li>AWS Glue (ETL)</li>
+                <li>Athena (SQL queries)</li>
+                <li>QuickSight (dashboards)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Option B: Use analytics SaaS (faster MVP)</h2>
+            <p>You can integrate:</p>
+            <ul>
+                <li>Mixpanel → best for product behavior</li>
+                <li>Amplitude → strong retention/cohort analysis</li>
+                <li>Firebase Analytics → easiest mobile setup</li>
+            </ul>
+            <p>For React Native apps, this is usually the fastest win.</p>
+        </section>
+
+        <section>
+            <h2>4. React Native implementation pattern</h2>
+            <p>Create a centralized analytics service:</p>
+            <pre><code>
+class Analytics {
+    static track(event: string, properties?: object) {
+        fetch("https://api.trycastanet.com/analytics", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                event,
+                properties,
+                timestamp: Date.now(),
+            }),
+        });
+    }
+}
+            </code></pre>
+            <p>Usage:</p>
+            <pre><code>
+Analytics.track("contact_created", {
+    source: "manual",
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Backend (AWS Lambda analytics handler)</h2>
+            <p>Your Lambda should:</p>
+            <ul>
+                <li>validate events</li>
+                <li>attach user metadata</li>
+                <li>store efficiently</li>
+            </ul>
+            <p>Pseudo-flow:</p>
+            <pre><code>
+exports.handler = async (event) => {
+    const body = JSON.parse(event.body);
+    
+    const enrichedEvent = {
+        ...body,
+        receivedAt: new Date().toISOString(),
+        ip: event.requestContext.identity.sourceIp,
+    };
+    
+    await mongo.collection("analytics_events").insertOne(enrichedEvent);
+    
+    return { statusCode: 200 };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Build dashboards (where insights come alive)</h2>
+            <p>You can visualize:</p>
+            <p>Core dashboards</p>
+            <ul>
+                <li>Active users over time</li>
+                <li>Contact creation trend</li>
+                <li>Feature usage heatmap</li>
+                <li>Subscription funnel</li>
+            </ul>
+            <p>Tools</p>
+            <ul>
+                <li>AWS QuickSight (native)</li>
+                <li>Metabase (easy + powerful, great with MongoDB/Postgres)</li>
+                <li>Supabase + dashboards (if you move later)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Advanced (what makes it “AI-level product”)</h2>
+            <p>Since TryCastanet is AI-driven, add:</p>
+            <p>🧠 Smart analytics</p>
+            <ul>
+                <li>“Users who import contacts are 3x more likely to subscribe”</li>
+                <li>“Users who don’t add tags churn faster”</li>
+            </ul>
+            <p>🧩 Event clustering</p>
+            <p>Group users:</p>
+            <ul>
+                <li>Power users</li>
+                <li>Casual users</li>
+                <li>At-risk users</li>
+            </ul>
+            <p>🔁 Funnel tracking</p>
+            <p>Example:</p>
+            <pre><code>
+Signup → Contact Created → Contact Tagged → Subscription
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Critical best practices</h2>
+            <ul>
+                <li>Batch events (don’t spam API per click)</li>
+                <li>Use retry queue (offline support in mobile)</li>
+                <li>Avoid logging sensitive contact data (privacy compliance)</li>
+                <li>Hash or anonymize PII when needed</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

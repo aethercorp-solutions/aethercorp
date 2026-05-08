@@ -13,7 +13,10 @@
             <div class="nav-container">
                 <div class="title-header">
                     <h1 class="title">Expo</h1>
-                    <p class="subtitle">Expo is not the industry standard, but it's a popular tool—especially among certain types of developers and projects. Here's a breakdown:</p>
+                    <p class="subtitle">
+                        Expo is a toolchain and platform that makes it easier to build React Native apps—especially if you want to avoid dealing with complex native setup (iOS/Android configuration).
+                        <p>Think of it as a shortcut layer on top of React Native.</p>
+                    </p>
                 </div>        
             </div>
         </nav>
@@ -21,337 +24,157 @@
 
     <main>
         <section>
-            <h2>✅ What Expo Is:</h2>
-            <p>Expo is a framework and platform built around React Native that aims to make mobile app development faster and easier. It provides:</p>
+            <h2>🔹 What Expo does</h2>
+            <p>Expo simplifies mobile development by giving you:</p>
             <ul>
-                <li>Pre-configured tooling (like Metro bundler, dev menu, build tools)</li>
-                <li>Managed workflow (no native code needed)</li>
-                <li>OTA updates</li>
-                <li>Easier access to device APIs</li>
+                <li>A pre-configured environment (no need to install Xcode/Android Studio initially)</li>
+                <li>
+                    Ready-to-use APIs for common features:
+                    <ul>
+                        <li>Camera</li>
+                        <li>Location</li>
+                        <li>Notifications</li>
+                        <li>Sensors</li>
+                    </ul>
+                </li>
+                <li>Fast development tools like live reload and QR code testing</li>
             </ul>
         </section>
 
         <section>
-            <h2>📊 Is It the Industry Standard?</h2>
-            <p>No, it's not the default or dominant choice in the industry.</p>
-            <p>Instead, the industry standard is:</p>
-            <p>🔧 Pure React Native with custom native code (sometimes using tools like React Native CLI, EAS, or Fastlane)</p>
-            <p>This gives companies more flexibility, control, and scalability—critical for larger, more complex, or performance-sensitive apps.</p>
+            <h2>🔹 How it works</h2>
+            <p>Instead of writing native code, you:</p>
+            <ol>
+                <li>Write JavaScript/TypeScript (React)</li>
+                <li>Run your app using the Expo Go app on your phone</li>
+                <li>Scan a QR code → your app runs instantly</li>
+            </ol>
         </section>
 
         <section>
-            <h2>💡 When Expo Is Commonly Used:</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Use Case</th>
-                        <th>Expo Suitability</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>MVPs / prototypes</td>
-                        <td>✅ Excellent choice</td>
-                    </tr>
-                    <tr>
-                        <td>Startups / small teams</td>
-                        <td>✅ Great productivity</td>
-                    </tr>
-                    <tr>
-                        <td>Apps without heavy native code</td>
-                        <td>✅ No need to eject</td>
-                    </tr>
-                    <tr>
-                        <td>Learning / education</td>
-                        <td>✅ Beginner-friendly</td>
-                    </tr>
-                    <tr>
-                        <td>Complex, large-scale apps</td>
-                        <td>🚫 May need ejecting</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h2>🔹 Two main workflows</h2>
+            <ol>
+                <li>
+                    Managed Workflow (easy mode)
+                    <ul>
+                        <li>No native code</li>
+                        <li>Expo handles everything</li>
+                        <li>
+                            Best for:
+                            <ul>
+                                <li>MVPs</li>
+                                <li>Prototypes</li>
+                                <li>Standard apps</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Bare Workflow (advanced)
+                    <ul>
+                        <li>You can access native code (like normal React Native)</li>
+                        <li>Still use Expo tools if needed</li>
+                    </ul>
+                </li>
+            </ol>
         </section>
 
         <section>
-            <h2>❗ Pros & Cons of Expo</h2>
-            <p>Pros:</p>
-            <ul>
-                <li>Super fast setup</li>
-                <li>No Xcode/Android Studio needed (in managed workflow)</li>
-                <li>Easy OTA updates</li>
-                <li>Unified dev environment</li>
-            </ul>
+            <h2>🔹 Example</h2>
+            <p>Instead of manually linking native modules in React Native, with Expo you can just do:</p>
+            <pre><code>
+npx create-expo-app myApp
+cd myApp
+npm start
+            </code></pre>
+        </section>
 
-            <p>Cons:</p>
+        <section>
+            <h2>🔹 Pros</h2>
             <ul>
-                <li>Less flexibility with native modules (in managed workflow)</li>
-                <li>May need to eject to bare workflow for advanced use</li>
-                <li>Larger binary size</li>
-                <li>Can abstract away too much for pro teams</li>
-            </ul>
-
-            <ul>
-                <li>Expo is not the industry standard for professional, large-scale apps.</li>
-                <li>React Native (bare workflow) or native development is more commonly used at scale.</li>
-                <li>Expo is ideal for fast development, small teams, and MVPs.</li>
+                <li>Fast setup (minutes)</li>
+                <li>Great for beginners and rapid dev</li>
+                <li>Built-in APIs (no need for many third-party libs)</li>
+                <li>OTA (over-the-air) updates</li>
             </ul>
         </section>
 
         <section>
-            <h2>Great question — React Native CLI and Metro bundler are related but serve different purposes in the React Native ecosystem.</h2>
-            <p>🔧 React Native CLI vs. Metro Bundler</p>
+            <h2>🔹 Cons</h2>
+            <ul>
+                <li>Limited access to custom native code (in managed mode)</li>
+                <li>Some libraries not supported without ejecting</li>
+                <li>Slightly larger app size</li>
+            </ul>
+        </section>
 
+        <section>
+            <h2>🔹 Expo vs React Native CLI</h2>
             <table>
                 <thead>
                     <tr>
                         <th>Feature</th>
+                        <th>Expo</th>
                         <th>React Native CLI</th>
-                        <th>Metro Bundler</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>🧠 What It Is</td>
-                        <td>Command-line interface to scaffold, build, run, and manage React Native apps</td>
-                        <td>JavaScript bundler that packages JS code for the app</td>
+                        <td>Setup</td>
+                        <td>Very easy</td>
+                        <td>Complex</td>
                     </tr>
                     <tr>
-                        <td>📦 Main Role</td>
-                        <td>Project lifecycle & tooling: create projects, link libraries, run apps</td>
-                        <td>Serve and bundle JS files efficiently</td>
+                        <td>Native code</td>
+                        <td>Limited (unless ejected)</td>
+                        <td>Full control</td>
                     </tr>
                     <tr>
-                        <td>🧰 Used For</td>
-                        <td>Running commands like npx react-native run-android, linking native modules, building releases</td>
-                        <td>Transforming and bundling JS modules into a format your mobile app can execute</td>
+                        <td>Speed of development</td>
+                        <td>Faster</td>
+                        <td>Slower initially</td>
                     </tr>
                     <tr>
-                        <td>🔗 Relation to Each Other</td>
-                        <td>CLI launches and coordinates Metro automatically when you run the app</td>
-                        <td>Metro runs under the hood during development, serving your app's JS bundle</td>
-                    </tr>
-                    <tr>
-                        <td>🏗️ Customizable?</td>
-                        <td>Yes (build process, native modules, etc.)</td>
-                        <td>Yes (custom transformers, plugins)</td>
+                        <td>Flexibility</td>
+                        <td>Medium</td>
+                        <td>High</td>
                     </tr>
                 </tbody>
             </table>
         </section>
 
         <section>
-            <h2>🔍 More Detail</h2>
-            <p>✅ React Native CLI</p>
+            <h2>🔹 When YOU should use Expo (based on your background)</h2>
+            <p>Since you're already working with:</p>
             <ul>
-                <li>Used to initialize (npx react-native init MyApp) and run React Native projects.</li>
-                <li>Can build Android and iOS apps using native build tools like Gradle (Android) and Xcode (iOS).</li>
-                <li>Not tied to Expo — gives you full control over the native code.</li>
-                <li>Supports native module linking (npx react-native link).</li>
+                <li>React Native</li>
+                <li>AWS serverless</li>
+                <li>Advanced integrations (auth, gRPC, etc.)</li>
+            </ul>
+            <p>👉 Use Expo if:</p>
+            <ul>
+                <li>You want faster iteration / prototyping</li>
+                <li>Your app doesn’t need heavy native customization</li>
+            </ul>
+            <p>👉 Stick to React Native CLI if:</p>
+            <ul>
+                <li>You need deep native integrations</li>
+                <li>You’re doing complex SDK integrations (e.g., custom auth flows, low-level device APIs)</li>
             </ul>
         </section>
 
         <section>
-            <h2>✅ Metro Bundler</h2>
-            <ul>
-                <li>JS/TS bundler developed by Facebook specifically for React Native.</li>
-                <li>
-                    Runs a local server that:
-                    <ul>
-                        <li>Watches your files</li>
-                        <li>Transpiles JSX/TSX using Babel</li>
-                        <li>Resolves imports (like ES Modules, images, styles)</li>
-                        <li>Delivers the JS bundle to your app in development</li>
-                    </ul>
-                    <p>When you run npx react-native run-ios, the CLI starts Metro behind the scenes.</p>
-                </li>
-            </ul>
-        </section>
-
-        <section>
-            <h2>🧠 Analogy:</h2>
-            <ul>
-                <li>React Native CLI is like the conductor of the orchestra — it coordinates the whole development process.</li>
-                <li>Metro is like the guy mixing the audio — it compiles your JavaScript so it can be played by the app.</li>
-            </ul>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>If you're thinking:</th>
-                        <th>Use this:</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>"How do I run or build the app?"</td>
-                        <td>✅ React Native CLI</td>
-                    </tr>
-                    <tr>
-                        <td>"How does the JS code get bundled and served to the app?"</td>
-                        <td>✅ Metro Bundler</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section>
-            <h2>Absolutely — let’s dive into a Metro vs Webpack comparison, especially focusing on hot reloading, module resolution, and bundling differences.</h2>
-            <p>⚔️ Metro vs Webpack (with Hot Reloading Focus)</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Feature</th>
-                        <th>Metro Bundler</th>
-                        <th>Webpack</th>
-                    </tr>
-                    <tr>
-                        <td>🔧 Primary Use Case</td>
-                        <td>React Native apps</td>
-                        <td>Web apps (React, Vue, Angular, etc.)</td>
-                    </tr>
-                    <tr>
-                        <td>🧠 Designed For</td>
-                        <td>Mobile (iOS/Android) — optimized for RN</td>
-                        <td>Web platforms — highly configurable</td>
-                    </tr>
-                    <tr>
-                        <td>🚀 Bundling Language</td>
-                        <td>JavaScript/TypeScript, JSX, images, assets</td>
-                        <td>JavaScript/TypeScript, CSS, HTML, images</td>
-                    </tr>
-                    <tr>
-                        <td>⚡ Hot Reloading (Fast Refresh)</td>
-                        <td>Native support, built for React Native</td>
-                        <td>Through plugins/loaders (e.g. react-refresh-webpack-plugin)</td>
-                    </tr>
-                    <tr>
-                        <td>🔄 Live Reloading</td>
-                        <td>Built-in (restart app when file changes)</td>
-                        <td>Also built-in, typically with webpack-dev-server</td>
-                    </tr>
-                    <tr>
-                        <td>📦 Module Resolution</td>
-                        <td>Custom resolver tuned for React Native’s flat node_modules</td>
-                        <td>Node-style + Webpack-specific aliasing</td>
-                    </tr>
-                    <tr>
-                        <td>📁 Asset Handling</td>
-                        <td>Inline and optimized for mobile (e.g. images bundled differently)</td>
-                        <td>Uses loaders for files like images, CSS</td>
-                    </tr>
-                    <tr>
-                        <td>🧩 Plugins/Customization</td>
-                        <td>Limited out of the box, but extensible via custom transformers</td>
-                        <td>Very extensible with loaders & plugins</td>
-                    </tr>
-                    <tr>
-                        <td>⚙️ Configuration Complexity</td>
-                        <td>Zero-config by default</td>
-                        <td>High configurability, often complex</td>
-                    </tr>
-                </thead>
-            </table>
-        </section>
-
-        <section>
-            <h2>🔁 Hot Reloading in Metro vs Webpack</h2>
-            <p>✅ Metro – Hot Reloading / Fast Refresh</p>
-            <p>Metro uses Fast Refresh, which is:</p>
-
-            <ul>
-                <li>Built specifically for React Native</li>
-                <li>Retains component state whenever possible</li>
-                <li>Automatically retries when there's a syntax error</li>
-                <li>Super fast — uses granular module reloading</li>
-                <li>No config required</li>
-            </ul>
-
-            <p>🔥 How It Works:</p>
-            <ul>
-                <li>Metro watches file changes.</li>
-                <li>
-                    When a change is detected:
-                    <ul>
-                        <li>It sends the updated modules over WebSocket to the running app.</li>
-                        <li>Only the affected components are reloaded.</li>
-                        <li>State is preserved using heuristics (e.g., component boundaries, hooks).</li>
-                    </ul>
-                </li>
-            </ul>
-            <p>✅ Reliable, minimal setup, works with functional components and hooks out of the box.</p>
-        </section>
-
-        <section>
-            <h2>🔁 Webpack – Hot Reloading / Fast Refresh</h2>
-            <p>Webpack achieves hot reloading via:</p>
-            <ul>
-                <li>Hot Module Replacement (HMR): Updates modules in-place in the browser without a full reload.</li>
-                <li>React Fast Refresh: Requires configuration (react-refresh-webpack-plugin).</li>
-            </ul>
-            <p>🛠️ Typical setup:</p>
+            <h2>✅ How to force a blank template</h2>
+            <p>Use the --template flag explicitly:</p>
+            <p>JavaScript blank app</p>
             <pre><code>
-npm install react-refresh react-refresh-webpack-plugin --save-dev
+npx create-expo-app myApp --template blank
             </code></pre>
+            <p>TypeScript blank app</p>
 
-            <p>In Webpack config:</p>
             <pre><code>
-plugins: [
-  new ReactRefreshWebpackPlugin()
-]
+npx create-expo-app myApp --template blank-typescript
             </code></pre>
-
-            <p>🧠 It works very well, but:</p>
-            <ul>
-                <li>Requires proper setup</li>
-                <li>Easier to break if your loaders or config are misaligned</li>
-                <li>More opinionated plugins often needed</li>
-            </ul>
-        </section>
-
-        <section>
-            <h2>📌 Summary: Fast Refresh & Bundling Differences</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Feature</th>
-                        <th>Metro (React Native)</th>
-                        <th>Webpack (Web)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Fast Refresh built-in?</td>
-                        <td>✅ Yes</td>
-                        <td>⚠️ No (requires config)</td>
-                    </tr>
-                    <tr>
-                        <td>State preservation on reload</td>
-                        <td>✅ Yes</td>
-                        <td>✅ Yes (with Fast Refresh plugin)</td>
-                    </tr>
-                    <tr>
-                        <td>Customization/flexibility</td>
-                        <td>⚠️ Limited (on purpose)</td>
-                        <td>✅ Extremely flexible</td>
-                    </tr>
-                    <tr>
-                        <td>Ecosystem</td>
-                        <td>Built for React Native</td>
-                        <td>Built for Web</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section>
-            <ul>
-                <li>Metro is tightly integrated into React Native, has zero config, and supports Fast Refresh out of the box.</li>
-                <li>Webpack is super powerful, but needs setup for Fast Refresh and can be brittle if misconfigured.</li>
-                <li>If you're building for mobile: 🟢 Metro is the right tool.</li>
-                <li>If you're building for web: 🟢 Webpack (or Vite, newer alternative) is standard.</li>
-            </ul>
         </section>
     </main>
 

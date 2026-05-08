@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>request object</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">request object</h1>
+                    <p class="subtitle">In HTTP, a request object is basically the structured representation of a client’s request sent to a server. When your app (like your Node.js API on AWS Lambda) receives an HTTP request, frameworks turn that raw request into a request object so you can easily work with it in code.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What an HTTP request contains</h2>
+            <p>At the protocol level, an HTTP request has:</p>
+            <ul>
+                <li>Method → what action to perform (GET, POST, PUT, DELETE)</li>
+                <li>URL / Path → the endpoint (/users, /login)</li>
+                <li>Headers → metadata (e.g. Authorization, Content-Type)</li>
+                <li>Body → data sent by the client (for POST/PUT)</li>
+                <li>Query parameters → values in the URL (?page=1&limit=10)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example (raw HTTP request)</h2>
+            <pre><code>
+POST /login HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Authorization: Bearer token123
+
+{
+  "email": "test@example.com",
+  "password": "123456"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Request object in Node.js (Express-style)</h2>
+            <p>Frameworks like Express.js convert that into a request object (req):</p>
+            <pre><code>
+app.post('/login', (req, res) => {
+    console.log(req.method);      // POST
+    console.log(req.path);        // /login
+    console.log(req.headers);     // headers object
+    console.log(req.body);        // parsed JSON body
+    console.log(req.query);       // query params
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>In AWS Lambda (API Gateway)</h2>
+            <p>Since you're using AWS, your request object looks slightly different:</p>
+            <pre><code>
+exports.handler = async (event) => {
+    console.log(event.httpMethod);   // POST
+    console.log(event.path);         // /login
+    console.log(event.headers);      // headers
+    console.log(event.body);         // raw string (JSON)
+};
+            </code></pre>
+            <p>Here, the event object = request object.</p>
+        </section>
+
+        <section>
+            <h2>Key idea</h2>
+            <p>The request object is:</p>
+            <p>A program-friendly wrapper around the incoming HTTP request, so you don’t have to manually parse raw text.</p>
+        </section>
+
+        <section>
+            <h2>Why it matters (especially for your setup)</h2>
+            <p>Since you're working with:</p>
+            <ul>
+                <li>OAuth (Google / Azure AD)</li>
+                <li>JWT authentication</li>
+                <li>Serverless APIs</li>
+            </ul>
+            <p>You’ll constantly use the request object to:</p>
+            <ul>
+                <li>Read tokens → req.headers.authorization</li>
+                <li>Get auth codes → req.headers.code</li>
+                <li>Parse user data → req.body</li>
+                <li>Handle query params → req.query</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Where and How data is sent in an HTTP request</h2>
+            <h2>🧱 1. HTTP Request Structure (big picture)</h2>
+            <p>An HTTP request has 4 main parts:</p>
+            <pre><code>
+POST /users?id=123 HTTP/1.1
+Host: example.com
+Authorization: Bearer abc123
+
+{
+  "name": "Paul"
+}
+            </code></pre>
+            <ul>
+                <li>Request line → URL + query params</li>
+                <li>Headers → metadata (Authorization, Content-Type, etc.)</li>
+                <li>Body → actual payload (data)</li>
+                <li>Query params → part of URL</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔑 2. Authorization Header (what it is)</h2>
+            <p>This is a header used for authentication.</p>
+            <pre><code>
+Authorization: Bearer abc123
+            </code></pre>
+            <ul>
+                <li>Lives in: req.headers.authorization</li>
+                <li>Purpose: tell server who you are</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🪪 3. Bearer Token (what it is)</h2>
+            <p>“Bearer” is just a type of Authorization scheme.</p>
+            <pre><code>
+Authorization: Bearer &lt;token&gt;
+            </code></pre>
+            <p>Meaning:</p>
+            <p>“Whoever bears this token is authenticated”</p>
+            <p>Common token types:</p>
+            <ul>
+                <li>JWT</li>
+                <li>OAuth access token (like Google)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 4. Request Body (what it is)</h2>
+            <p>This is where you send actual data.</p>
+            <pre><code>
+{
+    "email": "paul@example.com",
+    "password": "123456"
+}
+            </code></pre>
+            <ul>
+                <li>Access in Node.js: req.body</li>
+                <li>
+                    Used for:
+                    <ul>
+                        <li>form submissions</li>
+                        <li>JSON APIs</li>
+                        <li>POST/PUT requests</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔗 5. Request Parameters (2 types)</h2>
+            <p>a) Query Parameters</p>
+            <pre><code>
+GET /users?role=admin&page=2
+            </code></pre>
+            <ul>
+                <li>Access: req.query.role</li>
+                <li>
+                    Used for:
+                    <ul>
+                        <li>filtering</li>
+                        <li>searching</li>
+                        <li>pagination</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>b) Path Parameters</p>
+            <pre><code>
+GET /users/123
+            </code></pre>
+            <ul>
+                <li>Access: req.params.id</li>
+                <li>
+                    Used for:
+                    <ul>
+                        <li>identifying a specific resource</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚖️ Side-by-side comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Where it lives</th>
+                        <th>Example</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Authorization Header</td>
+                        <td>req.headers.authorization</td>
+                        <td>Bearer abc123</td>
+                        <td>Authentication</td>
+                    </tr>
+                    <tr>
+                        <td>Bearer</td>
+                        <td>Inside Authorization</td>
+                        <td>Bearer</td>
+                        <td>Token type</td>
+                    </tr>
+                    <tr>
+                        <td>Body</td>
+                        <td>req.body</td>
+                        <td>{ email, password }</td>
+                        <td>Data payload</td>
+                    </tr>
+                    <tr>
+                        <td>Query Param</td>
+                        <td>req.query</td>
+                        <td>?page=1</td>
+                        <td>Filters/search</td>
+                    </tr>
+                    <tr>
+                        <td>Path Param</td>
+                        <td>req.params</td>
+                        <td>/users/123</td>
+                        <td>Resource ID</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Real-world example (your Google OAuth flow)</h2>
+            <p>❌ Your current approach</p>
+            <pre><code>
+req.headers.code
+            </code></pre>
+            <p>You're putting OAuth code in headers.</p>
+        </section>
+
+        <section>
+            <h2>✅ Standard approach</h2>
+            <p>Step 1: send code in body</p>
+            <pre><code>
+POST /auth/google
+Content-Type: application/json
+
+{
+  "code": "4/0AX4XfWh..."
+}
+            </code></pre>
+            <p>Step 2: backend receives it</p>
+            <pre><code>
+const { code } = req.body;
+            </code></pre>
+
+            <p>✅ After login (protected routes)</p>
+            <pre><code>
+GET /profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+            </code></pre>
+            <pre><code>
+const token = req.headers.authorization;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 Simple mental model</h2>
+            <ul>
+                <li>Headers → identity / metadata</li>
+                <li>Bearer → type of auth token</li>
+                <li>Body → actual data</li>
+                <li>Params → filtering or identifying resources</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Common mistakes (you’re close to one)</h2>
+            <p>❌ Putting everything in headers</p>
+            <p>Bad for:</p>
+            <ul>
+                <li>debugging</li>
+                <li>standards</li>
+                <li>proxies/CDNs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>❌ Putting tokens in body</h2>
+            <pre><code>
+{ "token": "abc123" }
+            </code></pre>
+            <p>Bad because:</p>
+            <ul>
+                <li>not standard</li>
+                <li>harder to secure</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>✅ Best practice summary</h2>
+            <ul>
+                <li>Auth → Authorization header</li>
+                <li>Data → Body</li>
+                <li>Filters → Query params</li>
+                <li>Resource IDs → Path params</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

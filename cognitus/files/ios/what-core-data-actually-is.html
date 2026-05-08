@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What Core Data actually is</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What Core Data actually is</h1>
+                    <p class="subtitle">Short answer: sometimes—but usually only in a limited, supporting role.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What Core Data actually is</h2>
+            <p>Core Data is Apple’s built-in local persistence framework for iOS apps. It lets developers store structured data on the device (often backed by SQLite) and manage object graphs efficiently.</p>
+            <p>It’s important to understand:</p>
+            <p>👉 It is not a backend or database server</p>
+            <p>👉 It is on-device storage only</p>
+        </section>
+
+        <section>
+            <h2>How mobile banking apps typically handle data</h2>
+            <p>Modern iOS banking apps usually use a hybrid architecture:</p>
+            <ol>
+                <li>
+                    Backend (primary source of truth)
+                    <ul>
+                        <li>Bank servers (APIs, cloud, mainframes)</li>
+                        <li>Handles accounts, balances, transactions, authentication</li>
+                        <li>This is where critical financial data lives</li>
+                    </ul>
+                </li>
+                <li>
+                    On-device storage (optional, secondary)
+                    <p>This is where Core Data may come in.</p>
+                    <p>Banks might use Core Data (or alternatives) for:</p>
+                    <ul>
+                        <li>Caching recent transactions for faster loading</li>
+                        <li>Storing UI state (e.g., last viewed account)</li>
+                        <li>Offline support (limited)</li>
+                        <li>Temporary/session data</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Do banks actually use Core Data?</h2>
+            <p>Yes — but not always, and not for core financial logic</p>
+            <ul>
+                <li>Some banking apps use Core Data as a local cache layer</li>
+                <li>
+                    Others prefer alternatives like:
+                    <ul>
+                        <li>SQLite directly</li>
+                        <li>Realm</li>
+                        <li>Encrypted storage layers</li>
+                        <li>In-memory caches + secure keychain</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>From developer discussions:</p>
+            <p>Core Data is “a persistence layer that is local to the device… backed by SQLite”</p>
+            <p>That aligns well with non-sensitive, cached data, not authoritative banking data.</p>
+        </section>
+
+        <section>
+            <h2>Why Core Data is not heavily relied on in banking</h2>
+            <p>Banks are extremely cautious about:</p>
+            <ul>
+                <li>Security</li>
+                <li>Data consistency</li>
+                <li>Regulatory compliance</li>
+            </ul>
+            <p>So they tend to:</p>
+            <ul>
+                <li>Avoid storing sensitive financial data locally unless encrypted</li>
+                <li>Rely on secure APIs + server validation</li>
+                <li>Use Keychain (not Core Data) for credentials/tokens</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>A typical iOS banking app might:</h2>
+            <ul>
+                <li>Use Core Data (or similar) → cache transaction list for faster UI</li>
+                <li>Use Keychain → store auth tokens securely</li>
+                <li>Use backend APIs → fetch real balances every time</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Bottom line</h2>
+            <ul>
+                <li>✅ Core Data can be used in iOS banking apps</li>
+                <li>❗ But only for local caching or non-critical data</li>
+                <li>🚫 It is not used as the main data store for financial data</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

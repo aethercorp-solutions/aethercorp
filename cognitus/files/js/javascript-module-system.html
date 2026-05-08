@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JavaScript module system</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JavaScript module system</h1>
+                    <p class="subtitle">
+                        A JavaScript module system is the way JavaScript organizes code into separate, reusable files (modules) and controls how those files import and export functionality.
+                        <p>Instead of putting everything in one huge file, modules let you split your app into smaller pieces—each with its own responsibility.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Core Idea</h2>
+            <p>A module is just a file with its own scope that can:</p>
+            <ul>
+                <li>export values (functions, variables, classes)</li>
+                <li>import values from other modules</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔑 Why module systems exist</h2>
+            <p>Before modules, JavaScript had problems:</p>
+            <ul>
+                <li>Global scope pollution (var x everywhere)</li>
+                <li>No standard way to reuse code</li>
+                <li>Hard to maintain large apps</li>
+            </ul>
+            <p>Module systems solve this by:</p>
+            <ul>
+                <li>Encapsulating code</li>
+                <li>Making dependencies explicit</li>
+                <li>Improving scalability</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ Main JavaScript Module Systems</h2>
+            <p>1. CommonJS (CJS) — Node.js classic</p>
+            <p>Used in Node.js (especially older versions)</p>
+            <pre><code>
+// export
+module.exports = function greet() {
+  console.log("Hello");
+};
+
+// import
+const greet = require('./greet');
+            </code></pre>
+            <p>Characteristics:</p>
+            <ul>
+                <li>Synchronous (loads modules instantly)</li>
+                <li>Good for backend (like your AWS Lambda setup)</li>
+                <li>Uses require and module.exports</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. ES Modules (ESM) — Modern standard</h2>
+            <p>Native in modern JavaScript (browser + Node.js)</p>
+            <pre><code>
+// export
+export function greet() {
+  console.log("Hello");
+}
+
+// import
+import { greet } from './greet.js';
+            </code></pre>
+            <p>Characteristics:</p>
+            <ul>
+                <li>Asynchronous (better for browsers)</li>
+                <li>Static structure (analyzable at build time)</li>
+                <li>Official JS standard</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. AMD (Asynchronous Module Definition)</h2>
+            <p>Used mainly in browsers (older systems like RequireJS)</p>
+            <pre><code>
+define(['dep'], function(dep) {
+    return function() {};
+});
+            </code></pre>
+            <p>Characteristics:</p>
+            <ul>
+                <li>Async loading</li>
+                <li>Mostly obsolete today</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. UMD (Universal Module Definition)</h2>
+            <p>Hybrid system that works with both CommonJS and AMD</p>
+            <pre><code>
+(function (root, factory) {
+    if (typeof module === 'object') {
+        module.exports = factory();
+    } else {
+        root.myLib = factory();
+    }
+    })(this, function () {
+    return {};
+});
+            </code></pre>
+            <p>Use case:</p>
+            <ul>
+                <li>Libraries that must work everywhere</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔄 Quick Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>CommonJS</th>
+                        <th>ES Modules</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Syntax</td>
+                        <td>require/export</td>
+                        <td>import/export</td>
+                    </tr>
+                    <tr>
+                        <td>Loading</td>
+                        <td>Sync</td>
+                        <td>Async</td>
+                    </tr>
+                    <tr>
+                        <td>Environment</td>
+                        <td>Node.js</td>
+                        <td>Browser + Node</td>
+                    </tr>
+                    <tr>
+                        <td>Standard</td>
+                        <td>No</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧩 In your context (AWS + Node.js)</h2>
+            <p>Since you're working with:</p>
+            <ul>
+                <li>AWS Lambda</li>
+                <li>Node.js backend</li>
+                <li>Express / serverless</li>
+            </ul>
+            <p>You're likely using:</p>
+            <ul>
+                <li>CommonJS (require) OR</li>
+                <li>Moving toward ES Modules (import)</li>
+            </ul>
+            <p>👉 Example in your middleware:</p>
+            <pre><code>
+const jwt = require('jsonwebtoken'); // CommonJS
+            </code></pre>
+            <p>Modern equivalent:</p>
+            <pre><code>
+import jwt from 'jsonwebtoken'; // ESM
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Simple Analogy</h2>
+            <p>Think of modules like microservices inside your codebase:</p>
+            <ul>
+                <li>Each file = one service</li>
+                <li>export = API</li>
+                <li>import = calling another service</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

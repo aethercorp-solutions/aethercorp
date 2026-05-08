@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>HTTP</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">HTTP</h1>
+                    <p class="subtitle">
+                        HTTP stands for HyperText Transfer Protocol. It’s the fundamental protocol used for communication on the web—basically how your browser talks to a server.
+                        <p>Simple idea</p>
+                        <p>When you open a website:</p>
+                        <ol>
+                            <li>Your browser sends an HTTP request to a server</li>
+                            <li>The server sends back an HTTP response</li>
+                            <li>The browser renders the result (HTML, JSON, images, etc.)</li>
+                        </ol>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Example (real-world flow)</h2>
+            <p>If you visit:</p>
+            <pre><code>
+https://example.com
+            </code></pre>
+            <p>Your browser sends something like:</p>
+            <pre><code>
+GET / HTTP/1.1
+Host: example.com
+            </code></pre>
+            <p>Server responds:</p>
+            <pre><code>
+HTTP/1.1 200 OK
+Content-Type: text/html
+
+&lt;html&gt;...&lt;/html&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Key concepts</h2>
+            <p>1. Request Methods</p>
+            <p>These define what you want to do:</p>
+            <ul>
+                <li>GET → retrieve data</li>
+                <li>POST → send/create data</li>
+                <li>PUT → update data</li>
+                <li>DELETE → remove data</li>
+            </ul>
+
+            <p>2. Status Codes</p>
+            <p>Server responses include status:</p>
+            <ul>
+                <li>200 → success</li>
+                <li>404 → not found</li>
+                <li>500 → server error</li>
+            </ul>
+
+            <p>3. Stateless</p>
+            <p>HTTP is stateless, meaning:</p>
+            <ul>
+                <li>Each request is independent</li>
+                <li>Server doesn’t remember previous requests</li>
+                <li>That’s why we use things like cookies or JWT tokens (you’ve used this in your Node.js middleware)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>HTTP vs HTTPS</h2>
+            <ul>
+                <li>HTTP → not secure (data is plain text)</li>
+                <li>HTTPS → secure (encrypted using SSL/TLS)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>In your context (Node.js / AWS)</h2>
+            <p>When you build:</p>
+            <ul>
+                <li>Express apps → handle HTTP requests (req, res)</li>
+                <li>AWS Lambda + API Gateway → API Gateway receives HTTP requests, then triggers your Lambda</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Quick analogy</h2>
+            <p>Think of HTTP like a messenger system:</p>
+            <ul>
+                <li>You (client) send a request letter</li>
+                <li>Server reads it and sends back a reply</li>
+                <li>Each letter is separate (stateless)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔗 1. Big Picture Flow</h2>
+            <p>Great—let’s connect HTTP → Express → AWS Lambda in a way that matches what you’re building.</p>
+            <p>When a client (mobile app / browser) calls your API:</p>
+            <pre><code>
+Client (React Native)
+        ↓ HTTP Request
+API Gateway (AWS)
+        ↓
+Lambda Handler
+        ↓
+Express App (middleware + routes)
+        ↓
+Response back to client
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 2. HTTP in Express (what you already use)</h2>
+            <p>In a normal Express app:</p>
+            <pre><code>
+app.get('/users', (req, res) => {
+    res.json({ users: [] });
+});
+            </code></pre>
+            <p>What happens under the hood:</p>
+            <ul>
+                <li>
+                    req = HTTP Request
+                    <ul>
+                        <li>headers, body, method, URL</li>
+                    </ul>
+                </li>
+                <li>
+                    res = HTTP Response
+                    <ul>
+                        <li>status code, JSON, headers</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+req.method   // GET
+req.headers  // authorization, content-type
+req.body     // JSON payload
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ 3. Middleware = HTTP Pipeline</h2>
+            <p>Your middleware is literally processing the HTTP request step-by-step.</p>
+            <p>Example (like what you wrote):</p>
+            <pre><code>
+module.exports = function (req, res, next) {
+    const token = req.headers['authorization'];
+    
+    if (!token) {
+        return res.status(401).json({ message: 'No token' });
+    }
+    
+    next();
+};
+            </code></pre>
+            <p>Flow:</p>
+            <pre><code>
+HTTP Request
+   ↓
+Auth Middleware
+   ↓
+Route Handler
+   ↓
+HTTP Response
+            </code></pre>
+            <p>So middleware = interceptors of HTTP requests</p>
+        </section>
+
+        <section>
+            <h2>☁️ 4. Now add AWS Lambda</h2>
+            <p>Lambda does NOT natively understand Express.</p>
+            <p>It receives an event like this:</p>
+            <pre><code>
+{
+    httpMethod: "GET",
+    path: "/users",
+    headers: {...},
+    body: "..."
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔁 5. What serverless-http does</h2>
+            <pre><code>
+const serverless = require('serverless-http');
+const app = require('./app');
+
+module.exports.handler = serverless(app);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Translation layer:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>HTTP Concept</th>
+                        <th>API Gateway</th>
+                        <th>Express</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Method</td>
+                        <td>event.httpMethod</td>
+                        <td>req.method</td>
+                    </tr>
+                    <tr>
+                        <td>Headers</td>
+                        <td>event.headers</td>
+                        <td>req.headers</td>
+                    </tr>
+                    <tr>
+                        <td>Body</td>
+                        <td>event.body</td>
+                        <td>req.body</td>
+                    </tr>
+                    <tr>
+                        <td>Response</td>
+                        <td>eturn object</td>
+                        <td>res.json()</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 serverless-http converts:</p>
+            <pre><code>
+API Gateway event → Express req/res
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔄 6. Full Flow (REAL execution)</h2>
+            <p>Step-by-step when your React Native app calls API:</p>
+            <p>1. Client sends HTTP request</p>
+            <pre><code>
+GET /users
+Authorization: Bearer xxx
+            </code></pre>
+
+            <p>2. API Gateway receives it</p>
+            <p>Transforms into:</p>
+            <pre><code>
+event = {
+    httpMethod: "GET",
+    path: "/users",
+    headers: { authorization: "Bearer xxx" }
+}
+            </code></pre>
+
+            <p>3. Lambda handler runs</p>
+            <pre><code>
+module.exports.handler = serverless(app);
+            </code></pre>
+
+            <p>4. Express kicks in</p>
+            <p>Middleware runs:</p>
+            <pre><code>
+authMiddleware → verifies JWT
+            </code></pre>
+
+            <p>Route runs:</p>
+            <pre><code>
+app.get('/users', ...)
+            </code></pre>
+
+            <p>5. Response sent back</p>
+            <pre><code>
+{
+    "users": []
+}
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+Express → serverless-http → API Gateway → Client
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 7. Why this matters for YOU</h2>
+            <p>Since you're building:</p>
+            <ul>
+                <li>AWS Lambda</li>
+                <li>API Gateway</li>
+                <li>JWT auth middleware</li>
+                <li>React Native frontend</li>
+            </ul>
+            <p>👉 You are basically building a full HTTP pipeline manually</p>
+        </section>
+
+        <section>
+            <h2>⚠️ Important Insight</h2>
+            <p>Even though you use Express…</p>
+            <p>👉 In serverless:</p>
+            <ul>
+                <li>There is no real server running</li>
+                <li>Each HTTP request = new Lambda execution</li>
+            </ul>
+            <p>So:</p>
+            <ul>
+                <li>No persistent memory</li>
+                <li>No session (unless external like DB/Redis)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 8. Clean Mental Model</h2>
+            <p>Think of your system like this:</p>
+            <pre><code>
+HTTP Request
+   ↓
+API Gateway (entry point)
+   ↓
+Lambda (execution container)
+   ↓
+Express (logic + middleware)
+   ↓
+Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>💡 Bonus: Without Express</h2>
+            <p>You could also write pure Lambda:</p>
+            <pre><code>
+module.exports.handler = async (event) => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Hello" })
+    };
+};
+            </code></pre>
+            <p>But Express gives you:</p>
+            <ul>
+                <li>Routing</li>
+                <li>Middleware</li>
+                <li>Cleaner structure</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

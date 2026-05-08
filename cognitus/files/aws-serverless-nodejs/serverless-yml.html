@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS serverless function (Lambda-based) vs traditional Node.js Express app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS serverless function (Lambda-based) vs traditional Node.js Express app</h1>
+                    <p class="subtitle">
+                        The key difference between an AWS serverless function (Lambda-based) and a traditional Node.js Express app is how and where your code runs, and how it’s managed.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Execution Model</h2>
+            <p>🟣 AWS Serverless Function (AWS Lambda)</p>
+            <ul>
+                <li>Code runs as single-purpose functions</li>
+                <li>Triggered by events (HTTP request, queue, cron, etc.)</li>
+                <li>Example: one function per route or feature</li>
+            </ul>
+            <p>👉 Think: “Run this function only when needed”</p>
+        </section>
+
+        <section>
+            <h2>🔵 Node.js Express App (Traditional Server)</h2>
+            <ul>
+                <li>Runs as a continuous server process</li>
+                <li>Handles many routes in one application</li>
+                <li>Example: /users, /orders, /login all inside one app</li>
+            </ul>
+            <p>👉 Think: “Always-on server handling requests anytime”</p>
+        </section>
+
+        <section>
+            <h2>2. Infrastructure Management</h2>
+            <p>AWS Lambda</p>
+            <ul>
+                <li>No server to manage (serverless)</li>
+                <li>AWS automatically handles scaling, uptime, and resources</li>
+                <li>You just deploy functions</li>
+            </ul>
+            <p>Express App</p>
+            <ul>
+                <li>You manage the server (EC2, VPS, Docker, etc.)</li>
+                <li>You handle scaling, load balancing, uptime</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Scaling</h2>
+            <p>Lambda</p>
+            <ul>
+                <li>Auto-scales instantly per request</li>
+                <li>Can handle 1 → 10,000 requests without manual setup</li>
+            </ul>
+            <p>Express</p>
+            <ul>
+                <li>You must configure scaling (load balancer, clusters, autoscaling groups)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Cost Model</h2>
+            <p>Lambda</p>
+            <ul>
+                <li>Pay per request + execution time</li>
+                <li>Cheap for low/medium traffic</li>
+                <li>Can become expensive at very high traffic</li>
+            </ul>
+            <p>Express</p>
+            <ul>
+                <li>Pay for server uptime (even if idle)</li>
+                <li>More cost-effective for constant heavy traffic</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Performance</h2>
+            <p>Lambda</p>
+            <ul>
+                <li>Has cold starts (initial delay when function wakes up)</li>
+                <li>Best for short, stateless operations</li>
+            </ul>
+            <p>Express</p>
+            <ul>
+                <li>Always running → no cold start</li>
+                <li>Better for long-lived connections (WebSockets, streaming)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Structure</h2>
+            <p>Lambda example</p>
+            <pre><code>
+exports.handler = async (event) => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Hello from Lambda" })
+    };
+};
+            </code></pre>
+            <p>Each function is isolated.</p>
+        </section>
+
+        <section>
+            <h2>Express example</h2>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+app.get('/hello', (req, res) => {
+  res.json({ message: "Hello from Express" });
+});
+
+app.listen(3000);
+            </code></pre>
+            <p>All routes live in one app.</p>
+        </section>
+
+        <section>
+            <h2>7. Deployment Style</h2>
+            <p>Lambda (Serverless)</p>
+            <ul>
+                <li>Deployed via Serverless Framework / AWS SAM / CDK</li>
+                <li>Often mapped via API Gateway</li>
+            </ul>
+            <p>Express</p>
+            <ul>
+                <li>Deploy whole app to a server (EC2, VPS, container)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. When to Use</h2>
+            <p>Use AWS Serverless (Lambda) when:</p>
+            <ul>
+                <li>Microservices</li>
+                <li>Event-driven systems</li>
+                <li>Low to medium traffic APIs</li>
+                <li>Pay-per-use optimization</li>
+            </ul>
+
+            <p>Use Express when:</p>
+            <ul>
+                <li>Full control needed</li>
+                <li>Real-time apps (WebSockets, streaming)</li>
+                <li>High and constant traffic</li>
+                <li>Complex middleware-heavy APIs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple Analogy</h2>
+            <ul>
+                <li>Lambda = Uber ride → you only pay when you ride</li>
+                <li>Express server = owning a car → always available, but you maintain it</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

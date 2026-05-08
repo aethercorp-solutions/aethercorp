@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>API keys and JWTs (JSON Web Tokens)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">API keys and JWTs (JSON Web Tokens)</h1>
+                    <p class="subtitle">
+                        At a high level, API keys and JWTs (JSON Web Tokens) are both used to control access to APIs—but they solve different problems and operate at different levels of security.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔑 API Key (Simple Identification)</h2>
+            <p>An API key is basically a static secret string that identifies the application making the request.</p>
+            <p>How it works:</p>
+            <ul>
+                <li>Client sends a request with a key (e.g., in headers: x-api-key)</li>
+                <li>Server checks if the key is valid</li>
+                <li>If valid → request is allowed</li>
+            </ul>
+            <p>Characteristics:</p>
+            <ul>
+                <li>Simple and fast</li>
+                <li>Usually does NOT represent a user, just the app</li>
+                <li>No built-in expiration (unless you implement it)</li>
+                <li>No payload (just a string)</li>
+                <li>Easily leaked if not protected</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+GET /api/data
+x-api-key: abc123xyz
+            </code></pre>
+            <p>👉 Think of API keys like a door key to a building—anyone who has it can enter.</p>
+        </section>
+
+        <section>
+            <h2>🪪 JWT (Authentication + Authorization)</h2>
+            <p>A JWT (JSON Web Token) is a signed token containing data (claims) about a user or entity.</p>
+            <p>How it works:</p>
+            <ol>
+                <li>User logs in</li>
+                <li>Server generates a JWT</li>
+                <li>Client sends JWT in requests (usually Authorization: Bearer <token>)</li>
+                <li>Server verifies signature and reads data</li>
+            </ol>
+            <p>Structure:</p>
+            <ul>
+                <li>Header</li>
+                <li>Payload (e.g., user ID, roles)</li>
+                <li>Signature (to prevent tampering)</li>
+            </ul>
+            <p>Characteristics:</p>
+            <ul>
+                <li>Represents a specific user/session</li>
+                <li>Contains data (claims) inside</li>
+                <li>Has expiration (exp)</li>
+                <li>Cryptographically signed (secure if done right)</li>
+                <li>Stateless (no DB lookup required if designed properly)</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+GET /api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            </code></pre>
+            <p>👉 Think of JWT like a passport—it proves identity and contains information about you.</p>
+        </section>
+
+        <section>
+            <h2>⚖️ Key Differences</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>API Key</th>
+                        <th>JWT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Purpose</td>
+                        <td>Identify application</td>
+                        <td>Authenticate user</td>
+                    </tr>
+                    <tr>
+                        <td>Contains data</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes (claims)</td>
+                    </tr>
+                    <tr>
+                        <td>Expiration</td>
+                        <td>❌ Usually none</td>
+                        <td>✅ Built-in (exp)</td>
+                    </tr>
+                    <tr>
+                        <td>Security level</td>
+                        <td>Low–Medium</td>
+                        <td>Medium–High</td>
+                    </tr>
+                    <tr>
+                        <td>Use case</td>
+                        <td>Public APIs, server-to-server</td>
+                        <td>User login/auth sessions</td>
+                    </tr>
+                    <tr>
+                        <td>Stateless</td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Tamper protection</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes (signature)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 When to Use Each</h2>
+            <p>Use API Keys when:</p>
+            <ul>
+                <li>You just need to identify which app is calling</li>
+                <li>Public APIs (e.g., rate limiting, quota tracking)</li>
+                <li>Internal service-to-service communication (simple cases)</li>
+            </ul>
+            <p>Use JWT when:</p>
+            <ul>
+                <li>You need user authentication</li>
+                <li>You need roles/permissions (e.g., admin vs user)</li>
+                <li>You want stateless auth in systems like your AWS Lambda + API Gateway setup</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 Real-World Combo (What pros actually do)</h2>
+            <p>In production systems (like your serverless setup), it's common to use both:</p>
+            <ul>
+                <li>API Key → identifies the client/app</li>
+                <li>JWT → identifies the user</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+Authorization: Bearer &lt;jwt&gt;
+x-api-key: &lt;api-key&gt;
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

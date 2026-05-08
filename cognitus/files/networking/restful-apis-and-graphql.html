@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>RESTful APIs and GraphQL</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">RESTful APIs and GraphQL</h1>
+                    <p class="subtitle">At a high level, both RESTful APIs and GraphQL are ways for a client (like a web or mobile app) to talk to a server—but they take very different approaches.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>REST (Representational State Transfer)</h2>
+            <p>REST is an architectural style where data is exposed through multiple endpoints. Each endpoint represents a resource.</p>
+            <ul>
+                <li>
+                    You typically have URLs like:
+                    <ul>
+                        <li>/users</li>
+                        <li>/users/123</li>
+                        <li>/users/123/posts</li>
+                    </ul>
+                </li>
+                <li>You use HTTP methods like GET, POST, PUT, DELETE to act on those resources.</li>
+                <li>The server decides the structure of the response.</li>
+            </ul>
+            <p>GraphQL</p>
+            <p>GraphQL is a query language and runtime that lets the client request exactly the data it needs from a single endpoint.</p>
+            <ul>
+                <li>Usually only one endpoint: /graphql</li>
+                <li>The client sends a query describing the exact data it wants.</li>
+                <li>The server returns only that data—nothing extra, nothing missing.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key Differences</h2>
+            1. Data Fetching
+            <ul>
+                <li>REST: Fixed responses. You might get more data than needed (over-fetching) or need multiple requests (under-fetching).</li>
+                <li>GraphQL: Flexible. You ask for exactly what you need in one request.</li>
+            </ul>
+            <p>Example:</p>
+            <ul>
+                <li>
+                    REST might require:
+                    <ul>
+                        <li>/users/123</li>
+                        <li>/users/123/posts</li>
+                    </ul>
+                </li>
+                <li>
+                    GraphQL:
+                    <pre><code>
+{
+    user(id: 123) {
+        name
+        posts {
+        title
+        }
+    }
+}
+                    </code></pre>
+                </li>
+            </ul>
+
+            2. Number of Endpoints
+            <ul>
+                <li>REST: Many endpoints for different resources.</li>
+                <li>GraphQL: Typically one endpoint.</li>
+            </ul>
+
+            3. Response Structure
+            <ul>
+                <li>REST: Server defines structure.</li>
+                <li>GraphQL: Client defines structure.</li>
+            </ul>
+
+            4. Versioning
+            <ul>
+                <li>REST: Often uses versions (/v1/users, /v2/users)</li>
+                <li>GraphQL: Usually avoids versioning; you evolve the schema instead.</li>
+            </ul>
+
+            5. Performance & Efficiency
+            <ul>
+                <li>REST: Can require multiple round trips.</li>
+                <li>GraphQL: Reduces round trips but can be complex to optimize on the backend.</li>
+            </ul>
+
+            6. Complexity
+            <ul>
+                <li>REST: Simpler to implement and understand.</li>
+                <li>GraphQL: More powerful but adds complexity (schema, resolvers, query parsing).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>When to Use Each</h2>
+            <p>Use REST if:</p>
+            <ul>
+                <li>Your API is simple</li>
+                <li>You want something quick and widely understood</li>
+                <li>Caching via HTTP is important</li>
+            </ul>
+            <p>Use GraphQL if:</p>
+            <ul>
+                <li>You have complex data relationships</li>
+                <li>Clients need flexibility (e.g., mobile apps with varying needs)</li>
+                <li>You want to minimize network requests</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Quick Analogy</h2>
+            <ul>
+                <li>REST: Ordering a fixed meal from a menu.</li>
+                <li>GraphQL: Building your own plate exactly how you want it.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Securing API calls in a banking app</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Securing API calls in a banking app</h1>
+                    <p class="subtitle">
+                        Securing API calls in a banking app is about protecting data in transit, verifying identity, preventing abuse, and minimizing attack surface. In practice, you use multiple layered defenses—not just one mechanism.
+                        <p>Here’s how it’s typically done in real banking-grade systems:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Always use HTTPS (TLS 1.2+ or 1.3)</h2>
+            <p>All API traffic must be encrypted in transit.</p>
+            <ul>
+                <li>Enforce HTTPS only (no HTTP fallback)</li>
+                <li>Disable weak ciphers</li>
+                <li>Use HSTS (HTTP Strict Transport Security)</li>
+            </ul>
+            <p>👉 This prevents sniffing and man-in-the-middle attacks.</p>
+        </section>
+
+        <section>
+            <h2>2. Strong Authentication (OAuth2 + OpenID Connect / JWT)</h2>
+            <p>Most modern banking APIs use:</p>
+            <ul>
+                <li>OAuth2 for authorization flows</li>
+                <li>OpenID Connect for identity</li>
+                <li>Short-lived JWT access tokens</li>
+            </ul>
+            <p>Key practices:</p>
+            <ul>
+                <li>Access tokens expire quickly (5–15 minutes)</li>
+                <li>Use refresh tokens securely stored</li>
+                <li>Validate JWT signature + issuer + audience + expiry on every request</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

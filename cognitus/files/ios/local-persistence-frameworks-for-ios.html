@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Local persistence frameworks for iOS apps</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Local persistence frameworks for iOS apps</h1>
+                    <p class="subtitle">
+                        Local persistence frameworks for iOS apps are tools or APIs that let you store data directly on the device so it remains available between app launches, even without an internet connection. Apple and third-party developers provide several options, each suited to different needs.
+                        <p>Here are the main ones you’ll encounter:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Core Data</h2>
+            <p>This is Apple’s primary, high-level persistence framework. It’s not just a database—it’s an object graph and data management system.</p>
+            <ul>
+                <li>Best for: Complex apps with structured data and relationships</li>
+                <li>Features: Data modeling, querying, change tracking, undo/redo, iCloud sync support</li>
+                <li>Works with SQLite under the hood, but abstracts it away</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. SQLite</h2>
+            <p>A lightweight, file-based relational database built into iOS.</p>
+            <ul>
+                <li>Best for: Apps needing direct SQL control or high performance</li>
+                <li>Features: Full SQL support, fast, reliable</li>
+                <li>Downside: Requires writing raw SQL and managing schema manually</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Realm</h2>
+            <p>A popular third-party mobile database that’s often seen as simpler than Core Data.</p>
+            <ul>
+                <li>Best for: Developers who want an easier API than Core Data</li>
+                <li>Features: Object-oriented, fast, real-time updates, cross-platform support</li>
+                <li>Downside: Adds external dependency</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. UserDefaults</h2>
+            <p>A simple key-value storage system.</p>
+            <ul>
+                <li>Best for: Small pieces of data (settings, flags, preferences)</li>
+                <li>Features: Easy to use, built-in</li>
+                <li>Not suitable for: Large or complex data</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Keychain</h2>
+            <p>Secure storage for sensitive data.</p>
+            <ul>
+                <li>Best for: Passwords, tokens, credentials</li>
+                <li>Features: Encrypted, secure, persists across app reinstalls (in some cases)</li>
+                <li>Not for general app data</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. File System (using FileManager)</h2>
+            <p>You can store files directly in the app’s sandbox.</p>
+            <ul>
+                <li>Best for: Media files, documents, cached data</li>
+                <li>Features: Full control over file storage</li>
+                <li>Requires manual organization and handling</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. SwiftData</h2>
+            <p>A newer Apple framework introduced to modernize Core Data.</p>
+            <ul>
+                <li>Best for: SwiftUI apps and modern Swift development</li>
+                <li>Features: Simpler syntax, integrates with SwiftUI, uses Swift types directly</li>
+                <li>Think of it as a more developer-friendly evolution of Core Data</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>How to choose</h2>
+            <ul>
+                <li>Simple settings → UserDefaults</li>
+                <li>Sensitive info → Keychain</li>
+                <li>Structured app data (modern) → SwiftData</li>
+                <li>Structured app data (mature/legacy) → Core Data</li>
+                <li>Full SQL control → SQLite</li>
+                <li>Simpler alternative to Core Data → Realm</li>
+                <li>Files/media → FileManager</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>It’s not just a database—it’s an object graph and data management system.</p>
+            <p>That line is contrasting a simple database with something more sophisticated.</p>
+            <p>A traditional database (like a relational database) mainly stores data in tables—rows and columns—and you query it to get pieces of data.</p>
+            <p>When something is described as “an object graph and data management system,” it usually means:</p>
+            <ul>
+                <li>
+                    Object graph:
+                    <p>Data is represented as interconnected objects, similar to how objects reference each other in programming (like in Java or Python).
+                        Instead of flat tables, you have a network (graph) of objects linked together—like a user object connected to orders, addresses, friends, etc.</p>
+                </li>
+                <li>
+                    Data management system:
+                    <p>It doesn’t just store data—it also handles things like:</p>
+                    <ul>
+                        <li>Relationships between objects</li>
+                        <li>Tracking changes</li>
+                        <li>Caching</li>
+                        <li>Synchronization</li>
+                        <li>Querying in a more object-oriented way</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>So the sentence is basically saying:</p>
+            <p>“This isn’t just a place to store data—it actively manages complex, connected data structures in a way that mirrors how your application works.”</p>
+            <p>In practice, this kind of system is often used in:</p>
+            <ul>
+                <li>ORMs (Object-Relational Mappers)</li>
+                <li>Graph databases</li>
+                <li>Frameworks that keep app data in sync with storage</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

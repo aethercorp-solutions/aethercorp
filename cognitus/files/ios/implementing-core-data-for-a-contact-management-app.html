@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Implementing Core Data for a contact management app using Swift</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Implementing Core Data for a contact management app using Swift</h1>
+                    <p class="subtitle">
+                        Here’s a clean, practical example of implementing Core Data for a contact management app using Swift
+                        <p>+ UIKit. This walks through:</p>
+                        <ul>
+                            <li>Core Data setup</li>
+                            <li>Contact entity</li>
+                            <li>CRUD operations</li>
+                            <li>Simple UIKit integration (UITableView)</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Core Data Setup</h2>
+            <p>If you created your project with “Use Core Data” checked, you already have a PersistenceController or AppDelegate setup.</p>
+            <p>AppDelegate.swift</p>
+            <pre><code>
+import UIKit
+import CoreData
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    lazy var persistentContainer: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "ContactsModel")
+        container.loadPersistentStores { _, error in
+            if let error = error {
+                fatalError("Core Data failed: \(error)")
+            }
+        }
+        return container
+    }()
+
+    func saveContext () {
+        let context = persistentContainer.viewContext
+        if context.hasChanges {
+            try? context.save()
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Create Core Data Entity</h2>
+            <p>Open .xcdatamodeld file and create:</p>
+            <p>Entity: Contact</p>
+            <p>Attributes:</p>
+            <ul>
+                <li>name (String)</li>
+                <li>phone (String)</li>
+                <li>email (String)</li>
+            </ul>
+            <p>Then generate NSManagedObject:</p>
+            <pre><code>
+import Foundation
+import CoreData
+
+@objc(Contact)
+public class Contact: NSManagedObject {}
+
+extension Contact {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest&lt;Contact&gt; {
+        return NSFetchRequest&lt;Contact&gt;(entityName: "Contact")
+    }
+
+    @NSManaged public var name: String?
+    @NSManaged public var phone: String?
+    @NSManaged public var email: String?
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Core Data Manager (Clean Architecture)</h2>
+            <p>Create a helper class:</p>
+            <pre><code>
+import UIKit
+import CoreData
+
+class CoreDataManager {
+
+    static let shared = CoreDataManager()
+    private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+
+    // CREATE
+    func createContact(name: String, phone: String, email: String) {
+        let contact = Contact(context: context)
+        contact.name = name
+        contact.phone = phone
+        contact.email = email
+
+        save()
+    }
+
+    // READ
+    func fetchContacts() -> [Contact] {
+        let request: NSFetchRequest&lt;Contact&gt; = Contact.fetchRequest()
+        return (try? context.fetch(request)) ?? []
+    }
+
+    // UPDATE
+    func updateContact(contact: Contact, name: String, phone: String, email: String) {
+        contact.name = name
+        contact.phone = phone
+        contact.email = email
+
+        save()
+    }
+
+    // DELETE
+    func deleteContact(contact: Contact) {
+        context.delete(contact)
+        save()
+    }
+
+    private func save() {
+        try? context.save()
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. UIKit TableView Example</h2>
+            <p>ContactsViewController.swift</p>
+            <pre><code>
+import UIKit
+
+class ContactsViewController: UIViewController {
+
+    @IBOutlet weak var tableView: UITableView!
+
+    var contacts: [Contact] = []
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        tableView.dataSource = self
+        loadData()
+    }
+
+    func loadData() {
+        contacts = CoreDataManager.shared.fetchContacts()
+        tableView.reloadData()
+    }
+
+    @IBAction func addContactTapped() {
+        CoreDataManager.shared.createContact(
+            name: "John Doe",
+            phone: "123456789",
+            email: "john@email.com"
+        )
+        loadData()
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>UITableViewDataSource</h2>
+            <pre><code>
+extension ContactsViewController: UITableViewDataSource {
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        contacts.count
+    }
+
+    func tableView(_ tableView: UITableView,
+                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+
+        let contact = contacts[indexPath.row]
+        cell.textLabel?.text = contact.name
+        cell.detailTextLabel?.text = contact.phone
+
+        return cell
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Delete Support (Swipe to Delete)</h2>
+            <pre><code>
+extension ContactsViewController: UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView,
+                    commit editingStyle: UITableViewCell.EditingStyle,
+                    forRowAt indexPath: IndexPath) {
+
+        if editingStyle == .delete {
+            let contact = contacts[indexPath.row]
+            CoreDataManager.shared.deleteContact(contact: contact)
+            loadData()
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Best Practices</h2>
+            <ul>
+                <li>Use NSFetchedResultsController for large datasets (auto UI updates)</li>
+                <li>Avoid force casting AppDelegate in production → inject dependencies</li>
+                <li>Add validation (email/phone formatting)</li>
+                <li>Use background context for heavy operations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>If you want next:</h2>
+            <p>I can extend this with:</p>
+            <ul>
+                <li>Search functionality 🔍</li>
+                <li>MVVM architecture</li>
+                <li>SwiftUI version</li>
+                <li>Image/avatar storage</li>
+                <li>Sync with iCloud</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Core Data</h2>
+            <p>In Core Data, “search functionality” usually refers to how you fetch, filter, and sort data stored in your persistent store (SQLite under the hood in most cases). The core mechanism for searching is the NSFetchRequest.</p>
+            <p>Here’s a clear breakdown of the main parts that make up Core Data search functionality:</p>
+        </section>
+
+        <section>
+            <h2>1. NSFetchRequest (the core of searching)</h2>
+            <p>This is the primary way to query data.</p>
+            <pre><code>
+let request: NSFetchRequest&lt;Person&gt; = Person.fetchRequest()
+            </code></pre>
+            <p>It defines:</p>
+            <ul>
+                <li>What entity you’re searching (e.g., Person)</li>
+                <li>Optional filters (predicate)</li>
+                <li>Sorting rules</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. NSPredicate (filtering/search conditions)</h2>
+            <p>This is where the “search logic” lives.</p>
+            <p>Example: exact match</p>
+            <pre><code>
+request.predicate = NSPredicate(format: "name == %@", "John")
+            </code></pre>
+            <p>Example: partial text search</p>
+            <pre><code>
+request.predicate = NSPredicate(format: "name CONTAINS[cd] %@", "jo")
+            </code></pre>
+            <ul>
+                <li>[c] → case-insensitive</li>
+                <li>[d] → diacritic-insensitive</li>
+            </ul>
+            <p>Example: multiple conditions</p>
+            <pre><code>
+NSPredicate(format: "name CONTAINS[cd] %@ AND age > %d", "jo", 18)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. NSSortDescriptor (ordering results)</h2>
+            <p>Not required for search, but commonly used with it.</p>
+            <pre><code>
+request.sortDescriptors = [
+    NSSortDescriptor(key: "name", ascending: true)
+]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Executing the search</h2>
+            <pre><code>
+do {
+    let results = try context.fetch(request)
+} catch {
+    print("Fetch failed")
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Common search patterns</h2>
+            <p>“Search bar” style filtering</p>
+            <pre><code>
+let query = searchText
+request.predicate = NSPredicate(format: "name CONTAINS[cd] %@", query)
+            </code></pre>
+            <p>Search across multiple fields</p>
+            <pre><code>
+NSPredicate(format: "name CONTAINS[cd] %@ OR email CONTAINS[cd] %@", query, query)
+            </code></pre>
+            <p>Fetch everything (no filter)</p>
+            <pre><code>
+request.predicate = nil
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Performance considerations (important in Core Data search)</h2>
+            <ul>
+                <li>Use indexed attributes for frequently searched fields</li>
+                <li>Avoid overly complex predicates on large datasets</li>
+                <li>Prefer CONTAINS carefully (can be slower than exact matches)</li>
+                <li>Use batch size for large results:</li>
+            </ul>
+            <pre><code>
+request.fetchBatchSize = 20
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Advanced: Compound predicates</h2>
+            <pre><code>
+let p1 = NSPredicate(format: "name CONTAINS[cd] %@", query)
+let p2 = NSPredicate(format: "age > %d", 18)
+
+request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [p1, p2])
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <p>Core Data search functionality is mainly built from:</p>
+            <ul>
+                <li>NSFetchRequest → defines the query</li>
+                <li>NSPredicate → filters data (the “search engine”)</li>
+                <li>NSSortDescriptor → orders results</li>
+                <li>context.fetch() → executes the search</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

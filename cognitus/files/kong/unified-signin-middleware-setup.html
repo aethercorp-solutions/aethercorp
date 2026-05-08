@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Unified sign-in + middleware setup</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Unified sign-in + middleware setup</h1>
+                    <p class="subtitle">
+                        If you’re aiming for a clean, production-ready unified sign-in + middleware setup in AWS Lambda (Node.js), the key is to stop treating each provider (Google, Cognito, Azure AD, etc.) differently at the route level and instead normalize everything into one token verification layer + one middleware.
+                        <p>Here’s a practical architecture that fits your stack (Lambda + API Gateway + MongoDB + React Native):</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔐 1. High-Level Flow (Unified Sign-In)</h2>
+            <p>Client (React Native)</p>
+            <ul>
+                <li>
+                    User signs in via:
+                    <ul>
+                        <li>Google</li>
+                        <li>Azure AD</li>
+                        <li>Cognito Hosted UI (optional)</li>
+                    </ul>
+                </li>
+                <li>Client sends ID token / access token to backend</li>
+            </ul>
+            <p>Backend (Lambda)</p>
+            <ol>
+                <li>Detect provider</li>
+                <li>Verify token</li>
+                <li>Normalize user profile</li>
+                <li>Issue your own JWT (session token)</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧠 2. Core Idea: Your Backend Owns the Session</h2>
+            <p>Never rely on external tokens for authorization after login.</p>
+            <p>Instead:</p>
+            <pre><code>
+[Google ID Token] → verify → create/find user → issue JWT (your system)
+            </code></pre>
+            <p>After that:</p>
+            <pre><code>
+Client → sends your JWT → middleware validates → access granted
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🏗️ 3. Project Structure</h2>
+            <pre><code>
+/auth
+  ├── providers/
+  │     ├── google.js
+  │     ├── azure.js
+  │     └── cognito.js
+  ├── auth.service.js
+  ├── auth.middleware.js
+  └── jwt.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔑 4. Token Verification (Provider Layer)</h2>
+            <p>Example: Google</p>
+            <pre><code>
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+async function verifyGoogleToken(idToken) {
+    const ticket = await client.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+
+    return {
+        email: payload.email,
+        name: payload.name,
+        picture: payload.picture,
+        provider: 'google',
+        providerId: payload.sub
+    };
+}
+
+module.exports = { verifyGoogleToken };
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔄 5. Unified Auth Service</h2>
+            <pre><code>
+const { verifyGoogleToken } = require('./providers/google');
+// add azure, cognito...
+
+async function verifyProviderToken(provider, token) {
+    switch (provider) {
+        case 'google':
+            return await verifyGoogleToken(token);
+
+        case 'azure':
+            return await verifyAzureToken(token);
+
+        case 'cognito':
+            return await verifyCognitoToken(token);
+
+        default:
+            throw new Error('Unsupported provider');
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>👤 6. Sign-In Lambda Handler</h2>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+const UserRepo = require('../user.repository');
+const { verifyProviderToken } = require('./auth.service');
+
+module.exports.signIn = async (event) => {
+    const body = JSON.parse(event.body);
+    const { provider, token } = body;
+
+    const profile = await verifyProviderToken(provider, token);
+
+    let user = await UserRepo.findByEmail(profile.email);
+
+    if (!user) {
+        user = await UserRepo.create(profile);
+    }
+
+    const appToken = jwt.sign(
+        {
+            userId: user._id,
+            email: user.email
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+    );
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            token: appToken,
+            user
+        })
+    };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🛡️ 7. Middleware for API Gateway (Lambda)</h2>
+            <p>Since Lambda doesn’t have Express middleware, you simulate it.</p>
+            <p>Option A: Reusable Middleware Wrapper</p>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+function authMiddleware(handler) {
+    return async (event) => {
+        try {
+            const authHeader = event.headers.Authorization || '';
+            const token = authHeader.replace('Bearer ', '');
+
+            if (!token) {
+                return { statusCode: 401, body: 'Unauthorized' };
+            }
+
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            event.user = decoded;
+
+            return await handler(event);
+
+        } catch (err) {
+            return { statusCode: 401, body: 'Invalid token' };
+        }
+    };
+}
+
+module.exports = authMiddleware;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Usage:</h2>
+            <pre><code>
+const authMiddleware = require('./auth.middleware');
+
+const handler = async (event) => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            message: 'Protected route',
+            user: event.user
+        })
+    };
+};
+
+module.exports.protectedRoute = authMiddleware(handler);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ 8. Alternative (Better for Scale): API Gateway Authorizer</h2>
+            <p>Instead of per-Lambda middleware:</p>
+            <p>👉 Use Lambda Authorizer</p>
+            <p>Flow:</p>
+            <pre><code>
+Request → Authorizer → Validate JWT → Allow/Deny → Lambda
+            </code></pre>
+            <p>Benefits:</p>
+            <ul>
+                <li>Centralized auth</li>
+                <li>Faster execution (cached)</li>
+                <li>Cleaner Lambdas</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example Authorizer</h2>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+exports.handler = async (event) => {
+    try {
+        const token = event.authorizationToken.replace('Bearer ', '');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        return {
+            principalId: decoded.userId,
+            policyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                    {
+                        Action: 'execute-api:Invoke',
+                        Effect: 'Allow',
+                        Resource: event.methodArn
+                    }
+                ]
+            },
+            context: {
+                userId: decoded.userId,
+                email: decoded.email
+            }
+        };
+    } catch (e) {
+        throw new Error('Unauthorized');
+    }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 9. Recommended Setup (Best Practice)</h2>
+            <p>For your case:</p>
+            <p>✅ Use:</p>
+            <ul>
+                <li>Provider verification (Google/Azure)</li>
+                <li>Issue your own JWT</li>
+                <li>Use API Gateway Authorizer</li>
+            </ul>
+            <p>🚫 Avoid:</p>
+            <ul>
+                <li>Passing Google tokens to every API call</li>
+                <li>Verifying Google token on every request (slow + costly)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 10. Bonus: Demo Mode Support (your current need)</h2>
+            <p>Since you're implementing demo mode:</p>
+            <pre><code>
+if (process.env.DEMO_MODE === 'true') {
+    return {
+        email: 'demo@demo.com',
+        name: 'Demo User',
+        provider: 'demo',
+        providerId: 'demo-123'
+    };
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Final Architecture Summary</h2>
+            <pre><code>
+React Native
+   ↓
+[Google / Azure Login]
+   ↓
+Send token → Lambda (/signin)
+   ↓
+Verify provider
+   ↓
+Create user (MongoDB)
+   ↓
+Return JWT (your system)
+   ↓
+Client stores JWT
+   ↓
+All API calls use JWT
+   ↓
+API Gateway Authorizer / Middleware validates
+   ↓
+Protected Lambda executes
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

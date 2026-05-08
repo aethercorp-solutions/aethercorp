@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MVVM (Model–View–ViewModel)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">MVVM (Model–View–ViewModel)</h1>
+                    <p class="subtitle">MVVM (Model–View–ViewModel) is a popular architectural pattern in Swift used especially for iOS apps. It helps you organize code cleanly, improve testability, and separate UI from business logic.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Core Components of MVVM</h2>
+            <h2>1. Model</h2>
+            <ul>
+                <li>Represents your data and business logic</li>
+                <li>Examples: structs, classes, API responses</li>
+            </ul>
+            <pre><code>
+struct User {
+    let name: String
+    let age: Int
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. View</h2>
+            <ul>
+                <li>UI layer (UIKit / SwiftUI)</li>
+                <li>Displays data and forwards user actions</li>
+            </ul>
+            <p>UIKit Example:</p>
+            <pre><code>
+class UserViewController: UIViewController {
+    var viewModel: UserViewModel!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        print(viewModel.displayName)
+    }
+}
+            </code></pre>
+
+            <p>SwiftUI Example:</p>
+            <pre><code>
+struct UserView: View {
+    @ObservedObject var viewModel: UserViewModel
+
+    var body: some View {
+        Text(viewModel.displayName)
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. ViewModel</h2>
+            <ul>
+                <li>The “bridge” between Model and View</li>
+                <li>Prepares data for display</li>
+                <li>Contains presentation logic</li>
+            </ul>
+            <pre><code>
+class UserViewModel: ObservableObject {
+    private var user: User
+
+    init(user: User) {
+        self.user = user
+    }
+
+    var displayName: String {
+        return "Name: \(user.name)"
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔄 Data Flow in MVVM</h2>
+            <pre><code>
+Model  →  ViewModel  →  View
+         ↑          ↓
+       updates   user input
+            </code></pre>
+            <ul>
+                <li>ViewModel transforms raw data → UI-friendly format</li>
+                <li>View updates automatically (especially in SwiftUI with bindings)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ MVVM with SwiftUI (Reactive Style)</h2>
+            <p>SwiftUI works naturally with MVVM:</p>
+            <pre><code>
+class CounterViewModel: ObservableObject {
+    @Published var count = 0
+
+    func increment() {
+        count += 1
+    }
+}
+            </code></pre>
+            <pre><code>
+struct CounterView: View {
+    @StateObject var viewModel = CounterViewModel()
+
+    var body: some View {
+        VStack {
+            Text("\(viewModel.count)")
+            Button("Increase") {
+                viewModel.increment()
+            }
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Advantages</h2>
+            <ul>
+                <li>Clear separation of concerns</li>
+                <li>Easier unit testing (test ViewModel without UI)</li>
+                <li>Works great with SwiftUI and Combine</li>
+                <li>Reduces massive view controllers (common UIKit issue)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Common Pitfalls</h2>
+            <ul>
+                <li>Overloading ViewModel with too much logic</li>
+                <li>Tight coupling if not careful</li>
+                <li>Naming confusion (especially in large projects)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 When to Use MVVM</h2>
+            <ul>
+                <li>Medium to large iOS apps</li>
+                <li>Apps with dynamic UI updates</li>
+                <li>When using SwiftUI or Combine</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🏗️ 1. MVC (Model–View–Controller)</h2>
+            <p>Here’s a clear, practical comparison of MVC vs MVVM vs VIPER in iOS development using Swift.</p>
+            <p>Structure</p>
+            <ul>
+                <li>Model: data + logic</li>
+                <li>View: UI</li>
+                <li>Controller: connects everything</li>
+            </ul>
+            <p>Flow</p>
+            <pre><code>
+Model ↔ Controller ↔ View
+            </code></pre>
+
+            <p>Example in iOS</p>
+            <ul>
+                <li>UIViewController is usually the Controller</li>
+            </ul>
+
+            <p>👍 Pros</p>
+            <ul>
+                <li>Simple and easy to start with</li>
+                <li>Built into Apple’s UIKit design</li>
+                <li>Fast for small apps</li>
+            </ul>
+
+            <p>👎 Cons (big one)</p>
+            <ul>
+                <li>“Massive View Controller” problem</li>
+                <li>Hard to test business logic</li>
+                <li>Logic often gets dumped into controllers</li>
+            </ul>
+
+            <p>Best for</p>
+            <ul>
+                <li>Small apps / prototypes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 2. MVVM (Model–View–ViewModel)</h2>
+            <p>Structure</p>
+            <ul>
+                <li>Model: data</li>
+                <li>View: UI (SwiftUI or UIKit)</li>
+                <li>ViewModel: prepares data for UI</li>
+            </ul>
+            <p>Flow</p>
+            <pre><code>
+Model → ViewModel → View
+            </code></pre>
+            <p>Key idea</p>
+            <p>ViewModel = presentation logic layer</p>
+            <p>👍 Pros</p>
+            <ul>
+                <li>Cleaner separation than MVC</li>
+                <li>Very testable (ViewModel is independent of UI)</li>
+                <li>Works extremely well with SwiftUI</li>
+                <li>Reduces controller complexity</li>
+            </ul>
+            <p>👎 Cons</p>
+            <ul>
+                <li>Can become bloated if not structured well</li>
+                <li>Requires data-binding concepts (Combine / @Published / etc.)</li>
+            </ul>
+            <p>Best for</p>
+            <ul>
+                <li>Medium to large apps</li>
+                <li>SwiftUI apps</li>
+                <li>Apps with lots of UI state changes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 3. VIPER (View–Interactor–Presenter–Entity–Router)</h2>
+            <p>Structure</p>
+            <ul>
+                <li>View: UI</li>
+                <li>Interactor: business logic</li>
+                <li>Presenter: prepares data for view</li>
+                <li>Entity: data models</li>
+                <li>Router: navigation</li>
+            </ul>
+            <p>Flow</p>
+            <pre><code>
+View → Presenter → Interactor → Entity
+          ↓
+        Router
+            </code></pre>
+
+            <p>👍 Pros</p>
+            <ul>
+                <li>Extremely modular</li>
+                <li>Highly testable (each layer isolated)</li>
+                <li>Great for large teams</li>
+            </ul>
+            <p>👎 Cons</p>
+            <ul>
+                <li>Very complex boilerplate</li>
+                <li>Slow development speed</li>
+                <li>Overkill for small/medium apps</li>
+            </ul>
+            <p>Best for</p>
+            <ul>
+                <li>Large enterprise apps</li>
+                <li>Long-term scalable projects</li>
+                <li>Team-based development with strict architecture</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚖️ Side-by-Side Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>MVC</th>
+                        <th>MVVM</th>
+                        <th>VIPER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Complexity</td>
+                        <td>Low</td>
+                        <td>Medium</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Testability</td>
+                        <td>Low</td>
+                        <td>High</td>
+                        <td>Very High</td>
+                    </tr>
+                    <tr>
+                        <td>Code Separation</td>
+                        <td>Weak</td>
+                        <td>Good</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>Boilerplate</td>
+                        <td>Low</td>
+                        <td>Medium</td>
+                        <td>Very High</td>
+                    </tr>
+                    <tr>
+                        <td>Learning Curve</td>
+                        <td>Easy</td>
+                        <td>Moderate</td>
+                        <td>Hard</td>
+                    </tr>
+                    <tr>
+                        <td>Best Use Case</td>
+                        <td>Small apps</td>
+                        <td>Modern iOS apps</td>
+                        <td>Large enterprise apps</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Real-world analogy</h2>
+            <ul>
+                <li>MVC → One chef cooking everything alone 🍳</li>
+                <li>MVVM → Chef + assistant preparing ingredients 🍽️</li>
+                <li>VIPER → Full restaurant team with specialized roles 👨‍🍳👩‍💼📋</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Quick Recommendation</h2>
+            <ul>
+                <li>Start with MVC (for learning basics)</li>
+                <li>Move to MVVM (modern iOS standard)</li>
+                <li>Use VIPER only if scale demands it</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

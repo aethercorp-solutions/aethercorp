@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Middleware Use Cases in AWS Serverless (Node.js)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Middleware Use Cases in AWS Serverless (Node.js)</h1>
+                    <p class="subtitle">
+                        In an AWS serverless Node.js setup (typically using Amazon Web Services with AWS Lambda and Amazon API Gateway), middleware works a bit differently compared to traditional Express.js apps—but the concept is the same: intercept requests before/after your handler to apply shared logic.
+                        <p>Since Lambda doesn’t natively support Express middleware chains, developers usually use:</p>
+                        <ul>
+                            <li>middleware frameworks like Middy</li>
+                            <li>or custom wrapper functions</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Common Middleware Use Cases in AWS Serverless (Node.js)</h2>
+            <p>1. Authentication / Authorization (JWT, Cognito)</p>
+            <p>Validate tokens before allowing access to protected routes.</p>
+            <p>Use case:</p>
+            <ul>
+                <li>Verify JWT from headers</li>
+                <li>Integrate with Amazon Cognito</li>
+            </ul>
+            <pre><code>
+const authMiddleware = async (event) => {
+    const token = event.headers.Authorization;
+    
+    if (!token) throw new Error("Unauthorized");
+    
+    // verify token logic here
+    return { userId: "123" };
+};
+            </code></pre>
+            <p>👉 Applied before Lambda handler to protect endpoints like /contacts.</p>
+        </section>
+
+        <section>
+            <h2>2. Request Validation</h2>
+            <p>Ensure incoming data is valid before processing.</p>
+            <p>Use case:</p>
+            <ul>
+                <li>Validate body for POST/PUT (e.g., contact creation)</li>
+                <li>Prevent bad data reaching MongoDB</li>
+            </ul>
+            <pre><code>
+const validateMiddleware = (event) => {
+    const body = JSON.parse(event.body);
+    
+    if (!body.email) {
+        throw new Error("Email is required");
+    }
+};
+            </code></pre>
+
+        </section>
+
+        <section>
+            <h2>3. Error Handling Middleware</h2>
+            <p>Catch and standardize errors across all Lambdas.</p>
+            <pre><code>
+const errorMiddleware = (handler) => async (event) => {
+    try {
+        return await handler(event);
+    } catch (err) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: err.message }),
+        };
+    }
+};
+            </code></pre>
+            <p>👉 Prevents inconsistent error responses.</p>
+        </section>
+
+        <section>
+            <h2>4. Logging & Monitoring</h2>
+            <p>Track requests, responses, and performance.</p>
+            <p>Use case:</p>
+            <ul>
+                <li>Log request payloads</li>
+                <li>Send logs to Amazon CloudWatch</li>
+            </ul>
+
+            <pre><code>
+const loggerMiddleware = (handler) => async (event) => {
+    console.log("Request:", event);
+    const result = await handler(event);
+    console.log("Response:", result);
+    return result;
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. CORS Handling</h2>
+            <p>Add headers to allow frontend apps (React Native / Web) to access API.</p>
+            <pre><code>
+const corsMiddleware = (response) => {
+    return {
+        ...response,
+        headers: {
+        ...response.headers,
+        "Access-Control-Allow-Origin": "*",
+        },
+    };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Database Connection Reuse (MongoDB Optimization)</h2>
+            <p>Important for serverless performance.</p>
+            <p>Use case:</p>
+            <ul>
+                <li>Reuse MongoDB connection instead of reconnecting every invocation</li>
+            </ul>
+            <pre><code>
+let cachedDb = null;
+
+const dbMiddleware = async () => {
+  if (!cachedDb) {
+    cachedDb = await connectToMongo();
+  }
+  return cachedDb;
+};
+            </code></pre>
+            <p>👉 Critical when using MongoDB with Lambda (like your setup).</p>
+        </section>
+
+        <section>
+            <h2>7. Input Transformation / Parsing</h2>
+            <p>Normalize incoming requests.</p>
+            <p>Use case:</p>
+            <ul>
+                <li>Parse JSON body</li>
+                <li>Normalize headers/query params</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Rate Limiting / Throttling</h2>
+            <p>Prevent abuse of API endpoints.</p>
+            <p>Use case:</p>
+            <ul>
+                <li>Limit requests per user/IP</li>
+                <li>Protect login endpoints</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Response Formatting</h2>
+            <p>Standardize API responses across all endpoints.</p>
+            <pre><code>
+const responseMiddleware = (data) => ({
+    statusCode: 200,
+    body: JSON.stringify({
+        success: true,
+        data,
+    }),
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Example: Middleware Composition (Custom Wrapper)</h2>
+            <pre><code>
+const withMiddleware = (handler) => async (event) => {
+    try {
+        await validateMiddleware(event);
+        const user = await authMiddleware(event);
+    
+        const result = await handler(event, user);
+    
+        return corsMiddleware({
+        statusCode: 200,
+        body: JSON.stringify(result),
+        });
+    } catch (err) {
+        return {
+        statusCode: 400,
+        body: JSON.stringify({ error: err.message }),
+        };
+    }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ Using Middy (Recommended)</h2>
+            <pre><code>
+const middy = require('@middy/core');
+const jsonBodyParser = require('@middy/http-json-body-parser');
+
+const handler = async (event) => {
+  return { statusCode: 200, body: JSON.stringify(event.body) };
+};
+
+exports.handler = middy(handler)
+  .use(jsonBodyParser());
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 Real-World Use Case (Your Project: Contact Management Platform)</h2>
+            <p>For your React Native + AWS Serverless + MongoDB app, middleware would handle:</p>
+            <ul>
+                <li>🔐 Auth (JWT / Cognito)</li>
+                <li>📥 Validate contact input</li>
+                <li>🧠 Attach user context</li>
+                <li>🗄 Reuse MongoDB connection</li>
+                <li>📊 Log API activity</li>
+                <li>🌐 Enable CORS</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔑 Key Insight</h2>
+            <p>Middleware in serverless is not built-in like Express—but it’s even more important because:</p>
+            <ul>
+                <li>Functions are stateless</li>
+                <li>You must handle cross-cutting concerns manually</li>
+                <li>Performance depends on smart reuse (DB, auth, etc.)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Keychain Services and UserDefaults</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Keychain Services and UserDefaults</h1>
+                    <p class="subtitle">
+                        In iOS development, Keychain Services and UserDefaults serve very different purposes. Mixing them up can create serious security issues, so it’s worth being precise.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔐 Keychain Services</h2>
+            <p>Use this for sensitive data.</p>
+            <p>Keychain is an encrypted, secure storage managed by the OS.</p>
+            <p>Best for:</p>
+            <ul>
+                <li>Passwords</li>
+                <li>OAuth / JWT tokens</li>
+                <li>API keys</li>
+                <li>Private credentials</li>
+            </ul>
+            <p>Characteristics:</p>
+            <ul>
+                <li>Data is encrypted at rest</li>
+                <li>Survives app reinstall (in many cases)</li>
+                <li>Protected by device security (Face ID, passcode, etc.)</li>
+                <li>Not easily accessible even if device is compromised (compared to normal storage)</li>
+            </ul>
+            <p>Example use case:</p>
+            <pre><code>
+saveTokenToKeychain("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧾 UserDefaults</h2>
+            <p>Use this for non-sensitive preferences.</p>
+            <p>UserDefaults is basically a simple key-value store.</p>
+            <p>Best for:</p>
+            <ul>
+                <li>App settings (dark mode, language)</li>
+                <li>Flags (isFirstLaunch, hasSeenOnboarding)</li>
+                <li>Lightweight cached values</li>
+            </ul>
+            <p>Characteristics:</p>
+            <ul>
+                <li>Not encrypted</li>
+                <li>Stored in plain plist files</li>
+                <li>Fast and simple</li>
+                <li>Easily readable if someone inspects the app container</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+UserDefaults.standard.set(true, forKey: "isLoggedIn")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚠️ Critical Difference</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Keychain Services 🔐</th>
+                        <th>UserDefaults 🧾</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Security</td>
+                        <td>Encrypted</td>
+                        <td>Not encrypted</td>
+                    </tr>
+                    <tr>
+                        <td>Use case</td>
+                        <td>Secrets</td>
+                        <td>Preferences</td>
+                    </tr>
+                    <tr>
+                        <td>Persistence</td>
+                        <td>Long-term, secure</td>
+                        <td>Simple storage</td>
+                    </tr>
+                    <tr>
+                        <td>Risk level</td>
+                        <td>Low (secure)</td>
+                        <td>High if misused</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🚨 Practical Rule (Don’t skip this)</h2>
+            <ul>
+                <li>If it can compromise a user account → use Keychain</li>
+                <li>If it just changes UI/behavior → use UserDefaults</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💡 Real-world (your setup)</h2>
+            <p>Given you’re working with:</p>
+            <ul>
+                <li>JWT auth</li>
+                <li>AWS Lambda APIs</li>
+                <li>Mobile app auth flows</li>
+            </ul>
+            <p>👉 Store your JWT / refresh tokens in Keychain, not UserDefaults.</p>
+            <p>Storing tokens in UserDefaults is a common mistake and can expose users to token theft (especially on jailbroken devices or backups).</p>
+        </section>
+
+        <section>
+            <h2>Secure Enclave</h2>
+            <p>
+                A Secure Enclave is a dedicated, isolated hardware component inside a device that is designed to protect sensitive data by keeping it completely separate from the main processor and operating system.
+            </p>
+            <p>
+                Think of it as a locked mini-computer inside your phone or laptop that handles the most sensitive security tasks.
+            </p>
+        </section>
+
+        <section>
+            <h2>Key idea</h2>
+            <p>
+                Even if your main operating system is compromised (malware, jailbreak, etc.), the Secure Enclave is still designed to keep certain data safe and inaccessible.
+            </p>
+        </section>
+
+        <section>
+            <h2>🧠 How it works</h2>
+            <p>The Secure Enclave has its own:</p>
+            <ul>
+                <li>CPU</li>
+                <li>Secure memory</li>
+                <li>Operating system (a very minimal, security-focused OS)</li>
+                <li>Encrypted storage</li>
+            </ul>
+            <p>It communicates with the main system only through tightly controlled channels.</p>
+        </section>
+
+        <section>
+            <h2>🔐 What it protects</h2>
+            <p>On devices like those from Apple, the Secure Enclave is used for:</p>
+            <ul>
+                <li>Face ID / Touch ID biometric data</li>
+                <li>Device passcodes</li>
+                <li>Encryption keys (used to encrypt files, messages, etc.)</li>
+                <li>Apple Pay payment credentials</li>
+                <li>Keychain secrets (in some cases)</li>
+            </ul>
+            <p>Importantly:</p>
+            <p>Your biometric data (like Face ID) never leaves the Secure Enclave.</p>
+        </section>
+
+        <section>
+            <h2>🧩 Why it exists</h2>
+            <p>The goal is to prevent attackers from accessing critical data even if they:</p>
+            <ul>
+                <li>Hack the operating system</li>
+                <li>Gain root access</li>
+                <li>Install malicious software</li>
+            </ul>
+            <p>So instead of storing secrets in normal memory or disk, they’re stored in a physically isolated chip area.</p>
+        </section>
+
+        <section>
+            <h2>📱 Where you’ll find it</h2>
+            <p>Secure Enclave is commonly found in:</p>
+            <ul>
+                <li>iPhones (A-series chips)</li>
+                <li>iPads</li>
+                <li>Macs with Apple Silicon (M-series chips)</li>
+                <li>Apple Watches</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ Simple analogy</h2>
+            <ul>
+                <li>Main system = your house</li>
+                <li>Secure Enclave = a locked safe embedded in the wall</li>
+                <li>Even if someone breaks into the house, they still can’t open the safe</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

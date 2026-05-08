@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>access token</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">access token</h1>
+                    <p class="subtitle">An access token is a short-lived credential used to authorize a user or client to access protected resources (like APIs).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔐 Use cases of an Access Token</h2>
+            <p>1. API Authentication</p>
+            <p>After login, the client receives an access token and uses it for every API request:</p>
+            <pre><code>
+Authorization: Bearer &lt;access_token&gt;
+            </code></pre>
+            <p>Example:</p>
+            <ul>
+                <li>Get user profile</li>
+                <li>Fetch contacts</li>
+                <li>Update data</li>
+                <li>Call AWS API Gateway / Lambda endpoints</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Stateless Authentication (JWT common case)</h2>
+            <p>Instead of storing sessions on the server, the server trusts the token itself.</p>
+            <p>Typical flow:</p>
+            <ol>
+                <li>User logs in</li>
+                <li>Server returns access token (JWT)</li>
+                <li>Client stores token (memory / secure storage)</li>
+                <li>Client sends token on every request</li>
+                <li>Server validates signature + expiry</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>3. Permission Control (Scopes/Roles)</h2>
+            <p>Access tokens can contain claims like:</p>
+            <pre><code>
+{
+    "sub": "userId123",
+    "role": "admin",
+    "scope": "read:contacts write:contacts"
+}
+            </code></pre>
+            <p>So APIs can decide:</p>
+            <ul>
+                <li>Can read?</li>
+                <li>Can write?</li>
+                <li>Can access admin routes?</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Third-party access (OAuth2)</h2>
+            <p>Used when apps access another service:</p>
+            <ul>
+                <li>“Login with Google”</li>
+                <li>“Login with Apple”</li>
+                <li>Access Google Drive, Facebook API, etc.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⏳ How Access Token Expiration Works</h2>
+            <p>Access tokens are intentionally short-lived for security.</p>
+            <p>Typical lifespan:</p>
+            <ul>
+                <li>5 minutes → 1 hour (common)</li>
+                <li>Rarely more than 24 hours</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 Why expire them?</h2>
+            <p>If stolen:</p>
+            <ul>
+                <li>Attacker can only use it for a short time</li>
+                <li>Limits damage window</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 How expiration is implemented</h2>
+            <p>1. JWT exp claim (most common)</p>
+            <pre><code>
+{
+    "exp": 1714380000
+}
+            </code></pre>
+            <p>Server checks:</p>
+            <ul>
+                <li>If current time > exp → reject token</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Server-side session store (less common with JWT)</h2>
+            <ul>
+                <li>Store token/session in DB or Redis</li>
+                <li>Mark expired manually or via TTL</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔄 Best Practice: Use Refresh Tokens</h2>
+            <p>Because access tokens expire quickly, systems usually use:</p>
+            <p>Flow:</p>
+            <ul>
+                <li>Access token (short-lived, e.g. 15 min)</li>
+                <li>Refresh token (long-lived, e.g. 7–30 days)</li>
+            </ul>
+            <p>When access token expires:</p>
+            <p>Client calls:</p>
+            <pre><code>
+POST /refresh-token
+            </code></pre>
+            <p>Server returns a new access token without forcing login.</p>
+        </section>
+
+        <section>
+            <h2>🏗️ Typical Production Flow</h2>
+            <pre><code>
+Login → Access Token + Refresh Token
+
+API calls → Access Token
+
+Expired?
+   ↓
+Use Refresh Token → Get new Access Token
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚠️ Common mistakes</h2>
+            <ul>
+                <li>❌ Long-lived access tokens (bad security)</li>
+                <li>❌ No refresh token rotation</li>
+                <li>❌ Storing tokens in insecure storage (like localStorage for sensitive apps)</li>
+                <li>❌ Not validating exp claim properly</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💡 In your AWS / Node.js setup (important)</h2>
+            <p>Since you're using AWS Lambda + API Gateway:</p>
+            <p>Best practice setup:</p>
+            <ul>
+                <li>JWT access token (15 min)</li>
+                <li>Refresh token stored in DB (MongoDB or DynamoDB)</li>
+                <li>API Gateway authorizer validates JWT</li>
+                <li>Lambda checks scopes/roles</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔑 What a JWT looks like</h2>
+            <p>JWT (JSON Web Token) is a compact, secure way to transmit information between parties, commonly used for authentication.</p>
+            <p>I’ll walk you through the core idea and a simple implementation.</p>
+            <p>A JWT has 3 parts:</p>
+            <pre><code>
+header.payload.signature
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            </code></pre>
+            <ul>
+                <li>Header → algorithm + token type</li>
+                <li>Payload → user data (id, email, etc.)</li>
+                <li>Signature → ensures token is valid</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Basic Flow (Auth System)</h2>
+            <ol>
+                <li>User logs in with username/password</li>
+                <li>Server verifies credentials</li>
+                <li>Server generates JWT</li>
+                <li>Client stores token (cookie/localStorage)</li>
+                <li>Client sends token in requests</li>
+                <li>Server verifies token before granting access</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>⚙️ Example: Node.js (Express)</h2>
+            <p>1. Install dependencies</p>
+            <pre><code>
+npm install jsonwebtoken express body-parser
+            </code></pre>
+
+            <p>2. Generate JWT (Login route)</p>
+            <pre><code>
+const express = require('express');
+const jwt = require('jsonwebtoken');
+
+const app = express();
+app.use(express.json());
+
+const SECRET_KEY = "your_secret_key";
+
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    // fake user validation
+    if (username === "admin" && password === "1234") {
+        const token = jwt.sign(
+            { username },
+            SECRET_KEY,
+            { expiresIn: '1h' }
+        );
+
+        return res.json({ token });
+    }
+
+    res.status(401).json({ message: "Invalid credentials" });
+});
+            </code></pre>
+
+            <p>3. Verify JWT (Middleware)</p>
+            <pre><code>
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.sendStatus(403);
+
+        req.user = user;
+        next();
+    });
+}
+            </code></pre>
+
+            <p>4. Protect routes</p>
+            <pre><code>
+app.get('/protected', authenticateToken, (req, res) => {
+    res.json({ message: "Protected data", user: req.user });
+});
+            </code></pre>
+
+            <p>5. Start server</p>
+            <pre><code>
+app.listen(3000, () => console.log("Server running"));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 How client sends token</h2>
+            <pre><code>
+Authorization: Bearer &lt;your_token&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚠️ Best Practices</h2>
+            <ol>
+                <li>Use HTTPS only</li>
+                <li>Keep secret key safe (env variables)</li>
+                <li>Use short expiration time</li>
+                <li>Store tokens in HTTP-only cookies (safer than localStorage)</li>
+                <li>Avoid storing sensitive data in payload</li>
+                <li>Use refresh tokens for long sessions</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🧩 Other Languages (quick mention)</h2>
+            <ul>
+                <li>Python → PyJWT</li>
+                <li>Java → jjwt</li>
+                <li>Go → golang-jwt/jwt</li>
+                <li>.NET → built-in JWT middleware</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Simple mental model</h2>
+            <p>Think of JWT like a signed ID card:</p>
+            <ul>
+                <li>Payload = your info</li>
+                <li>Signature = tamper-proof seal</li>
+                <li>Server checks the seal, not the database every time</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

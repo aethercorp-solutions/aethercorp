@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Swift’s copy-on-write</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Swift’s copy-on-write</h1>
+                    <p class="subtitle">
+                        Swift’s copy-on-write (COW) is a performance optimization layered on top of value semantics. It lets value types behave like independent copies while avoiding unnecessary deep copies until mutation actually happens.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Core idea</h2>
+            <p>When you copy a value type like Array, Dictionary, or String, Swift does not immediately duplicate the underlying data. Instead, both copies initially share the same heap-allocated storage. Only when one of them is modified does Swift make a real copy.</p>
+        </section>
+
+        <section>
+            <h2>How it works internally</h2>
+            <p>Most standard library value types use this pattern:</p>
+            <p>1. Value type (struct) wraps a reference type</p>
+            <p>A Swift struct (e.g., Array) contains a reference to a heap object that holds the actual storage.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+struct Array&lt;Element&gt; {
+    private var storage: _ArrayStorage&lt;Element&gt;
+}
+            </code></pre>
+            <p>_ArrayStorage is a class (reference type) that holds:</p>
+            <ul>
+                <li>buffer pointer</li>
+                <li>capacity</li>
+                <li>count</li>
+                <li>elements</li>
+            </ul>
+            <p>So copying the struct is cheap: it just copies a pointer.</p>
+        </section>
+
+        <section>
+            <h2>2. Reference counting shares storage</h2>
+            <p>The underlying storage is reference-counted (ARC). When you do:</p>
+            <pre><code>
+var a = [1, 2, 3]
+var b = a
+            </code></pre>
+            <p>Both a and b point to the same storage object, and its retain count increases.</p>
+            <p>No element copying happens here.</p>
+        </section>
+
+        <section>
+            <h2>3. Mutation triggers uniqueness check</h2>
+            <p>Before any mutation, Swift checks whether the storage is uniquely referenced.</p>
+            <p>This is done using:</p>
+            <pre><code>
+isKnownUniquelyReferenced(&storage)
+            </code></pre>
+            <p>So when you write:</p>
+            <pre><code>
+b.append(4)
+            </code></pre>
+            <p>Swift does something like:</p>
+            <pre><code>
+if !isKnownUniquelyReferenced(&storage) {
+    storage = storage.copy()
+}
+            </code></pre>
+            <p>Then b gets its own independent storage, and mutation proceeds safely.</p>
+        </section>
+
+        <section>
+            <h2>Why this is safe</h2>
+            <p>COW relies on two guarantees:</p>
+            <p>1. Value semantics at the language level</p>
+            <p>Even though storage is shared, the observable behavior is as if each variable is independent.</p>
+            <p>2. Uniqueness check before mutation</p>
+            <p>As long as mutation triggers a copy when needed, no two variables can accidentally mutate the same storage.</p>
+        </section>
+
+        <section>
+            <h2>Where Swift uses COW</h2>
+            <p>Common standard library types:</p>
+            <ul>
+                <li>Array</li>
+                <li>Dictionary</li>
+                <li>Set</li>
+                <li>String</li>
+                <li>Data</li>
+            </ul>
+            <p>All of these:</p>
+            <ul>
+                <li>Are structs</li>
+                <li>Wrap reference-counted storage</li>
+                <li>Use COW on mutation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple mental model</h2>
+            <p>Think of it like this:</p>
+            <ul>
+                <li>Copying = sharing a pointer</li>
+                <li>Reading = free (no copy)</li>
+                <li>Writing = “if shared, clone first”</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Minimal illustrative example</h2>
+            <p>A simplified version of what Swift does:</p>
+            <pre><code>
+final class Box&lt;T&gt; {
+    var value: T
+    init(_ value: T) { self.value = value }
+}
+
+struct MyValue&lt;T&gt; {
+    private var box: Box<T>
+
+    mutating func mutate(_ newValue: T) {
+        if !isKnownUniquelyReferenced(&box) {
+            box = Box(box.value) // copy storage
+        }
+        box.value = newValue
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Key benefits</h2>
+            <ul>
+                <li>Efficient copies of large collections</li>
+                <li>Predictable value semantics</li>
+                <li>No accidental shared mutation</li>
+                <li>Good balance between performance and safety</li>
+            </ul>
+            <p>If you want, I can also show:</p>
+            <ul>
+                <li>how Array growth interacts with COW</li>
+                <li>why COW sometimes doesn’t trigger when you expect it</li>
+                <li>or how to implement a production-grade COW container in Swift</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

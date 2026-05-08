@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Agentic coding in Xcode 26.3</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Agentic coding in Xcode 26.3</h1>
+                    <p class="subtitle">
+                        Agentic coding in Xcode 26.3 is a pretty big shift—it’s not just “AI autocomplete,” it’s closer to having an autonomous junior (sometimes mid-level) engineer inside your IDE.
+                        <p>Here’s a clear breakdown so you can actually understand and use it, not just read the hype.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🚀 What “agentic coding” actually means</h2>
+            <p>In Xcode 26.3, Apple integrated coding agents like:</p>
+            <ul>
+                <li>OpenAI Codex</li>
+                <li>Claude Agent</li>
+            </ul>
+            <p>These aren’t just assistants—they’re agents that can:</p>
+            <ul>
+                <li>Plan multi-step tasks</li>
+                <li>Execute changes across your project</li>
+                <li>Verify results and iterate</li>
+            </ul>
+            <p>👉 In short: instead of you telling the AI what line to write, you give it a goal, and it figures out the steps.</p>
+        </section>
+
+        <section>
+            <h2>🧠 What makes it different from old AI in Xcode</h2>
+            <p>Before 26.3:</p>
+            <ul>
+                <li>AI = autocomplete + chat</li>
+                <li>You still manually wired everything</li>
+            </ul>
+            <p>Now:</p>
+            <ul>
+                <li>AI = goal-driven execution engine</li>
+            </ul>
+            <p>Agents can:</p>
+            <ul>
+                <li>Break features into steps</li>
+                <li>Modify multiple files</li>
+                <li>Run builds/tests</li>
+                <li>Fix errors automatically</li>
+                <li>Validate UI via previews</li>
+            </ul>
+            <p>Basically, they close the loop:</p>
+            <p>write → build → test → fix → repeat</p>
+        </section>
+
+        <section>
+            <h2>⚙️ What agents can actually do (practical)</h2>
+            <p>Inside Xcode, an agent can:</p>
+            <h2>1. Build features end-to-end</h2>
+            <p>Example prompt:</p>
+            <p>“Add login with Firebase and persist session”</p>
+            <p>Agent will:</p>
+            <ol>
+                <li>Create views (SwiftUI/UIKit)</li>
+                <li>Add dependencies</li>
+                <li>Wire backend calls</li>
+                <li>Handle errors</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>2. Debug and fix issues</h2>
+            <ul>
+                <li>Run build</li>
+                <li>Read compiler errors</li>
+                <li>Apply fixes</li>
+                <li>Re-run until clean</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Work with your UI</h2>
+            <ul>
+                <li>Capture SwiftUI previews as images</li>
+                <li>Compare expected vs actual UI</li>
+                <li>Adjust layout automatically</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Understand your project structure</h2>
+            <ul>
+                <li>Navigate files</li>
+                <li>Refactor modules</li>
+                <li>Update project settings</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Search and apply knowledge</h2>
+            <ul>
+                <li>Apple docs</li>
+                <li>WWDC transcripts</li>
+                <li>APIs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔌 Model Context Protocol (MCP)</h2>
+            <p>One of the most important parts (and easy to overlook):</p>
+            <p>Xcode exposes agent capabilities via:</p>
+            <ul>
+                <li>Model Context Protocol (MCP)</li>
+            </ul>
+            <p>This means:</p>
+            <ul>
+                <li>You’re not locked into Apple’s default agents</li>
+                <li>You can plug in custom agents/tools</li>
+            </ul>
+            <p>👉 Think of it like:</p>
+            <p>“VSCode extensions—but for AI agents controlling your IDE”</p>
+        </section>
+
+        <section>
+            <h2>🧪 Real workflow (how you’d actually use it)</h2>
+            <p>Old way</p>
+            <ol>
+                <li>Write code</li>
+                <li>Build</li>
+                <li>Fix errors</li>
+                <li>Repeat manually</li>
+            </ol>
+            <p>Agentic way</p>
+            <ol>
+                <li>Describe goal</li>
+                <li>
+                    Agent:
+                    <ul>
+                        <li>Plans tasks</li>
+                        <li>Writes code</li>
+                        <li>Builds project</li>
+                        <li>Fixes errors</li>
+                        <li>Validates UI</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>You just:</p>
+            <ul>
+                <li>Review</li>
+                <li>Approve</li>
+                <li>Guide</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚠️ Reality check (important)</h2>
+            <p>This is powerful—but not magic.</p>
+            <p>Current limitations:</p>
+            <ul>
+                <li>Can over-modify large codebases</li>
+                <li>Sometimes makes wrong architectural assumptions</li>
+                <li>Needs guardrails (you still review PR-level changes)</li>
+            </ul>
+            <p>Research even shows:</p>
+            <ul>
+                <li>Agent-generated PRs get rejected more often if unchecked</li>
+            </ul>
+            <p>So:</p>
+            <p>👉 Treat it as a fast collaborator, not an autopilot.</p>
+        </section>
+
+        <section>
+            <h2>🧩 Why this matters (especially for you)</h2>
+            <p>Given your stack (React Native + AWS + mobile apps):</p>
+            <p>Agentic coding can:</p>
+            <ul>
+                <li>Scaffold features fast (auth, APIs, UI flows)</li>
+                <li>Handle repetitive refactors</li>
+                <li>Debug iOS-specific issues (like your UITableView animation problems)</li>
+                <li>Speed up native Swift bridging</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 Simple mental model</h2>
+            <p>Think of it like:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool type</th>
+                        <th>Behavior</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Copilot (old)</td>
+                        <td>“Here’s a suggestion”</td>
+                    </tr>
+                    <tr>
+                        <td>ChatGPT (chat)</td>
+                        <td>“Here’s an answer”</td>
+                    </tr>
+                    <tr>
+                        <td>Agent (Xcode 26.3)</td>
+                        <td>“I’ll do the task for you”</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Node.js + Express.js app, middleware</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Node.js + Express.js app, middleware</h1>
+                    <p class="subtitle">
+                        In a Node.js + Express.js app, middleware is basically a function that runs between the request and the response. It can read, modify, validate, or stop a request before it reaches your main logic (controllers/routes).
+                        <p>Think of it like a pipeline:</p>
+                        <pre><code>
+Request → Middleware → Middleware → Route Handler → Response
+                        </code></pre>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔧 Common Middleware Use Cases</h2>
+            <p>1. Authentication (Very common in your setup)</p>
+            <p>Validate JWT or session before allowing access.</p>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+function authMiddleware(req, res, next) {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token' });
+  }
+
+  try {
+    const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
+    req.user = decoded;
+    next(); // continue
+  } catch (err) {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+}
+            </code></pre>
+            <p>👉 Use case: Protect APIs like /profile, /orders</p>
+        </section>
+
+        <section>
+            <h2>2. Logging Requests</h2>
+            <p>Track every incoming request (useful for debugging or analytics).</p>
+            <pre><code>
+function logger(req, res, next) {
+    console.log(`${req.method} ${req.url}`);
+    next();
+}
+            </code></pre>
+            <p>👉 Use case: Monitoring API usage in AWS Lambda logs</p>
+        </section>
+
+        <section>
+            <h2>3. Input Validation</h2>
+            <p>Ensure request body is correct before hitting business logic.</p>
+            <pre><code>
+function validateUser(req, res, next) {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Missing fields' });
+    }
+    
+    next();
+}
+            </code></pre>
+            <p>👉 Use case: Prevent bad data from reaching MongoDB</p>
+        </section>
+
+        <section>
+            <h2>4. Error Handling Middleware</h2>
+            <p>Centralized error management.</p>
+            <pre><code>
+function errorHandler(err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something went wrong' });
+}
+            </code></pre>
+            <p>👉 Use case: Avoid repeating try/catch everywhere</p>
+        </section>
+
+        <section>
+            <h2>5. CORS Handling</h2>
+            <p>Allow cross-origin requests (important for React Native / frontend apps).</p>
+            <pre><code>
+const cors = require('cors');
+app.use(cors());
+            </code></pre>
+            <p>👉 Use case: Your React Native app calling your AWS API</p>
+        </section>
+
+        <section>
+            <h2>6. Rate Limiting / Security</h2>
+            <p>Prevent abuse (DDoS, brute force).</p>
+            <pre><code>
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100
+});
+
+app.use(limiter);
+            </code></pre>
+            <p>👉 Use case: Protect login endpoints</p>
+        </section>
+
+        <section>
+            <h2>7. Parsing Request Body</h2>
+            <p>Convert incoming JSON to usable object.</p>
+            <pre><code>
+app.use(express.json());
+            </code></pre>
+            <p>👉 Use case: Read req.body properly</p>
+        </section>
+
+        <section>
+            <h2>8. Role-Based Authorization</h2>
+            <p>Restrict access by user roles.</p>
+            <pre><code>
+function isAdmin(req, res, next) {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+    }
+    next();
+}
+            </code></pre>
+            <p>👉 Use case: Admin-only APIs</p>
+        </section>
+
+        <section>
+            <h2>🧠 In Your AWS Serverless Setup</h2>
+            <p>Since you're using Lambda + API Gateway:</p>
+            <ul>
+                <li>Middleware is not built-in like Express</li>
+                <li>
+                    You either:
+                    <ul>
+                        <li>Use Express + serverless-http (what you're doing)</li>
+                        <li>Or manually chain middleware functions</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Example in your setup:</p>
+            <pre><code>
+app.get('/protected', authMiddleware, (req, res) => {
+    res.json({ user: req.user });
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ Key Insight</h2>
+            <p>Middleware helps you:</p>
+            <ul>
+                <li>Reuse logic</li>
+                <li>Keep routes clean</li>
+                <li>Separate concerns (auth, validation, logging)</li>
+            </ul>
+            <p>Without middleware, your route becomes messy:</p>
+            <pre><code>
+// BAD (no middleware)
+app.get('/profile', (req, res) => {
+  // auth logic
+  // validation
+  // logging
+  // business logic
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 Core Idea</h2>
+            <p>At the JavaScript level, middleware is nothing magical—it’s just functions calling other functions in sequence, using closures and callbacks.</p>
+            <p>A middleware is just a function like this:</p>
+            <pre><code>
+function middleware(req, res, next) {
+    // do something
+    next(); // pass control
+}
+            </code></pre>
+            <p>The important part is next() → it tells JavaScript:</p>
+            <p>“Call the next function in the chain.”</p>
+        </section>
+
+        <section>
+            <h2>🔁 What’s really happening under the hood</h2>
+            <p>Express (from Express.js running on Node.js) stores middleware in an array (stack):</p>
+            <pre><code>
+const stack = [mw1, mw2, mw3];
+            </code></pre>
+            <p>Then it executes them one by one.</p>
+        </section>
+
+        <section>
+            <h2>⚙️ Simplified Engine (Pure JavaScript)</h2>
+            <p>Here’s a minimal version of how middleware works internally:</p>
+            <pre><code>
+function runMiddleware(stack, req, res) {
+    let index = 0;
+    
+    function next() {
+        const fn = stack[index++];
+        if (fn) {
+        fn(req, res, next);
+        }
+    }
+    
+    next(); // start chain
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>▶ Example usage:</h2>
+            <pre><code>
+const mw1 = (req, res, next) => {
+    console.log('Middleware 1');
+    req.name = 'Paul';
+    next();
+};
+
+const mw2 = (req, res, next) => {
+    console.log('Middleware 2');
+    req.age = 30;
+    next();
+};
+    
+const handler = (req, res) => {
+    console.log('Final Handler', req);
+};
+
+runMiddleware([mw1, mw2, handler], {}, {});
+            </code></pre>
+
+            <p>🧾 Output:</p>
+            <pre><code>
+Middleware 1
+Middleware 2
+Final Handler { name: 'Paul', age: 30 }
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔄 Execution Flow (Step-by-step)</h2>
+            <ol>
+                <li>next() is called</li>
+                <li>First middleware runs</li>
+                <li>It calls next()</li>
+                <li>Second middleware runs</li>
+                <li>It calls next()</li>
+                <li>Final handler runs</li>
+                <li>No more functions → stop</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>❗ Important Behavior</h2>
+            <p>1. If next() is NOT called → chain stops</p>
+            <pre><code>
+const mw = (req, res, next) => {
+    console.log('Stops here');
+    // no next()
+};
+            </code></pre>
+            <p>👉 Everything after this middleware will never execute</p>
+
+            <p>2. Middleware can END the response</p>
+            <pre><code>
+const auth = (req, res, next) => {
+    if (!req.user) {
+        return res.send('Unauthorized'); // stops chain
+    }
+    next();
+};
+            </code></pre>
+            <p>👉 No next() → request lifecycle ends</p>
+
+            <p>3. Middleware can MODIFY shared objects</p>
+            <p>All middleware share the same req and res references:</p>
+            <pre><code>
+req.user = { id: 1 };
+            </code></pre>
+            <p>👉 Next middleware can use it</p>
+        </section>
+
+        <section>
+            <h2>🧩 Why this works (JS concepts involved)</h2>
+            <p>Middleware relies on:</p>
+            <ul>
+                <li>Closures → next() remembers index</li>
+                <li>First-class functions → functions passed as arguments</li>
+                <li>Mutable objects → req and res shared across chain</li>
+                <li>Control flow delegation → each function decides when to continue</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ Async Middleware (Real-world)</h2>
+            <pre><code>
+const mw = async (req, res, next) => {
+    await someAsyncTask();
+    next();
+};
+            </code></pre>
+            <p>⚠️ If you forget next() or await, you can break the flow or create bugs.</p>
+        </section>
+
+        <section>
+            <h2>🔥 Key Insight</h2>
+            <p>Middleware is basically:</p>
+            <p>A controlled function pipeline where each function decides whether to pass control forward.</p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

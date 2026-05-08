@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>OTP (One-Time Password)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">OTP (One-Time Password)</h1>
+                    <p class="subtitle">
+                        OTP (One-Time Password) is typically implemented as a short-lived code generated on the server, sent to the user (SMS/email/app), and then verified within a limited time window.
+                        <p>Here’s a clean breakdown of how it works in real systems (including AWS Lambda / Node.js style setups like yours).</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔐 1. OTP Flow (High-Level)</h2>
+            <p>Step 1: User requests OTP</p>
+            <ul>
+                <li>User enters phone/email</li>
+                <li>Backend generates OTP</li>
+                <li>Backend stores OTP (temporarily)</li>
+                <li>OTP is sent via SMS/email</li>
+            </ul>
+
+            <p>Step 2: User submits OTP</p>
+            <ul>
+                <li>User enters received code</li>
+                <li>
+                    Backend verifies:
+                    <ul>
+                        <li>correct code</li>
+                        <li>not expired</li>
+                        <li>not already used</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Step 3: Authentication success</p>
+            <ul>
+                <li>Issue JWT / session token</li>
+                <li>OTP is invalidated</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ 2. OTP Generation</h2>
+            <p>Most systems use:</p>
+            <p>Option A: Random numeric OTP (most common)</p>
+            <pre><code>
+const otp = Math.floor(100000 + Math.random() * 900000);
+            </code></pre>
+            <p>Example: 483920</p>
+            <p>Option B: Crypto-secure OTP (recommended)</p>
+            <pre><code>
+import crypto from "crypto";
+
+const otp = crypto.randomInt(100000, 999999);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🗄️ 3. OTP Storage (Very Important)</h2>
+            <p>You must store:</p>
+            <ul>
+                <li>OTP</li>
+                <li>Identifier (email/phone)</li>
+                <li>Expiry time</li>
+                <li>Attempt count (optional)</li>
+            </ul>
+            <p>Example (MongoDB / DynamoDB style)</p>
+            <pre><code>
+{
+    identifier: "user@email.com",
+    otp: "483920",
+    expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes
+    used: false
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📤 4. Sending OTP</h2>
+            <p>Email</p>
+            <ul>
+                <li>SendGrid / SES</li>
+            </ul>
+            <p>SMS</p>
+            <ul>
+                <li>AWS SNS / Twilio</li>
+            </ul>
+            <p>Example (AWS SNS):</p>
+            <pre><code>
+await sns.publish({
+    PhoneNumber: "+639xxxxxxxxx",
+    Message: `Your OTP is ${otp}`
+}).promise();
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 5. OTP Verification Logic</h2>
+            <pre><code>
+export const verifyOtp = async (identifier, inputOtp) => {
+    const record = await OtpModel.findOne({ identifier });
+    
+    if (!record) return { success: false, message: "OTP not found" };
+    
+    if (record.used) return { success: false, message: "OTP already used" };
+    
+    if (Date.now() > record.expiresAt)
+        return { success: false, message: "OTP expired" };
+    
+    if (record.otp !== inputOtp)
+        return { success: false, message: "Invalid OTP" };
+    
+    record.used = true;
+    await record.save();
+    
+    // Generate JWT after success
+    const token = generateJWT(identifier);
+    
+    return { success: true, token };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⏱️ 6. Expiry Strategy (Critical)</h2>
+            <p>Common practice:</p>
+            <ul>
+                <li>OTP validity: 3–10 minutes</li>
+                <li>After expiry → reject automatically</li>
+            </ul>
+            <p>You can enforce via:</p>
+            <ul>
+                <li>DB timestamp check</li>
+                <li>Redis TTL (best option)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ 7. Best Practice Architecture (AWS Lambda)</h2>
+            <p>Since you're using serverless:</p>
+            <p>Recommended stack:</p>
+            <ul>
+                <li>API Gateway</li>
+                <li>Lambda (Node.js)</li>
+                <li>DynamoDB or Redis (ElastiCache)</li>
+                <li>SNS (SMS) / SES (email)</li>
+            </ul>
+            <p>Flow:</p>
+            <pre><code>
+Client → API Gateway → Lambda (generate OTP)
+                      → SNS/SES sends OTP
+                      → Store in DynamoDB (TTL)
+
+Client → API Gateway → Lambda (verify OTP)
+                      → validate DynamoDB record
+                      → issue JWT
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 8. Production Improvements</h2>
+            <p>To make it secure:</p>
+            <p>✔ Rate limiting</p>
+            <ul>
+                <li>max 3–5 OTP requests per minute</li>
+            </ul>
+            <p>✔ Hash OTP before storing</p>
+            <pre><code>
+const hashed = crypto.createHash("sha256").update(otp).digest("hex");
+            </code></pre>
+            <p>✔ Attempt limit</p>
+            <ul>
+                <li>lock after 3 wrong attempts</li>
+            </ul>
+            <p>✔ Device binding (optional)</p>
+            <ul>
+                <li>tie OTP to device fingerprint</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 9. Common Variants</h2>
+            <ul>
+                <li>SMS OTP (most common)</li>
+                <li>Email OTP</li>
+                <li>Authenticator app (TOTP like Google Authenticator)</li>
+                <li>Magic link (OTP embedded in URL)</li>
+            </ul>
+            <p>If you want next step</p>
+            <p>I can give you a fully working AWS Lambda + MongoDB OTP system or a React Native OTP login flow (UI + API integration) based on your TryCastanet architecture.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

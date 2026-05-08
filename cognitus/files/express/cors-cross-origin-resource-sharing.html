@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CORS (Cross-Origin Resource Sharing)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">CORS (Cross-Origin Resource Sharing)</h1>
+                    <p class="subtitle">
+                        CORS (Cross-Origin Resource Sharing) in a Node.js Express app is a browser security mechanism that controls which domains (origins) are allowed to access your API.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🔒 Why CORS exists</h2>
+            <p>Browsers enforce something called the Same-Origin Policy:</p>
+            <p>A frontend running on one origin (domain + protocol + port) cannot directly call another origin unless explicitly allowed.</p>
+            <p>Example:</p>
+            <ul>
+                <li>Frontend: http://localhost:3000</li>
+                <li>Backend API: https://api.myapp.com</li>
+            </ul>
+            <p>👉 These are different origins, so the browser blocks the request unless your server allows it via CORS.</p>
+        </section>
+
+        <section>
+            <h2>⚙️ How CORS works in Express</h2>
+            <p>In a Node.js Express app, you usually enable CORS using the cors middleware.</p>
+            <p>Basic example:</p>
+            <pre><code>
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+
+app.use(cors()); // allow all origins
+
+app.get('/api', (req, res) => {
+  res.json({ message: 'CORS enabled' });
+});
+            </code></pre>
+            <p>👉 This allows any website to call your API.</p>
+        </section>
+
+        <section>
+            <h2>🎯 Restricting access (more secure)</h2>
+            <p>You can limit which origins are allowed:</p>
+            <pre><code>
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://myapp.com'
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  })
+);
+            </code></pre>
+            <p>👉 Only specified domains can access your API.</p>
+        </section>
+
+        <section>
+            <h2>🔁 What happens under the hood</h2>
+            <p>When a browser makes a cross-origin request:</p>
+            <ol>
+                <li>It sends a preflight request (OPTIONS) if needed</li>
+                <li>
+                    Your server responds with headers like:
+                    <ul>
+                        <li>Access-Control-Allow-Origin</li>
+                        <li>Access-Control-Allow-Methods</li>
+                        <li>Access-Control-Allow-Headers</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>Example response header:</p>
+            <pre><code>
+Access-Control-Allow-Origin: https://myapp.com
+            </code></pre>
+            <p>👉 This tells the browser: “It’s safe to allow this request.”</p>
+        </section>
+
+        <section>
+            <h2>🚨 Important clarifications</h2>
+            <ul>
+                <li>CORS is enforced by browsers, not by Node.js itself</li>
+                <li>Tools like Postman or curl ignore CORS</li>
+                <li>CORS does not secure your API — it only controls browser access</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Simple analogy</h2>
+            <p>Think of CORS like a bouncer at a club:</p>
+            <ul>
+                <li>Your API = the club</li>
+                <li>Different websites = people trying to enter</li>
+                <li>CORS = the guest list</li>
+            </ul>
+            <p>Only allowed origins get in.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

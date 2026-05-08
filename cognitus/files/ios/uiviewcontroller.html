@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>UIViewController</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">UIViewController</h1>
+                    <p class="subtitle">
+                        In UIViewController, you should focus on code that manages a single screen’s lifecycle, UI behavior, and user interaction—not everything in your app. Think of it as the “orchestrator” for one view.
+                        <p>Here’s what typically belongs there:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Lifecycle Methods</h2>
+            <p>These control what happens as the screen appears/disappears.</p>
+            <ul>
+                <li>viewDidLoad() → initial setup (runs once)</li>
+                <li>viewWillAppear() → update UI before it shows</li>
+                <li>viewDidAppear() → start animations, tracking</li>
+                <li>viewWillDisappear() → cleanup before leaving</li>
+            </ul>
+            <pre><code>
+override func viewDidLoad() {
+    super.viewDidLoad()
+    setupUI()
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. UI Setup & Configuration</h2>
+            <p>Create and configure views, constraints, styles.</p>
+            <pre><code>
+func setupUI() {
+    view.backgroundColor = .white
+    titleLabel.text = "Welcome"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. User Interaction Handling</h2>
+            <p>Respond to taps, gestures, inputs.</p>
+            <pre><code>
+@IBAction func buttonTapped(_ sender: UIButton) {
+    print("Button tapped")
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Navigation Logic</h2>
+            <p>Handle transitions to other screens.</p>
+            <pre><code>
+func goToNextScreen() {
+    let vc = NextViewController()
+    navigationController?.pushViewController(vc, animated: true)
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Binding / Updating Data to UI</h2>
+            <p>Take data and reflect it in views.</p>
+            <pre><code>
+func updateUI(with user: User) {
+    nameLabel.text = user.name
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Light State Management</h2>
+            <p>Keep small pieces of screen-specific state.</p>
+            <pre><code>
+var isLoading = false
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What should NOT be in UIViewController ❌</h2>
+            <p>If everything ends up in your controller, it quickly becomes unmanageable (“Massive View Controller” problem). Avoid:</p>
+            <ul>
+                <li>Heavy business logic → move to services or models</li>
+                <li>Networking code → use separate API/service layer</li>
+                <li>Complex data processing → use view models (MVVM)</li>
+                <li>Reusable UI components → separate into custom views</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>A Good Rule of Thumb</h2>
+            <p>Your UIViewController should:</p>
+            <ul>
+                <li>Coordinate, not compute</li>
+                <li>React, not decide everything</li>
+                <li>Display, not own all logic</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Where should the code for networking API calls be placed?</p>
+            <p>Short answer: not inside your UIViewController. Put networking code in a separate layer dedicated to fetching data.</p>
+            <h2>Where it should go instead</h2>
+            <p>1. Service / API Layer (most common)</p>
+            <p>Create a class or struct responsible only for API calls.</p>
+            <pre><code>
+class APIService {
+    static let shared = APIService()
+
+    func fetchUsers(completion: @escaping (Result<[User], Error>) -> Void) {
+        let url = URL(string: "https://api.example.com/users")!
+
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            let users = try? JSONDecoder().decode([User].self, from: data!)
+            completion(.success(users ?? []))
+        }.resume()
+    }
+}
+            </code></pre>
+            <p>👉 This layer uses URLSession and knows nothing about UI.</p>
+        </section>
+
+        <section>
+            <h2>2. ViewModel (if using MVVM)</h2>
+            <p>If you’re using MVVM, the ViewModel calls the service and prepares data for the UI.</p>
+            <pre><code>
+class UserViewModel {
+    func loadUsers(completion: @escaping ([User]) -> Void) {
+        APIService.shared.fetchUsers { result in
+            switch result {
+            case .success(let users):
+                completion(users)
+            case .failure:
+                completion([])
+            }
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Then the UIViewController</h2>
+            <p>Your controller just triggers the call and updates UI.</p>
+            <pre><code>
+viewModel.loadUsers { users in
+    DispatchQueue.main.async {
+        self.updateUI(with: users)
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why this separation matters</h2>
+            <p>If you put networking inside UIViewController, you’ll run into:</p>
+            <ul>
+                <li>Hard-to-test code</li>
+                <li>Reuse problems (same API used in multiple screens)</li>
+                <li>“Massive View Controller” mess</li>
+                <li>Tight coupling between UI and data layer</li>
+            </ul>
+            <p>Separating it gives you:</p>
+            <ul>
+                <li>Cleaner structure</li>
+                <li>Easier debugging</li>
+                <li>Reusable API logic</li>
+                <li>Better scalability</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Mental model</h2>
+            <ul>
+                <li>UIViewController → displays data, handles user actions</li>
+                <li>ViewModel (optional) → prepares data</li>
+                <li>Service/API layer → fetches data from network</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Yes—you can, and in some architectures you should.</p>
+            <p>If you’re using something like VIPER or Clean Architecture, the Interactor is actually the right place for coordinating network calls—but with an important nuance.</p>
+            <h2>How it works conceptually</h2>
+            <p>In these architectures:</p>
+            <ul>
+                <li>UIViewController → handles UI only</li>
+                <li>Interactor → contains business logic (use cases)</li>
+                <li>Service/API layer → performs the actual network request</li>
+            </ul>
+            <p>👉 The Interactor doesn’t directly “own” networking details—it uses a service that does.</p>
+        </section>
+
+        <section>
+            <h2>Recommended structure</h2>
+            <h2>1. API Service (low-level networking)</h2>
+            <pre><code>
+protocol APIServiceProtocol {
+    func fetchUsers(completion: @escaping (Result<[User], Error>) -> Void)
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Interactor (business logic layer)</h2>
+            <pre><code>
+class UserInteractor {
+    let apiService: APIServiceProtocol
+
+    init(apiService: APIServiceProtocol) {
+        self.apiService = apiService
+    }
+
+    func getUsers(completion: @escaping ([User]) -> Void) {
+        apiService.fetchUsers { result in
+            switch result {
+            case .success(let users):
+                // Business logic can go here (filtering, rules, etc.)
+                completion(users)
+            case .failure:
+                completion([])
+            }
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. ViewController</h2>
+            <pre><code>
+interactor.getUsers { users in
+    DispatchQueue.main.async {
+        self.updateUI(with: users)
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What NOT to do ❌</h2>
+            <p>Avoid putting raw networking code directly inside the Interactor like this:</p>
+            <pre><code>
+// ❌ Not ideal
+URLSession.shared.dataTask(with: url) { ... }
+            </code></pre>
+            <p>That tightly couples your business logic to a specific networking implementation.</p>
+        </section>
+
+        <section>
+            <h2>The key idea</h2>
+            <ul>
+                <li>✅ Interactor = “what to fetch and why”</li>
+                <li>✅ Service = “how to fetch”</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>When it’s okay to bend the rule</h2>
+            <p>For very small apps or prototypes, putting API calls directly in the Interactor isn’t catastrophic—but it won’t scale well.</p>
+        </section>
+
+        <section>
+            <h2>Bottom line</h2>
+            <ul>
+                <li>✔ Yes, API calls can be triggered from the Interactor</li>
+                <li>✔ But the actual networking logic should live in a separate service layer</li>
+                <li>✔ The Interactor should depend on abstractions (protocols), not implementations</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

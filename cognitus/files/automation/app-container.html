@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>App Container</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">App Container</h1>
+                    <p class="subtitle">
+                        “App container” can mean slightly different things depending on the context, but the core idea is the same: it’s an isolated environment where an application runs with controlled access to system resources.
+                        <p>Let’s break it down in the most common contexts:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. App Container (Operating System / Security context)</h2>
+            <p>In platforms like Windows, an AppContainer is a sandboxed security boundary.</p>
+            <p>What it does:</p>
+            <ul>
+                <li>Runs an app in isolation from the rest of the system</li>
+                <li>
+                    Restricts access to:
+                    <ul>
+                        <li>File system</li>
+                        <li>Registry</li>
+                        <li>Network (unless allowed)</li>
+                    </ul>
+                </li>
+                <li>Enforces least privilege</li>
+            </ul>
+            <p>Example:</p>
+            <p>Apps from the Microsoft Store run inside AppContainers.</p>
+            <p>👉 Think of it like:</p>
+            <p>“Your app is inside a locked room. It can only access what you explicitly allow.”</p>
+        </section>
+
+        <section>
+            <h2>2. App Container (Mobile – iOS / Android)</h2>
+            <p>On mobile platforms like iOS and Android:</p>
+            <p>Each app has its own container:</p>
+            <ul>
+                <li>Private storage (sandbox)</li>
+                <li>Separate memory space</li>
+                <li>No direct access to other apps’ data</li>
+            </ul>
+
+            <p>Example:</p>
+            <ul>
+                <li>One app cannot read another app’s files</li>
+                <li>
+                    Data is stored in:
+                    <ul>
+                        <li>iOS → App sandbox directory</li>
+                        <li>Android → /data/data/<package-name>/</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>👉 This is why apps can’t just “see” each other’s data.</p>
+        </section>
+
+        <section>
+            <h2>3. App Container (Containers like Docker)</h2>
+            <p>In backend / DevOps, “container” usually refers to tools like:</p>
+            <ul>
+                <li>Docker</li>
+            </ul>
+            <p>Here, an app container means:</p>
+            <ul>
+                <li>Your app + dependencies packaged together</li>
+                <li>Runs consistently across environments</li>
+            </ul>
+            <p>What it includes:</p>
+            <ul>
+                <li>Code</li>
+                <li>Runtime (Node.js, Python, etc.)</li>
+                <li>Libraries</li>
+                <li>OS-level dependencies</li>
+            </ul>
+            <p>👉 Think:</p>
+            <p>“Ship the app with everything it needs to run.”</p>
+        </section>
+
+        <section>
+            <h2>4. App Container (Cloud / Serverless mindset)</h2>
+            <p>In systems like Amazon Web Services:</p>
+            <ul>
+                <li>
+                    Containers may run in:
+                    <ul>
+                        <li>ECS / EKS</li>
+                        <li>Lambda (abstracted container)</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Even AWS Lambda runs your function in a managed container environment, though you don’t control it directly.</p>
+        </section>
+
+        <section>
+            <h2>Simple Analogy</h2>
+            <ul>
+                <li>OS App Container → security sandbox 🔒</li>
+                <li>Mobile App Container → per-app private storage 📱</li>
+                <li>Docker Container → portable runtime box 📦</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Quick Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Context</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Windows</td>
+                        <td>Security isolation</td>
+                    </tr>
+                    <tr>
+                        <td>iOS / Android</td>
+                        <td>App sandboxing</td>
+                    </tr>
+                    <tr>
+                        <td>Docker</td>
+                        <td>Deployment portability</td>
+                    </tr>
+                    <tr>
+                        <td>AWS / Cloud</td>
+                        <td>Scalable runtime isolation</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

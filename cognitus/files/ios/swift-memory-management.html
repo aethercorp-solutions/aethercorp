@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Swift memory management</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Swift memory management</h1>
+                    <p class="subtitle">
+                        Swift memory management is mainly about how the language allocates, uses, and frees memory automatically so you don’t have to manually manage it like in C or older Objective-C code. The core system behind this is called ARC (Automatic Reference Counting).
+                        <p>Let’s break it down clearly and in depth.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. The Big Idea: ARC (Automatic Reference Counting)</h2>
+            <p>Swift uses ARC to track how many references (variables, constants, properties) point to a class instance.</p>
+            <p>Rule:</p>
+            <ul>
+                <li>When an object’s reference count becomes 0 → it is deallocated (freed from memory).</li>
+                <li>When you assign a class instance to a variable → reference count increases.</li>
+                <li>When a reference is removed → reference count decreases.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <pre><code>
+class Person {
+    var name: String
+
+    init(name: String) {
+        self.name = name
+        print("\(name) is being initialized")
+    }
+
+    deinit {
+        print("\(name) is being deinitialized")
+    }
+}
+
+var p1: Person? = Person(name: "John")  // RC = 1
+var p2 = p1                              // RC = 2
+
+p1 = nil                                 // RC = 1
+p2 = nil                                 // RC = 0 → deinit called
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Value Types vs Reference Types</h2>
+            <p>Value Types (Stack-based)</p>
+            <ul>
+                <li>Structs, enums, tuples</li>
+                <li>Copied when assigned</li>
+                <li>Each copy is independent</li>
+                <li>Usually stored on stack (fast, auto cleanup)</li>
+            </ul>
+            <pre><code>
+struct Car {
+    var model: String
+}
+
+var c1 = Car(model: "BMW")
+var c2 = c1   // copy, not reference
+            </code></pre>
+            <p>✔ No ARC needed</p>
+        </section>
+
+        <section>
+            <h2>Reference Types (Heap-based)</h2>
+            <ul>
+                <li>Classes</li>
+                <li>Stored in heap memory</li>
+                <li>Shared references</li>
+                <li>Managed by ARC</li>
+            </ul>
+            <pre><code>
+class Car {
+    var model: String
+    init(model: String) { self.model = model }
+}
+            </code></pre>
+            <p>✔ ARC applies here</p>
+        </section>
+
+        <section>
+            <h2>3. How ARC Works Internally</h2>
+            <p>Swift keeps a reference count table:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Effect</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Create object</td>
+                        <td>RC = 1</td>
+                    </tr>
+                    <tr>
+                        <td>Assign to new variable</td>
+                        <td>RC +1</td>
+                    </tr>
+                    <tr>
+                        <td>Remove reference</td>
+                        <td>RC -1</td>
+                    </tr>
+                    <tr>
+                        <td>RC = 0</td>
+                        <td>object deallocated</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. Strong, Weak, and Unowned References</h2>
+            <p>These are used to prevent memory leaks (especially retain cycles).</p>
+            <p>4.1 Strong Reference (Default)</p>
+            <pre><code>
+class A {
+    var b: B?
+}
+            </code></pre>
+            <ul>
+                <li>Increases reference count</li>
+                <li>Prevents deallocation</li>
+            </ul>
+            <p>👉 Most references are strong by default</p>
+        </section>
+
+        <section>
+            <h2>Problem: Retain Cycle</h2>
+            <pre><code>
+class A {
+    var b: B?
+}
+
+class B {
+    var a: A?
+}
+            </code></pre>
+            <p>If A holds B and B holds A:</p>
+            <ul>
+                <li>RC never becomes 0</li>
+                <li>Memory leak occurs ❌</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4.2 Weak Reference</h2>
+            <pre><code>
+class B {
+    weak var a: A?
+}
+            </code></pre>
+            <p>Key points:</p>
+            <ul>
+                <li>Does NOT increase reference count</li>
+                <li>Automatically becomes nil when object is deallocated</li>
+                <li>Must be optional (A?)</li>
+            </ul>
+            <p>✔ Used in parent-child relationships (common in delegates)</p>
+        </section>
+
+        <section>
+            <h2>Example:</h2>
+            <pre><code>
+class Owner {
+    var dog: Dog?
+}
+
+class Dog {
+    weak var owner: Owner?
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4.3 Unowned Reference</h2>
+            <pre><code>
+class B {
+    unowned var a: A
+}
+            </code></pre>
+            <p>Key points:</p>
+            <ul>
+                <li>Does NOT increase reference count</li>
+                <li>NOT optional</li>
+                <li>Assumes object will never be nil when accessed</li>
+            </ul>
+            <p>⚠ Dangerous if object is deallocated → crash</p>
+        </section>
+
+        <section>
+            <h2>When to use:</h2>
+            <ul>
+                <li>When lifecycle is guaranteed</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+class Customer {
+    var card: CreditCard?
+}
+
+class CreditCard {
+    unowned let customer: Customer
+
+    init(customer: Customer) {
+        self.customer = customer
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Closures and Retain Cycles</h2>
+            <p>Closures capture references strongly by default.</p>
+            <p>Problem:</p>
+            <pre><code>
+class MyClass {
+    var name = "Swift"
+
+    lazy var closure: () -> Void = {
+        print(self.name)
+    }
+}
+            </code></pre>
+            <p>Here:</p>
+            <ul>
+                <li>closure strongly captures self</li>
+                <li>self strongly holds closure</li>
+                <li>retain cycle ❌</li>
+            </ul>
+
+            <p>Fix: Capture List</p>
+            <pre><code>
+lazy var closure: () -> Void = { [weak self] in
+    print(self?.name ?? "")
+}
+            </code></pre>
+            <p>Or:</p>
+            <pre><code>
+lazy var closure: () -> Void = { [unowned self] in
+    print(self.name)
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Memory Regions in Swift</h2>
+            <p>6.1 Stack</p>
+            <ul>
+                <li>Stores function calls, value types</li>
+                <li>Very fast</li>
+                <li>Auto-managed</li>
+            </ul>
+            <p>6.2 Heap</p>
+            <ul>
+                <li>Stores class instances</li>
+                <li>Slower but flexible</li>
+                <li>Managed by ARC</li>
+            </ul>
+            <p>6.3 Static/Data segment</p>
+            <ul>
+                <li>Global/static variables</li>
+                <li>Lives for entire app lifecycle</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Lifecycle of an Object</h2>
+            <ol>
+                <li>Allocation (heap)</li>
+                <li>Initialization (init)</li>
+                <li>Usage (references tracked)</li>
+                <li>ARC updates count</li>
+                <li>When RC = 0 → deinit</li>
+                <li>Memory freed</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>8. Common Memory Issues</h2>
+            <p>1. Retain Cycles</p>
+            <ul>
+                <li>Two objects strongly referencing each other</li>
+            </ul>
+            <p>2. Closure capturing self strongly</p>
+            <p>3. Delegates not marked weak</p>
+            <pre><code>
+protocol Delegate: AnyObject {}
+
+class A {
+    weak var delegate: Delegate?
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Best Practices</h2>
+            <ul>
+                <li>Prefer value types (structs) when possible</li>
+                <li>Use weak for delegates</li>
+                <li>Use weak/unowned in closures carefully</li>
+                <li>Avoid unnecessary strong references</li>
+                <li>Break retain cycles explicitly</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Quick Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ARC</td>
+                        <td>Automatic memory management system</td>
+                    </tr>
+                    <tr>
+                        <td>Strong</td>
+                        <td>Increases reference count</td>
+                    </tr>
+                    <tr>
+                        <td>Weak</td>
+                        <td>Doesn’t increase count, becomes nil</td>
+                    </tr>
+                    <tr>
+                        <td>Unowned</td>
+                        <td>Doesn’t increase count, non-optional</td>
+                    </tr>
+                    <tr>
+                        <td>Retain cycle</td>
+                        <td>Memory leak due to circular references</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

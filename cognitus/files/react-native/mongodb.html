@@ -13,7 +13,10 @@
             <div class="nav-container">
                 <div class="title-header">
                     <h1 class="title">MongoDB</h1>
-                    <p class="subtitle">MongoDB is a NoSQL database designed to store and manage large volumes of unstructured or semi-structured data. Unlike traditional SQL databases (like MySQL or PostgreSQL), MongoDB does not use tables and rows. Instead, it stores data in flexible, JSON-like documents, which makes it easier to handle varied and evolving data structures.</p>
+                    <p class="subtitle">
+                        MongoDB is a popular NoSQL database used to store and manage data in a flexible, scalable way.
+                        <p>Instead of organizing data into rows and tables like traditional relational databases (such as MySQL or PostgreSQL), MongoDB stores data in documents that look like JSON objects.</p>
+                    </p>
                 </div>        
             </div>
         </nav>
@@ -21,110 +24,248 @@
 
     <main>
         <section>
-            <h2>🔑 Key Features of MongoDB:</h2>
-            <ol>
-                <li>
-                    Document-Oriented:
-                    <ul>
-                        <li>Data is stored as documents in collections.</li>
-                        <li>Documents are BSON (Binary JSON), which supports nested data and more data types than JSON.</li>
-                    </ul>
-                </li>
-
-                <li>
-                    Schema-less:
-                    <ul>
-                        <li>Documents in the same collection can have different fields, so it’s very flexible.</li>
-                    </ul>
-                </li>
-
-                <li>
-                    Scalable:
-                    <ul>
-                        <li>Built with horizontal scaling in mind (via sharding), making it good for big data and high-throughput applications.</li>
-                    </ul>
-                </li>
-
-                <li>
-                    High Performance:
-                    <ul>
-                        <li>Optimized for read/write performance.</li>
-                        <li>Supports indexing, in-memory storage, and aggregation frameworks.</li>
-                    </ul>
-                </li>
-
-                <li>
-                    Query Language:
-                    <ul>
-                        <li>Uses a rich query language based on JSON syntax for filtering, projecting, aggregating, etc.</li>
-                    </ul>
-                </li>
-            </ol>
-        </section>
-
-        <section>
-            <h2>🔧 When to Use MongoDB:</h2>
-            <ol>
-                <li>When your data structure is dynamic or constantly evolving.</li>
-                <li>When you need to scale out quickly.</li>
-                <li>
-                    For applications like:
-                    <ul>
-                        <li>Real-time analytics</li>
-                        <li>Content management systems</li>
-                        <li>IoT data storage</li>
-                        <li>Mobile or web apps with complex data models</li>
-                    </ul>
-                </li>
-            </ol>
-        </section>
-
-        <section>
-            <h2>🧾 Example Document:</h2>
+            <h2>🧠 Simple idea</h2>
+            <p>Think of MongoDB as a system where data is stored like this:</p>
             <pre><code>
 {
-    "_id": "12345",
     "name": "Alice",
-    "email": "alice@example.com",
-    "orders": [
-        { "item": "Laptop", "price": 999 },
-        { "item": "Mouse", "price": 25 }
-    ]
-}                  
+    "age": 25,
+    "skills": ["JavaScript", "Python"]
+}
             </code></pre>
-
-            <p>This would be a single document in a MongoDB collection, similar to a row in a SQL database — but more flexible.</p>
+            <p>Each of these records is called a document, and a group of documents is called a collection (similar to a table in SQL).</p>
         </section>
 
         <section>
-            <p>Here are a few common topics related to MongoDB — let me know which you're interested in, or describe your goal:</p>
-            <p>Basics:</p>
+            <h2>🔑 Key Features</h2>
             <ul>
-                <li>What is MongoDB?</li>
-                <li>How to install MongoDB</li>
-                <li>MongoDB vs SQL databases</li>
+                <li>
+                    Document-oriented
+                    <p>Data is stored in flexible JSON-like format (called BSON)</p>
+                </li>
+                <li>
+                    Schema-less
+                    <p>You don’t need to define a fixed structure beforehand</p>
+                </li>
+                <li>
+                    Scalable
+                    <p>Designed to handle large amounts of data across multiple servers</p>
+                </li>
+                <li>
+                    Fast and flexible
+                    <p>Great for applications that change frequently</p>
+                </li>
             </ul>
+        </section>
 
-            <p>Working with Data:</p>
+        <section>
+            <h2>🏗️ Basic Structure</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>MongoDB Concept</th>
+                        <th>Similar SQL Concept</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Database</td>
+                        <td>Database</td>
+                    </tr>
+                    <tr>
+                        <td>Collection</td>
+                        <td>Table</td>
+                    </tr>
+                    <tr>
+                        <td>Document</td>
+                        <td>Row</td>
+                    </tr>
+                    <tr>
+                        <td>Field</td>
+                        <td>Column</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🚀 Where MongoDB is used</h2>
+            <p>MongoDB is commonly used in:</p>
             <ul>
-                <li>CRUD operations (Create, Read, Update, Delete)</li>
-                <li>Querying documents</li>
-                <li>Aggregation pipelines</li>
+                <li>Web applications</li>
+                <li>Real-time analytics</li>
+                <li>Content management systems</li>
+                <li>Mobile apps</li>
+                <li>Big data applications</li>
             </ul>
+        </section>
 
-            <p>Setup & Tools:</p>
+        <section>
+            <h2>📌 Example use case</h2>
+            <p>A social media app might store user data like posts, comments, and likes in MongoDB because the structure can vary and evolve easily.</p>
+        </section>
+
+        <section>
+            <p>When people say “Mongoose MongoDB implementation”, they’re usually talking about using Mongoose as a layer on top of MongoDB in a Node.js app.</p>
+            <p>Mongoose is an ODM (Object Data Modeling) library—it gives structure, validation, and cleaner code when working with MongoDB.</p>
+            <h2>🧠 Why use Mongoose instead of raw MongoDB?</h2>
+            <p>Using the native MongoDB driver works, but Mongoose adds:</p>
             <ul>
-                <li>MongoDB Atlas (cloud-based MongoDB)</li>
-                <li>Connecting via Mongoose (Node.js)</li>
-                <li>Using MongoDB Compass (GUI)</li>
+                <li>Schemas (define structure)</li>
+                <li>Validation (required fields, types, etc.)</li>
+                <li>Models (clean abstraction for queries)</li>
+                <li>Middleware/hooks (before/after save)</li>
+                <li>Better dev experience</li>
             </ul>
+        </section>
 
-            <p>Advanced Topics:</p>
+        <section>
+            <h2>⚙️ Basic Implementation (Node.js)</h2>
+            <p>1. Install dependencies</p>
+            <pre><code>
+npm install mongoose
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Connect to MongoDB</h2>
+            <pre><code>
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://127.0.0.1:27017/myapp', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+mongoose.connection.on('connected', () => {
+  console.log('MongoDB connected');
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Create a Schema</h2>
+            <pre><code>
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    age: Number,
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Create a Model</h2>
+            <pre><code>
+const User = mongoose.model('User', userSchema);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. CRUD Operations</h2>
+            <p>➤ Create</p>
+            <pre><code>
+const user = new User({
+    name: 'Paul',
+    email: 'paul@example.com',
+    age: 30
+});
+    
+await user.save();
+            </code></pre>
+
+            <p>➤ Read</p>
+            <pre><code>
+const users = await User.find();
+const singleUser = await User.findOne({ email: 'paul@example.com' });
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>➤ Update</h2>
+            <pre><code>
+await User.updateOne(
+  { email: 'paul@example.com' },
+  { age: 31 }
+);
+            </code></pre>
+
+            <p>➤ Delete</p>
+            <pre><code>
+await User.deleteOne({ email: 'paul@example.com' });
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 Real-world pattern (clean structure)</h2>
+            <p>For a production Node.js API (like your AWS Lambda setup), you’d usually structure it like:</p>
+            <pre><code>
+/models
+  user.model.js
+/controllers
+  user.controller.js
+/services
+  user.service.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 Example Model File</h2>
+            <pre><code>
+// models/user.model.js
+const mongoose = require('mongoose');
+
+const schema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  name: String,
+}, { timestamps: true });
+
+module.exports = mongoose.model('User', schema);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚠️ Important (Serverless / AWS Lambda)</h2>
+            <p>Since you're working with serverless:</p>
             <ul>
-                <li>Indexing for performance</li>
-                <li>Schema design best practices</li>
-                <li>Replication & Sharding</li>
-                <li>Transactions in MongoDB</li>
+                <li>DON’T reconnect on every request</li>
+                <li>Cache the connection</li>
+            </ul>
+            <pre><code>
+let isConnected = false;
+
+module.exports.connectDB = async () => {
+  if (isConnected) return;
+
+  await mongoose.connect(process.env.MONGO_URI);
+  isConnected = true;
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>💡 When to use Mongoose</h2>
+            <p>Use it when:</p>
+            <ul>
+                <li>You want structured data + validation</li>
+                <li>You prefer models over raw queries</li>
+                <li>You’re building APIs quickly</li>
+            </ul>
+            <p>Avoid it when:</p>
+            <ul>
+                <li>You need ultra-high performance tuning</li>
+                <li>You want full control of raw MongoDB queries</li>
             </ul>
         </section>
     </main>

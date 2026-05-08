@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Kong Gateway</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Kong Gateway</h1>
+                    <p class="subtitle">Kong Gateway is a popular open-source API gateway used to manage, secure, and route API traffic between clients (like apps or browsers) and backend services (like microservices).</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Simple explanation</h2>
+            <p>Think of Kong Gateway as a “traffic controller” for APIs:</p>
+            <ul>
+                <li>Clients → send requests</li>
+                <li>Kong Gateway → receives & processes them</li>
+                <li>Backend services → handle the logic</li>
+                <li>Kong Gateway → returns the response</li>
+            </ul>
+            <p>It acts as a single entry point for all your APIs.</p>
+        </section>
+
+        <section>
+            <h2>⚙️ What it actually does</h2>
+            <p>Kong Gateway sits in front of your services and handles common API concerns:</p>
+            <ul>
+                <li>Routing → sends requests to the correct service</li>
+                <li>Authentication & security → verifies users (JWT, OAuth, etc.)</li>
+                <li>Rate limiting → prevents abuse (e.g., too many requests)</li>
+                <li>Load balancing → distributes traffic across services</li>
+                <li>Logging & monitoring → tracks API usage</li>
+                <li>Transformation → modifies requests/responses</li>
+            </ul>
+            <p>👉 All of this happens without changing your backend code.</p>
+        </section>
+
+        <section>
+            <h2>🏗️ How it fits in architecture</h2>
+            <p>In modern systems (especially microservices), you might have dozens of APIs.</p>
+            <p>Instead of exposing all of them directly:</p>
+            <pre><code>
+Client → Kong Gateway → Multiple Services (User, Payment, Orders...)
+            </code></pre>
+            <p>This simplifies things because:</p>
+            <ul>
+                <li>Clients talk to one endpoint</li>
+                <li>Kong handles complexity behind the scenes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Key features of Kong Gateway</h2>
+            <ul>
+                <li>High performance (built on NGINX)</li>
+                <li>Plugin system (easy to extend functionality)</li>
+                <li>Cloud-native & Kubernetes support</li>
+                <li>Works anywhere (on-prem, cloud, hybrid)</li>
+                <li>Declarative config & APIs for automation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>💡 Why people use Kong</h2>
+            <ul>
+                <li>Centralized API management</li>
+                <li>Strong security layer</li>
+                <li>Scales easily with microservices</li>
+                <li>Reduces complexity for frontend apps</li>
+                <li>Improves performance and reliability</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 In one line</h2>
+            <p>Kong Gateway = a high-performance API gateway that manages, secures, and routes API traffic in modern applications.</p>
+            <p>If you want, I can show you:</p>
+            <ul>
+                <li>how to install Kong</li>
+                <li>real-world architecture examples</li>
+                <li>or compare Kong vs tools like NGINX, Apigee, or AWS API Gateway 👍</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here’s a practical, no-nonsense comparison of Kong vs NGINX vs Apigee vs AWS API Gateway—focused on how they actually differ in real-world systems (especially relevant to your AWS/serverless + mobile background).</p>
+            <h2>🆚 High-level positioning</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>What it really is</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Kong Gateway</td>
+                        <td>Open-source API gateway + plugin ecosystem</td>
+                    </tr>
+                    <tr>
+                        <td>NGINX</td>
+                        <td>Web server / reverse proxy (can act like a lightweight gateway)</td>
+                    </tr>
+                    <tr>
+                        <td>Google Apigee</td>
+                        <td>Full enterprise API management platform</td>
+                    </tr>
+                    <tr>
+                        <td>AWS API Gateway</td>
+                        <td>Fully managed API gateway (serverless-friendly)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>⚔️ Core differences (straight to the point)</h2>
+            <h2>1. 🧠 Philosophy</h2>
+            <ul>
+                <li>Kong → Developer-first, flexible, extensible</li>
+                <li>NGINX → Low-level building block</li>
+                <li>Apigee → Enterprise governance & monetization</li>
+                <li>AWS API Gateway → Fully managed, AWS-native</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. ⚙️ Setup & Control</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Control</th>
+                        <th>Setup complexity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Kong</td>
+                        <td>High</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>NGINX</td>
+                        <td>Very high</td>
+                        <td>High (manual config)</td>
+                    </tr>
+                    <tr>
+                        <td>Apigee</td>
+                        <td>Medium</td>
+                        <td>High (enterprise-heavy)</td>
+                    </tr>
+                    <tr>
+                        <td>AWS API Gateway</td>
+                        <td>Low</td>
+                        <td>Very low</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 Reality:</p>
+            <ul>
+                <li>If you like custom control (like your Node.js + Lambda work) → Kong / NGINX</li>
+                <li>If you want zero infra management → AWS API Gateway</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. 🔌 Features out of the box</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kong</th>
+                        <th>NGINX</th>
+                        <th>Apigee</th>
+                        <th>AWS API Gateway</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>✅ (plugins)</td>
+                        <td>⚠️ manual</td>
+                        <td>✅ strong</td>
+                        <td>✅ built-in</td>
+                    </tr>
+                    <tr>
+                        <td>✅</td>
+                        <td>⚠️ manual</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>⚠️ basic</td>
+                        <td>❌</td>
+                        <td>✅ advanced</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>❌</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>✅ strong</td>
+                        <td>⚠️ limited</td>
+                        <td>⚠️ policy-based</td>
+                        <td>❌ limited</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. 🚀 Performance</h2>
+            <ul>
+                <li>NGINX → ⚡ fastest (bare metal, minimal abstraction)</li>
+                <li>Kong → ⚡ very fast (built on NGINX)</li>
+                <li>AWS API Gateway → ⚠️ slower (adds latency)</li>
+                <li>Apigee → ⚠️ slower (heavy processing layer)</li>
+            </ul>
+            <p>👉 If latency matters (real-time apps, streaming, etc.), Kong/NGINX win.</p>
+        </section>
+
+        <section>
+            <h2>5. ☁️ Cloud & ecosystem fit</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Best environment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Kong</td>
+                        <td>Multi-cloud / Kubernetes</td>
+                    </tr>
+                    <tr>
+                        <td>NGINX</td>
+                        <td>Anywhere</td>
+                    </tr>
+                    <tr>
+                        <td>Apigee</td>
+                        <td>Google Cloud enterprise</td>
+                    </tr>
+                    <tr>
+                        <td>AWS API Gateway</td>
+                        <td>AWS serverless</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 For your case (AWS Lambda + mobile app):</p>
+            <ul>
+                <li>AWS API Gateway fits naturally</li>
+                <li>Kong is useful if you want cloud independence or hybrid</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. 💸 Cost model</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Kong</td>
+                        <td>Free (OSS) + paid enterprise</td>
+                    </tr>
+                    <tr>
+                        <td>NGINX</td>
+                        <td>Free (OSS) + paid Plus</td>
+                    </tr>
+                    <tr>
+                        <td>Apigee</td>
+                        <td>💸 Expensive (enterprise pricing)</td>
+                    </tr>
+                    <tr>
+                        <td>AWS API Gateway</td>
+                        <td>Pay-per-request</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>👉 Reality:</p>
+            <ul>
+                <li>Small app → AWS API Gateway is cheapest upfront</li>
+                <li>Large scale → Kong can become cheaper than AWS</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Real-world use cases</h2>
+            <p>Use Kong Gateway if:</p>
+            <ul>
+                <li>You want microservices + flexibility</li>
+                <li>You need custom plugins</li>
+                <li>You want to avoid vendor lock-in</li>
+            </ul>
+            <p>Use NGINX if:</p>
+            <ul>
+                <li>You just need reverse proxy / load balancer</li>
+                <li>You’re okay building features manually</li>
+                <li>You want maximum performance</li>
+            </ul>
+
+            <p>Use Apigee if:</p>
+            <ul>
+                <li>You’re in a large enterprise</li>
+                <li>
+                    You need:
+                    <ul>
+                        <li>API monetization</li>
+                        <li>developer portals</li>
+                        <li>governance</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Use AWS API Gateway if:</h2>
+            <ul>
+                <li>You're building serverless APIs (Lambda)</li>
+                <li>You want fast deployment with minimal ops</li>
+                <li>You’re already deep in AWS</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Quick decision guide</h2>
+            <ul>
+                <li>Startup / solo dev / serverless app → 👉 AWS API Gateway</li>
+                <li>Custom backend / microservices / Kubernetes → 👉 Kong</li>
+                <li>High-performance infra / low-level control → 👉 NGINX</li>
+                <li>Enterprise API platform → 👉 Apigee</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔥 Honest takeaway</h2>
+            <ul>
+                <li>Kong = best balance of power + flexibility</li>
+                <li>NGINX = raw power, but DIY everything</li>
+                <li>Apigee = enterprise monster (powerful but heavy & expensive)</li>
+                <li>AWS API Gateway = easiest, but less flexible + AWS lock-in</li>
+            </ul>
+
+            <p>If you want, I can:</p>
+            <ul>
+                <li>map this specifically to your AWS Lambda + MongoDB + React Native architecture</li>
+                <li>or show a hybrid setup (Kong + AWS API Gateway) which is actually common in production systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here’s the practical comparison between Kong Gateway, NGINX, Apigee, and Amazon API Gateway.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Best for</th>
+                        <th>Main strength</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Kong</td>
+                        <td>Microservices, hybrid cloud, Kubernetes</td>
+                        <td>Fast, flexible, plugin-based, cloud-agnostic</td>
+                    </tr>
+                    <tr>
+                        <td>NGINX</td>
+                        <td>Reverse proxy, lightweight routing</td>
+                        <td>Very fast and simple</td>
+                    </tr>
+                    <tr>
+                        <td>Apigee</td>
+                        <td>Large enterprise API programs</td>
+                        <td>Excellent analytics, governance, developer portals</td>
+                    </tr>
+                    <tr>
+                        <td>AWS API Gateway</td>
+                        <td>AWS serverless apps</td>
+                        <td>Deep AWS integration, fully managed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧠 Core Responsibilities of an API Gateway</h2>
+            <p>At minimum, your custom gateway should:</p>
+            <ul>
+                <li>Route requests → correct backend service</li>
+                <li>Handle authentication (JWT, API keys, OAuth)</li>
+                <li>Rate limit / throttle</li>
+                <li>Transform requests/responses (optional)</li>
+                <li>Logging & monitoring</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚙️ Architecture Overview</h2>
+            <pre><code>
+Client (Mobile/Web)
+        ↓
+   API Gateway (Node.js)
+        ↓
+   Microservices (Auth, Users, Payments, etc.)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🚀 Step-by-Step (Node.js from scratch)</h2>
+            <h2>1. Basic HTTP Server</h2>
+            <p>Use Express as your base:</p>
+            <pre><code>
+npm init -y
+npm install express http-proxy-middleware jsonwebtoken
+            </code></pre>
+            <pre><code>
+// gateway.js
+const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+app.listen(3000, () => {
+  console.log('API Gateway running on port 3000');
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Request Routing (Reverse Proxy)</h2>
+            <pre><code>
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
+app.use('/users', createProxyMiddleware({
+  target: 'http://localhost:4001',
+  changeOrigin: true
+}));
+
+app.use('/payments', createProxyMiddleware({
+  target: 'http://localhost:4002',
+  changeOrigin: true
+}));
+            </code></pre>
+            <p>👉 Now:</p>
+            <ul>
+                <li>/users → User service</li>
+                <li>/payments → Payment service</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Authentication Middleware (JWT)</h2>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+function authMiddleware(req, res, next) {
+  const token = req.headers['authorization'];
+
+  if (!token) return res.status(401).send('No token');
+
+  try {
+    const decoded = jwt.verify(token, 'SECRET_KEY');
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(403).send('Invalid token');
+  }
+}
+            </code></pre>
+            <p>Apply it:</p>
+            <pre><code>
+app.use('/payments', authMiddleware);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Rate Limiting</h2>
+            <pre><code>
+npm install express-rate-limit
+            </code></pre>
+            <pre><code>
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 100
+});
+
+app.use(limiter);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Logging</h2>
+            <pre><code>
+npm install morgan
+            </code></pre>
+            <pre><code>
+const morgan = require('morgan');
+app.use(morgan('combined'));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Request Transformation (Optional)</h2>
+            <pre><code>
+app.use('/users', (req, res, next) => {
+    req.headers['x-gateway'] = 'custom-api-gateway';
+    next();
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 Optional Advanced Features</h2>
+            <p>Once the basics work, you can add:</p>
+            <ul>
+                <li>Caching (Redis)</li>
+                <li>Circuit breaker (e.g. fallback if service fails)</li>
+                <li>Load balancing</li>
+                <li>GraphQL gateway</li>
+                <li>Service discovery (like Consul)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>☁️ Compare vs Managed Gateways</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Your Gateway</th>
+                        <th>Amazon API Gateway</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Setup</td>
+                        <td>Full control</td>
+                        <td>Fully managed</td>
+                    </tr>
+                    <tr>
+                        <td>Scaling</td>
+                        <td>Manual</td>
+                        <td>Automatic</td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td>You implement</td>
+                        <td>Built-in</td>
+                    </tr>
+                    <tr>
+                        <td>Cost</td>
+                        <td>Infra-based</td>
+                        <td>Pay per request</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🧩 When to Build Your Own</h2>
+            <p>Good idea if:</p>
+            <ul>
+                <li>You want full control (like your AWS Lambda + MongoDB setup)</li>
+                <li>You need custom logic not supported by managed gateways</li>
+                <li>You’re learning system design</li>
+            </ul>
+            <p>Bad idea if:</p>
+            <ul>
+                <li>You just need production reliability quickly</li>
+                <li>You don’t want to maintain infra/security</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Realistic Advice (based on your experience)</h2>
+            <p>Since you're already working with:</p>
+            <ul>
+                <li>AWS Lambda</li>
+                <li>API Gateway</li>
+                <li>Authentication systems</li>
+            </ul>
+            <p>👉 Best approach:</p>
+            <ul>
+                <li>Use Amazon API Gateway for production</li>
+                <li>
+                    Build your own gateway locally for:
+                    <ul>
+                        <li>Learning</li>
+                        <li>Custom routing logic</li>
+                        <li>Edge-case handling</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>👍 If you want next step</p>
+            <p>I can help you build a production-grade version with:</p>
+            <ul>
+                <li>JWT + refresh tokens</li>
+                <li>Role-based access control</li>
+                <li>Service registry</li>
+                <li>gRPC + REST hybrid gateway (fits your current project)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
