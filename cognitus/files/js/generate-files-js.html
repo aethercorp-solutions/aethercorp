@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Generate Files in JS</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Generate Files in JS</h1>
+                    <p class="subtitle">
+                        Yes. Instead of manually maintaining the htmlFiles array, you can programmatically load all .html files from the files/ folder.
+                        <p>Because browsers cannot directly read local directories for security reasons, the solution depends on your environment.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Option 1 — Recommended (Node.js Script Auto-Generate)</h2>
+            <p>Create a script that scans your files/ directory and generates a JS file automatically.</p>
+            <p>1. Create generate-files.js</p>
+            <pre><code>
+const fs = require('fs');
+const path = require('path');
+
+const ROOT_DIR = './files';
+const OUTPUT_FILE = './files-list.js';
+
+function getHtmlFiles(dir, fileList = []) {
+  const files = fs.readdirSync(dir);
+
+  files.forEach(file => {
+    const fullPath = path.join(dir, file);
+    const stat = fs.statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      getHtmlFiles(fullPath, fileList);
+    } else if (file.endsWith('.html')) {
+      fileList.push(fullPath.replace(/\\/g, '/'));
+    }
+  });
+
+  return fileList;
+}
+
+const htmlFiles = getHtmlFiles(ROOT_DIR);
+
+const output =
+`const htmlFiles = ${JSON.stringify(htmlFiles, null, 2)};`;
+
+fs.writeFileSync(OUTPUT_FILE, output);
+
+console.log('files-list.js generated successfully.');
+            </code></pre>
+
+            <p>2. Run Script</p>
+            <pre><code>
+node generate-files.js
+            </code></pre>
+
+            <p>This creates:</p>
+            <pre><code>
+const htmlFiles = [
+  "files/aws/aws-lambda.html",
+  "files/css/flexbox.html",
+  ...
+];
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS Lambda, a server handler</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS Lambda, a server handler</h1>
+                    <p class="subtitle">
+                        In AWS Lambda, a server handler (commonly called a Lambda handler) is the main function AWS executes when your serverless function is triggered.
+                        <p>Think of it as:</p>
+                        <pre><code>
+Client Request/Event
+        ↓
+API Gateway / S3 / EventBridge / etc.
+        ↓
+Lambda Handler (your entry point)
+        ↓
+Business Logic
+        ↓
+Response
+                        </code></pre>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Basic Concept</h2>
+            <p>The handler is:</p>
+            <ul>
+                <li>the entry point of your Lambda function</li>
+                <li>the function AWS calls automatically</li>
+                <li>
+                    responsible for:
+                    <ul>
+                        <li>receiving the event/request</li>
+                        <li>processing logic</li>
+                        <li>returning a response</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example in Node.js</h2>
+            <pre><code>
+exports.handler = async (event) => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            message: "Hello from Lambda!"
+        })
+    };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Breakdown</h2>
+            <p>exports.handler</p>
+            <p>This exposes the function to AWS.</p>
+            <p>AWS looks for:</p>
+            <pre><code>
+fileName.exportedFunctionName
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+index.handler
+            </code></pre>
+
+            <p>Means:</p>
+            <ul>
+                <li>file = index.js</li>
+                <li>exported function = handler</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>event</h2>
+            <p>Contains incoming request data.</p>
+            <p>Example from API Gateway:</p>
+            <pre><code>
+{
+    "httpMethod": "GET",
+    "path": "/users",
+    "headers": {},
+    "body": null
+}
+            </code></pre>
+
+            <p>You access it like:</p>
+            <pre><code>
+event.httpMethod
+event.body
+event.path
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Full Real Example</h2>
+            <p>API Gateway → Lambda</p>
+            <pre><code>
+exports.handler = async (event) => {
+
+    console.log("Incoming event:", event);
+
+    const users = [
+        { id: 1, name: "Paul" },
+        { id: 2, name: "John" }
+    ];
+
+    return {
+        statusCode: 200,
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(users)
+    };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Request Flow</h2>
+            <p>1. Client calls API</p>
+            <pre><code>
+GET /users
+            </code></pre>
+
+            <p>2. API Gateway receives request</p>
+            <p>API Gateway converts request into an event object.</p>
+
+            <p>3. Lambda handler executes</p>
+            <pre><code>
+exports.handler = async (event) => {
+            </code></pre>
+            <p>AWS runs this function.</p>
+
+            <p>4. Business logic runs</p>
+            <pre><code>
+const users = [...]
+            </code></pre>
+
+            <p>5. Lambda returns response</p>
+            <pre><code>
+return {
+    statusCode: 200,
+    body: ...
+}
+            </code></pre>
+            <p>6. API Gateway sends response back</p>
+            <p>Client receives JSON.</p>
+        </section>
+
+        <section>
+            <h2>Event-Driven Architecture</h2>
+            <p>Lambda handlers can be triggered by many AWS services:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Trigger</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>API Gateway</td>
+                        <td>REST API</td>
+                    </tr>
+                    <tr>
+                        <td>S3</td>
+                        <td>File upload</td>
+                    </tr>
+                    <tr>
+                        <td>DynamoDB Streams</td>
+                        <td>Database change</td>
+                    </tr>
+                    <tr>
+                        <td>EventBridge</td>
+                        <td>Scheduled cron</td>
+                    </tr>
+                    <tr>
+                        <td>SQS</td>
+                        <td>Queue message</td>
+                    </tr>
+                    <tr>
+                        <td>SNS</td>
+                        <td>Notifications</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Example: S3 Upload Trigger</h2>
+            <pre><code>
+exports.handler = async (event) => {
+
+    const fileName =
+        event.Records[0].s3.object.key;
+
+    console.log("Uploaded file:", fileName);
+
+    return {
+        statusCode: 200
+    };
+};
+            </code></pre>
+            <p>When a file uploads to S3:</p>
+            <pre><code>
+S3 Upload
+   ↓
+Lambda Handler Executes
+   ↓
+Process File
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Handler in Serverless Framework</h2>
+            <p>Example serverless.yml:</p>
+            <pre><code>
+functions:
+  getUsers:
+    handler: src/users.handler
+            </code></pre>
+
+            <p>Meaning:</p>
+            <pre><code>
+src/users.js
+exports.handler
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Internal Architecture</h2>
+            <pre><code>
+┌─────────────────┐
+│ Client          │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ API Gateway     │
+└────────┬────────┘
+         │ Event
+         ▼
+┌─────────────────┐
+│ Lambda Handler  │
+│ exports.handler │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Business Logic  │
+│ DB Calls        │
+│ Authentication  │
+│ Validation      │
+└─────────────────┘
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common Handler Structure (Production)</h2>
+            <pre><code>
+exports.handler = async (event) => {
+
+    try {
+
+        // 1. Validate request
+        // 2. Authenticate user
+        // 3. Execute business logic
+        // 4. Return response
+
+        return successResponse();
+
+    } catch (error) {
+
+        console.error(error);
+
+        return errorResponse();
+    }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Middleware Pattern</h2>
+            <p>Advanced projects use middleware:</p>
+            <pre><code>
+export const handler = middy(mainHandler)
+    .use(cors())
+    .use(authMiddleware())
+    .use(errorHandler());
+            </code></pre>
+
+            <p>Flow:</p>
+            <pre><code>
+Request
+  ↓
+Middleware
+  ↓
+Main Handler
+  ↓
+Middleware
+  ↓
+Response
+            </code></pre>
+            <p>Popular middleware library:</p>
+            <p>Middy.js</p>
+        </section>
+
+        <section>
+            <h2>Handler in Serverless Framework</h2>
+            <p>Example serverless.yml:</p>
+            <pre><code>
+functions:
+  getUsers:
+    handler: src/users.handler
+            </code></pre>
+
+            <p>Meaning:</p>
+            <pre><code>
+src/users.js
+exports.handler
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Internal Architecture</h2>
+            <pre><code>
+┌─────────────────┐
+│ Client          │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ API Gateway     │
+└────────┬────────┘
+         │ Event
+         ▼
+┌─────────────────┐
+│ Lambda Handler  │
+│ exports.handler │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Business Logic  │
+│ DB Calls        │
+│ Authentication  │
+│ Validation      │
+└─────────────────┘
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common Handler Structure (Production)</h2>
+            <pre><code>
+exports.handler = async (event) => {
+
+    try {
+
+        // 1. Validate request
+        // 2. Authenticate user
+        // 3. Execute business logic
+        // 4. Return response
+
+        return successResponse();
+
+    } catch (error) {
+
+        console.error(error);
+
+        return errorResponse();
+    }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Middleware Pattern</h2>
+            <p>Advanced projects use middleware:</p>
+            <pre><code>
+export const handler = middy(mainHandler)
+    .use(cors())
+    .use(authMiddleware())
+    .use(errorHandler());
+            </code></pre>
+
+            <p>Flow:</p>
+            <pre><code>
+Request
+  ↓
+Middleware
+  ↓
+Main Handler
+  ↓
+Middleware
+  ↓
+Response
+            </code></pre>
+            <p>Popular middleware library:</p>
+            <p>Middy.js</p>
+        </section>
+
+        <section>
+            <h2>Important Lambda Concepts</h2>
+            <p>Cold Start</p>
+            <p>First execution may be slower because AWS initializes runtime.</p>
+
+            <p>Stateless</p>
+            <p>Lambda should not rely on local memory between executions.</p>
+            <p>Use:</p>
+            <ul>
+                <li>MongoDB</li>
+                <li>DynamoDB</li>
+                <li>Redis</li>
+                <li>S3</li>
+            </ul>
+            <p>for persistence.</p>
+        </section>
+
+        <section>
+            <h2>Best Practices</h2>
+            <p>Keep handler thin</p>
+            <p>Good:</p>
+            <pre><code>
+Handler
+  ↓
+Service Layer
+  ↓
+Database Layer
+            </code></pre>
+            <p>Bad:</p>
+            <pre><code>
+Everything inside handler
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Better Architecture</h2>
+            <pre><code>
+exports.handler = async (event) => {
+
+    const user =
+        await userService.getUser();
+
+    return response(user);
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real Enterprise Structure</h2>
+            <pre><code>
+src/
+├── handlers/
+│   └── users.js
+├── services/
+│   └── userService.js
+├── repositories/
+│   └── userRepository.js
+├── middleware/
+├── utils/
+└── models/
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <p>A Lambda server handler is:</p>
+            <ul>
+                <li>the entry point of your serverless function</li>
+                <li>receives events/requests</li>
+                <li>executes business logic</li>
+                <li>returns responses</li>
+            </ul>
+            <p>Core flow:</p>
+            <pre><code>
+Trigger
+  ↓
+Handler
+  ↓
+Business Logic
+  ↓
+Response
+            </code></pre>
+            <p>For your AWS serverless Node.js architecture with API Gateway + Lambda + MongoDB, the handler is the bridge between:</p>
+            <pre><code>
+    API Request
+↔
+Business Logic
+↔
+Database
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

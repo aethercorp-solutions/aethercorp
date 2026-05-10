@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Middleware is software</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Middleware is software</h1>
+                    <p class="subtitle">
+                        Middleware is software that acts as a bridge between different applications, systems, or components, allowing them to communicate and work together smoothly.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple explanation</h2>
+            <p>Think of middleware like a translator or middle layer:</p>
+            <ul>
+                <li>One application sends a request</li>
+                <li>Middleware processes or modifies it</li>
+                <li>Then passes it to another application</li>
+                <li>And returns the response back</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>In everyday terms</h2>
+            <p>Imagine ordering food:</p>
+            <ul>
+                <li>You (client) → waiter (middleware) → kitchen (server)</li>
+                <li>The waiter takes your order, delivers it, and brings back the food</li>
+            </ul>
+            <p>The waiter is middleware.</p>
+        </section>
+
+        <section>
+            <h2>In software (especially web development)</h2>
+            <p>Middleware sits between the request and the response in an application.</p>
+            <p>For example, in a web app:</p>
+            <ol>
+                <li>User sends a request (e.g., login)</li>
+                <li>
+                    Middleware can:
+                    <ul>
+                        <li>Check authentication</li>
+                        <li>Log the request</li>
+                        <li>Validate data</li>
+                    </ul>
+                </li>
+                <li>Then the request reaches the main application logic</li>
+                <li>Response goes back through middleware again</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Common uses of middleware</h2>
+            <ul>
+                <li>Authentication (checking if a user is logged in)</li>
+                <li>Logging (tracking requests)</li>
+                <li>Data validation</li>
+                <li>Error handling</li>
+                <li>Security filtering</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example (conceptual)</h2>
+            <p>In frameworks like Express.js or Django, middleware functions run before your main code:</p>
+            <pre><code>
+Request → Middleware → Application → Middleware → Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Key idea</h2>
+            <p>Middleware = "in-between software that manages communication and processing"</p>
+            <p>In an AWS serverless Node.js architecture, the flow usually looks like this:</p>
+            <pre><code>
+Client App
+   ↓
+API Gateway
+   ↓
+Middleware
+   ↓
+Business Logic
+   ↓
+Database / External Services
+   ↓
+Response Middleware
+   ↓
+Client
+            </code></pre>
+            <p>Here’s the detailed breakdown using your stack style:</p>
+            <ul>
+                <li>React Native client</li>
+                <li>AWS API Gateway</li>
+                <li>AWS Lambda (Node.js)</li>
+                <li>MongoDB/Mongoose</li>
+                <li>JWT/Auth middleware</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. Client Layer</h2>
+            <p>This is your React Native app.</p>
+            <pre><code>
+fetch('https://api.example.com/users/profile', {
+    method: 'GET',
+    headers: {
+        Authorization: `Bearer ${token}`
+    }
+});
+            </code></pre>
+            <p>The client:</p>
+            <ul>
+                <li>Sends HTTP request</li>
+                <li>Adds JWT token</li>
+                <li>Sends JSON payload</li>
+                <li>Waits for response</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. API Gateway</h2>
+            <p>Amazon API Gateway acts as the entry point.</p>
+            <p>Responsibilities:</p>
+            <ul>
+                <li>Receives HTTP request</li>
+                <li>Routes request to correct Lambda</li>
+                <li>Handles CORS</li>
+                <li>Rate limiting</li>
+                <li>Authorization</li>
+                <li>Request validation</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+GET /users/profile
+    ↓
+routes to
+    ↓
+Lambda function: getProfile
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Lambda Handler (Entry Point)</h2>
+            <p>Your Lambda receives the request event.</p>
+            <p>Example:</p>
+            <pre><code>
+module.exports.getProfile = async (event) => {
+    console.log(event);
+};
+            </code></pre>
+            <p>The event contains:</p>
+            <ul>
+                <li>headers</li>
+                <li>body</li>
+                <li>query params</li>
+                <li>path params</li>
+                <li>auth data</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+event.headers.Authorization
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Middleware Layer</h2>
+            <p>Middleware executes BEFORE business logic.</p>
+            <p>In Node.js serverless apps, middleware is commonly implemented using:</p>
+            <ul>
+                <li>Middy</li>
+                <li>custom wrapper functions</li>
+                <li>Express-like patterns</li>
+            </ul>
+            <p>Example architecture:</p>
+            <pre><code>
+Request
+  ↓
+Auth Middleware
+  ↓
+Validation Middleware
+  ↓
+Logging Middleware
+  ↓
+Business Logic
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Authentication Middleware</h2>
+            <p>This checks JWT tokens.</p>
+            <p>Example flow:</p>
+            <pre><code>
+Client sends JWT
+    ↓
+Middleware extracts token
+    ↓
+Verifies token
+    ↓
+Adds user info to request context
+    ↓
+Continues to business logic
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+const authMiddleware = async (event) => {
+    const token = event.headers.Authorization;
+    
+    const decoded = verifyJWT(token);
+    
+    event.user = decoded;
+};
+            </code></pre>
+
+            <p>If invalid:</p>
+            <pre><code>
+return {
+    statusCode: 401,
+    body: 'Unauthorized'
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Validation Middleware</h2>
+            <p>Checks request data before business logic runs.</p>
+            <p>Example:</p>
+            <pre><code>
+POST /users
+            </code></pre>
+            <p>Middleware checks:</p>
+            <ul>
+                <li>email exists</li>
+                <li>password length</li>
+                <li>valid JSON</li>
+            </ul>
+
+            <p>Example:</p>
+            <pre><code>
+if (!body.email) {
+    throw new Error('Email required');
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Logging Middleware</h2>
+            <p>Tracks requests for monitoring/debugging.</p>
+            <p>Example:</p>
+            <pre><code>
+console.log({
+    path: event.path,
+    user: event.user.id
+});
+            </code></pre>
+
+            <p>Useful for:</p>
+            <ul>
+                <li>CloudWatch logs</li>
+                <li>analytics</li>
+                <li>debugging production issues</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Business Logic Layer</h2>
+            <p>This is the actual application functionality.</p>
+            <p>Example:</p>
+            <pre><code>
+const user = await User.findById(event.user.id);
+            </code></pre>
+
+            <p>Business logic should:</p>
+            <ul>
+                <li>contain app rules</li>
+                <li>not handle authentication directly</li>
+                <li>focus on operations</li>
+            </ul>
+
+            <p>Examples:</p>
+            <ul>
+                <li>create invoice</li>
+                <li>calculate totals</li>
+                <li>process payments</li>
+                <li>generate analytics</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Database Layer</h2>
+            <p>Your Lambda connects to MongoDB.</p>
+            <p>Example:</p>
+            <pre><code>
+await mongoose.connect(process.env.MONGO_URI);
+            </code></pre>
+
+            <p>Flow:</p>
+            <pre><code>
+Business Logic
+   ↓
+Mongoose Model
+   ↓
+MongoDB
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+const invoices = await Invoice.find({
+    userId: event.user.id
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Response Middleware</h2>
+            <p>Middleware can also modify responses.</p>
+            <p>Example:</p>
+            <pre><code>
+return {
+    statusCode: 200,
+    headers: {
+        'Access-Control-Allow-Origin': '*'
+    },
+    body: JSON.stringify(data)
+};
+            </code></pre>
+
+            <p>Response middleware may:</p>
+            <ul>
+                <li>add headers</li>
+                <li>compress response</li>
+                <li>standardize API format</li>
+                <li>handle errors</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>11. Response Back to Client</h2>
+            <p>Final response flow:</p>
+            <pre><code>
+MongoDB
+   ↓
+Business Logic
+   ↓
+Middleware
+   ↓
+API Gateway
+   ↓
+React Native App
+            </code></pre>
+
+            <p>Client receives:</p>
+            <pre><code>
+{
+    "success": true,
+    "user": {
+        "name": "Paul"
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real Full Flow Example</h2>
+            <p>User Opens Profile Screen</p>
+            <p>Step 1 — Client Request</p>
+            <p>React Native:</p>
+            <pre><code>
+GET /profile
+Authorization: Bearer eyJ...
+            </code></pre>
+
+            <p>Step 2 — API Gateway</p>
+            <p>Routes request:</p>
+            <pre><code>
+/profile
+   ↓
+getProfile Lambda
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3 — Auth Middleware</h2>
+            <p>Middleware:</p>
+            <ul>
+                <li>extracts token</li>
+                <li>verifies JWT</li>
+                <li>attaches user info</li>
+            </ul>
+            <pre><code>
+event.user = {
+    id: '123'
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3 — Auth Middleware</h2>
+            <p>Middleware:</p>
+            <ul>
+                <li>extracts token</li>
+                <li>verifies JWT</li>
+                <li>attaches user info</li>
+            </ul>
+
+            <pre><code>
+event.user = {
+    id: '123'
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4 — Validation Middleware</h2>
+            <p>Checks:</p>
+            <ul>
+                <li>token exists</li>
+                <li>headers valid</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 5 — Business Logic</h2>
+            <p>Lambda:</p>
+            <pre><code>
+const user = await User.findById(event.user.id);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 6 — MongoDB</h2>
+            <p>Returns:</p>
+            <pre><code>
+{
+    "_id": "123",
+    "name": "Paul"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 7 — Response Middleware</h2>
+            <p>Formats:</p>
+            <pre><code>
+{
+    "success": true,
+    "data": {
+        "name": "Paul"
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 8 — Client Receives Response</h2>
+            <p>React Native updates UI.</p>
+        </section>
+
+        <section>
+            <h2>Typical Folder Structure</h2>
+            <pre><code>
+src/
+ ├── handlers/
+ │    └── users.js
+ │
+ ├── middleware/
+ │    ├── auth.js
+ │    ├── validation.js
+ │    └── logger.js
+ │
+ ├── services/
+ │    └── userService.js
+ │
+ ├── models/
+ │    └── User.js
+ │
+ └── utils/
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Important Architecture Principle</h2>
+            <p>Middleware should handle:</p>
+            <ul>
+                <li>cross-cutting concerns</li>
+                <li>reusable processing</li>
+            </ul>
+            <p>Business logic should handle:</p>
+            <ul>
+                <li>actual application rules</li>
+            </ul>
+            <p>Good separation:</p>
+            <pre><code>
+Middleware = HOW request is processed
+Business Logic = WHAT app does
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common Middleware in AWS Serverless</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Middleware</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Auth</td>
+                        <td>Verify JWT</td>
+                    </tr>
+                    <tr>
+                        <td>CORS</td>
+                        <td>Browser access</td>
+                    </tr>
+                    <tr>
+                        <td>Logger</td>
+                        <td>Debugging</td>
+                    </tr>
+                    <tr>
+                        <td>Validator</td>
+                        <td>Validate body</td>
+                    </tr>
+                    <tr>
+                        <td>Error Handler</td>
+                        <td>Standard errors</td>
+                    </tr>
+                    <tr>
+                        <td>Rate Limiter</td>
+                        <td>Prevent abuse</td>
+                    </tr>
+                    <tr>
+                        <td>Analytics</td>
+                        <td>Track usage</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <p>Common Middleware Libraries</p>
+            <ul>
+                <li>Middy</li>
+                <li>AWS Lambda Powertools for TypeScript</li>
+                <li>Serverless Framework</li>
+            </ul>
+
+            <p>In AWS serverless architecture, a Lambda Handler is the main function AWS Lambda executes when an event triggers your function.</p>
+            <p>Think of it as:</p>
+            <ul>
+                <li>the entry point</li>
+                <li>the starting execution function</li>
+                <li>the bridge between AWS services and your business logic</li>
+            </ul>
+            <p>In Node.js serverless apps, the handler receives:</p>
+            <ol>
+                <li>the incoming event/request</li>
+                <li>execution context</li>
+                <li>optionally a callback</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>High-Level Flow</h2>
+            <p>Example architecture:</p>
+            <pre><code>
+Client App (React Native/Web)
+        ↓
+API Gateway
+        ↓
+AWS Lambda Handler
+        ↓
+Middleware
+        ↓
+Business Logic / Services
+        ↓
+Database / External APIs
+        ↓
+Response back to Client
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Basic Lambda Handler Example</h2>
+            <pre><code>
+exports.handler = async (event, context) => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            message: "Hello World"
+        })
+    };
+};
+            </code></pre>
+            <p>AWS Lambda looks for:</p>
+            <pre><code>
+fileName.exportedFunction
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+handler: src/users/getUser.handler
+            </code></pre>
+
+            <p>Means:</p>
+            <pre><code>
+src/users/getUser.js
+            </code></pre>
+
+            <p>and inside:</p>
+            <pre><code>
+exports.handler = async () => {}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Detailed Anatomy</h2>
+            <p>1. Event Object</p>
+            <p>The event contains the incoming request data.</p>
+            <p>If using API Gateway:</p>
+            <pre><code>
+exports.handler = async (event) => {
+    console.log(event);
+};
+            </code></pre>
+            <p>Example event:</p>
+            <pre><code>
+{
+    "httpMethod": "GET",
+    "path": "/users/123",
+    "headers": {
+        "Authorization": "Bearer token"
+    },
+    "queryStringParameters": {
+        "expand": "profile"
+    },
+    "pathParameters": {
+        "id": "123"
+    },
+    "body": "{\"name\":\"Paul\"}"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Event Sources</h2>
+            <p>Different AWS services send different event formats.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Event Contains</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>API Gateway</td>
+                        <td>HTTP request</td>
+                    </tr>
+                    <tr>
+                        <td>SQS</td>
+                        <td>Queue messages</td>
+                    </tr>
+                    <tr>
+                        <td>SNS</td>
+                        <td>Notifications</td>
+                    </tr>
+                    <tr>
+                        <td>S3</td>
+                        <td>File upload event</td>
+                    </tr>
+                    <tr>
+                        <td>DynamoDB Streams</td>
+                        <td>DB changes</td>
+                    </tr>
+                    <tr>
+                        <td>EventBridge</td>
+                        <td>Scheduled/custom events</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>2. Context Object</h2>
+            <p>Provides Lambda runtime info.</p>
+            <pre><code>
+exports.handler = async (event, context) => {
+    console.log(context);
+};
+            </code></pre>
+            <p>Contains:</p>
+            <pre><code>
+{
+    functionName,
+    functionVersion,
+    awsRequestId,
+    memoryLimitInMB,
+    getRemainingTimeInMillis()
+}
+            </code></pre>
+            <p>Useful for:</p>
+            <ul>
+                <li>logging</li>
+                <li>tracing</li>
+                <li>timeout handling</li>
+                <li>debugging</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Callback (Old Style)</h2>
+            <p>Older Node.js style:</p>
+            <pre><code>
+exports.handler = (event, context, callback) => {
+    callback(null, {
+        statusCode: 200,
+        body: "OK"
+    });
+};
+            </code></pre>
+            <p>Modern approach:</p>
+            <ul>
+                <li>use async/await</li>
+                <li>return Promise</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Internal Lambda Lifecycle</h2>
+            <p>Step 1 — Request Arrives</p>
+            <p>Example:</p>
+            <p>Client calls:</p>
+            <pre><code>
+GET /users/123
+            </code></pre>
+            <p>API Gateway receives request.</p>
+        </section>
+
+        <section>
+            <h2>Step 2 — API Gateway Converts Request to Event</h2>
+            <p>AWS transforms HTTP request into:</p>
+            <pre><code>
+{
+    "httpMethod": "GET",
+    "pathParameters": {
+        "id": "123"
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3 — Lambda Runtime Starts</h2>
+            <p>AWS:</p>
+            <ul>
+                <li>allocates container</li>
+                <li>loads Node.js runtime</li>
+                <li>loads your code</li>
+                <li>executes handler</li>
+            </ul>
+            <p>This is called:</p>
+            <p>Cold Start</p>
+        </section>
+
+        <section>
+            <h2>Cold Start Flow</h2>
+            <pre><code>
+Create Container
+↓
+Initialize Runtime
+↓
+Load Dependencies
+↓
+Execute Handler
+            </code></pre>
+            <p>Heavy imports increase cold start time:</p>
+            <pre><code>
+const AWS = require('aws-sdk');
+const mongoose = require('mongoose');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Warm Start</h2>
+            <p>If container already exists:</p>
+            <pre><code>
+Reuse Existing Container
+↓
+Execute Handler Immediately
+            </code></pre>
+            <p>Faster.</p>
+        </section>
+
+        <section>
+            <h2>Example Real Serverless Structure</h2>
+            <pre><code>
+src/
+ ├── handlers/
+ │    └── getUser.js
+ │
+ ├── middleware/
+ │    ├── auth.js
+ │    ├── validator.js
+ │    └── logger.js
+ │
+ ├── services/
+ │    └── userService.js
+ │
+ ├── repositories/
+ │    └── userRepository.js
+ │
+ └── utils/
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example Professional Handler</h2>
+            <pre><code>
+const middy = require('@middy/core');
+const authMiddleware = require('../middleware/auth');
+const validatorMiddleware = require('../middleware/validator');
+const userService = require('../services/userService');
+
+const baseHandler = async (event) => {
+
+    const userId = event.pathParameters.id;
+
+    const user = await userService.getUser(userId);
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(user)
+    };
+};
+
+exports.handler = middy(baseHandler)
+    .use(authMiddleware())
+    .use(validatorMiddleware());
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What Happens Internally</h2>
+            <pre><code>
+AWS invokes handler
+↓
+Middy wrapper executes
+↓
+Auth middleware runs
+↓
+Validation middleware runs
+↓
+Business logic executes
+↓
+Response middleware executes
+↓
+Return HTTP response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Middleware in Lambda</h2>
+            <p>Middleware acts like a processing pipeline.</p>
+            <p>Example:</p>
+            <pre><code>
+Incoming Request
+↓
+Authentication Middleware
+↓
+Authorization Middleware
+↓
+Validation Middleware
+↓
+Business Logic
+↓
+Response Formatter
+↓
+Error Handler
+↓
+Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example Authentication Middleware</h2>
+            <pre><code>
+const authMiddleware = () => {
+    return {
+        before: async (request) => {
+
+            const token =
+                request.event.headers.Authorization;
+
+            if (!token) {
+                throw new Error('Unauthorized');
+            }
+        }
+    };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Business Logic Separation</h2>
+            <p>Bad:</p>
+            <pre><code>
+exports.handler = async (event) => {
+    // 500 lines here
+};
+            </code></pre>
+            <p>Good:</p>
+            <pre><code>
+handler
+ → service
+   → repository
+     → database
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+const userService = require('../services/userService');
+
+exports.handler = async (event) => {
+
+    const user =
+        await userService.getUser(
+            event.pathParameters.id
+        );
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(user)
+    };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Lambda Execution Environment</h2>
+            <p>AWS creates isolated containers.</p>
+            <p>Each Lambda invocation runs in:</p>
+            <pre><code>
+Micro VM / Container
+            </code></pre>
+            <p>Contains:</p>
+            <ul>
+                <li>Node.js runtime</li>
+                <li>memory</li>
+                <li>temporary storage /tmp</li>
+                <li>environment variables</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Important Lambda Concepts</h2>
+            <p>1. Statelessness</p>
+            <p>Do NOT rely on memory persistence.</p>
+            <p>Bad:</p>
+            <pre><code>
+let currentUser;
+            </code></pre>
+            <p>Lambda containers may disappear anytime.</p>
+            <p>Use:</p>
+            <ul>
+                <li>DynamoDB</li>
+                <li>MongoDB</li>
+                <li>Redis</li>
+                <li>S3</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Reused Containers</h2>
+            <p>Global variables may persist temporarily.</p>
+            <p>Example:</p>
+            <pre><code>
+const mongoose = require('mongoose');
+
+let cachedConnection;
+            </code></pre>
+            <p>Useful for DB optimization.</p>
+        </section>
+
+        <section>
+            <h2>MongoDB Optimization Example</h2>
+            <p>Common in your AWS + Mongoose architecture:</p>
+            <pre><code>
+let isConnected = false;
+
+module.exports.connectDB = async () => {
+
+    if (isConnected) {
+        return;
+    }
+
+    await mongoose.connect(process.env.MONGO_URI);
+
+    isConnected = true;
+};
+            </code></pre>
+            <p>Without this:</p>
+            <ul>
+                <li>every invocation reconnects to MongoDB</li>
+                <li>performance degrades</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Timeout</h2>
+            <p>Every Lambda has timeout:</p>
+            <pre><code>
+timeout: 30
+            </code></pre>
+            <p>If exceeded:</p>
+            <pre><code>
+Task timed out
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Memory</h2>
+            <p>Configured memory:</p>
+            <pre><code>
+memorySize: 512
+            </code></pre>
+            <p>More memory:</p>
+            <ul>
+                <li>more CPU power</li>
+                <li>faster execution</li>
+                <li>higher cost</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Error Handling</h2>
+            <p>Example:</p>
+            <pre><code>
+exports.handler = async () => {
+
+    try {
+
+        return {
+            statusCode: 200,
+            body: 'Success'
+        };
+
+    } catch (error) {
+
+        return {
+            statusCode: 500,
+            body: JSON.stringify({
+                message: error.message
+            })
+        };
+    }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>API Gateway + Lambda Response Format</h2>
+            <p>Lambda must return:</p>
+            <pre><code>
+{
+    statusCode: 200,
+    headers: {},
+    body: JSON.stringify(data)
+}
+            </code></pre>
+            <p>body must be stringified.</p>
+        </section>
+
+        <section>
+            <h2>Real Authentication Flow</h2>
+            <p>Example with Cognito JWT:</p>
+            <pre><code>
+React Native App
+↓
+Login via Cognito
+↓
+Receive JWT Token
+↓
+Send Authorization Header
+↓
+API Gateway
+↓
+Lambda Handler
+↓
+Auth Middleware verifies JWT
+↓
+Business Logic
+↓
+MongoDB
+↓
+Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example JWT Verification</h2>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+exports.handler = async (event) => {
+
+    const token =
+        event.headers.Authorization;
+
+    const decoded =
+        jwt.verify(token, process.env.JWT_SECRET);
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(decoded)
+    };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Lambda Handler vs Express Server</h2>
+            <p>Traditional Express:</p>
+            <pre><code>
+Server always running
+            </code></pre>
+
+            <p>Lambda:</p>
+            <pre><code>
+Function runs only when triggered
+            </code></pre>
+
+            <p>Express:</p>
+            <pre><code>
+app.get('/users', handler)
+            </code></pre>
+
+            <p>Lambda:</p>
+            <pre><code>
+exports.handler = async (event) => {}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Serverless Framework Example</h2>
+            <pre><code>
+functions:
+  getUser:
+    handler: src/handlers/getUser.handler
+    events:
+      - http:
+          path: users/{id}
+          method: get
+            </code></pre>
+            
+            <p>Flow:</p>
+            <pre><code>
+HTTP GET /users/123
+↓
+API Gateway
+↓
+src/handlers/getUser.js
+↓
+exports.handler()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Best Practices</h2>
+            <p>Keep Handler Thin</p>
+            <p>Good:</p>
+            <pre><code>
+Handler = orchestration only
+            </code></pre>
+
+            <p>Avoid:</p>
+            <ul>
+                <li>huge business logic</li>
+                <li>direct DB complexity</li>
+                <li>large validation blocks</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Use Layers</h2>
+            <p>For shared:</p>
+            <ul>
+                <li>utilities</li>
+                <li>SDKs</li>
+                <li>common libraries</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Reuse Connections</h2>
+            <p>Especially:</p>
+            <ul>
+                <li>MongoDB</li>
+                <li>Redis</li>
+                <li>PostgreSQL</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Use Environment Variables</h2>
+            <pre><code>
+process.env.MONGO_URI
+            </code></pre>
+            <p>Never hardcode secrets.</p>
+        </section>
+
+        <section>
+            <h2>Structured Logging</h2>
+            <pre><code>
+console.log(JSON.stringify({
+    action: 'GET_USER',
+    userId
+}));
+            </code></pre>
+            <p>Better for CloudWatch analysis.</p>
+        </section>
+
+        <section>
+            <h2>Full Realistic Flow</h2>
+            <pre><code>
+React Native App
+↓
+HTTPS Request
+↓
+API Gateway
+↓
+Lambda Handler
+↓
+Middy Middleware
+    ↓ Auth
+    ↓ Validation
+    ↓ Logger
+↓
+Service Layer
+↓
+Repository Layer
+↓
+MongoDB
+↓
+Return Data
+↓
+API Gateway
+↓
+Client Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <p>A Lambda Handler is:</p>
+            <pre><code>
+The main serverless execution entry point
+            </code></pre>
+            <p>It:</p>
+            <ul>
+                <li>orchestrates middleware</li>
+                <li>calls business logic</li>
+                <li>returns responses</li>
+            </ul>
+            <p>In professional AWS serverless architecture:</p>
+            <ul>
+                <li>handler = thin controller</li>
+                <li>middleware = cross-cutting concerns</li>
+                <li>services = business logic</li>
+                <li>repositories = data access</li>
+                <li>AWS Lambda = execution environment</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

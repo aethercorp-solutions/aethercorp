@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Amazon Web Services Serverless Lambda</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Amazon Web Services Serverless Lambda</h1>
+                    <p class="subtitle">
+                        Amazon Web Services Serverless Lambda usually refers to building backend applications using AWS Lambda and other managed cloud services where you do not manage servers manually.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is AWS Lambda?</h2>
+            <p>AWS Lambda is a serverless compute service that runs your code automatically when an event happens.</p>
+            <p>You only:</p>
+            <ul>
+                <li>Write code</li>
+                <li>Upload/deploy it</li>
+                <li>Configure triggers</li>
+            </ul>
+
+            <p>AWS handles:</p>
+            <ul>
+                <li>Servers</li>
+                <li>Scaling</li>
+                <li>Availability</li>
+                <li>Infrastructure maintenance</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Traditional Server vs Serverless Lambda</h2>
+            <p>Traditional Server</p>
+            <p>You manage:</p>
+            <ul>
+                <li>EC2 servers</li>
+                <li>OS updates</li>
+                <li>Scaling</li>
+                <li>Load balancers</li>
+                <li>Server uptime</li>
+            </ul>
+            <p>Flow:</p>
+            <pre><code>
+Client → Server (always running) → Database
+            </code></pre>
+            <p>Even with no users:</p>
+            <ul>
+                <li>Server still runs</li>
+                <li>You still pay</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Serverless Lambda</h2>
+            <p>Flow:</p>
+            <pre><code>
+Client → API Gateway → Lambda → Database
+            </code></pre>
+
+            <p>Lambda:</p>
+            <ul>
+                <li>Runs only when requested</li>
+                <li>Auto-scales</li>
+                <li>Stops after execution</li>
+                <li>Pay only for execution time</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Core AWS Serverless Components</h2>
+            <p>1. Lambda Function</p>
+            <p>Your backend code.</p>
+            <p>Example:</p>
+            <ul>
+                <li>Login API</li>
+                <li>Upload API</li>
+                <li>Payment processing</li>
+                <li>Chatbot logic</li>
+            </ul>
+
+            <p>Supports:</p>
+            <ul>
+                <li>Node.js</li>
+                <li>Python</li>
+                <li>Java</li>
+                <li>Go</li>
+                <li>.NET</li>
+            </ul>
+
+            <p>Example Node.js Lambda:</p>
+            <pre><code>
+exports.handler = async (event) => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            message: "Hello Serverless"
+        })
+    };
+};
+            </code></pre>
+
+            <p>2. API Gateway</p>
+            <p>Amazon API Gateway exposes Lambda as HTTP endpoints.</p>
+            <p>Example:</p>
+            <pre><code>
+POST /login
+GET /users
+PUT /profile
+            </code></pre>
+
+            <p>Flow:</p>
+            <pre><code>
+Mobile App
+    ↓
+API Gateway
+    ↓
+Lambda
+            </code></pre>
+
+            <p>3. Database</p>
+            <p>Common choices:</p>
+            <ul>
+                <li>Amazon DynamoDB</li>
+                <li>MongoDB</li>
+                <li>Amazon RDS</li>
+            </ul>
+
+            <p>4. Authentication</p>
+            <p>Usually:</p>
+            <ul>
+                <li>Amazon Cognito</li>
+                <li>JWT tokens</li>
+                <li>OAuth</li>
+                <li>Google Login</li>
+                <li>Azure AD</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Complete Serverless Architecture</h2>
+            <pre><code>
+React Native App / Web App
+        ↓
+    API Gateway
+        ↓
+    Lambda
+        ↓
+MongoDB / DynamoDB
+            </code></pre>
+
+            <p>Optional:</p>
+            <ul>
+                <li>S3 for file uploads</li>
+                <li>Cognito for auth</li>
+                <li>CloudWatch for logs</li>
+                <li>SNS/SQS for messaging</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Lambda Execution Flow</h2>
+            <p>Step-by-Step</p>
+            <p>1. Client sends request</p>
+            <p>Example:</p>
+            <pre><code>
+POST /login
+            </code></pre>
+
+            <p>2. API Gateway receives request</p>
+            <p>It:</p>
+            <ul>
+                <li>Validates request</li>
+                <li>Handles CORS</li>
+                <li>Sends request to Lambda</li>
+            </ul>
+
+            <p>3. Lambda executes</p>
+            <p>Example:</p>
+            <pre><code>
+exports.handler = async (event) => {
+
+    const body = JSON.parse(event.body);
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            success: true
+        })
+    };
+};
+            </code></pre>
+
+            <p>4. Lambda connects to database</p>
+            <p>Example:</p>
+            <ul>
+                <li>Verify user</li>
+                <li>Save data</li>
+                <li>Fetch records</li>
+            </ul>
+
+            <p>5. Response returned</p>
+            <pre><code>
+{
+    "success": true
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Benefits of Serverless Lambda</h2>
+            <p>Auto Scaling</p>
+            <p>1 request → 1 Lambda instance</p>
+            <p>10,000 requests → AWS creates more instances automatically</p>
+        </section>
+
+        <section>
+            <h2>Lower Cost</h2>
+            <p>You pay only:</p>
+            <ul>
+                <li>Execution time</li>
+                <li>Requests</li>
+            </ul>
+            <p>No idle server cost.</p>
+        </section>
+
+        <section>
+            <h2>Faster Development</h2>
+            <p>Focus only on:</p>
+            <ul>
+                <li>Business logic</li>
+                <li>APIs</li>
+                <li>Features</li>
+            </ul>
+            <p>Not infrastructure.</p>
+        </section>
+
+        <section>
+            <h2>Important Lambda Concepts</h2>
+            <p>Lambda Handler</p>
+            <p>Entry point of execution.</p>
+            <p>Example:</p>
+            <pre><code>
+exports.handler = async (event) => {
+};
+            </code></pre>
+            <ul>
+                <li>event = incoming request</li>
+                <li>context = runtime info</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Event Object</h2>
+            <p>Contains:</p>
+            <ul>
+                <li>Headers</li>
+                <li>Body</li>
+                <li>Query params</li>
+                <li>Path params</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+event.body
+event.headers
+event.queryStringParameters
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Cold Start</h2>
+            <p>If Lambda was inactive:</p>
+            <ul>
+                <li>AWS starts container</li>
+                <li>First request may be slower</li>
+            </ul>
+            <p>Common in:</p>
+            <ul>
+                <li>VPC connections</li>
+                <li>Large packages</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Stateless</h2>
+            <p>Lambda should not store memory permanently.</p>
+            <p>Use:</p>
+            <ul>
+                <li>Database</li>
+                <li>Redis</li>
+                <li>S3</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example Login API Architecture</h2>
+            <pre><code>
+React Native App
+      ↓
+API Gateway
+      ↓
+Lambda Login Function
+      ↓
+MongoDB
+      ↓
+JWT Token
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Typical Backend Folder Structure</h2>
+            <pre><code>
+project/
+│
+├── handler.js
+├── routes/
+├── controllers/
+├── services/
+├── models/
+├── middleware/
+├── utils/
+└── serverless.yml
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Serverless Framework</h2>
+            <p>Many developers use:</p>
+            <p>Serverless Framework</p>
+            <p>Example deployment:</p>
+            <pre><code>
+serverless deploy
+            </code></pre>
+            <p>Example config:</p>
+            <pre><code>
+service: my-api
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+
+functions:
+  login:
+    handler: handler.login
+    events:
+      - http:
+          path: login
+          method: post
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common AWS Serverless Services</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lambda</td>
+                        <td>Run backend code</td>
+                    </tr>
+                    <tr>
+                        <td>API Gateway</td>
+                        <td>HTTP API</td>
+                    </tr>
+                    <tr>
+                        <td>DynamoDB</td>
+                        <td>Database</td>
+                    </tr>
+                    <tr>
+                        <td>Cognito</td>
+                        <td>Authentication</td>
+                    </tr>
+                    <tr>
+                        <td>S3</td>
+                        <td>File storage</td>
+                    </tr>
+                    <tr>
+                        <td>CloudWatch</td>
+                        <td>Logs/monitoring</td>
+                    </tr>
+                    <tr>
+                        <td>SNS</td>
+                        <td>Notifications</td>
+                    </tr>
+                    <tr>
+                        <td>SQS</td>
+                        <td>Queue system</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Real-World Example</h2>
+            <p>Food Delivery App</p>
+            <p>APIs</p>
+            <pre><code>
+POST /login
+GET /restaurants
+POST /orders
+GET /tracking
+            </code></pre>
+            <p>Each endpoint:</p>
+            <ul>
+                <li>Separate Lambda</li>
+                <li>Independent scaling</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Best Practices</h2>
+            <p>Reuse Database Connections</p>
+            <p>For MongoDB:</p>
+            <pre><code>
+let cachedDb = null;
+            </code></pre>
+            <p>Avoid reconnecting every request.</p>
+        </section>
+
+        <section>
+            <h2>Use Environment Variables</h2>
+            <pre><code>
+environment:
+  DB_URL: xxx
+            </code></pre>
+            <p>Keep Lambdas Small</p>
+            <p>One responsibility per function.</p>
+        </section>
+
+        <section>
+            <h2>Add Middleware</h2>
+            <p>Examples:</p>
+            <ul>
+                <li>JWT validation</li>
+                <li>Logging</li>
+                <li>Error handling</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Typical Development Stack</h2>
+            <p>Since you're working with:</p>
+            <ul>
+                <li>React Native</li>
+                <li>AWS Lambda</li>
+                <li>MongoDB</li>
+                <li>Cognito</li>
+            </ul>
+            <p>A common stack is:</p>
+            <p>Authentication:</p>
+            <pre><code>
+Google Login / Cognito / Azure AD
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>When Serverless is Good</h2>
+            <p>Good for:</p>
+            <ul>
+                <li>Mobile APIs</li>
+                <li>Startups</li>
+                <li>SaaS apps</li>
+                <li>Event-driven systems</li>
+                <li>Chatbots</li>
+                <li>AI APIs</li>
+            </ul>
+            <p>Less ideal for:</p>
+            <ul>
+                <li>Long-running processes</li>
+                <li>Heavy CPU tasks</li>
+                <li>Persistent socket servers</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
