@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>The event loop in Node.js</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">The event loop in Node.js</h1>
+                    <p class="subtitle">
+                        The event loop in Node.js is what allows Node.js to handle many operations efficiently using a single thread. It’s the core mechanism behind Node’s non-blocking, asynchronous behavior.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 Big idea (simple explanation)</h2>
+            <p>Instead of waiting for tasks (like reading files or API calls) to finish, Node.js:</p>
+            <ul>
+                <li>Starts the task</li>
+                <li>Moves on to other work</li>
+                <li>Comes back to handle the result later</li>
+            </ul>
+            <p>The event loop is the system that keeps checking:</p>
+            <p>“Is anything finished? If yes, run its callback.”</p>
+        </section>
+
+        <section>
+            <h2>🔄 How it works (step by step)</h2>
+            <ol>
+                <li>Your code runs on the main thread</li>
+                <li>
+                    When it hits an async operation (e.g., setTimeout, file read, HTTP request):
+                    <ul>
+                        <li>The task is handed off to the system (or thread pool)</li>
+                    </ul>
+                </li>
+                <li>
+                    Once the task is done:
+                    <ul>
+                        <li>Its callback is placed into a queue</li>
+                    </ul>
+                </li>
+                <li>
+                    The event loop:
+                    <ul>
+                        <li>Continuously checks the queue</li>
+                        <li>Executes callbacks one by one when the main stack is free</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🔁 Event loop phases (simplified)</h2>
+            <p>The loop runs in cycles, with key phases like:</p>
+            <ol>
+                <li>Timers → executes setTimeout, setInterval</li>
+                <li>I/O callbacks → handles system-level callbacks</li>
+                <li>Idle/prepare</li>
+                <li>Poll → retrieves new I/O events</li>
+                <li>Check → executes setImmediate</li>
+                <li>Close callbacks</li>
+            </ol>
+            <p>Between these phases, Node also processes:</p>
+            <ul>
+                <li>Microtasks (like Promise.then, process.nextTick) — these run before the next phase</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧪 Example</h2>
+            <pre><code>
+console.log("Start");
+
+setTimeout(() => {
+  console.log("Timeout");
+}, 0);
+
+Promise.resolve().then(() => {
+  console.log("Promise");
+});
+
+console.log("End");
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+Start
+End
+Promise
+Timeout
+            </code></pre>
+            <p>Why?</p>
+            <ul>
+                <li>Synchronous code runs first (Start, End)</li>
+                <li>Microtasks (Promise) run before timers</li>
+                <li>Then the event loop processes the timer queue</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ Why it matters</h2>
+            <p>The event loop lets Node.js:</p>
+            <ul>
+                <li>Handle thousands of connections efficiently</li>
+                <li>Avoid blocking operations</li>
+                <li>Be ideal for I/O-heavy applications (APIs, real-time apps, streaming)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧩 Key takeaway</h2>
+            <p>The event loop is basically:</p>
+            <p>A continuous loop that manages and executes asynchronous callbacks when the call stack is empty.</p>
+            <p>If you want, I can break this down visually or compare it to how browsers handle the event loop (they’re similar but not identical).</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

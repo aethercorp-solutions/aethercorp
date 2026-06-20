@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TLS 1.2+ with Certificate Pinning</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">TLS 1.2+ with Certificate Pinning</h1>
+                    <p class="subtitle">
+                        TLS 1.2+ with Certificate Pinning is a common security requirement in banking, fintech, healthcare, and other high-security applications. It protects data in transit and helps prevent attackers from intercepting communications.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is TLS?</h2>
+            <p>TLS (Transport Layer Security) is the protocol behind HTTPS.</p>
+            <p>When your React Native app connects to:</p>
+            <pre><code>
+https://api.example.com
+            </code></pre>
+            <p>TLS provides:</p>
+            <ol>
+                <li>Encryption – nobody can read the data.</li>
+                <li>Integrity – data cannot be modified.</li>
+                <li>Authentication – verifies the server is legitimate.</li>
+            </ol>
+            <p>Without TLS:</p>
+            <pre><code>
+React Native App
+      ↓
+email=user@example.com
+password=secret123
+      ↓
+Internet
+            </code></pre>
+            <p>An attacker on public Wi-Fi could see everything.</p>
+            <p>With TLS:</p>
+            <pre><code>
+React Native App
+      ↓
+Encrypted
+      ↓
+Internet
+      ↓
+API Server
+            </code></pre>
+            <p>The attacker only sees encrypted bytes.</p>
+        </section>
+
+        <section>
+            <h2>2. Why TLS 1.2+?</h2>
+            <p>Older TLS versions are insecure.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Version</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SSL 2.0</td>
+                        <td>Broken</td>
+                    </tr>
+                    <tr>
+                        <td>SSL 3.0</td>
+                        <td>Broken</td>
+                    </tr>
+                    <tr>
+                        <td>TLS 1.0</td>
+                        <td>Deprecated</td>
+                    </tr>
+                    <tr>
+                        <td>TLS 1.1</td>
+                        <td>Deprecated</td>
+                    </tr>
+                    <tr>
+                        <td>TLS 1.2</td>
+                        <td>Secure</td>
+                    </tr>
+                    <tr>
+                        <td>TLS 1.3</td>
+                        <td>Recommended</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Most financial institutions require:</p>
+            <pre><code>
+TLS 1.2 minimum
+TLS 1.3 preferred
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. How TLS Handshake Works</h2>
+            <p>When the app calls:</p>
+            <pre><code>
+fetch("https://api.example.com/login")
+            </code></pre>
+            <p>The TLS handshake occurs before any API data is sent.</p>
+            <p>Step 1: Client Hello</p>
+            <p>App says:</p>
+            <pre><code>
+Hello Server
+I support:
+- TLS 1.2
+- TLS 1.3
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2: Server Hello</h2>
+            <p>Server responds:</p>
+            <pre><code>
+Use TLS 1.3
+Here is my certificate
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3: Certificate Validation</h2>
+            <p>The app validates:</p>
+            <pre><code>
+Certificate
+  ↓
+Trusted CA?
+  ↓
+Domain matches?
+  ↓
+Expired?
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+Certificate says:
+
+api.example.com
+            </code></pre>
+            <p>If user is visiting:</p>
+            <pre><code>
+api.example.com
+            </code></pre>
+            <p>It matches.</p>
+        </section>
+
+        <section>
+            <h2>Step 4: Key Exchange</h2>
+            <p>Client and server create:</p>
+            <pre><code>
+Session Key
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+A8X9-K2M4-P7Q1...
+            </code></pre>
+            <p>Used for encryption.</p>
+        </section>
+
+        <section>
+            <h2>Step 5: Secure Communication</h2>
+            <p>Everything is encrypted:</p>
+            <pre><code>
+{
+    "email": "user@example.com",
+    "password": "secret123"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. What Problem Does Certificate Pinning Solve?</h2>
+            <p>Normal TLS trusts hundreds of Certificate Authorities (CAs).</p>
+            <pre><code>
+App
+ ↓
+Trusts
+ ↓
+Any certificate signed by:
+- DigiCert
+- GlobalSign
+- Let's Encrypt
+- Sectigo
+- etc.
+            </code></pre>
+            <p>If a CA is compromised or a fake certificate is issued:</p>
+            <pre><code>
+Attacker
+   ↓
+Fake Certificate
+   ↓
+MITM Attack
+            </code></pre>
+            <p>The app may still trust it.</p>
+            <p>This is called:</p>
+            <p>Man-in-the-Middle (MITM)</p>
+        </section>
+
+        <section>
+            <h2>5. What is Certificate Pinning?</h2>
+            <p>Certificate pinning means:</p>
+            <pre><code>
+Trust ONLY my server certificate
+            </code></pre>
+            <p>instead of:</p>
+            <pre><code>
+Trust any valid CA
+            </code></pre>
+            <p>Without pinning:</p>
+            <pre><code>
+App
+ ↓
+Any valid certificate
+ ↓
+Server
+            </code></pre>
+            <p>With pinning:</p>
+            <pre><code>
+App
+ ↓
+Exact certificate/public key
+ ↓
+Server
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. MITM Example</h2>
+            <p>Without pinning:</p>
+            <pre><code>
+React Native App
+       ↓
+Attacker Wi-Fi Proxy
+       ↓
+API Server
+            </code></pre>
+            <p>Attacker presents a certificate.</p>
+            <p>If device trusts it:</p>
+            <pre><code>
+TLS succeeds
+            </code></pre>
+            <p>Attacker can inspect traffic.</p>
+            <p>With pinning:</p>
+            <pre><code>
+React Native App
+       ↓
+Certificate Check
+       ↓
+Certificate doesn't match
+       ↓
+Connection Rejected
+            </code></pre>
+            <p>Attack fails.</p>
+        </section>
+
+        <section>
+            <h2>7. Types of Pinning</h2>
+            <p>A. Certificate Pinning</p>
+            <p>Pin the whole certificate.</p>
+            <pre><code>
+-----BEGIN CERTIFICATE-----
+MIIF...
+-----END CERTIFICATE-----
+            </code></pre>
+            <p>Pros:</p>
+            <pre><code>
+Easy
+            </code></pre>
+            <p>Cons:</p>
+            <pre><code>
+Certificate renewal breaks app
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>B. Public Key Pinning (Recommended)</h2>
+            <p>Pin only the public key.</p>
+            <pre><code>
+Public Key Hash
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+sha256/AAAAAAAAAAAAAAAAAAAA
+            </code></pre>
+            <p>Pros:</p>
+            <pre><code>
+Certificate can be renewed
+            </code></pre>
+            <p>Cons:</p>
+            <pre><code>
+Need proper key management
+            </code></pre>
+            <p>Most banking apps use this approach.</p>
+        </section>
+
+        <section>
+            <h2>8. React Native Implementation</h2>
+            <p>A common library is:</p>
+            <pre><code>
+npm install react-native-ssl-pinning
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+import { fetch } from 'react-native-ssl-pinning';
+
+const response = await fetch(
+  'https://api.example.com/login',
+  {
+    method: 'POST',
+    sslPinning: {
+      certs: ['api_cert']
+    },
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email,
+      password
+    })
+  }
+);
+            </code></pre>
+            <p>The certificate is bundled inside:</p>
+            <pre><code>
+android/app/src/main/assets
+ios/
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Backend Requirements</h2>
+            <p>For a Node.js API:</p>
+            <p>Use:</p>
+            <pre><code>
+const https = require('https');
+            </code></pre>
+            <p>Enable:</p>
+            <pre><code>
+TLS 1.2
+TLS 1.3
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+const https = require('https');
+const fs = require('fs');
+
+https.createServer(
+  {
+    key: fs.readFileSync('privkey.pem'),
+    cert: fs.readFileSync('fullchain.pem'),
+    minVersion: 'TLSv1.2'
+  },
+  app
+);
+            </code></pre>
+            <p>Or if using:</p>
+            <ul>
+                <li>AWS API Gateway</li>
+                <li>AWS ALB</li>
+                <li>CloudFront</li>
+                <li>NGINX</li>
+            </ul>
+            <p>configure:</p>
+            <pre><code>
+Minimum TLS = 1.2
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Banking Industry Setup</h2>
+            <p>Typical architecture:</p>
+            <pre><code>
+React Native App
+      ↓
+TLS 1.3
+      ↓
+Certificate Pinning
+      ↓
+AWS WAF
+      ↓
+API Gateway
+      ↓
+Lambda / Node.js
+      ↓
+Database
+            </code></pre>
+            <p>Authentication:</p>
+            <pre><code>
+Email + Password
+       ↓
+Argon2 Verification
+       ↓
+MFA
+       ↓
+JWT Access Token (15m)
+       ↓
+Refresh Token (30d)
+       ↓
+Keychain / Keystore
+            </code></pre>
+            <p>Every request:</p>
+            <pre><code>
+Authorization: Bearer eyJhbGciOi...
+            </code></pre>
+            <p>sent through:</p>
+            <pre><code>
+TLS 1.2+
+Certificate Pinning
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>11. Recommended Security Stack for Your React Native + Node.js App</h2>
+            <pre><code>
+✓ HTTPS everywhere
+✓ TLS 1.2 minimum
+✓ TLS 1.3 preferred
+✓ Certificate pinning
+✓ Argon2 password hashing
+✓ MFA (OTP/TOTP)
+✓ JWT access tokens (15 min)
+✓ Refresh tokens (30 days)
+✓ Keychain (iOS)
+✓ Android Keystore
+✓ Rate limiting
+✓ Device attestation
+✓ WAF
+✓ Audit logging
+✓ Automatic certificate monitoring
+            </code></pre>
+            <p>For a fintech or banking-grade React Native app with a Node.js backend on AWS, TLS 1.3 + public-key pinning + MFA + short-lived JWTs stored in Keychain/Keystore is considered a strong modern baseline.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

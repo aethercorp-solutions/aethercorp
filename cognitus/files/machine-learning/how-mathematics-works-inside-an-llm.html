@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How Mathematics Works Inside an LLM</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How Mathematics Works Inside an LLM</h1>
+                    <p class="subtitle">
+                        Large Language Models (LLMs) do not “understand” mathematics the same way humans or symbolic math engines do. They generate mathematical reasoning using patterns learned from massive datasets, then often combine that with specialized tools such as symbolic solvers, calculators, or neural reasoning systems.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Training Phase — Learning Mathematical Patterns</h2>
+            <p>During training, the LLM reads billions of examples:</p>
+            <ul>
+                <li>Algebra problems</li>
+                <li>Proofs</li>
+                <li>Calculus derivations</li>
+                <li>Code</li>
+                <li>Scientific papers</li>
+                <li>Forum discussions</li>
+                <li>Textbooks</li>
+            </ul>
+            <p>The model learns statistical relationships between tokens.</p>
+            <p>Example:</p>
+            <p>Input:</p>
+            <pre><code>
+2 + 2 =
+            </code></pre>
+            <p>The model predicts:</p>
+            <pre><code>
+4
+            </code></pre>
+            <p>because it has seen this pattern many times.</p>
+            <p>But for advanced math:</p>
+            <pre><code>
+Integrate x^2
+            </code></pre>
+            <p>it predicts:</p>
+            <pre><code>
+x^3 / 3 + C
+            </code></pre>
+            <p>because it learned symbolic transformation patterns.</p>
+        </section>
+
+        <section>
+            <h2>Core Architecture</h2>
+            <p>Most modern LLMs use the Transformer architecture introduced in the Attention Is All You Need paper.</p>
+            <p>Main Components</p>
+            <p>Tokenization</p>
+            <p>Math expressions are split into tokens.</p>
+            <p>Example:</p>
+            <pre><code>
+x^2 + 3x
+            </code></pre>
+            <p>might become:</p>
+            <pre><code>
+["x", "^", "2", "+", "3", "x"]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Embeddings</h2>
+            <p>Each token becomes a vector of numbers.</p>
+            <p>Example:</p>
+            <pre><code>
+"x" → [0.12, -0.44, 0.91, ...]
+            </code></pre>
+            <p>These vectors represent mathematical relationships.</p>
+        </section>
+
+        <section>
+            <h2>Self-Attention</h2>
+            <p>Attention allows the model to determine which parts of the equation matter most.</p>
+            <p>Example:</p>
+            <pre><code>
+Solve: 2x + 5 = 15
+            </code></pre>
+            <p>The model learns relationships between:</p>
+            <ul>
+                <li>2x</li>
+                <li>5</li>
+                <li>15</li>
+            </ul>
+            <p>Attention helps track dependencies across the equation.</p>
+        </section>
+
+        <section>
+            <h2>Mathematical Reasoning Flow</h2>
+            <p>Here is a simplified reasoning pipeline.</p>
+            <p>Example Problem</p>
+            <p>Solve:</p>
+            <pre><code>
+2x + 5 = 15
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 1 — Parse Structure</h2>
+            <p>The LLM identifies:</p>
+            <ul>
+                <li>variable: x</li>
+                <li>operator: +</li>
+                <li>equality constraint</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 2 — Recall Learned Patterns</h2>
+            <p>The model has seen many examples like:</p>
+            <pre><code>
+ax + b = c
+            </code></pre>
+            <p>It predicts the next reasoning step.</p>
+        </section>
+
+        <section>
+            <h2>Step 3 — Generate Intermediate Steps</h2>
+            <pre><code>
+2x = 10
+x = 5
+            </code></pre>
+            <p>This is called Chain-of-Thought reasoning.</p>
+        </section>
+
+        <section>
+            <h2>Chain-of-Thought (CoT)</h2>
+            <p>LLMs became dramatically better at mathematics using step-by-step generation.</p>
+            <p>Instead of:</p>
+            <pre><code>
+Answer: 5
+            </code></pre>
+            <p>the model produces:</p>
+            <pre><code>
+Subtract 5 from both sides.
+2x = 10
+
+Divide by 2.
+x = 5
+            </code></pre>
+            <p>This improves reasoning accuracy.</p>
+        </section>
+
+        <section>
+            <h2>Why LLMs Sometimes Fail at Math</h2>
+            <p>LLMs are probabilistic generators, not exact calculators.</p>
+            <p>They may:</p>
+            <ul>
+                <li>hallucinate steps</li>
+                <li>lose track of variables</li>
+                <li>make arithmetic mistakes</li>
+                <li>skip logical constraints</li>
+            </ul>
+            <p>Example failure:</p>
+            <pre><code>
+                987 × 654
+            </code></pre>
+            <p>The model may output an incorrect number because it predicts likely digits rather than executing exact multiplication.</p>
+        </section>
+
+        <section>
+            <h2>Modern LLM Mathematics Implementations</h2>
+            <p>Modern systems improve math using hybrid architectures.</p>
+            <p>1. Tool-Augmented LLMs</p>
+            <p>The LLM calls:</p>
+            <ul>
+                <li>calculators</li>
+                <li>symbolic algebra systems</li>
+                <li>Python interpreters</li>
+                <li>theorem provers</li>
+            </ul>
+            <p>Example pipeline:</p>
+            <pre><code>
+    User asks integral
+↓
+LLM interprets query
+↓
+Calls symbolic solver
+↓
+Formats explanation
+            </code></pre>
+            <p>This greatly improves reliability.</p>
+        </section>
+
+        <section>
+            <h2>Symbolic Mathematics Integration</h2>
+            <p>Many systems integrate engines similar to:</p>
+            <ul>
+                <li>Wolfram Mathematica</li>
+                <li>SymPy</li>
+            </ul>
+            <p>These systems perform:</p>
+            <ul>
+                <li>exact algebra</li>
+                <li>differentiation</li>
+                <li>integration</li>
+                <li>equation solving</li>
+            </ul>
+            <p>The LLM acts as the natural language interface.</p>
+        </section>
+
+        <section>
+            <h2>Neural + Symbolic Hybrid Systems</h2>
+            <p>This is one of the most important directions in AI math.</p>
+            <p>Neural Component</p>
+            <p>Handles:</p>
+            <ul>
+                <li>language understanding</li>
+                <li>flexible reasoning</li>
+                <li>explanation generation</li>
+            </ul>
+            <p>Symbolic Component</p>
+            <p>Handles:</p>
+            <ul>
+                <li>exact computation</li>
+                <li>logical correctness</li>
+                <li>proofs</li>
+            </ul>
+            <p>Together:</p>
+            <pre><code>
+Natural language
+↓
+Neural interpretation
+↓
+Symbolic execution
+↓
+Human-readable explanation
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example in Action</h2>
+            <p>User asks:</p>
+            <pre><code>
+Differentiate x^3 + 2x
+            </code></pre>
+            <p>LLM reasoning:</p>
+            <pre><code>
+Power rule:
+d/dx(x^3) = 3x^2
+
+d/dx(2x) = 2
+
+Final:
+3x^2 + 2
+            </code></pre>
+            <p>Using a learning-style visualization:</p>
+        </section>
+
+        <section>
+            <h2>Attention Mechanism in Mathematics</h2>
+            <p>Attention helps track relationships across long equations.</p>
+            <p>Example:</p>
+            <pre><code>
+(a+b)^2 = a^2 + 2ab + b^2
+            </code></pre>
+            <p>The model learns correlations between:</p>
+            <ul>
+                <li>left expansion</li>
+                <li>right expansion</li>
+                <li>distributive patterns</li>
+            </ul>
+            <p>Visualization concept:</p>
+        </section>
+
+        <section>
+            <h2>Reinforcement Learning for Math</h2>
+            <p>Advanced models improve using:</p>
+            <ul>
+                <li>reinforcement learning</li>
+                <li>verifier models</li>
+                <li>self-consistency sampling</li>
+            </ul>
+            <p>The model generates multiple solutions and checks which one is most logically consistent.</p>
+        </section>
+
+        <section>
+            <h2>Retrieval-Augmented Mathematics</h2>
+            <p>Some systems retrieve:</p>
+            <ul>
+                <li>formulas</li>
+                <li>theorems</li>
+                <li>proofs</li>
+                <li>examples</li>
+            </ul>
+            <p>before generating answers.</p>
+            <p>Example:</p>
+            <ul>
+                <li>retrieve quadratic formula</li>
+                <li>apply it to user equation</li>
+            </ul>
+            <p>Visualization:</p>
+        </section>
+
+        <section>
+
+            <h2>Real-World LLM Math Stack</h2>
+            <p>A production AI math assistant may include:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Transformer LLM</td>
+                        <td>Language reasoning</td>
+                    </tr>
+                    <tr>
+                        <td>Vector database</td>
+                        <td>Formula retrieval</td>
+                    </tr>
+                    <tr>
+                        <td>Symbolic engine</td>
+                        <td>Exact computation</td>
+                    </tr>
+                    <tr>
+                        <td>Python runtime</td>
+                        <td>Numerical solving</td>
+                    </tr>
+                    <tr>
+                        <td>Verifier model</td>
+                        <td>Error checking</td>
+                    </tr>
+                    <tr>
+                        <td>UI renderer</td>
+                        <td>Equation formatting</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Example Full Workflow</h2>
+            <p>User input:</p>
+            <pre><code>
+Solve x^2 - 5x + 6 = 0
+            </code></pre>
+            <p>Pipeline:</p>
+            <pre><code>
+1. Tokenize equation
+2. Detect quadratic structure
+3. Retrieve solving strategy
+4. Apply factorization
+5. Verify roots
+6. Generate explanation
+            </code></pre>
+            <p>Mathematical form:</p>
+            <p>Reasoning:</p>
+            <pre><code>
+(x - 2)(x - 3) = 0
+
+x = 2 or x = 3
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Emerging Research Areas</h2>
+            <p>Current research focuses on:</p>
+            <ul>
+                <li>theorem proving</li>
+                <li>formal verification</li>
+                <li>neuro-symbolic AI</li>
+                <li>mathematical planning</li>
+                <li>self-correcting reasoning</li>
+                <li>graph-based reasoning</li>
+                <li>memory-augmented transformers</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key Insight</h2>
+            <p>LLMs do not inherently “compute mathematics” like calculators.</p>
+            <p>They:</p>
+            <ol>
+                <li>Predict mathematical reasoning patterns</li>
+                <li>Use attention to track relationships</li>
+                <li>Generate step-by-step solutions</li>
+                <li>Often rely on external symbolic systems for correctness</li>
+            </ol>
+            <p>The strongest AI math systems today combine:</p>
+            <ul>
+                <li>neural language reasoning</li>
+                <li>symbolic mathematics</li>
+                <li>tool execution</li>
+                <li>verification systems</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

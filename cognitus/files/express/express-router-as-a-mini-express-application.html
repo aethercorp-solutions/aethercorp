@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>express.Router() as a mini Express application</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">express.Router() as a mini Express application</h1>
+                    <p class="subtitle">Think of express.Router() as a mini Express application that lets you organize related routes into separate files.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Without Router, all routes go into one file:</h2>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+app.get('/users', (req, res) => {
+    res.send('Get users');
+});
+
+app.post('/users', (req, res) => {
+    res.send('Create user');
+});
+
+app.get('/products', (req, res) => {
+    res.send('Get products');
+});
+
+app.listen(3000);
+            </code></pre>
+            <p>As your application grows, this file becomes huge.</p>
+        </section>
+
+        <section>
+            <h2>Using express.Router()</h2>
+            <p>Create a separate file for user routes.</p>
+            <p>routes/users.js</p>
+            <pre><code>
+const express = require('express');
+const router = express.Router();
+
+router.get('/', (req, res) => {
+    res.send('Get users');
+});
+
+router.post('/', (req, res) => {
+    res.send('Create user');
+});
+
+module.exports = router;
+            </code></pre>
+
+            <p>app.js</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+const userRoutes = require('./routes/users');
+
+app.use('/users', userRoutes);
+
+app.listen(3000);
+            </code></pre>
+            <p>Now:</p>
+            <pre><code>
+GET  /users
+POST /users
+            </code></pre>
+            <p>work automatically.</p>
+        </section>
+
+        <section>
+            <h2>What happens internally?</h2>
+            <p>When Express sees:</p>
+            <pre><code>
+app.use('/users', userRoutes);
+            </code></pre>
+            <p>it means:</p>
+            <p>"For any URL starting with /users, pass the request to this router."</p>
+            <p>Inside the router:</p>
+            <pre><code>
+router.get('/', ...)
+            </code></pre>
+            <p>actually becomes:</p>
+            <pre><code>
+/users + /
+= /users
+            </code></pre>
+            <p>and</p>
+            <pre><code>
+router.get('/profile', ...)
+            </code></pre>
+            <p>becomes:</p>
+            <pre><code>
+/users/profile
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Visual Flow</h2>
+            <pre><code>
+Browser
+   |
+GET /users/profile
+   |
+Express App
+   |
+app.use('/users', userRoutes)
+   |
+Users Router
+   |
+router.get('/profile')
+   |
+Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Multiple Routers</h2>
+            <p>routes/users.js</p>
+            <pre><code>
+const router = express.Router();
+
+router.get('/', (req, res) => {
+    res.send('Users');
+});
+
+module.exports = router;
+            </code></pre>
+
+            <p>routes/products.js</p>
+            <pre><code>
+const router = express.Router();
+
+router.get('/', (req, res) => {
+    res.send('Products');
+});
+
+module.exports = router;
+            </code></pre>
+
+            <p>app.js</p>
+            <pre><code>
+app.use('/users', require('./routes/users'));
+app.use('/products', require('./routes/products'));
+            </code></pre>
+
+            <p>Requests:</p>
+            <pre><code>
+GET /users      -> Users Router
+GET /products   -> Products Router
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Router Middleware</h2>
+            <p>A router can have middleware that only applies to that router.</p>
+            <pre><code>
+const router = express.Router();
+
+router.use((req, res, next) => {
+    console.log('Users router middleware');
+    next();
+});
+
+router.get('/', (req, res) => {
+    res.send('Users');
+});
+            </code></pre>
+            <p>Request:</p>
+            <pre><code>
+GET /users
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+Users router middleware
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real Backend Structure</h2>
+            <pre><code>
+project/
+│
+├── app.js
+│
+├── routes/
+│   ├── auth.js
+│   ├── users.js
+│   └── products.js
+│
+├── controllers/
+│   ├── authController.js
+│   ├── userController.js
+│   └── productController.js
+│
+└── middleware/
+    └── auth.js
+            </code></pre>
+
+            <p>routes/users.js</p>
+            <pre><code>
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/userController');
+
+router.get('/', userController.getUsers);
+router.get('/:id', userController.getUser);
+router.post('/', userController.createUser);
+
+module.exports = router;
+            </code></pre>
+
+            <p>app.js</p>
+            <pre><code>
+app.use('/api/users', require('./routes/users'));
+            </code></pre>
+            <p>Routes become:</p>
+            <pre><code>
+GET  /api/users
+GET  /api/users/123
+POST /api/users
+            </code></pre>
+            <p>Simple mental model</p>
+            <pre><code>
+Express App
+   |
+   +-- /users ----&gt; Users Router
+   |
+   +-- /products -> Products Router
+   |
+   +-- /auth -----&gt; Auth Router
+            </code></pre>
+            <p>express.Router() is simply a way to group related routes and middleware together, making large Node.js/Express applications easier to maintain.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Node.js, middleware</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Node.js, middleware</h1>
+                    <p class="subtitle">
+                        In Node.js, middleware is a function that runs between the incoming request and the final response in a web application. It acts like a processing layer that can inspect, modify, validate, log, authenticate, or even stop a request before it reaches the main route handler.
+                        <p>Middleware is most commonly used in Express.js applications.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Basic Flow of a Request</h2>
+            <p>When a client sends a request:</p>
+            <pre><code>
+Client Request
+      ↓
+Middleware 1
+      ↓
+Middleware 2
+      ↓
+Middleware 3
+      ↓
+Route Handler
+      ↓
+Response to Client
+            </code></pre>
+            <p>Each middleware decides whether to:</p>
+            <ul>
+                <li>Continue to the next middleware</li>
+                <li>End the request immediately</li>
+                <li>Throw an error</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Basic Middleware Syntax</h2>
+            <pre><code>
+function middleware(req, res, next) {
+    console.log("Middleware executed");
+
+    next();
+}
+            </code></pre>
+            <p>Parameters</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>req</td>
+                        <td>Incoming request object</td>
+                    </tr>
+                    <tr>
+                        <td>res</td>
+                        <td>Response object</td>
+                    </tr>
+                    <tr>
+                        <td>next</td>
+                        <td>Function that passes control to the next middleware</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Example in Express.js</h2>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+// Middleware
+app.use((req, res, next) => {
+    console.log('Request received:', req.method, req.url);
+
+    next();
+});
+
+// Route
+app.get('/', (req, res) => {
+    res.send('Hello World');
+});
+
+app.listen(3000);
+            </code></pre>
+            <p>What Happens</p>
+            <ol>
+                <li>User visits /</li>
+                <li>Middleware runs first</li>
+                <li>Logs request info</li>
+                <li>Calls next()</li>
+                <li>Route handler executes</li>
+                <li>Response sent</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Why Middleware Is Important</h2>
+            <p>Middleware is the backbone of most backend systems because it allows reusable logic.</p>
+            <p>Common uses:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Purpose</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Authentication</td>
+                        <td>Verify JWT tokens</td>
+                    </tr>
+                    <tr>
+                        <td>Logging</td>
+                        <td>Save API logs</td>
+                    </tr>
+                    <tr>
+                        <td>Validation</td>
+                        <td>Check request body</td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td>Block malicious requests</td>
+                    </tr>
+                    <tr>
+                        <td>Parsing</td>
+                        <td>Convert JSON body</td>
+                    </tr>
+                    <tr>
+                        <td>CORS</td>
+                        <td>Allow frontend access</td>
+                    </tr>
+                    <tr>
+                        <td>Error handling</td>
+                        <td>Catch server errors</td>
+                    </tr>
+                    <tr>
+                        <td>Rate limiting</td>
+                        <td>Prevent spam requests</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Types of Middleware</h2>
+            <p>1. Application-Level Middleware</p>
+            <p>Runs for all routes or selected routes.</p>
+            <pre><code>
+app.use((req, res, next) => {
+    console.log('Global middleware');
+    next();
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Route-Level Middleware</h2>
+            <p>Runs only on specific routes.</p>
+            <pre><code>
+function auth(req, res, next) {
+    console.log("Auth middleware");
+    next();
+}
+
+app.get('/profile', auth, (req, res) => {
+    res.send('Profile Page');
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Built-in Middleware</h2>
+            <p>Express already includes some middleware.</p>
+            <p>JSON Parser</p>
+            <pre><code>
+app.use(express.json());
+            </code></pre>
+            <p>This converts incoming JSON into JavaScript objects.</p>
+            <p>Example request:</p>
+            <pre><code>
+{
+    "name": "Paul"
+}
+            </code></pre>
+            <p>Accessible as:</p>
+            <pre><code>
+req.body.name
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Third-Party Middleware</h2>
+            <p>Installed from npm.</p>
+            <p>Example:</p>
+            <p>CORS Middleware</p>
+            <pre><code>
+npm install cors
+            </code></pre>
+            <pre><code>
+const cors = require('cors');
+
+app.use(cors());
+            </code></pre>
+            <p>Used when frontend and backend run on different domains.</p>
+        </section>
+
+        <section>
+            <h2>5. Error-Handling Middleware</h2>
+            <p>Special middleware with 4 parameters.</p>
+            <pre><code>
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+
+    res.status(500).json({
+        message: 'Server Error'
+    });
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Understanding next()</h2>
+            <p>next() is critical.</p>
+            <p>It tells Express:</p>
+            <p>"Continue to the next middleware."</p>
+            <p>Without it, the request hangs unless a response is sent.</p>
+        </section>
+
+        <section>
+            <h2>Example WITHOUT next()</h2>
+            <pre><code>
+app.use((req, res, next) => {
+    console.log("Middleware");
+});
+            </code></pre>
+            <p>The browser waits forever because the request never continues.</p>
+        </section>
+
+        <section>
+            <h2>Middleware Execution Order</h2>
+            <p>Order matters.</p>
+            <pre><code>
+app.use(middleware1);
+app.use(middleware2);
+app.use(middleware3);
+            </code></pre>
+            <p>Execution:</p>
+            <pre><code>
+middleware1 → middleware2 → middleware3
+            </code></pre>
+            <p>If one middleware sends a response:</p>
+            <pre><code>
+res.send("Blocked");
+            </code></pre>
+            <p>The chain stops.</p>
+        </section>
+
+        <section>
+            <h2>Real Authentication Middleware Example</h2>
+            <p>This is very common in APIs using JWT authentication.</p>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+function verifyToken(req, res, next) {
+
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(401).json({
+            message: 'Access denied'
+        });
+    }
+
+    try {
+
+        const verified = jwt.verify(
+            token,
+            process.env.JWT_SECRET
+        );
+
+        req.user = verified;
+
+        next();
+
+    } catch (err) {
+
+        res.status(400).json({
+            message: 'Invalid token'
+        });
+    }
+}
+            </code></pre>
+            <p>Usage:</p>
+            <pre><code>
+app.get('/dashboard', verifyToken, (req, res) => {
+
+    res.json({
+        user: req.user
+    });
+
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Middleware Chain Example</h2>
+            <pre><code>
+app.use(logger);
+app.use(authenticate);
+app.use(validateRequest);
+app.use(compressResponse);
+            </code></pre>
+            <p>Example request flow:</p>
+            <pre><code>
+Request arrives
+    ↓
+Logger middleware
+    ↓
+Authentication middleware
+    ↓
+Validation middleware
+    ↓
+Compression middleware
+    ↓
+Route handler
+    ↓
+Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Async Middleware</h2>
+            <p>Modern middleware often uses async/await.</p>
+            <pre><code>
+app.use(async (req, res, next) => {
+
+    try {
+
+        const user = await User.findById(req.userId);
+
+        req.user = user;
+
+        next();
+
+    } catch (err) {
+
+        next(err);
+
+    }
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Middleware in Your Architecture</h2>
+            <p>Since you're working with:</p>
+            <ul>
+                <li>Amazon Web Services Lambda</li>
+                <li>API Gateway</li>
+                <li>JWT authentication</li>
+                <li>Passport.js</li>
+                <li>Express APIs</li>
+            </ul>
+            <p>Middleware is likely handling:</p>
+            <ul>
+                <li>Firebase token verification</li>
+                <li>JWT validation</li>
+                <li>Role-based access</li>
+                <li>Request logging</li>
+                <li>Rate limiting</li>
+                <li>CORS</li>
+                <li>Body parsing</li>
+                <li>Error handling</li>
+            </ul>
+            <p>Example structure:</p>
+            <pre><code>
+API Gateway
+    ↓
+Lambda
+    ↓
+Express App
+    ↓
+Middleware
+    ↓
+Routes
+    ↓
+MongoDB
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common Middleware Pattern in Large Projects</h2>
+            <pre><code>
+middlewares/
+│
+├── auth.js
+├── admin.js
+├── logger.js
+├── validation.js
+├── errorHandler.js
+├── upload.js
+└── rateLimiter.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Advanced Concepts</h2>
+            <p>Middleware Can Modify Requests</p>
+            <pre><code>
+req.user = decodedToken;
+req.requestTime = Date.now();
+            </code></pre>
+            <p>Data added in middleware becomes available later.</p>
+        </section>
+
+        <section>
+            <h2>Middleware Can End Requests Early</h2>
+            <pre><code>
+if (!isAdmin) {
+    return res.status(403).send('Forbidden');
+}
+            </code></pre>
+            <p>Useful for security.</p>
+        </section>
+
+        <section>
+            <h2>Difference Between Middleware and Route Handler</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Middleware</th>
+                        <th>Route Handler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Pre-process request</td>
+                        <td>Final logic</td>
+                    </tr>
+                    <tr>
+                        <td>Usually calls next()</td>
+                        <td>Usually sends response</td>
+                    </tr>
+                    <tr>
+                        <td>Reusable</td>
+                        <td>Specific endpoint</td>
+                    </tr>
+                    <tr>
+                        <td>Chainable</td>
+                        <td>Endpoint-specific</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Example Full API Flow</h2>
+            <pre><code>
+app.post(
+    '/api/orders',
+
+    authenticate,
+    validateOrder,
+    checkInventory,
+
+    async (req, res) => {
+
+        const order = await createOrder(req.body);
+
+        res.json(order);
+
+    }
+);
+            </code></pre>
+
+            <p>Flow:</p>
+            <pre><code>
+Authenticate user
+    ↓
+Validate order data
+    ↓
+Check inventory
+    ↓
+Create order
+    ↓
+Return response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Best Practices</h2>
+            <p>Keep Middleware Focused</p>
+            <p>Good:</p>
+            <pre><code>
+authMiddleware()
+            </code></pre>
+            <p>Bad:</p>
+            <pre><code>
+authAndLoggingAndValidationMiddleware()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Always Handle Errors</h2>
+            <pre><code>
+try {
+    next();
+} catch(err) {
+    next(err);
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Avoid Heavy Logic</h2>
+            <p>Middleware should be lightweight and reusable.</p>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <p>Middleware in Node.js/Express is:</p>
+            <ul>
+                <li>A function executed during request processing</li>
+                <li>Used to intercept and process requests</li>
+                <li>Essential for authentication, validation, logging, and security</li>
+                <li>Connected using the next() function</li>
+                <li>Executed in sequence</li>
+                <li>One of the core architectural concepts in backend development</li>
+            </ul>
+            <p>Think of middleware as:</p>
+            <p>“Checkpoint layers” between the client request and your business logic.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

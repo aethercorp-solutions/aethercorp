@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is MongoDB? (Simple Explanation)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is MongoDB? (Simple Explanation)</h1>
+                    <p class="subtitle">
+                        MongoDB is a modern NoSQL database that stores data as JSON-like documents instead of rows and tables.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Traditional SQL database:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>name</th>
+                        <th>email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Paul</td>
+                        <td>paul@email.com</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>MongoDB document:</h2>
+            <pre><code>
+{
+    "_id": "1",
+    "name": "Paul",
+    "email": "paul@email.com"
+}
+            </code></pre>
+            <p>Think of MongoDB as storing data in flexible JSON objects, making it easier for modern web and mobile applications.</p>
+        </section>
+
+        <section>
+            <h2>Why Developers Like MongoDB</h2>
+            <p>1. Flexible Schema</p>
+            <p>You don't need to define all columns beforehand.</p>
+            <p>User 1:</p>
+            <pre><code>
+{
+    "name": "Paul",
+    "email": "paul@email.com"
+}
+            </code></pre>
+            <p>User 2:</p>
+            <pre><code>
+{
+    "name": "John",
+    "email": "john@email.com",
+    "phone": "123456789"
+}
+            </code></pre>
+            <p>Both documents can exist in the same collection.</p>
+        </section>
+
+        <section>
+            <h2>2. Scales Easily</h2>
+            <p>MongoDB can distribute data across many servers (sharding).</p>
+            <p>Useful for:</p>
+            <ul>
+                <li>Social media</li>
+                <li>E-commerce</li>
+                <li>Fintech</li>
+                <li>AI applications</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Fast for JSON APIs</h2>
+            <p>MongoDB works naturally with:</p>
+            <ul>
+                <li>Node.js</li>
+                <li>Express</li>
+                <li>React</li>
+                <li>React Native</li>
+                <li>Next.js</li>
+            </ul>
+            <p>Since JavaScript already uses JSON.</p>
+        </section>
+
+        <section>
+            <h2>What is a Vector Database?</h2>
+            <p>A vector database stores embeddings instead of just text.</p>
+            <p>Example text:</p>
+            <pre><code>
+"I want to build a banking app"
+            </code></pre>
+            <p>AI converts this into numbers:</p>
+            <pre><code>
+[0.23, -0.81, 0.55, 0.91, ...]
+            </code></pre>
+            <p>This list of numbers is called a vector embedding.</p>
+            <p>The vector represents the meaning of the text.</p>
+        </section>
+
+        <section>
+            <h2>Why Use Vectors?</h2>
+            <p>Instead of exact keyword search:</p>
+            <pre><code>
+Search: "payment system"
+            </code></pre>
+            <p>AI can find:</p>
+            <pre><code>
+"money transfer platform"
+            </code></pre>
+            <p>even though the words are different.</p>
+            <p>Because their vectors are close together.</p>
+        </section>
+
+        <section>
+            <h2>MongoDB as a Vector Database</h2>
+            <p>Modern MongoDB supports vector search through:</p>
+            <p>MongoDB Atlas</p>
+            <p>Features:</p>
+            <ul>
+                <li>Store documents</li>
+                <li>Store embeddings</li>
+                <li>Perform semantic search</li>
+                <li>Build AI applications</li>
+            </ul>
+            <p>Example document:</p>
+            <pre><code>
+{
+    "title": "Freelancer Payment Platform",
+    "description": "Send money globally",
+    "embedding": [0.23, -0.81, 0.55, ...]
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How Vector Search Works</h2>
+            <p>Step 1: Store Data</p>
+            <pre><code>
+{
+    "content": "How to send payments internationally?",
+    "embedding": [...]
+}
+            </code></pre>
+            <p>Step 2: User Asks</p>
+            <pre><code>
+How can I transfer money overseas?
+            </code></pre>
+            <p>Step 3: Generate Embedding</p>
+            <pre><code>
+[0.21, -0.77, 0.53, ...]
+            </code></pre>
+            <p>Step 4: MongoDB Finds Similar Vectors</p>
+            <p>Result:</p>
+            <pre><code>
+How to send payments internationally?
+            </code></pre>
+            <p>Even though the wording is different.</p>
+        </section>
+
+        <section>
+            <h2>Real-World AI Applications</h2>
+            <p>AI Chatbots</p>
+            <p>Store:</p>
+            <ul>
+                <li>Documentation</li>
+                <li>FAQs</li>
+                <li>Company knowledge</li>
+            </ul>
+            <p>Search using vectors before sending context to an LLM.</p>
+            <p>Example:</p>
+            <ul>
+                <li>Customer asks question</li>
+                <li>MongoDB finds relevant documents</li>
+                <li>AI generates answer</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>RAG (Retrieval-Augmented Generation)</h2>
+            <p>Popular architecture:</p>
+            <pre><code>
+User Question
+      ↓
+Embedding Model
+      ↓
+MongoDB Vector Search
+      ↓
+Relevant Documents
+      ↓
+OpenAI / LLM
+      ↓
+Answer
+            </code></pre>
+            <p>Recommendation Systems</p>
+            <p>Netflix-style recommendations:</p>
+            <pre><code>
+User likes:
+- Banking
+- Fintech
+- Payments
+            </code></pre>
+            <p>MongoDB finds similar content using vector similarity.</p>
+        </section>
+
+        <section>
+            <h2>Knowledge Base Search</h2>
+            <p>Instead of keyword matching:</p>
+            <pre><code>
+"How do I receive money?"
+            </code></pre>
+            <p>can find:</p>
+            <pre><code>
+"Receiving international payments"
+            </code></pre>
+            <p>because the meaning is similar.</p>
+        </section>
+
+        <section>
+            <h2>Example for Your Projects</h2>
+            <p>For your TryCastanet platform, MongoDB Vector Search could be used for:</p>
+            <ul>
+                <li>Contact matching</li>
+                <li>Smart people recommendations</li>
+                <li>AI-powered search</li>
+                <li>Chatbot support</li>
+                <li>Freelancer-client matching</li>
+                <li>Knowledge base assistant</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+User:
+Looking for React Native developer with AWS experience
+            </code></pre>
+            <p>MongoDB Vector Search can find profiles containing:</p>
+            <pre><code>
+Mobile Developer
+Serverless AWS
+React Native
+Node.js
+            </code></pre>
+            <p>even if the exact keywords don't match.</p>
+        </section>
+
+        <section>
+            <h2>Simple Summary</h2>
+            <p>MongoDB (Traditional)</p>
+            <pre><code>
+Stores documents
+Performs exact searches
+            </code></pre>
+            <p>MongoDB + Vector Search</p>
+            <pre><code>
+Stores documents
+Stores embeddings (vectors)
+Performs semantic AI search
+Understands meaning, not just keywords
+            </code></pre>
+            <p>That's why modern AI applications often use MongoDB as both:</p>
+            <ol>
+                <li>A regular application database.</li>
+                <li>A vector database for AI-powered search and RAG systems.</li>
+            </ol>
+        </section>
+
+        <section>
+            <p>Think of them as three different things working together:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Purpose</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Embedding Model</td>
+                        <td>Converts text into vectors</td>
+                        <td>OpenAI text-embedding models</td>
+                    </tr>
+                    <tr>
+                        <td>Vector Database</td>
+                        <td>Stores and searches vectors</td>
+                        <td>MongoDB Atlas, Pinecone</td>
+                    </tr>
+                    <tr>
+                        <td>LLM</td>
+                        <td>Understands and generates text</td>
+                        <td>ChatGPT</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>1. Embedding Model</h2>
+            <p>An embedding model does not write answers.</p>
+            <p>Its job is:</p>
+            <pre><code>
+Input:
+"How do I send money abroad?"
+
+Output:
+[0.23, -0.81, 0.55, ...]
+            </code></pre>
+            <p>It converts meaning into numbers (vectors).</p>
+            <p>Think of it as:</p>
+            <pre><code>
+Text → Numbers
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Vector Database</h2>
+            <p>A vector database does not understand language.</p>
+            <p>Its job is:</p>
+            <pre><code>
+Store vectors
+Find similar vectors
+            </code></pre>
+            <p>Example:</p>
+            <p>User asks:</p>
+            <pre><code>
+How can I transfer money internationally?
+            </code></pre>
+            <p>Embedding:</p>
+            <pre><code>
+[0.22, -0.79, 0.54]
+            </code></pre>
+            <p>Vector database searches millions of vectors and finds:</p>
+            <pre><code>
+How do I send money abroad?
+            </code></pre>
+            <p>because the vectors are similar.</p>
+            <p>Think of it as:</p>
+            <pre><code>
+Google for embeddings
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. LLM (Large Language Model)</h2>
+            <p>An LLM can:</p>
+            <ul>
+                <li>Understand language</li>
+                <li>Reason</li>
+                <li>Summarize</li>
+                <li>Generate responses</li>
+                <li>Write code</li>
+            </ul>
+            <p>Example:</p>
+            <p>Input:</p>
+            <pre><code>
+How can I transfer money internationally?
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+You can use wire transfers, Wise, PayPal, or other remittance services...
+            </code></pre>
+            <p>Think of it as:</p>
+            <pre><code>
+Brain + Writer
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why Not Just Use an LLM?</h2>
+            <p>Imagine your company has:</p>
+            <pre><code>
+100,000 PDFs
+10 million records
+Internal documents
+            </code></pre>
+            <p>An LLM does not automatically know them.</p>
+            <p>Without retrieval:</p>
+            <pre><code>
+User
+ ↓
+LLM
+            </code></pre>
+            <p>The LLM only knows what it learned during training.</p>
+        </section>
+
+        <section>
+            <h2>Why Use Vector Search?</h2>
+            <p>Instead:</p>
+            <pre><code>
+User Question
+      ↓
+Embedding Model
+      ↓
+Vector Database
+      ↓
+Relevant Documents
+      ↓
+LLM
+      ↓
+Answer
+            </code></pre>
+            <p>This is called RAG (Retrieval-Augmented Generation).</p>
+            <p>The vector database finds relevant information and gives it to the LLM.</p>
+        </section>
+
+        <section>
+            <h2>Simple Real-World Example</h2>
+            <p>Suppose your fintech app stores:</p>
+            <pre><code>
+Document A:
+How to receive payments
+
+Document B:
+How to send payments
+
+Document C:
+Refund process
+            </code></pre>
+            <p>User asks:</p>
+            <pre><code>
+How do I get money from a client?
+            </code></pre>
+            <p>Vector Database</p>
+            <p>Finds:</p>
+            <pre><code>
+Document A:
+How to receive payments
+            </code></pre>
+            <p>LLM</p>
+            <p>Reads Document A and generates:</p>
+            <pre><code>
+To receive money from a client, follow these steps...
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Analogy</h2>
+            <p>Imagine a library.</p>
+            <p>Embedding Model</p>
+            <p>Creates an index card for every book.</p>
+            <pre><code>
+Book → Vector
+            </code></pre>
+            <p>Vector Database</p>
+            <p>Acts like the librarian.</p>
+            <pre><code>
+Find books most related to the question.
+            </code></pre>
+            <p>LLM</p>
+            <p>Reads the books and explains the answer.</p>
+            <pre><code>
+Creates a human-friendly response.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>In AI Systems</h2>
+            <p>For a modern chatbot:</p>
+            <pre><code>
+React Native App
+      ↓
+Node.js API
+      ↓
+Embedding Model
+      ↓
+MongoDB Vector Search
+      ↓
+LLM (GPT, Claude, Gemini)
+      ↓
+Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Quick Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Main Job</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Embedding Model</td>
+                        <td>Convert text into vectors</td>
+                    </tr>
+                    <tr>
+                        <td>Vector Database</td>
+                        <td>Store/search vectors</td>
+                    </tr>
+                    <tr>
+                        <td>LLM</td>
+                        <td>Generate answers and reasoning</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>A vector database is the memory/search engine, while an LLM is the brain that reads and writes. They are usually used together, not as replacements for each other.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

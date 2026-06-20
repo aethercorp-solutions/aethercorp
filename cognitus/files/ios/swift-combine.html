@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Swift Combine</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Swift Combine</h1>
+                    <p class="subtitle">
+                        Swift Combine is Apple’s framework for handling asynchronous events (things that happen over time) in a clean, reactive way.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple idea</h2>
+            <p>Instead of writing complex callbacks like:</p>
+            <ul>
+                <li>completion handlers</li>
+                <li>delegates</li>
+                <li>notification observers</li>
+            </ul>
+            <p>Combine lets you say:</p>
+            <p>“When data changes, automatically react to it.”</p>
+        </section>
+
+        <section>
+            <h2>🧠 Core concept (easy version)</h2>
+            <p>Combine is like a pipeline:</p>
+            <p>1. Publisher</p>
+            <p>This is the source of data</p>
+            <ul>
+                <li>Example: API call, text input, button tap</li>
+                <li>It “publishes” values over time</li>
+            </ul>
+            <pre><code>
+Just("Hello")
+            </code></pre>
+            <p>👉 This publishes a single value: "Hello"</p>
+        </section>
+
+        <section>
+            <h2>2. Subscriber</h2>
+            <p>This is the receiver</p>
+            <ul>
+                <li>It listens for values from the publisher</li>
+            </ul>
+            <pre><code>
+.sink { value in
+    print(value)
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Operators</h2>
+            <p>These transform data in between</p>
+            <p>Example: change text to uppercase</p>
+            <pre><code>
+Just("hello")
+    .map { $0.uppercased() }
+    .sink { print($0) }
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+HELLO
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔁 Real-world example</h2>
+            <p>Imagine:</p>
+            <ul>
+                <li>User types in a search bar</li>
+                <li>You want to filter results live</li>
+            </ul>
+            <p>Combine flow:</p>
+            <pre><code>
+TextField → Publisher → Transform → API call → UI update
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ Why Combine is useful</h2>
+            <ul>
+                <li>Removes nested callbacks (“callback hell”)</li>
+                <li>Makes async code more readable</li>
+                <li>Works well with SwiftUI</li>
+                <li>Handles streams of data (not just single responses)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 Simple mental model</h2>
+            <p>Think of it like:</p>
+            <ul>
+                <li>🎤 Publisher = microphone</li>
+                <li>🎧 Subscriber = listener</li>
+                <li>🎚️ Operators = audio effects in between</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Here’s a simple Combine API call example in Swift (clean and commonly used in MVVM apps).</p>
+            <h2>🌐 Example: Fetch Users from API using Combine</h2>
+            <p>We’ll call a fake API:</p>
+            <pre><code>
+https://jsonplaceholder.typicode.com/users
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>1. Model</h2>
+            <pre><code>
+struct User: Codable {
+    let id: Int
+    let name: String
+    let email: String
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. API Service (Combine Network Layer)</h2>
+            <pre><code>
+import Foundation
+import Combine
+
+class APIService {
+
+    func fetchUsers() -> AnyPublisher<[User], Error> {
+
+        let url = URL(string: "https://jsonplaceholder.typicode.com/users")!
+
+        return URLSession.shared.dataTaskPublisher(for: url)
+            .map { $0.data } // extract data
+            .decode(type: [User].self, decoder: JSONDecoder()) // decode JSON
+            .receive(on: DispatchQueue.main) // update UI on main thread
+            .eraseToAnyPublisher() // hide complexity
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. ViewModel (Using Combine)</h2>
+            <pre><code>
+import Foundation
+import Combine
+
+class UserViewModel: ObservableObject {
+
+    private var cancellables = Set<AnyCancellable>()
+    private let service = APIService()
+
+    @Published var users: [User] = []
+    @Published var errorMessage: String?
+
+    func loadUsers() {
+
+        service.fetchUsers()
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
+                }
+            }, receiveValue: { users in
+                self.users = users
+            })
+            .store(in: &cancellables)
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. How it works (simple flow)</h2>
+            <pre><code>
+API URL
+   ↓
+URLSession Publisher
+   ↓
+map → extract data
+   ↓
+decode → convert JSON to Swift model
+   ↓
+receive(on main thread)
+   ↓
+sink → update UI
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ Key Combine concepts used here</h2>
+            <ul>
+                <li>dataTaskPublisher → makes API call</li>
+                <li>map → transforms response</li>
+                <li>decode → JSON → Swift model</li>
+                <li>sink → receives result</li>
+                <li>AnyCancellable → keeps subscription alive</li>
+                <li>@Published → updates UI automatically (SwiftUI-friendly)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 Simple mental model</h2>
+            <p>“Start request → transform data → decode → deliver to UI → react automatically”</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

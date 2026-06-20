@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is a Vector Embedding?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is a Vector Embedding?</h1>
+                    <p class="subtitle">Imagine you have words, sentences, images, or documents.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple Explanation</h2>
+            <p>Imagine you have words, sentences, images, or documents.</p>
+            <p>A computer cannot directly understand meaning, so an AI model converts them into a list of numbers called a vector embedding.</p>
+            <p>Example:</p>
+            <pre><code>
+"dog"  → [0.23, -0.81, 0.45, 0.92, ...]
+"puppy"→ [0.25, -0.79, 0.47, 0.89, ...]
+"car"  → [-0.65, 0.12, -0.34, 0.08, ...]
+            </code></pre>
+            <p>Because "dog" and "puppy" have similar meanings, their vectors are close together.</p>
+            <p>Think of embeddings as:</p>
+            <p>A GPS coordinate for meaning.</p>
+            <p>Just as places have latitude and longitude, words and documents have embedding coordinates.</p>
+        </section>
+
+        <section>
+            <h2>Why Use Vector Embeddings?</h2>
+            <p>Traditional search:</p>
+            <pre><code>
+Query: "How to build a banking app"
+
+Matches:
+✓ "How to build a banking app"
+✗ "Creating a fintech application"
+            </code></pre>
+            <p>Vector search:</p>
+            <pre><code>
+Query: "How to build a banking app"
+
+Matches:
+✓ "Creating a fintech application"
+✓ "Developing a digital wallet"
+✓ "Building payment systems"
+            </code></pre>
+            <p>Because it understands meaning, not just keywords.</p>
+        </section>
+
+        <section>
+            <h2>Common Uses</h2>
+            <p>1. Semantic Search</p>
+            <p>Search by meaning.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Google Search</li>
+                <li>ChatGPT Memory</li>
+                <li>Internal company document search</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. RAG (Retrieval Augmented Generation)</h2>
+            <p>Used by modern AI assistants.</p>
+            <p>Process:</p>
+            <pre><code>
+User Question
+      ↓
+Create Embedding
+      ↓
+Search Vector DB
+      ↓
+Get Relevant Documents
+      ↓
+Send to LLM
+      ↓
+Generate Answer
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+Question:
+"What is our refund policy?"
+
+LLM:
+Searches company documents first
+then answers.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Recommendation Systems</h2>
+            <p>Netflix:</p>
+            <pre><code>
+Movie A embedding
+Movie B embedding
+
+If close together:
+recommend Movie B
+            </code></pre>
+            <p>Same for:</p>
+            <ul>
+                <li>YouTube</li>
+                <li>Spotify</li>
+                <li>TikTok</li>
+                <li>Amazon</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Chatbots</h2>
+            <p>Store company documents as embeddings.</p>
+            <pre><code>
+PDFs
+FAQs
+Knowledge Base
+            </code></pre>
+            <p>Then search them when users ask questions.</p>
+        </section>
+
+        <section>
+            <h2>How Embeddings Are Generated</h2>
+            <p>AI model:</p>
+            <pre><code>
+Sentence
+   ↓
+Neural Network
+   ↓
+Vector Embedding
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+"I love dogs"
+            </code></pre>
+            <p>becomes</p>
+            <pre><code>
+[0.21, -0.44, 0.78, ...]
+            </code></pre>
+            <p>Typical dimensions:</p>
+            <p>The more dimensions, the richer the meaning representation.</p>
+        </section>
+
+        <section>
+            <h2>Basic Algorithm</h2>
+            <p>Step 1: Convert Text to Embeddings</p>
+            <pre><code>
+const embedding = embeddingModel.embed(
+  "How to build a banking app"
+);
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+[0.34, -0.52, 0.91, ...]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2: Store in Vector Database</h2>
+            <p>Example document:</p>
+            <pre><code>
+{
+    "text": "Building a fintech application",
+    "embedding": [0.33, -0.50, 0.89]
+}
+            </code></pre>
+            <p>Stored in:</p>
+            <ul>
+                <li>MongoDB</li>
+                <li>Pinecone</li>
+                <li>Weaviate</li>
+                <li>Milvus</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 3: Create Query Embedding</h2>
+            <p>User asks:</p>
+            <pre><code>
+"How do I create a digital wallet?"
+            </code></pre>
+            <p>Convert to vector:</p>
+            <pre><code>
+[0.35, -0.49, 0.88]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4: Calculate Similarity</h2>
+            <p>Most common algorithm:</p>
+            <p>Cosine Similarity</p>
+            <p>Measures angle between vectors.</p>
+            <pre><code>
+1.0  = identical
+0.8+ = very similar
+0.5  = somewhat related
+0.0  = unrelated
+            </code></pre>
+            <p>Earlier you asked about cosine.</p>
+            <p>Here cosine similarity answers:</p>
+            <p>"How similar are the meanings of two vectors?"</p>
+            <p>not their actual distance.</p>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>Documents:</p>
+            <pre><code>
+1. Banking Application
+2. Dog Training Guide
+3. Mobile Wallet Development
+            </code></pre>
+            <p>Query:</p>
+            <pre><code>
+"How to build e-wallet?"
+            </code></pre>
+            <p>Embeddings comparison:</p>
+            <pre><code>
+Banking App          = 0.89
+Dog Training         = 0.02
+Mobile Wallet Dev    = 0.95
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+1. Mobile Wallet Dev
+2. Banking App
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Using MongoDB Vector Search</h2>
+            <p>Since you work with Node.js and MongoDB, a typical flow is:</p>
+            <pre><code>
+PDFs/Documents
+        ↓
+Create Embeddings
+        ↓
+Store in MongoDB
+        ↓
+MongoDB Atlas Vector Search
+        ↓
+Return Top Matching Documents
+        ↓
+Send Context to LLM
+        ↓
+Generate Answer
+            </code></pre>
+            <p>Document example:</p>
+            <pre><code>
+{
+    "_id": 1,
+    "content": "TryCastanet payment processing",
+    "embedding": [0.12, 0.45, -0.33, ...]
+}
+            </code></pre>
+            <p>Query:</p>
+            <pre><code>
+db.collection.aggregate([
+  {
+    $vectorSearch: {
+      index: "vector_index",
+      path: "embedding",
+      queryVector: embedding,
+      numCandidates: 100,
+      limit: 5
+    }
+  }
+]);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Simple Mental Model</h2>
+            <pre><code>
+Text
+ ↓
+Embedding Model
+ ↓
+Vector Numbers
+ ↓
+Vector Database
+ ↓
+Cosine Similarity Search
+ ↓
+Most Similar Content
+ ↓
+LLM Uses Context
+ ↓
+Answer
+            </code></pre>
+            <p>That's the core technology behind modern AI search, RAG systems, AI chatbots, document assistants, and knowledge-base applications.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

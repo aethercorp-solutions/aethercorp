@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@Binding in SwiftUI</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">@Binding in SwiftUI</h1>
+                    <p class="subtitle">
+                        @Binding in SwiftUI is commonly used when a child view needs to read and modify state owned by a parent view.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>In real-world apps, @Binding is everywhere:</h2>
+            <ul>
+                <li>Forms</li>
+                <li>Toggles</li>
+                <li>Modals</li>
+                <li>Navigation</li>
+                <li>Filters</li>
+                <li>Settings</li>
+                <li>Custom components</li>
+                <li>Editable lists</li>
+                <li>Search bars</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Real Project Example — E-commerce Cart Quantity</h2>
+            <p>This is a practical app architecture pattern.</p>
+            <p>Parent View (Owns the State)</p>
+            <pre><code>
+import SwiftUI
+
+struct CartView: View {
+    
+    @State private var quantity: Int = 1
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            
+            Text("Quantity: \(quantity)")
+                .font(.title)
+            
+            QuantitySelector(quantity: $quantity)
+            
+            Text("Total: $\(quantity * 499)")
+                .font(.headline)
+        }
+        .padding()
+    }
+}
+            </code></pre>
+
+            <p>Child View (Edits Parent State)</p>
+            <pre><code>
+import SwiftUI
+
+struct QuantitySelector: View {
+    
+    @Binding var quantity: Int
+    
+    var body: some View {
+        HStack(spacing: 20) {
+            
+            Button("-") {
+                if quantity > 1 {
+                    quantity -= 1
+                }
+            }
+            
+            Text("\(quantity)")
+                .font(.title2)
+            
+            Button("+") {
+                quantity += 1
+            }
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why @Binding Is Important</h2>
+            <p>Without @Binding:</p>
+            <ul>
+                <li>Child views cannot directly update parent state</li>
+                <li>You would need callbacks/closures everywhere</li>
+                <li>State management becomes messy</li>
+            </ul>
+            <p>With @Binding:</p>
+            <ul>
+                <li>Single source of truth</li>
+                <li>Cleaner architecture</li>
+                <li>Reusable components</li>
+                <li>Better separation of concerns</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Real App Scenarios</h2>
+            <p>1. Login Form</p>
+            <pre><code>
+struct LoginView: View {
+
+    @State private var email = ""
+    
+    var body: some View {
+        EmailField(email: $email)
+    }
+}
+            </code></pre>
+
+            <pre><code>
+struct EmailField: View {
+
+    @Binding var email: String
+    
+    var body: some View {
+        TextField("Email", text: $email)
+    }
+}
+            </code></pre>
+
+            <p>2. Settings Screen Toggle</p>
+
+            <pre><code>
+struct SettingsView: View {
+
+    @State private var notificationsEnabled = false
+    
+    var body: some View {
+        NotificationToggle(
+            isEnabled: $notificationsEnabled
+        )
+    }
+}
+            </code></pre>
+
+            <p>3. Search Bar Component</p>
+            <pre><code>
+struct HomeView: View {
+
+    @State private var searchText = ""
+    
+    var body: some View {
+        SearchBar(text: $searchText)
+    }
+}
+            </code></pre>
+
+            <p>4. Modal Presentation</p>
+            <pre><code>
+struct DashboardView: View {
+
+    @State private var showProfile = false
+    
+    var body: some View {
+        
+        Button("Open Profile") {
+            showProfile = true
+        }
+        .sheet(isPresented: $showProfile) {
+            ProfileView(showProfile: $showProfile)
+        }
+    }
+}
+            </code></pre>
+
+            <p>Child:</p>
+            <pre><code>
+struct ProfileView: View {
+
+    @Binding var showProfile: Bool
+    
+    var body: some View {
+        Button("Close") {
+            showProfile = false
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Architecture Flow</h2>
+            <pre><code>
+Parent View
+   owns @State
+        ↓
+passes $value
+        ↓
+Child receives @Binding
+        ↓
+Child updates parent state
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Important Concept</h2>
+            <p>@State</p>
+            <p>Owns the data.</p>
+            <pre><code>
+@State private var username = ""
+            </code></pre>
+
+            <p>@Binding</p>
+            <p>References data owned elsewhere.</p>
+            <pre><code>
+@Binding var username: String
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The $ Symbol</h2>
+            <p>This creates a binding.</p>
+            <pre><code>
+$username
+            </code></pre>
+            <p>Meaning:</p>
+            <p>“Pass a reference to this state.”</p>
+        </section>
+
+        <section>
+            <h2>“Pass a reference to this state.”</h2>
+            <p>Large apps often combine:</p>
+            <ul>
+                <li>@State</li>
+                <li>@Binding</li>
+                <li>@StateObject</li>
+                <li>@ObservedObject</li>
+                <li>@EnvironmentObject</li>
+            </ul>
+            <p>Typical flow:</p>
+            <pre><code>
+ViewModel
+   ↓
+Parent View
+   ↓
+Child Components via @Binding
+            </code></pre>
+            <p>Example:</p>
+            <ul>
+                <li>Banking app transaction form</li>
+                <li>Food delivery quantity selector</li>
+                <li>Ride-sharing destination picker</li>
+                <li>Social media post composer</li>
+                <li>AI chat message input</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

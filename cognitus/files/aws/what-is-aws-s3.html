@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is AWS S3?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is AWS S3?</h1>
+                    <p class="subtitle">
+                        AWS S3 (Simple Storage Service) is like a giant online hard drive in the cloud.
+                        <p>Instead of storing files on your server, you store them in S3.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Examples of files stored in S3:</h2>
+            <ul>
+                <li>User profile pictures</li>
+                <li>Documents (PDFs)</li>
+                <li>Videos</li>
+                <li>Audio files</li>
+                <li>Backups</li>
+                <li>App images</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple Example</h2>
+            <p>Imagine your React Native app lets users upload profile photos.</p>
+            <p>Without S3:</p>
+            <pre><code>
+React Native App
+      |
+      v
+Node.js Server
+      |
+      v
+Server Hard Drive
+            </code></pre>
+            <p>Problem:</p>
+            <ul>
+                <li>Server storage can run out</li>
+                <li>Difficult to scale</li>
+                <li>If server crashes, files may be lost</li>
+            </ul>
+            <p>With S3:</p>
+            <pre><code>
+React Native App
+      |
+      v
+Node.js API (Lambda)
+      |
+      v
+AWS S3 Bucket
+            </code></pre>
+            <p>Benefits:</p>
+            <ul>
+                <li>Almost unlimited storage</li>
+                <li>Highly durable</li>
+                <li>Scales automatically</li>
+                <li>Cheap</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Important Terms</h2>
+            <p>Bucket</p>
+            <p>A bucket is like a folder at the top level.</p>
+            <p>Example:</p>
+            <pre><code>
+Bucket: trycastanet-files
+            </code></pre>
+            <p>Inside:</p>
+            <pre><code>
+trycastanet-files
+├── users/
+│   ├── photo1.jpg
+│   └── photo2.jpg
+├── documents/
+│   └── contract.pdf
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Object</h2>
+            <p>Every file stored in S3 is called an Object.</p>
+            <p>Example:</p>
+            <pre><code>
+users/photo1.jpg
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How Upload Works</h2>
+            <p>Step 1</p>
+            <p>User selects a photo.</p>
+            <pre><code>
+React Native
+            </code></pre>
+            <p>Step 2</p>
+            <p>Photo is sent to your Node.js Lambda.</p>
+            <p>Step 3</p>
+            <p>Lambda uploads it to S3.</p>
+            <p>Step 4</p>
+            <p>S3 returns a URL.</p>
+            <p>Example:</p>
+            <pre><code>
+https://mybucket.s3.amazonaws.com/users/photo1.jpg
+            </code></pre>
+            <p>Step 5</p>
+            <p>Save the URL in MongoDB.</p>
+            <pre><code>
+{
+    name: "Paul",
+    profileImage:
+    "https://mybucket.s3.amazonaws.com/users/photo1.jpg"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Create S3 Bucket</h2>
+            <ol>
+                <li>Login to AWS Console.</li>
+                <li>Open Amazon Web Services S3.</li>
+                <li>Click Create Bucket.</li>
+                <li>
+                    Enter:
+                    <p>trycastanet-files</p>
+                </li>
+                <li>Create bucket.</li>
+            </ol>
+            <p>Done.</p>
+        </section>
+
+        <section>
+            <h2>Install SDK</h2>
+            <p>Node.js:</p>
+            <pre><code>
+npm install @aws-sdk/client-s3
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Configure AWS Credentials</h2>
+            <p>Lambda IAM Role needs:</p>
+            <pre><code>
+{
+    "Effect": "Allow",
+    "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+    ],
+    "Resource": "arn:aws:s3:::trycastanet-files/*"
+}
+            </code></pre>
+            <p>This allows Lambda to upload files.</p>
+        </section>
+
+        <section>
+            <h2>Upload File Example</h2>
+            <pre><code>
+const { S3Client, PutObjectCommand } =
+require("@aws-sdk/client-s3");
+
+const s3 = new S3Client({
+  region: "ap-southeast-1"
+});
+
+async function uploadFile(buffer, fileName) {
+
+  const command = new PutObjectCommand({
+    Bucket: "trycastanet-files",
+    Key: `users/${fileName}`,
+    Body: buffer,
+    ContentType: "image/jpeg"
+  });
+
+  await s3.send(command);
+
+  return `https://trycastanet-files.s3.ap-southeast-1.amazonaws.com/users/${fileName}`;
+}
+            </code></pre>
+            <p>Usage:</p>
+            <pre><code>
+const url = await uploadFile(
+  imageBuffer,
+  "profile.jpg"
+);
+
+console.log(url);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Better Approach for React Native</h2>
+            <p>Instead of:</p>
+            <pre><code>
+Mobile → Lambda → S3
+            </code></pre>
+            <p>Use:</p>
+            <pre><code>
+Mobile → Presigned URL
+          ↓
+          S3
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why?</h2>
+            <p>Large files don't pass through Lambda.</p>
+            <p>Benefits:</p>
+            <ul>
+                <li>Faster</li>
+                <li>Cheaper</li>
+                <li>Less Lambda memory usage</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Presigned URL Flow</h2>
+            <p>1. App asks Lambda</p>
+            <pre><code>
+POST /upload-url
+            </code></pre>
+            <p>2. Lambda generates temporary upload URL</p>
+            <p>Example:</p>
+            <pre><code>
+https://s3.amazonaws.com/...
+            </code></pre>
+            <p>3. React Native uploads directly to S3</p>
+            <pre><code>
+fetch(uploadUrl, {
+    method: "PUT",
+    body: imageBlob
+});
+            </code></pre>
+            <p>4. Save file URL in MongoDB</p>
+            <p>Done.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

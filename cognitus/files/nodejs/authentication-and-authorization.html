@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Authentication and Authorization</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Authentication and Authorization</h1>
+                    <p class="subtitle">
+                        In backend systems like Node.js + Express.js APIs, authentication and authorization solve two completely different problems.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Authentication = “Who are you?”</h2>
+            <p>Authentication verifies identity.</p>
+            <p>When you see:</p>
+            <pre><code>
+"authentication": "JWT validation"
+            </code></pre>
+            <p>it means:</p>
+            <p>The server checks whether the JWT token is real, valid, signed correctly, and not expired.</p>
+            <p>The system is asking:</p>
+            <ul>
+                <li>Did this token come from a trusted server?</li>
+                <li>Is the user logged in?</li>
+                <li>Is the token expired?</li>
+                <li>Was the token tampered with?</li>
+            </ul>
+            <p>If valid → user is authenticated.</p>
+        </section>
+
+        <section>
+            <h2>JWT Authentication Flow</h2>
+            <p>Step 1 — User logs in</p>
+            <pre><code>
+Email + Password
+            </code></pre>
+            <p>Server verifies credentials.</p>
+        </section>
+
+        <section>
+            <h2>Step 2 — Server creates JWT</h2>
+            <p>Example:</p>
+            <pre><code>
+const token = jwt.sign(
+  {
+    userId: "123",
+    email: "paul@email.com"
+  },
+  SECRET_KEY,
+  { expiresIn: '1h' }
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3 — Client sends token</h2>
+            <pre><code>
+Authorization: Bearer eyJhbGciOi...
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4 — Middleware validates JWT</h2>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+function authenticate(req, res, next) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({
+            message: 'No token'
+        });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+
+        req.user = decoded;
+
+        next();
+    } catch (err) {
+        return res.status(401).json({
+            message: 'Invalid token'
+        });
+    }
+}
+            </code></pre>
+            <p>This is:</p>
+            <p>Authentication</p>
+            <p>The server now knows:</p>
+            <pre><code>
+req.user = {
+    userId: "123",
+    email: "paul@email.com"
+}
+            </code></pre>
+            <p>But the server still does NOT know what the user is allowed to do.</p>
+            <p>That is authorization.</p>
+        </section>
+
+        <section>
+            <h2>2. Authorization = “What are you allowed to do?”</h2>
+            <p>Authorization checks permissions AFTER authentication succeeds.</p>
+            <p>When you see:</p>
+            <pre><code>
+"authorization": "role-based access"
+            </code></pre>
+            <p>it means:</p>
+            <p>The system decides access based on user roles.</p>
+            <p>Example roles:</p>
+            <pre><code>
+admin
+manager
+staff
+customer
+            </code></pre>
+            <p>The system asks:</p>
+            <ul>
+                <li>Can this user access admin routes?</li>
+                <li>Can this user delete users?</li>
+                <li>Can this user edit products?</li>
+                <li>Can this user view reports?</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Role-Based Access Control (RBAC)</h2>
+            <p>Example JWT payload:</p>
+            <pre><code>
+{
+    userId: "123",
+    role: "admin"
+}
+            </code></pre>
+            <p>Authorization middleware:</p>
+            <pre><code>
+function authorize(roles = []) {
+    return (req, res, next) => {
+
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({
+                message: 'Forbidden'
+            });
+        }
+
+        next();
+    };
+}
+            </code></pre>
+            <p>Usage:</p>
+            <pre><code>
+app.delete(
+   '/users/:id',
+   authenticate,
+   authorize(['admin']),
+   deleteUserController
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Request Flow</h2>
+            <pre><code>
+1. User sends JWT
+        ↓
+2. Authentication middleware validates JWT
+        ↓
+3. req.user created
+        ↓
+4. Authorization middleware checks role
+        ↓
+5. Access granted or denied
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real-World Analogy</h2>
+            <p>Authentication</p>
+            <p>Security guard checks your ID card.</p>
+            <pre><code>
+"Are you really Paul?"
+            </code></pre>
+
+            <p>Authorization</p>
+            <p>After identity is verified:</p>
+            <pre><code>
+"Are you allowed inside the server room?"
+            </code></pre>
+            <p>You may be authenticated but still forbidden.</p>
+        </section>
+
+        <section>
+            <h2>Common HTTP Status Codes</h2>
+            <p>Authentication Failure</p>
+            <pre><code>
+401 Unauthorized
+            </code></pre>
+            <p>Means:</p>
+            <pre><code>
+"You are NOT logged in."
+            </code></pre>
+            <p>Examples:</p>
+            <ul>
+                <li>Missing token</li>
+                <li>Invalid JWT</li>
+                <li>Expired JWT</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Authorization Failure</h2>
+            <pre><code>
+403 Forbidden
+            </code></pre>
+            <p>Means:</p>
+            <pre><code>
+"You are logged in BUT not allowed."
+            </code></pre>
+            <p>Example:</p>
+            <ul>
+                <li>Normal user accessing admin panel</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Full Example</h2>
+            <pre><code>
+app.get(
+   '/admin/dashboard',
+   authenticate,
+   authorize(['admin']),
+   adminDashboardController
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Case 1 — Invalid Token</h2>
+            <p>Fails at authentication.</p>
+            <p>Response:</p>
+            <pre><code>
+401 Unauthorized
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Case 2 — Valid Token but role=user</h2>
+            <p>Fails at authorization.</p>
+            <p>Response:</p>
+            <pre><code>
+403 Forbidden
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Simple Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Purpose</th>
+                        <th>Question</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Authentication</td>
+                        <td>Verify identity</td>
+                        <td>“Who are you?”</td>
+                    </tr>
+                    <tr>
+                        <td>Authorization</td>
+                        <td>Verify permissions</td>
+                        <td>“What can you do?”</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>JWT Validation vs Role-Based Access</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>JWT Validation</th>
+                        <th>Role-Based Access</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Type</td>
+                        <td>Authentication</td>
+                        <td>Authorization</td>
+                    </tr>
+                    <tr>
+                        <td>Checks</td>
+                        <td>Token validity</td>
+                        <td>User permissions</td>
+                    </tr>
+                    <tr>
+                        <td>Uses</td>
+                        <td>jwt.verify()</td>
+                        <td>role checking</td>
+                    </tr>
+                    <tr>
+                        <td>Result</td>
+                        <td>Logged in</td>
+                        <td>Access granted</td>
+                    </tr>
+                    <tr>
+                        <td>Failure Code</td>
+                        <td>401</td>
+                        <td>403</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Typical Express Architecture</h2>
+            <pre><code>
+Routes
+  ↓
+Authentication Middleware
+  ↓
+Authorization Middleware
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Database
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+routes/
+middlewares/
+controllers/
+services/
+models/
+            </code></pre>
+            <p>Authentication and authorization usually belong in middleware because they run before controllers execute.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>n8n</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">n8n</h1>
+                    <p class="subtitle">n8n (pronounced "en-eight-en") is an automation platform that lets you connect apps and automate tasks without writing much code.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of it as:</h2>
+            <p>"If this happens → then do that."</p>
+            <p>Similar to:</p>
+            <ul>
+                <li>Zapier</li>
+                <li>Make (formerly Integromat)</li>
+            </ul>
+            <p>But n8n is more developer-friendly and can be self-hosted.</p>
+        </section>
+
+        <section>
+            <h2>Simple Example</h2>
+            <p>Imagine you receive a new customer inquiry.</p>
+            <p>Workflow in n8n:</p>
+            <ol>
+                <li>Customer submits a form</li>
+                <li>n8n receives the form data</li>
+                <li>Save data to MongoDB</li>
+                <li>Send an email notification</li>
+                <li>Create a task in Trello</li>
+                <li>Send a Slack message</li>
+            </ol>
+            <p>All automatically.</p>
+            <pre><code>
+Form
+  ↓
+n8n
+  ├─ Save to MongoDB
+  ├─ Send Email
+  ├─ Create Trello Card
+  └─ Send Slack Message
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How It Works</h2>
+            <p>n8n uses nodes.</p>
+            <p>Each node performs one task.</p>
+            <p>Example:</p>
+            <pre><code>
+Webhook
+   ↓
+HTTP Request
+   ↓
+OpenAI
+   ↓
+MongoDB
+   ↓
+Email
+            </code></pre>
+            <p>A workflow is just nodes connected together.</p>
+        </section>
+
+        <section>
+            <h2>Why Developers Like n8n</h2>
+            <p>As an AI full-stack developer, you could use n8n to:</p>
+            <ul>
+                <li>Build AI agents</li>
+                <li>Connect OpenAI with MongoDB</li>
+                <li>Automate business processes</li>
+                <li>Integrate APIs</li>
+                <li>Process documents</li>
+                <li>Create chatbots</li>
+                <li>Schedule jobs</li>
+            </ul>
+            <p>Example AI workflow:</p>
+            <pre><code>
+User Message
+      ↓
+OpenAI
+      ↓
+Vector Search (MongoDB)
+      ↓
+Generate Answer
+      ↓
+Send Response
+            </code></pre>
+            <p>This is essentially a simple RAG (Retrieval-Augmented Generation) system.</p>
+        </section>
+
+        <section>
+            <h2>Example: AI Customer Support</h2>
+            <pre><code>
+Customer Question
+        ↓
+OpenAI Embedding
+        ↓
+MongoDB Vector Search
+        ↓
+Relevant Documents
+        ↓
+GPT Response
+        ↓
+Email Back to Customer
+            </code></pre>
+            <p>n8n orchestrates all the steps.</p>
+        </section>
+
+        <section>
+            <h2>n8n vs Coding Everything Yourself</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Traditional Code</th>
+                        <th>n8n</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Connect APIs</td>
+                        <td>Write code</td>
+                        <td>Drag and drop</td>
+                    </tr>
+                    <tr>
+                        <td>Scheduled jobs</td>
+                        <td>Cron + code</td>
+                        <td>Built-in</td>
+                    </tr>
+                    <tr>
+                        <td>AI workflows</td>
+                        <td>Lots of code</td>
+                        <td>Visual workflow</td>
+                    </tr>
+                    <tr>
+                        <td>Debugging</td>
+                        <td>Logs</td>
+                        <td>Visual execution</td>
+                    </tr>
+                    <tr>
+                        <td>Complex logic</td>
+                        <td>Better</td>
+                        <td>Possible but harder</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>When to Use n8n</h2>
+            <p>Use n8n when:</p>
+            <ul>
+                <li>You need to connect multiple services quickly</li>
+                <li>You are building automation workflows</li>
+                <li>You are creating AI agents and RAG systems</li>
+                <li>You want less boilerplate code</li>
+            </ul>
+            <p>Don't use n8n when:</p>
+            <ul>
+                <li>Building a full banking app</li>
+                <li>Creating high-performance backend services</li>
+                <li>Handling millions of requests per second</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple Analogy</h2>
+            <p>Think of your backend services as machines.</p>
+            <p>n8n is the factory manager that tells the machines:</p>
+            <p>"When a customer message arrives, send it to OpenAI, search MongoDB, generate an answer, then email the customer."</p>
+            <p>The machines do the work; n8n coordinates the process.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

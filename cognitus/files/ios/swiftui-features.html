@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title> Title </title>
+    <title>SwiftUI Features Explained in Detail</title>
     <link rel="stylesheet" href="../../style.css">
     <script src="../../index.js"></script>
 </head>
@@ -12,8 +12,10 @@
         <nav class="corporate-nav">
             <div class="nav-container">
                 <div class="title-header">
-                    <h1 class="title"> Title </h1>
-                    <p class="subtitle"> Subtitle </p>
+                    <h1 class="title">SwiftUI Features Explained in Detail</h1>
+                    <p class="subtitle">
+                
+                    </p>
                 </div>        
             </div>
         </nav>
@@ -21,7 +23,755 @@
 
     <main>
         <section>
-            <h2> Subtitle </h2>
+            <h2>SwiftUI</h2>
+            SwiftUI is Apple’s modern declarative UI framework used for building apps across:
+            <ul>
+                <li>iOS</li>
+                <li>iPadOS</li>
+                <li>macOS</li>
+                <li>watchOS</li>
+                <li>tvOS</li>
+                <li>visionOS</li>
+            </ul>
+            <p>It was introduced by Apple in 2019 and is tightly integrated with the Swift language.</p>
+        </section>
+
+        <section>
+            <h2>1. Declarative Syntax</h2>
+            <p>The biggest feature of SwiftUI is declarative programming.</p>
+            <p>Instead of telling the UI how to update step-by-step, you describe what the UI should look like for a given state.</p>
+            <p>UIKit (Imperative)</p>
+            <pre><code>
+label.text = "Hello"
+label.textColor = .red
+view.addSubview(label)
+            </code></pre>
+            <p>You manually update UI objects.</p>
+        </section>
+
+        <section>
+            <h2>SwiftUI (Declarative)</h2>
+            <pre><code>
+Text("Hello")
+    .foregroundColor(.red)
+            </code></pre>
+            <p>You describe the UI state.</p>
+            <p>SwiftUI automatically handles:</p>
+            <ul>
+                <li>rendering</li>
+                <li>updating</li>
+                <li>diffing</li>
+                <li>animations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. State-Driven UI</h2>
+            <p>SwiftUI UI changes are based on state.</p>
+            <p>When state changes:</p>
+            <ul>
+                <li>the UI automatically refreshes</li>
+                <li>views recompute</li>
+                <li>only necessary parts redraw</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+struct CounterView: View {
+    @State private var count = 0
+
+    var body: some View {
+        VStack {
+            Text("Count: \(count)")
+
+            Button("Increment") {
+                count += 1
+            }
+        }
+    }
+}
+            </code></pre>
+            <p>When count changes:</p>
+            <ul>
+                <li>SwiftUI recomputes body</li>
+                <li>updates only affected views</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Property Wrappers</h2>
+            <p>SwiftUI heavily uses property wrappers.</p>
+            <p>@State</p>
+            <p>Local mutable state.</p>
+            <pre><code>
+@State private var isOn = false
+            </code></pre>
+            <p>Use when:</p>
+            <ul>
+                <li>view owns the data</li>
+            </ul>
+
+            <p>@Binding</p>
+            <p>Two-way connection to parent state.</p>
+            <pre><code>
+@Binding var isEnabled: Bool
+            </code></pre>
+            <p>Child can modify parent state.</p>
+
+            <p>@ObservedObject</p>
+            <p>Observes external object changes.</p>
+            <pre><code>
+class UserModel: ObservableObject {
+    @Published var name = ""
+}
+            </code></pre>
+            <pre><code>
+@ObservedObject var model: UserModel
+            </code></pre>
+
+            <p>@StateObject</p>
+            <p>View creates and owns observable object.</p>
+            <pre><code>
+@StateObject private var vm = ViewModel()
+            </code></pre>
+            <p>Prevents recreation during redraws.</p>
+
+            <p>@EnvironmentObject</p>
+            <p>Shared global dependency injection.</p>
+            <pre><code>
+@EnvironmentObject var session: SessionManager
+            </code></pre>
+            <p>Useful for:</p>
+            <ul>
+                <li>authentication</li>
+                <li>themes</li>
+                <li>app-wide settings</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Automatic UI Updates</h2>
+            <p>SwiftUI automatically tracks dependencies.</p>
+            <p>If state changes:</p>
+            <ul>
+                <li>affected views redraw</li>
+                <li>unaffected views stay untouched</li>
+            </ul>
+            <p>This is one reason SwiftUI apps can be efficient.</p>
+        </section>
+
+        <section>
+            <h2>5. View Composition</h2>
+            <p>SwiftUI encourages reusable small views.</p>
+            <p>Example:</p>
+            <pre><code>
+struct ProfileImage: View {
+    var body: some View {
+        Image("avatar")
+            .clipShape(Circle())
+    }
+}
+            </code></pre>
+            <p>Then reuse:</p>
+            <pre><code>
+ProfileImage()
+            </code></pre>
+            <p>Benefits:</p>
+            <ul>
+                <li>modularity</li>
+                <li>readability</li>
+                <li>maintainability</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Body Recalculation System</h2>
+            <p>Every SwiftUI view has:</p>
+            <pre><code>
+var body: some View
+            </code></pre>
+            <p>The body is a computed property.</p>
+            <p>When state changes:</p>
+            <ul>
+                <li>SwiftUI recalculates body</li>
+                <li>compares new hierarchy with previous hierarchy</li>
+                <li>updates actual UI efficiently</li>
+            </ul>
+            <p>This process is called diffing.</p>
+        </section>
+
+        <section>
+            <h2>7. Live Preview (Canvas)</h2>
+            <p>SwiftUI supports real-time previews inside Xcode.</p>
+            <pre><code>
+#Preview {
+    ContentView()
+}
+            </code></pre>
+            <p>Benefits</p>
+            <ul>
+                <li>Instant UI feedback</li>
+                <li>Faster iteration</li>
+                <li>No need to constantly run simulator</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Automatic UI Updates</h2>
+            <p>SwiftUI tracks dependencies automatically.</p>
+            <p>When state changes:</p>
+            <ul>
+                <li>only affected views refresh</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+Text(username)
+            </code></pre>
+            <p>If username changes:</p>
+            <ul>
+                <li>SwiftUI re-renders the dependent view automatically.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Built-in Animations</h2>
+            <p>Animations are extremely simple in SwiftUI.</p>
+            <pre><code>
+withAnimation {
+    isExpanded.toggle()
+}
+            </code></pre>
+            <p>Or:</p>
+            <pre><code>
+.scaleEffect(isBig ? 1.5 : 1)
+.animation(.easeInOut, value: isBig)
+            </code></pre>
+
+            <p>Features</p>
+            <ul>
+                <li>Spring animations</li>
+                <li>Transitions</li>
+                <li>Matched geometry effects</li>
+                <li>Gesture-driven animations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Layout System</h2>
+            <p>SwiftUI uses flexible layout containers.</p>
+            <p>VStack</p>
+            <p>Vertical layout.</p>
+            <pre><code>
+VStack {
+    Text("Top")
+    Text("Bottom")
+}
+            </code></pre>
+
+            <p>HStack</p>
+            <p>Horizontal layout.</p>
+            <pre><code>
+HStack {
+    Image(systemName: "star")
+    Text("Favorite")
+}
+            </code></pre>
+
+            <p>ZStack</p>
+            <p>Overlapping views.</p>
+            <pre><code>
+ZStack {
+    Color.blue
+    Text("Overlay")
+}
+            </code></pre>
+
+            <p>Lazy Containers</p>
+            <p>Efficient rendering for large data.</p>
+            <pre><code>
+LazyVStack {
+    ForEach(items) { item in
+        Row(item)
+    }
+}
+            </code></pre>
+            <p>Only visible items are rendered.</p>
+        </section>
+
+        <section>
+            <h2>11. Navigation System</h2>
+            <p>SwiftUI includes modern navigation APIs.</p>
+            <p>NavigationStack</p>
+            <pre><code>
+NavigationStack {
+    List(users) { user in
+        NavigationLink(user.name) {
+            DetailView(user: user)
+        }
+    }
+}
+            </code></pre>
+            <p>Features</p>
+            <ul>
+                <li>Type-safe navigation</li>
+                <li>Deep linking support</li>
+                <li>Stack-based navigation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>12. Lists and Dynamic Data</h2>
+            <p>SwiftUI simplifies rendering collections.</p>
+            <pre><code>
+List(users) { user in
+    Text(user.name)
+}
+            </code></pre>
+            <p>Supports:</p>
+            <ul>
+                <li>Swipe actions</li>
+                <li>Deleting</li>
+                <li>Moving rows</li>
+                <li>Sections</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>13. Combine Integration</h2>
+            <p>SwiftUI works closely with Combine.</p>
+            <pre><code>
+@Published var text = ""
+            </code></pre>
+            <p>Changes automatically update UI.</p>
+            <p>Useful for:</p>
+            <ul>
+                <li>API responses</li>
+                <li>Real-time data</li>
+                <li>Reactive programming</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>14. Swift Concurrency Support</h2>
+            <p>SwiftUI integrates with async/await.</p>
+            <pre><code>
+.task {
+    await loadData()
+}
+            </code></pre>
+            <p>Benefits</p>
+            <ul>
+                <li>Cleaner async code</li>
+                <li>Easier networking</li>
+                <li>Better readability</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>15. Dark Mode Support</h2>
+            <p>SwiftUI automatically adapts to:</p>
+            <ul>
+                <li>Light mode</li>
+                <li>Dark mode</li>
+            </ul>
+            <pre><code>
+Color.primary
+            </code></pre>
+            <p>Automatically changes color depending on theme.</p>
+        </section>
+
+        <section>
+            <h2>16. Accessibility Built-In</h2>
+            <p>SwiftUI includes accessibility support automatically.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>VoiceOver</li>
+                <li>Dynamic Type</li>
+                <li>Accessibility labels</li>
+            </ul>
+            <pre><code>
+.accessibilityLabel("Profile Image")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>17. Cross-Platform Development</h2>
+            <p>One SwiftUI codebase can run on:</p>
+            <ul>
+                <li>iPhone</li>
+                <li>iPad</li>
+                <li>Mac</li>
+                <li>Apple Watch</li>
+                <li>Apple TV</li>
+                <li>Vision Pro</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+#if os(iOS)
+Text("iPhone")
+#elseif os(macOS)
+Text("Mac")
+#endif
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>18. Modifiers</h2>
+            <p>SwiftUI uses chained modifiers.</p>
+            <pre><code>
+Text("Hello")
+    .font(.title)
+    .padding()
+    .background(Color.blue)
+            </code></pre>
+            <p>Advantages</p>
+            <ul>
+                <li>Reusable styling</li>
+                <li>Readable UI structure</li>
+                <li>Composable design</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>19. Custom Reusable Components</h2>
+            <p>SwiftUI encourages reusable UI.</p>
+            <pre><code>
+struct PrimaryButton: View {
+    let title: String
+
+    var body: some View {
+        Text(title)
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.white)
+    }
+}
+            </code></pre>
+            <p>Usage:</p>
+            <pre><code>
+PrimaryButton(title: "Login")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>20. Gesture Handling</h2>
+            <p>Built-in gesture system.</p>
+            <pre><code>
+Text("Tap Me")
+.onTapGesture {
+    print("Tapped")
+}
+            </code></pre>
+            <p>Supports:</p>
+            <ul>
+                <li>Tap</li>
+                <li>Drag</li>
+                <li>Magnification</li>
+                <li>Rotation</li>
+                <li>Long press</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>21. Drawing and Graphics</h2>
+            <p>SwiftUI includes powerful graphics APIs.</p>
+            <p>Canvas</p>
+            <pre><code>
+Canvas { context, size in
+    context.fill(
+        Path(ellipseIn: CGRect(origin: .zero, size: size)),
+        with: .color(.blue)
+    )
+}
+            </code></pre>
+            <p>Supports:</p>
+            <ul>
+                <li>Vector drawing</li>
+                <li>Custom rendering</li>
+                <li>Charts</li>
+                <li>Graphics effects</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>22. Scene and App Lifecycle</h2>
+            <p>SwiftUI introduced a new app lifecycle.</p>
+            <pre><code>
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+            </code></pre>
+            <p>Replaces older:</p>
+            <ul>
+                <li>AppDelegate</li>
+                <li>SceneDelegate</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>23. Environment System</h2>
+            <p>Pass shared values through hierarchy.</p>
+            <pre><code>
+@Environment(\.colorScheme) var colorScheme
+            </code></pre>
+            <p>Examples:</p>
+            <ul>
+                <li>Theme</li>
+                <li>Locale</li>
+                <li>Size class</li>
+                <li>Dismiss actions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>24. Performance Optimizations</h2>
+            <p>SwiftUI includes:</p>
+            <ul>
+                <li>Diffing system</li>
+                <li>Lazy loading</li>
+                <li>View identity tracking</li>
+                <li>Incremental rendering</li>
+            </ul>
+            <p>However:</p>
+            <ul>
+                <li>improper state management can still cause excessive redraws.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>25. Integration with UIKit</h2>
+            <p>SwiftUI and UIKit can work together.</p>
+            <p>UIKit inside SwiftUI</p>
+            <pre><code>
+UIViewRepresentable
+            </code></pre>
+            <p>SwiftUI inside UIKit</p>
+            <pre><code>
+UIHostingController
+            </code></pre>
+            <p>Very useful for migrating legacy apps gradually.</p>
+        </section>
+
+        <section>
+            <h2>26. Preview-driven Development</h2>
+            <p>You can preview multiple states:</p>
+            <pre><code>
+#Preview("Dark Mode") {
+    ContentView()
+        .preferredColorScheme(.dark)
+}
+            </code></pre>
+            <p>Useful for:</p>
+            <ul>
+                <li>Device testing</li>
+                <li>Localization testing</li>
+                <li>Accessibility testing</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>27. Data Flow Architecture</h2>
+            <p>SwiftUI encourages:</p>
+            <ul>
+                <li>MVVM architecture</li>
+                <li>Unidirectional data flow</li>
+            </ul>
+            <p>Flow:</p>
+            <pre><code>
+Model → ViewModel → View
+            </code></pre>
+            <p>This improves:</p>
+            <ul>
+                <li>testability</li>
+                <li>maintainability</li>
+                <li>scalability</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Advantages of SwiftUI</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Advantage</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Less Code</td>
+                        <td>Much cleaner syntax</td>
+                    </tr>
+                    <tr>
+                        <td>Faster Development</td>
+                        <td>Live previews</td>
+                    </tr>
+                    <tr>
+                        <td>Reactive UI</td>
+                        <td>Automatic updates</td>
+                    </tr>
+                    <tr>
+                        <td>Cross-platform</td>
+                        <td>One codebase</td>
+                    </tr>
+                    <tr>
+                        <td>Easier Animations</td>
+                        <td>Minimal animation code</td>
+                    </tr>
+                    <tr>
+                        <td>Modern Architecture</td>
+                        <td>State-driven UI</td>
+                    </tr>
+                    <tr>
+                        <td>Better Readability</td>
+                        <td>Declarative style</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Limitations of SwiftUI</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Limitation</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Newer Framework</td>
+                        <td>APIs still evolving</td>
+                    </tr>
+                    <tr>
+                        <td>Some Missing Features</td>
+                        <td>UIKit still needed sometimes</td>
+                    </tr>
+                    <tr>
+                        <td>Debugging Complexity</td>
+                        <td>State issues can be tricky</td>
+                    </tr>
+                    <tr>
+                        <td>Performance Pitfalls</td>
+                        <td>Improper state usage can hurt performance</td>
+                    </tr>
+                    <tr>
+                        <td>Backward Compatibility</td>
+                        <td>Older iOS support limited</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>SwiftUI vs UIKit</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>SwiftUI</th>
+                        <th>UIKit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Style</td>
+                        <td>Declarative</td>
+                        <td>Imperative</td>
+                    </tr>
+                    <tr>
+                        <td>Code Size</td>
+                        <td>Smaller</td>
+                        <td>Larger</td>
+                    </tr>
+                    <tr>
+                        <td>Learning Curve</td>
+                        <td>Easier initially</td>
+                        <td>Steeper</td>
+                    </tr>
+                    <tr>
+                        <td>Flexibility</td>
+                        <td>Modern but limited sometimes</td>
+                        <td>Extremely flexible</td>
+                    </tr>
+                    <tr>
+                        <td>State Management</td>
+                        <td>Built-in</td>
+                        <td>Manual</td>
+                    </tr>
+                    <tr>
+                        <td>Animations</td>
+                        <td>Easier</td>
+                        <td>More verbose</td>
+                    </tr>
+                    <tr>
+                        <td>Legacy Support</td>
+                        <td>Newer iOS</td>
+                        <td>Older iOS supported</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>When to Use SwiftUI</h2>
+            <p>SwiftUI is excellent for:</p>
+            <ul>
+                <li>New iOS apps</li>
+                <li>Rapid prototyping</li>
+                <li>Cross-platform Apple apps</li>
+                <li>Modern reactive UI</li>
+                <li>MVVM architecture</li>
+            </ul>
+
+            <p>UIKit may still be preferred for:</p>
+            <ul>
+                <li>Very large legacy apps</li>
+                <li>Highly customized UI</li>
+                <li>Older iOS support</li>
+                <li>Complex UIKit integrations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Real-World SwiftUI Features Commonly Used</h2>
+            <p>In production apps, developers commonly use:</p>
+            <ul>
+                <li>NavigationStack</li>
+                <li>List</li>
+                <li>ScrollView</li>
+                <li>LazyVGrid</li>
+                <li>sheet</li>
+                <li>fullScreenCover</li>
+                <li>async/await</li>
+                <li>ObservableObject</li>
+                <li>@StateObject</li>
+                <li>@EnvironmentObject</li>
+                <li>Task</li>
+                <li>matchedGeometryEffect</li>
+                <li>TimelineView</li>
+                <li>Canvas</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <p>SwiftUI is:</p>
+            <ul>
+                <li>declarative</li>
+                <li>state-driven</li>
+                <li>reactive</li>
+                <li>cross-platform</li>
+                <li>animation-friendly</li>
+                <li>modern</li>
+            </ul>
+            <p>It significantly reduces UI code complexity while improving developer productivity.</p>
+            <p>For modern Apple ecosystem development, SwiftUI has become one of the most important frameworks to learn.</p>
         </section>
     </main>
 

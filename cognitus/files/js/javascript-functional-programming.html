@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JavaScript functional programming</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JavaScript functional programming</h1>
+                    <p class="subtitle">JavaScript functional programming is a style of programming where you build programs by combining small functions that transform data instead of changing it.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of it like a factory assembly line:</h2>
+            <pre><code>
+Raw Data -> Function A -> Function B -> Function C -> Result
+            </code></pre>
+            <p>Instead of writing lots of loops and changing variables, you pass data through functions.</p>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>Traditional way</p>
+            <pre><code>
+const numbers = [1, 2, 3, 4, 5];
+
+let result = [];
+
+for (let i = 0; i &lt; numbers.length; i++) {
+  result.push(numbers[i] * 2);
+}
+
+console.log(result);
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+[2, 4, 6, 8, 10]
+            </code></pre>
+            <p>Functional way</p>
+            <pre><code>
+const numbers = [1, 2, 3, 4, 5];
+
+const result = numbers.map(x => x * 2);
+
+console.log(result);
+            </code></pre>
+            <p>Same result, less code.</p>
+        </section>
+
+        <section>
+            <h2>Three Most Important Functions</h2>
+            <p>1. map()</p>
+            <p>Transforms each item.</p>
+            <pre><code>
+const names = ["Paul", "John", "Mary"];
+
+const upper = names.map(name => name.toUpperCase());
+
+console.log(upper);
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+["PAUL", "JOHN", "MARY"]
+            </code></pre>
+
+            <p>2. filter()</p>
+            <p>Keeps items that match a condition.</p>
+            <pre><code>
+const numbers = [1, 2, 3, 4, 5];
+
+const evens = numbers.filter(x => x % 2 === 0);
+
+console.log(evens);
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+[2, 4]
+            </code></pre>
+
+            <p>3. reduce()</p>
+            <p>Combines items into one value.</p>
+            <pre><code>
+const numbers = [1, 2, 3, 4, 5];
+
+const sum = numbers.reduce(
+  (total, current) => total + current,
+  0
+);
+
+console.log(sum);
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+15
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Chaining Functions</h2>
+            <p>Functional programming becomes powerful when you combine functions.</p>
+            <pre><code>
+const numbers = [1, 2, 3, 4, 5, 6];
+
+const result = numbers
+  .filter(x => x % 2 === 0)
+  .map(x => x * 10)
+  .reduce((sum, x) => sum + x, 0);
+
+console.log(result);
+            </code></pre>
+            <p>Step by step:</p>
+            <pre><code>
+[1,2,3,4,5,6]
+      ↓ filter
+[2,4,6]
+      ↓ map
+[20,40,60]
+      ↓ reduce
+120
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Pure Functions</h2>
+            <p>A pure function:</p>
+            <ul>
+                <li>Same input → same output</li>
+                <li>Doesn't change outside variables</li>
+            </ul>
+            <p>Good:</p>
+            <pre><code>
+function add(a, b) {
+    return a + b;
+}
+            </code></pre>
+            <p>Bad:</p>
+            <pre><code>
+let total = 0;
+
+function addToTotal(x) {
+  total += x;
+}
+            </code></pre>
+            <p>The second function changes external state.</p>
+        </section>
+
+        <section>
+            <h2>Immutability</h2>
+            <p>Don't modify existing data.</p>
+            <p>Bad:</p>
+            <pre><code>
+const arr = [1, 2, 3];
+
+arr.push(4);
+            </code></pre>
+            <p>Good:</p>
+            <pre><code>
+const arr = [1, 2, 3];
+
+const newArr = [...arr, 4];
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+[1,2,3,4]
+            </code></pre>
+            <p>Original array stays unchanged.</p>
+        </section>
+
+        <section>
+            <h2>Real React Native Example</h2>
+            <p>Suppose you have contacts:</p>
+            <pre><code>
+const contacts = [
+  { name: "Paul", favorite: true },
+  { name: "John", favorite: false },
+  { name: "Mary", favorite: true }
+];
+            </code></pre>
+            <p>Get favorite contact names:</p>
+            <pre><code>
+const favoriteNames = contacts
+  .filter(contact => contact.favorite)
+  .map(contact => contact.name);
+
+console.log(favoriteNames);
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+["Paul", "Mary"]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The Core Idea</h2>
+            <p>Functional programming is mainly:</p>
+            <ol>
+                <li>Use functions as building blocks</li>
+                <li>Avoid changing data</li>
+                <li>Use map, filter, and reduce</li>
+                <li>Create small reusable functions</li>
+                <li>Transform data through pipelines</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

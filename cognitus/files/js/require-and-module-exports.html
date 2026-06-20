@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>require() and module.exports</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">require() and module.exports</h1>
+                    <p class="subtitle">
+                        In Node.js, require() and module.exports are part of the CommonJS module system. They allow you to split code into reusable files (modules) and share functionality between them.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. What is a Module?</h2>
+            <p>A module is simply a file.</p>
+            <p>Example:</p>
+            <pre><code>
+math.js
+app.js
+            </code></pre>
+            <p>Each file has its own scope.</p>
+            <p>Variables inside one file are NOT automatically available in another file.</p>
+        </section>
+
+        <section>
+            <h2>2. What is module.exports?</h2>
+            <p>module.exports is used to expose data or functionality from a file so other files can use it.</p>
+            <p>Think of it like:</p>
+            <p>“What should this file make available to the outside world?”</p>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>math.js</p>
+            <pre><code>
+function add(a, b) {
+    return a + b;
+}
+
+module.exports = add;
+            </code></pre>
+            <p>This exports the add function.</p>
+        </section>
+
+        <section>
+            <h2>3. What is require()?</h2>
+            <p>require() imports another module.</p>
+            <p>Think of it like:</p>
+            <p>“Load this file and give me whatever it exported.”</p>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>app.js</p>
+            <pre><code>
+const add = require('./math');
+
+console.log(add(2, 3));
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+5
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. How It Works Internally</h2>
+            <p>When Node.js sees:</p>
+            <pre><code>
+require('./math')
+            </code></pre>
+            <p>It does roughly this internally:</p>
+            <ol>
+                <li>Finds math.js</li>
+                <li>Executes the file</li>
+                <li>Looks at module.exports</li>
+                <li>Returns that exported value</li>
+            </ol>
+            <p>So this:</p>
+            <pre><code>
+module.exports = add;
+            </code></pre>
+            <p>becomes:</p>
+            <pre><code>
+const add = require('./math');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Every File Has a Hidden Module Wrapper</h2>
+            <p>Node.js secretly wraps every file like this:</p>
+            <pre><code>
+(function(exports, require, module, __filename, __dirname) {
+
+    // your code here
+
+});
+            </code></pre>
+            <p>That is why these variables exist automatically:</p>
+            <ul>
+                <li>require</li>
+                <li>module</li>
+                <li>exports</li>
+                <li>__filename</li>
+                <li>__dirname</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. exports vs module.exports</h2>
+            <p>This confuses many developers.</p>
+            <p>They Initially Point to the Same Object</p>
+            <p>Internally:</p>
+            <pre><code>
+exports = module.exports
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Valid Usage</h2>
+            <p>user.js</p>
+            <pre><code>
+exports.name = 'Paul';
+exports.age = 30;
+            </code></pre>
+            <p>Equivalent to:</p>
+            <pre><code>
+module.exports.name = 'Paul';
+module.exports.age = 30;
+            </code></pre>
+            <p>Import:</p>
+            <pre><code>
+const user = require('./user');
+
+console.log(user.name);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. The Dangerous Part</h2>
+            <p>This DOES NOT work correctly:</p>
+            <pre><code>
+exports = function() {
+    console.log('hello');
+};
+            </code></pre>
+            <p>Why?</p>
+            <p>Because you replaced the reference.</p>
+            <p>You changed exports, but NOT module.exports.</p>
+            <p>Node only returns:</p>
+            <pre><code>
+module.exports
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Correct Way to Export a Function/Class</h2>
+            <p>Use:</p>
+            <pre><code>
+module.exports = function() {
+    console.log('hello');
+};
+            </code></pre>
+            <p>or:</p>
+            <pre><code>
+module.exports = MyClass;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Exporting Multiple Functions</h2>
+            <p>math.js</p>
+            <pre><code>
+function add(a, b) {
+    return a + b;
+}
+
+function subtract(a, b) {
+    return a - b;
+}
+
+module.exports = {
+    add,
+    subtract
+};
+            </code></pre>
+
+            <p>app.js</p>
+            <pre><code>
+const math = require('./math');
+
+console.log(math.add(5, 2));
+console.log(math.subtract(5, 2));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Destructuring Imports</h2>
+            <p>Instead of:</p>
+            <pre><code>
+const math = require('./math');
+            </code></pre>
+            <p>You can do:</p>
+            <pre><code>
+const { add, subtract } = require('./math');
+            </code></pre>
+            <p>This extracts properties from the exported object.</p>
+        </section>
+
+        <section>
+            <h2>11. Real Express.js Example</h2>
+            <p>In Express.js apps:</p>
+            <p>routes/userRoutes.js</p>
+            <pre><code>
+const express = require('express');
+const router = express.Router();
+
+router.get('/', (req, res) => {
+    res.send('Users');
+});
+
+module.exports = router;
+            </code></pre>
+            <p>app.js</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+const userRoutes = require('./routes/userRoutes');
+
+app.use('/users', userRoutes);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>12. Why This Pattern Exists</h2>
+            <p>Benefits:</p>
+            <p>Separation of Concerns</p>
+            <p>Split code into files.</p>
+            <p>Reusability</p>
+            <p>Reuse logic anywhere.</p>
+            <p>Maintainability</p>
+            <p>Cleaner architecture.</p>
+            <p>Encapsulation</p>
+            <p>Private variables stay hidden unless exported.</p>
+            <p>Example:</p>
+            <pre><code>
+const secret = 'hidden';
+
+module.exports = {
+    visible: 'shown'
+};
+            </code></pre>
+            <p>secret cannot be accessed outside.</p>
+        </section>
+
+        <section>
+            <h2>13. Module Caching</h2>
+            <p>Node.js caches required modules.</p>
+            <p>Example:</p>
+            <pre><code>
+const math1 = require('./math');
+const math2 = require('./math');
+            </code></pre>
+            <p>math.js executes ONLY ONCE.</p>
+            <p>This is important for:</p>
+            <ul>
+                <li>database connections</li>
+                <li>singleton services</li>
+                <li>config files</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>14. Circular Dependency Problem</h2>
+            <p>Example:</p>
+            <pre><code>
+// a.js
+const b = require('./b');
+
+// b.js
+const a = require('./a');
+            </code></pre>
+            <p>This can cause partially loaded modules.</p>
+            <p>Avoid circular imports when possible.</p>
+        </section>
+
+        <section>
+            <h2>15. CommonJS vs ES Modules</h2>
+            <p>Modern JavaScript also supports ES Modules.</p>
+            <p>CommonJS:</p>
+            <pre><code>
+const math = require('./math');
+module.exports = math;
+            </code></pre>
+            <p>ES Modules:</p>
+            <pre><code>
+import math from './math.js';
+export default math;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>16. When to Use Which</h2>
+            <p>CommonJS (require)</p>
+            <p>Traditionally used in:</p>
+            <ul>
+                <li>Node.js backend apps</li>
+                <li>Older projects</li>
+                <li>Express.js apps</li>
+            </ul>
+
+            <p>ES Modules (import/export)</p>
+            <p>Modern standard:</p>
+            <ul>
+                <li>React</li>
+                <li>Frontend apps</li>
+                <li>Modern Node.js</li>
+                <li>TypeScript</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>17. Architecture Pattern in Real Apps</h2>
+            <p>Typical structure:</p>
+            <pre><code>
+controllers/
+services/
+routes/
+models/
+middlewares/
+utils/
+            </code></pre>
+            <p>Each file exports something:</p>
+            <pre><code>
+module.exports = controller;
+module.exports = router;
+module.exports = service;
+            </code></pre>
+            <p>Then imported with:</p>
+            <pre><code>
+require(...)
+            </code></pre>
+            <p>This creates a modular backend architecture.</p>
+        </section>
+
+        <section>
+            <h2>18. Simple Mental Model</h2>
+            <p>Think of a module like a box.</p>
+            <pre><code>
+module.exports = {
+    item1,
+    item2
+};
+            </code></pre>
+            <p>require() opens the box and gives you its contents.</p>
+        </section>
+
+        <section>
+            <h2>19. Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>require()</td>
+                        <td>Import another module</td>
+                    </tr>
+                    <tr>
+                        <td>module.exports</td>
+                        <td>Export something from a module</td>
+                    </tr>
+                    <tr>
+                        <td>exports</td>
+                        <td>Shortcut reference to module.exports</td>
+                    </tr>
+                    <tr>
+                        <td>Each file</td>
+                        <td>Independent module</td>
+                    </tr>
+                    <tr>
+                        <td>Node.js</td>
+                        <td>Wraps each file automatically</td>
+                    </tr>
+                    <tr>
+                        <td>Modules cached</td>
+                        <td>Loaded once then reused</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>20. Best Practices</h2>
+            <p>✅ Use:</p>
+            <pre><code>
+module.exports = ...
+            </code></pre>
+            <p>for single exports.</p>
+
+            <p>✅ Use:</p>
+            <pre><code>
+module.exports = {
+    ...
+}
+            </code></pre>
+            <p>for multiple exports.</p>
+            <p>✅ Keep modules focused on one responsibility.</p>
+            <p>✅ Avoid circular dependencies.</p>
+            <p>✅ Use folder separation:</p>
+            <ul>
+                <li>routes</li>
+                <li>controllers</li>
+                <li>services</li>
+                <li>models</li>
+                <li>middleware</li>
+            </ul>
+            <p>for scalable architecture.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

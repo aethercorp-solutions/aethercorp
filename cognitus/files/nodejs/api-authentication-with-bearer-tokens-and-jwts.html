@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>API authentication with Bearer tokens and JWTs (JSON Web Tokens)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">API authentication with Bearer tokens and JWTs (JSON Web Tokens)</h1>
+                    <p class="subtitle">
+                        API authentication with Bearer tokens and JWTs (JSON Web Tokens) is one of the most common patterns in modern web and mobile applications.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>How it works</h2>
+            <p>Step 1: User logs in</p>
+            <p>The client sends credentials to the backend:</p>
+            <pre><code>
+const response = await fetch("https://api.example.com/login", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        email: "user@example.com",
+        password: "password123"
+    })
+});
+
+const data = await response.json();
+
+console.log(data.token);
+            </code></pre>
+            <p>Example response:</p>
+            <pre><code>
+{
+    "token": "eyJhbGciOiJIUzI1NiIs..."
+}
+            </code></pre>
+            <p>This token is usually a JWT.</p>
+        </section>
+
+        <section>
+            <h2>Step 2: Store the token</h2>
+            <p>React Native</p>
+            <p>Avoid storing tokens in AsyncStorage for sensitive apps. Consider using secure storage solutions such as:</p>
+            <ul>
+                <li>react-native-keychain</li>
+                <li>expo-secure-store</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+import * as Keychain from 'react-native-keychain';
+
+await Keychain.setGenericPassword(
+  'token',
+  data.token
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3: Send the token in requests</h2>
+            <p>The token goes in the Authorization header.</p>
+            <pre><code>
+const token = "eyJhbGciOiJIUzI1NiIs...";
+
+const response = await fetch(
+  "https://api.example.com/profile",
+  {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }
+);
+
+const profile = await response.json();
+
+console.log(profile);
+            </code></pre>
+
+            <p>HTTP request:</p>
+            <pre><code>
+GET /profile HTTP/1.1
+Host: api.example.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Complete Fetch Wrapper</h2>
+            <p>Instead of repeating the Authorization header everywhere:</p>
+            <pre><code>
+async function apiFetch(url, options = {}) {
+    const token = await getToken();
+    
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+        ...options.headers,
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+        }
+    });
+    
+    if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+    }
+    
+    return response.json();
+}
+            </code></pre>
+            <p>Usage:</p>
+            <pre><code>
+const user = await apiFetch(
+  "https://api.example.com/profile"
+);
+
+console.log(user);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>JWT Structure</h2>
+            <p>A JWT consists of three parts:</p>
+            <pre><code>
+xxxxx.yyyyy.zzzzz
+            </code></pre>
+            <ul>
+                <li>Header</li>
+                <li>Payload</li>
+                <li>Signature</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+.
+eyJ1c2VySWQiOjEyMywicm9sZSI6ImFkbWluIn0
+.
+abc123xyz456
+            </code></pre>
+            <p>The payload often contains:</p>
+            <pre><code>
+{
+    "userId": 123,
+    "email": "user@example.com",
+    "role": "admin",
+    "exp": 1780000000
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Node.js Backend Example</h2>
+            <p>Using jsonwebtoken:</p>
+            <pre><code>
+const jwt = require("jsonwebtoken");
+
+app.post("/login", (req, res) => {
+  const user = {
+    id: 123,
+    email: "user@example.com"
+  };
+
+  const token = jwt.sign(
+    user,
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+
+  res.json({ token });
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Verifying JWT on Protected Routes</h2>
+            <pre><code>
+const jwt = require("jsonwebtoken");
+
+function authenticate(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.sendStatus(401);
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(
+    token,
+    process.env.JWT_SECRET,
+    (err, user) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
+
+      req.user = user;
+      next();
+    }
+  );
+}
+            </code></pre>
+            <p>Protected endpoint:</p>
+            <pre><code>
+app.get(
+  "/profile",
+  authenticate,
+  (req, res) => {
+    res.json({
+      user: req.user
+    });
+  }
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Token Refresh Pattern (Production)</h2>
+            <p>Access tokens should be short-lived:</p>
+            <pre><code>
+Access Token  : 15 minutes
+Refresh Token : 30 days
+            </code></pre>
+            <p>Flow:</p>
+            <pre><code>
+Login
+  ↓
+Access Token expires
+  ↓
+Client sends Refresh Token
+  ↓
+Server issues new Access Token
+  ↓
+Continue using API
+            </code></pre>
+            <p>This is the pattern used by many services, including Auth0, Firebase Authentication, and Amazon Cognito.</p>
+        </section>
+
+        <section>
+            <h2>For your AWS Lambda + API Gateway setup</h2>
+            <p>A common architecture is:</p>
+            <pre><code>
+React Native
+    ↓
+Amazon Cognito
+    ↓
+JWT Access Token
+    ↓
+API Gateway Authorizer
+    ↓
+AWS Lambda
+    ↓
+MongoDB
+            </code></pre>
+            <p>In this setup, API Gateway validates the JWT before the request reaches Lambda, reducing custom authentication code in your functions.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

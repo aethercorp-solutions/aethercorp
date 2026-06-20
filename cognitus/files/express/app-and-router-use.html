@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>app.use() and router.use()</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">app.use() and router.use()</h1>
+                    <p class="subtitle">
+                        In Express.js, both app.use() and router.use() are used to register middleware, but they work at different levels.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. app.use()</h2>
+            <p>app.use() registers middleware on the entire Express application.</p>
+            <pre><code>
+const express = require("express");
+const app = express();
+
+app.use((req, res, next) => {
+    console.log("Request received");
+    next();
+});
+
+app.get("/", (req, res) => {
+    res.send("Home");
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Flow</h2>
+            <p>When a request arrives:</p>
+            <pre><code>
+Client
+  ↓
+app.use()
+  ↓
+Route Handler
+  ↓
+Response
+            </code></pre>
+            <p>Request:</p>
+            <pre><code>
+GET /
+            </code></pre>
+            <p>Console:</p>
+            <pre><code>
+Request received
+            </code></pre>
+            <p>Response:</p>
+            <pre><code>
+Home
+            </code></pre>
+            <p>The middleware runs for every request.</p>
+        </section>
+
+        <section>
+            <h2>2. app.use(path, middleware)</h2>
+            <p>You can limit it to a specific path.</p>
+            <pre><code>
+app.use("/api", (req, res, next) => {
+    console.log("API middleware");
+    next();
+});
+
+app.get("/api/users", (req, res) => {
+    res.send("Users");
+});
+            </code></pre>
+            <p>Request:</p>
+            <pre><code>
+GET /api/users
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+API middleware
+            </code></pre>
+            <p>Request:</p>
+            <pre><code>
+GET /
+            </code></pre>
+            <p>Middleware does not run.</p>
+        </section>
+
+        <section>
+            <h2>3. router.use()</h2>
+            <p>router.use() works exactly the same way, but only inside a specific router.</p>
+            <p>Example:</p>
+            <pre><code>
+const express = require("express");
+const router = express.Router();
+
+router.use((req, res, next) => {
+    console.log("Router middleware");
+    next();
+});
+
+router.get("/users", (req, res) => {
+    res.send("Users");
+});
+
+module.exports = router;
+            </code></pre>
+
+            <p>Main app:</p>
+            <pre><code>
+const express = require("express");
+const app = express();
+
+const userRouter = require("./routes/users");
+
+app.use("/api", userRouter);
+            </code></pre>
+
+            <p>Request:</p>
+            <pre><code>
+GET /api/users
+            </code></pre>
+
+            <p>Flow:</p>
+            <pre><code>
+Client
+  ↓
+app.use("/api")
+  ↓
+router.use()
+  ↓
+router.get("/users")
+  ↓
+Response
+            </code></pre>
+            <p>Console:</p>
+            <pre><code>
+Router middleware
+            </code></pre>
+            <p>Response:</p>
+            <pre><code>
+Users
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real-World Example</h2>
+            <p>Suppose your API has:</p>
+            <pre><code>
+/api/users
+/api/orders
+/api/products
+            </code></pre>
+            <p>You can organize routes:</p>
+            <pre><code>
+app.use("/users", userRouter);
+app.use("/orders", orderRouter);
+app.use("/products", productRouter);
+            </code></pre>
+            <p>Users router:</p>
+            <pre><code>
+router.use(authMiddleware);
+            </code></pre>
+            <p>Now:</p>
+            <pre><code>
+/users/profile
+            </code></pre>
+            <p>requires authentication.</p>
+            <p>But:</p>
+            <pre><code>
+/products
+            </code></pre>
+            <p>does not.</p>
+            <p>This keeps middleware isolated to a specific module.</p>
+        </section>
+
+        <section>
+            <h2>Common Usage</h2>
+            <p>Global middleware</p>
+            <pre><code>
+app.use(express.json());
+            </code></pre>
+            <p>Every route can parse JSON.</p>
+
+            <p>Logging</p>
+            <pre><code>
+app.use(logger);
+            </code></pre>
+            <p>All requests are logged.</p>
+
+            <p>Authentication for a router</p>
+            <pre><code>
+router.use(authMiddleware);
+            </code></pre>
+            <p>Every route in that router requires login.</p>
+        </section>
+
+        <section>
+            <h2>Visual Comparison</h2>
+            <p>app.use()</p>
+            <pre><code>
+Express App
+│
+├── Middleware
+├── Route A
+├── Route B
+└── Route C
+            </code></pre>
+            <p>Middleware affects all routes.</p>
+        </section>
+
+        <section>
+            <h2>router.use()</h2>
+            <pre><code>
+Express App
+│
+├── User Router
+│   ├── Middleware
+│   ├── /profile
+│   └── /settings
+│
+└── Product Router
+    ├── /list
+    └── /details
+            </code></pre>
+            <p>Middleware affects only routes inside that router.</p>
+        </section>
+
+        <section>
+            <h2>Simple Rule</h2>
+            <p>Think of it like a building:</p>
+            <pre><code>
+app.use()     = Security guard at the building entrance.
+router.use()  = Security guard at a specific department.
+            </code></pre>
+            <p>Everyone entering the building passes through app.use().</p>
+            <p>Only people entering that department pass through router.use().</p>
+            <p>For a senior Node.js interview, a concise answer would be:</p>
+            <p>app.use() attaches middleware to the Express application, while router.use() attaches middleware to a specific Express Router instance. app.use() is typically used for global middleware such as logging, CORS, and body parsing, whereas router.use() is used for route-group-specific middleware such as authentication and authorization.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Beginner Guide to Jest</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Beginner Guide to Jest</h1>
+                    <p class="subtitle">
+                        Jest is a popular JavaScript testing framework created by Meta. It is commonly used to test applications built with JavaScript, Node.js, React, and React Native.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Why Use Jest?</h2>
+            <ul>
+                <li>Easy to set up</li>
+                <li>Fast test execution</li>
+                <li>Built-in assertions</li>
+                <li>Mocking support</li>
+                <li>Code coverage reports</li>
+                <li>Works well with React and Node.js</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. Install Jest</h2>
+            <p>For a Node.js project:</p>
+            <pre><code>
+npm install --save-dev jest
+            </code></pre>
+
+            <p>Add a test script to package.json:</p>
+            <pre><code>
+{
+    "scripts": {
+        "test": "jest"
+    }
+}
+            </code></pre>
+            <p>Run tests:</p>
+            <pre><code>
+npm test
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Create Your First Function</h2>
+            <p>math.js</p>
+            <pre><code>
+function add(a, b) {
+    return a + b;
+}
+    
+module.exports = add;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Create Your First Test</h2>
+            <p>math.test.js</p>
+            <pre><code>
+const add = require('./math');
+
+test('adds 2 + 3 to equal 5', () => {
+  expect(add(2, 3)).toBe(5);
+});
+            </code></pre>
+
+            <p>Run:</p>
+            <pre><code>
+npm test
+            </code></pre>
+
+            <p>Output:</p>
+            <pre><code>
+PASS ./math.test.js
+✓ adds 2 + 3 to equal 5
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Common Matchers</h2>
+            <p>Equality</p>
+            <pre><code>
+expect(2 + 2).toBe(4);
+            </code></pre>
+
+            <p>Objects</p>
+            <pre><code>
+expect({ name: 'Paul' }).toEqual({
+    name: 'Paul'
+});
+            </code></pre>
+
+            <p>Truthy/Falsy</p>
+            <pre><code>
+expect(true).toBeTruthy();
+expect(false).toBeFalsy();
+            </code></pre>
+
+            <p>Null</p>
+            <pre><code>
+expect(null).toBeNull();
+            </code></pre>
+
+            <p>Arrays</p>
+            <pre><code>
+expect(['Node', 'React']).toContain('Node');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Testing Async Functions</h2>
+            <p>Promise Example</p>
+            <pre><code>
+function fetchUser() {
+    return Promise.resolve({
+        id: 1,
+        name: 'Paul'
+    });
+}
+    
+test('returns user', async () => {
+    const user = await fetchUser();
+
+    expect(user.name).toBe('Paul');
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Using describe()</h2>
+            <p>Group related tests:</p>
+            <pre><code>
+describe('Math Functions', () => {
+    test('add numbers', () => {
+        expect(2 + 3).toBe(5);
+    });
+    
+    test('subtract numbers', () => {
+        expect(5 - 2).toBe(3);
+    });
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Setup and Cleanup</h2>
+            <pre><code>
+beforeEach(() => {
+    console.log('Runs before each test');
+});
+
+afterEach(() => {
+    console.log('Runs after each test');
+});
+            </code></pre>
+            <p>Other hooks:</p>
+            <pre><code>
+beforeAll(() => {});
+afterAll(() => {});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Mock Functions</h2>
+            <pre><code>
+const mockFn = jest.fn();
+
+mockFn('hello');
+
+expect(mockFn).toHaveBeenCalled();
+expect(mockFn).toHaveBeenCalledWith('hello');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Mocking Modules</h2>
+            <pre><code>
+// api.js
+module.exports = {
+  getUser: () => ({
+    id: 1,
+    name: 'Paul'
+  })
+};
+            </code></pre>
+
+            <pre><code>
+jest.mock('./api');
+
+const api = require('./api');
+
+api.getUser.mockReturnValue({
+  id: 99,
+  name: 'Mock User'
+});
+
+test('returns mocked user', () => {
+  expect(api.getUser().name).toBe('Mock User');
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Code Coverage</h2>
+            <p>Run:</p>
+            <pre><code>
+npx jest --coverage
+            </code></pre>
+            <p>Example output:</p>
+            <pre><code>
+Statements   : 95%
+Branches     : 90%
+Functions    : 100%
+Lines        : 95%
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Jest Interview Questions</h2>
+            <p>What is Jest?</p>
+            <p>A JavaScript testing framework used for unit testing, integration testing, mocking, and coverage reporting.</p>
+            <p>Difference between toBe() and toEqual()?</p>
+            <pre><code>
+expect(5).toBe(5);
+            </code></pre>
+            <p>toBe() uses strict equality (===).</p>
+            <pre><code>
+expect({a:1}).toEqual({a:1});
+            </code></pre>
+            <p>toEqual() compares object contents recursively.</p>
+        </section>
+
+        <section>
+            <h2>What is Mocking?</h2>
+            <p>Replacing real dependencies with fake implementations during testing.</p>
+        </section>
+
+        <section>
+            <h2>What is a Test Suite?</h2>
+            <p>A collection of related test cases grouped using describe().</p>
+        </section>
+
+        <section>
+            <h2>What is Code Coverage?</h2>
+            <p>A metric showing how much of your code is executed by tests.</p>
+        </section>
+
+        <section>
+            <h2>Example for a Senior Node.js Developer</h2>
+            <p>Testing an Express service:</p>
+            <pre><code>
+const userService = require('./userService');
+
+describe('User Service', () => {
+  test('creates user', async () => {
+    const user = await userService.create({
+      name: 'Paul'
+    });
+
+    expect(user.id).toBeDefined();
+    expect(user.name).toBe('Paul');
+  });
+});
+            </code></pre>
+
+            <p>Learning Path</p>
+            <ol>
+                <li>Basic assertions (expect, toBe, toEqual)</li>
+                <li>Test organization (describe, beforeEach)</li>
+                <li>Async testing</li>
+                <li>Mock functions (jest.fn)</li>
+                <li>Mock modules (jest.mock)</li>
+                <li>API testing with SuperTest</li>
+                <li>React/React Native testing with React Testing Library</li>
+                <li>Coverage reports and CI/CD integration</li>
+            </ol>
+            <p>For a Node.js backend interview, focus heavily on async testing, mocking database calls, API endpoint testing, and testing error handling, as these are frequently discussed in senior-level interviews.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

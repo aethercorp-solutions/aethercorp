@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Authentication API</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Authentication API</h1>
+                    <p class="subtitle">
+                        This code is an authentication API using Express.js, JWT, bcrypt, Firebase Admin SDK, and MongoDB/Mongoose.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>This file defines authentication routes for an Express.js backend using:</h2>
+            <ul>
+                <li>Express.js for routing</li>
+                <li>JSON Web Token for authentication tokens</li>
+                <li>bcrypt for password hashing</li>
+                <li>Firebase Admin SDK for Google authentication</li>
+                <li>MongoDB/Mongoose User model for storing users</li>
+            </ul>
+            <p>It supports:</p>
+            <ul>
+                <li>User registration (/register)</li>
+                <li>User login (/login)</li>
+                <li>Google sign-in (/google)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. IMPORTS</h2>
+            <pre><code>
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const router = express.Router();
+const admin = require('../firebaseAdmin');
+const User = require('../model/user');
+            </code></pre>
+
+            <p>What each import does</p>
+            <pre><code>
+const express = require('express');
+            </code></pre>
+            <p>Imports Express framework.</p>
+
+        </section>
+
+        <section>
+            <h2>JWT</h2>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+            </code></pre>
+            <p>Used to create authentication tokens.</p>
+            <p>Example token payload:</p>
+            <pre><code>
+{
+    "id": "123",
+    "email": "john@gmail.com"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>bcrypt</h2>
+            <pre><code>
+const bcrypt = require('bcrypt');
+            </code></pre>
+            <p>Used for securely hashing passwords before storing them in the database.</p>
+            <p>Why hash passwords?</p>
+            <p>Because storing plain passwords is dangerous.</p>
+            <p>Instead of:</p>
+            <pre><code>
+password123
+            </code></pre>
+            <p>You store:</p>
+            <pre><code>
+$2b$10$1z2x...
+            </code></pre>
+        </section>
+            
+
+        <section>
+            <h2>Express Router</h2>
+            <pre><code>
+const router = express.Router();
+            </code></pre>
+            <p>Creates modular route handling.</p>
+            <p>Instead of:</p>
+            <pre><code>
+app.post(...)
+            </code></pre>
+            <p>you use:</p>
+            <pre><code>
+router.post(...)
+            </code></pre>
+            <p>and export it later.</p>            
+        </section>
+
+        <section>
+            <h2>Firebase Admin</h2>
+            <pre><code>
+const admin = require('../firebaseAdmin');
+            </code></pre>
+            <p>Used to verify Firebase Google login tokens.</p>
+        </section>
+    
+        <section>
+            <h2>User Model</h2>
+            <pre><code>
+const User = require('../model/user');
+            </code></pre>
+            <p>Mongoose model for interacting with MongoDB users collection.</p>
+        </section>
+
+        <section>
+            <h2>2. REGISTER ROUTE</h2>
+            <pre><code>
+router.post('/register', async (req, res) => {
+            </code></pre>
+            <p>This creates a POST endpoint:</p>
+            <pre><code>
+POST /register
+            </code></pre>
+            <p>Used when a user signs up.</p>
+        </section>
+
+        <section>
+            <h2>REGISTER FLOW</h2>
+            <p>STEP 1 — Logging Start</p>
+            <pre><code>
+console.log('================ REGISTER REQUEST START ================');
+            </code></pre>
+            <p>For debugging and monitoring.</p>
+        </section>
+
+        <section>
+            <h2>STEP 2 — Extract Request Body</h2>
+            <pre><code>
+const { email, password } = req.body;
+            </code></pre>
+            <p>Gets values sent by frontend.</p>
+            <p>Example request:</p>
+            <pre><code>
+{
+    "email": "john@gmail.com",
+    "password": "123456"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 3 — Validation</h2>
+            <pre><code>
+if (!email || !password)
+            </code></pre>
+            <p>Checks if fields are missing.</p>
+            <p>If missing:</p>
+            <pre><code>
+return res.status(400).json({
+    status: false,
+    message: 'Email and password are required',
+});
+            </code></pre>
+            <p>Response</p>
+            <pre><code>
+{
+    "status": false,
+    "message": "Email and password are required"
+}
+            </code></pre>
+            <p>HTTP Status:</p>
+            <pre><code>
+400 Bad Request
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 4 — Check Existing User</h2>
+            <pre><code>
+const existingUser = await User.findOne({ email });
+            </code></pre>
+            <p>Searches MongoDB:</p>
+            <pre><code>
+db.users.findOne({ email: email })
+            </code></pre>
+            <p>If user exists:</p>
+            <pre><code>
+return res.status(400).json({
+    status: false,
+    message: 'User already exists',
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 5 — Hash Password</h2>
+            <pre><code>
+const hashedPassword = await bcrypt.hash(password, 10);
+            </code></pre>
+            <p>Important</p>
+            <p>10 = salt rounds.</p>
+            <p>Higher = more secure but slower.</p>
+            <p>Hashing process:</p>
+            <pre><code>
+password -> salt -> encrypted hash
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 6 — Create User</h2>
+            <pre><code>
+const user = await User.create({
+    email,
+    password: hashedPassword,
+    providers: { local: true },
+});
+            </code></pre>
+            <p>Saves user into MongoDB.</p>
+            <p>Example saved document:</p>
+            <pre><code>
+{
+    "_id": "...",
+    "email": "john@gmail.com",
+    "password": "$2b$10$....",
+    "providers": {
+        "local": true
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 7 — Success Response</h2>
+            <pre><code>
+return res.json({
+    status: true,
+    message: 'User registered successfully',
+    data: {
+        id: user._id,
+        email: user.email,
+    },
+});
+            </code></pre>
+            <p>Returns success JSON.</p>
+        </section>
+
+        <section>
+            <h2>REGISTER ERROR HANDLING</h2>
+            <pre><code>
+catch (error)
+            </code></pre>
+            <p>Handles unexpected errors.</p>
+        </section>
+
+        <section>
+            <h2>Duplicate MongoDB Key Error</h2>
+            <pre><code>
+if (error.code === 11000)
+            </code></pre>
+            <p>MongoDB unique index violation.</p>
+            <p>Example:</p>
+            <pre><code>
+email already exists
+            </code></pre>
+            <p>Response:</p>
+            <pre><code>
+{
+    "status": false,
+    "message": "Email already exists"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Generic Server Error</h2>
+            <pre><code>
+return res.status(500).json({
+    status: false,
+    message: 'Server error',
+});
+            </code></pre>
+            <p>500 = backend failure.</p>
+        </section>
+
+        <section>
+            <h2>Finally Block</h2>
+            <pre><code>
+finally {
+    console.log('================ REGISTER REQUEST END ================');
+}
+            </code></pre>
+            <p>Always executes whether success or failure.</p>
+            <p>Good for cleanup/logging.</p>
+        </section>
+
+        <section>
+            <h2>3. LOGIN ROUTE</h2>
+            <pre><code>
+router.post('/login', async (req, res) => {
+            </code></pre>
+            <p>Endpoint:</p>
+            <pre><code>
+POST /login
+            </code></pre>
+            <p>Used for email/password login.</p>
+        </section>
+
+        <section>
+            <h2>LOGIN FLOW</h2>
+            <p>STEP 1 — Extract Data</p>
+            <pre><code>
+const { email, password } = req.body;
+            </code></pre>
+
+            <p>STEP 2 — Find User</p>
+            <pre><code>
+const user = await User.findOne({ email });
+            </code></pre>
+            <p>Search database.</p>
+
+            <p>STEP 3 — Validate User</p>
+            <pre><code>
+if (!user || !user.password)
+            </code></pre>
+            <p>Checks:</p>
+            <ul>
+                <li>user exists</li>
+                <li>password exists</li>
+            </ul>
+            <p>Important because Google-only users may not have local passwords.</p>
+        </section>
+
+        <section>
+            <h2>STEP 4 — Compare Password</h2>
+            <pre><code>
+const isMatch = await bcrypt.compare(password, user.password);
+            </code></pre>
+            <p>bcrypt compares:</p>
+            <pre><code>
+plain password
+vs
+stored hash
+            </code></pre>
+            <p>Returns:</p>
+            <pre><code>
+true / false
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>STEP 5 — Invalid Password</h2>
+            <pre><code>
+if (!isMatch)
+            </code></pre>
+            <p>Returns:</p>
+            <pre><code>
+{
+    "status": false,
+    "message": "Invalid credentials"
+}
+        </section>
+
+        <section>
+            <h2>STEP 6 — Generate JWT Token</h2>
+            <pre><code>
+const token = jwt.sign(
+  { id: user._id, email: user.email },
+  process.env.JWT_SECRET,
+  { expiresIn: '7d' }
+);
+            </code></pre>
+            <p>Creates authentication token.</p>
+        </section>
+
+        <section>
+            <h2>JWT STRUCTURE</h2>
+            <p>A JWT has:</p>
+            <pre><code>
+HEADER.PAYLOAD.SIGNATURE
+            </code></pre>
+            <p>Example payload:</p>
+            <pre><code>
+{
+    "id": "abc123",
+    "email": "john@gmail.com"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>WHY JWT?</h2>
+            <p>Frontend stores token:</p>
+            <ul>
+                <li>localStorage</li>
+                <li>AsyncStorage</li>
+                <li>cookies</li>
+            </ul>
+            <p>Then sends token with requests:</p>
+            <pre><code>
+Authorization: Bearer TOKEN
+            </code></pre>
+            <p>Backend verifies token for protected routes.</p>
+        </section>
+
+        <section>
+            <h2>STEP 7 — Return Token</h2>
+            <pre><code>
+res.json({
+    status: true,
+    token
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>LOGIN ERROR HANDLING</h2>
+            <pre><code>
+catch (error)
+            </code></pre>
+            <p>Returns:</p>
+            <pre><code>
+500 Server error
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. GOOGLE LOGIN ROUTE</h2>
+            <pre><code>
+router.post('/google', async (req, res) => {
+            </code></pre>
+            <p>Endpoint:</p>
+            <pre><code>
+POST /google
+            </code></pre>
+            <p>Used for Google/Firebase authentication.</p>
+        </section>
+
+        <section>
+            <h2>GOOGLE LOGIN FLOW</h2>
+            <p>STEP 1 — Get Firebase Token</p>
+            <pre><code>
+const { idToken } = req.body;
+            </code></pre>
+            <p>Frontend sends Firebase ID token after Google sign-in.</p>
+        </section>
+
+        <section>
+            <h2>STEP 2 — Validate Token Exists</h2>
+            <pre><code>
+if (!idToken)
+            </code></pre>
+            <p>Returns error if missing.</p>
+        </section>
+
+        <section>
+            <h2>STEP 3 — Verify Firebase Token</h2>
+            <pre><code>
+const decodedToken = await admin.auth().verifyIdToken(idToken);
+            </code></pre>
+            <p>Firebase Admin checks token authenticity.</p>
+            <p>If valid, returns decoded user data.</p>
+            <p>Example:</p>
+            <pre><code>
+{
+    "uid": "firebase123",
+    "email": "john@gmail.com",
+    "name": "John",
+    "picture": "https://..."
+}
+            </code></pre>
+
+            <p>STEP 4 — Extract User Info</p>
+            <pre><code>
+const { uid, email, name, picture } = decodedToken;
+            </code></pre>
+
+            <p>STEP 5 — Ensure Email Exists</p>
+            <pre><code>
+if (!email)
+            </code></pre>
+            <p>Google account must have email.</p>
+        </section>
+
+        <section>
+            <h2>IMPORTANT PART — UPSERT</h2>
+            <pre><code>
+let user = await User.findOneAndUpdate(
+            </code></pre>
+            <p>This is the most advanced part.</p>
+        </section>
+
+        <section>
+            <h2>WHAT IS UPSERT?</h2>
+            <p>Combination of:</p>
+            <pre><code>
+UPDATE + INSERT
+            </code></pre>
+            <p>Meaning:</p>
+            <ul>
+                <li>If user exists → update</li>
+                <li>If not → create</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>QUERY</h2>
+            <pre><code>
+{ email }
+            </code></pre>
+            <p>Find user by email.</p>
+        </section>
+
+        <section>
+            <h2>$setOnInsert</h2>
+            <pre><code>
+$setOnInsert: {
+    email,
+    name,
+    picture,
+    firebaseUid: uid
+},
+            </code></pre>
+            <p>Only applied when creating new user.</p>
+        </section>
+
+        <section>
+            <h2>$set</h2>
+            <pre><code>
+$set: {
+    'providers.google': true
+}
+            </code></pre>
+            <p>Always applied.</p>
+            <p>Marks account as Google-authenticated.</p>
+        </section>
+
+        <section>
+            <h2>OPTIONS</h2>
+            <pre><code>
+{
+    upsert: true,
+    returnDocument: 'after'
+}
+            </code></pre>
+            <p>upsert: true</p>
+            <p>Create if not exists.</p>
+        </section>
+
+        <section>
+            <h2>returnDocument: 'after'</h2>
+            <p>Return updated document after changes.</p>
+        </section>
+
+        <section>
+            <h2>WHY THIS FIX IS IMPORTANT</h2>
+            <p>Without atomic upsert:</p>
+            <pre><code>
+findOne()
+create()
+            </code></pre>
+            <p>can cause race conditions.</p>
+            <p>Two requests could create duplicate users simultaneously.</p>
+            <p>Atomic upsert prevents that.</p>
+            <p>Excellent production-grade fix.</p>
+        </section>
+
+        <section>
+            <h2>STEP 6 — Attach Firebase UID If Missing</h2>
+            <pre><code>
+if (!user.firebaseUid)
+            </code></pre>
+            <p>Handles older accounts.</p>
+            <p>Adds Firebase UID later if needed.</p>
+        </section>
+
+        <section>
+            <h2>STEP 7 — Generate JWT</h2>
+            <p>Same logic as login route.</p>
+        </section>
+
+        <section>
+            <h2>STEP 8 — Return User + Token</h2>
+            <pre><code>
+res.json({
+    status: true,
+    token,
+    user
+});
+            </code></pre>
+            <p>Frontend now has:</p>
+            <ul>
+                <li>app JWT token</li>
+                <li>user data</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>FINAL EXPORT</h2>
+            <pre><code>
+module.exports = router;
+            </code></pre>
+            <p>Exports routes for use in main server.</p>
+            <p>Example:</p>
+            <pre><code>
+app.use('/auth', require('./routes/auth'));
+            </code></pre>
+            <p>Resulting endpoints:</p>
+            <pre><code>
+POST /auth/register
+POST /auth/login
+POST /auth/google
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>OVERALL ARCHITECTURE</h2>
+            <pre><code>
+Frontend
+   |
+   | HTTP Request
+   v
+Express Routes
+   |
+   | MongoDB Queries
+   v
+MongoDB
+
+AND
+
+Google Login
+   |
+Firebase Authentication
+   |
+Firebase Admin Verification
+   |
+MongoDB User Sync
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>SECURITY FEATURES USED</h2>
+            <p>Good Practices Already Present</p>
+            <p>Password hashing</p>
+            <p>Using bcrypt.</p>
+        </section>
+
+        <section>
+            <h2>JWT expiration</h2>
+            <pre><code>
+expiresIn: '7d'
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Duplicate protection</h2>
+            <p>MongoDB unique handling + upsert.</p>
+        </section>
+
+        <section>
+            <h2>Firebase token verification</h2>
+            <p>Secure Google auth.</p>
+        </section>
+
+        <section>
+            <h2>IMPROVEMENTS YOU COULD ADD</h2>
+            <p>1. Email validation</p>
+            <p>Example:</p>
+            <pre><code>
+validator.isEmail(email)
+            </code></pre>
+
+            <p>2. Strong password rules</p>
+            <p>Minimum:</p>
+            <ul>
+                <li>8 chars</li>
+                <li>uppercase</li>
+                <li>numbers</li>
+                <li>symbols</li>
+            </ul>
+
+            <p>3. Rate limiting</p>
+            <p>Prevent brute force login attacks.</p>
+            <p>Use:</p>
+            <pre><code>
+express-rate-limit
+            </code></pre>
+
+            <p>4. Helmet security middleware</p>
+            <pre><code>
+helmet
+            </code></pre>
+            <p>Adds HTTP security headers.</p>
+
+            <p>5. Refresh tokens</p>
+            <p>Instead of long-lived JWTs.</p>
+
+            <p>6. Better logging library</p>
+            <p>Instead of console.log:</p>
+            <ul>
+                <li>Winston</li>
+                <li>Pino</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>SUMMARY</h2>
+            <p>This file implements a complete authentication system with:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Register</td>
+                        <td>Create account</td>
+                    </tr>
+                    <tr>
+                        <td>Login</td>
+                        <td>Email/password authentication</td>
+                    </tr>
+                    <tr>
+                        <td>Google login</td>
+                        <td>Firebase authentication</td>
+                    </tr>
+                    <tr>
+                        <td>bcrypt</td>
+                        <td>Secure password hashing</td>
+                    </tr>
+                    <tr>
+                        <td>JWT</td>
+                        <td>Stateless authentication</td>
+                    </tr>
+                    <tr>
+                        <td>MongoDB</td>
+                        <td>User storage</td>
+                    </tr>
+                    <tr>
+                        <td>Upsert</td>
+                        <td>Prevent duplicate Google users</td>
+                    </tr>
+                    <tr>
+                        <td>Error handling</td>
+                        <td>Stable API behavior</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

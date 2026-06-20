@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Node.js + Express JSON middleware</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Node.js + Express JSON middleware</h1>
+                    <p class="subtitle">
+                        In Node.js + Express, middleware is one of the most important concepts. It is the foundation behind request handling, authentication, logging, error handling, and even routing behavior.
+                        <p>Below is a detailed explanation of Express middleware in JSON-style structured breakdown + practical examples.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>📦 1. What is Middleware in Express?</h2>
+            <p>Middleware is a function that runs between the request and the response.</p>
+            <p>It has access to:</p>
+            <ul>
+                <li>req (request object)</li>
+                <li>res (response object)</li>
+                <li>next() (function to pass control)</li>
+            </ul>
+            <p>Simple definition:</p>
+            <p>Middleware = a function that can modify request/response or stop/continue the request flow.</p>
+        </section>
+
+        <section>
+            <h2>🔁 2. Middleware Flow (Concept)</h2>
+            <pre><code>
+Client Request
+     ↓
+Middleware 1 (log)
+     ↓
+Middleware 2 (auth)
+     ↓
+Middleware 3 (validation)
+     ↓
+Route Handler
+     ↓
+Response sent
+            </code></pre>
+            <p>Each middleware decides:</p>
+            <ul>
+                <li>pass → next()</li>
+                <li>stop → send response</li>
+                <li>error → next(err)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 3. Middleware in JSON Conceptual Model</h2>
+            <pre><code>
+{
+    "middleware": {
+        "definition": "Function executed during request lifecycle",
+        "signature": "function(req, res, next)",
+        "purpose": [
+            "Modify request object",
+            "Modify response object",
+            "End request-response cycle",
+            "Call next middleware"
+        ]
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ 4. Types of Middleware in Express</h2>
+            <p>1. Application-level middleware</p>
+            <p>Runs on every request or specific routes.</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+app.use((req, res, next) => {
+  console.log(`Request Method: ${req.method}`);
+  next();
+});
+            </code></pre>
+            <p>JSON view:</p>
+            <pre><code>
+{
+    "type": "application-level",
+    "scope": "global or route-specific",
+    "usage": "app.use()"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Router-level middleware</h2>
+            <p>Used inside express.Router().</p>
+            <pre><code>
+const router = express.Router();
+
+router.use((req, res, next) => {
+  console.log("Router middleware triggered");
+  next();
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Built-in middleware</h2>
+            <p>Provided by Express.</p>
+            <pre><code>
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+            </code></pre>
+            <p>JSON:</p>
+            <pre><code>
+{
+    "express.json": "Parses JSON request body",
+    "express.urlencoded": "Parses form data"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Third-party middleware</h2>
+            <p>Installed via npm.</p>
+            <p>Example:</p>
+            <pre><code>
+npm install morgan
+            </code></pre>
+            <pre><code>
+const morgan = require('morgan');
+app.use(morgan('dev'));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Error-handling middleware</h2>
+            <p>Special middleware with 4 parameters:</p>
+            <pre><code>
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    
+    res.status(500).json({
+        success: false,
+        message: err.message
+    });
+});
+            </code></pre>
+            <p>JSON:</p>
+            <pre><code>
+{
+    "type": "error-handling",
+    "signature": "function(err, req, res, next)",
+    "triggered_when": "next(error) is called"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔄 5. Middleware Execution Rules</h2>
+            <pre><code>
+{
+    "rules": [
+        "Runs in order of declaration",
+        "Must call next() to continue",
+        "If response is sent, chain stops",
+        "Error middleware skips normal middleware chain"
+    ]
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 6. Example: Full Middleware Pipeline</h2>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+// 1. Parse JSON body
+app.use(express.json());
+
+// 2. Logger middleware
+app.use((req, res, next) => {
+  console.log(`[LOG] ${req.method} ${req.url}`);
+  next();
+});
+
+// 3. Auth middleware
+app.use((req, res, next) => {
+  if (!req.headers.authorization) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  next();
+});
+
+// 4. Route
+app.get('/profile', (req, res) => {
+  res.json({ user: "John Doe" });
+});
+
+// 5. Error handler
+app.use((err, req, res, next) => {
+  res.status(500).json({ error: err.message });
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 7. Middleware Behavior (Important Concepts)</h2>
+            <p>1. Blocking request</p>
+            <pre><code>
+return res.status(403).json({ message: "Forbidden" });
+            </code></pre>
+
+            <p>2. Passing control</p>
+            <pre><code>
+next();
+            </code></pre>
+
+            <p>3. Passing error</p>
+            <pre><code>
+next(new Error("Something failed"));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 8. Real-world Middleware Uses</h2>
+            <pre><code>
+{
+    "authentication": "JWT validation",
+    "authorization": "role-based access",
+    "logging": "request tracking",
+    "validation": "input checking",
+    "rate_limiting": "prevent abuse",
+    "parsing": "JSON/form body parsing",
+    "error_handling": "centralized error management"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧠 9. Mental Model (Very Important)</h2>
+            <p>Think of Express middleware like a factory conveyor belt:</p>
+            <ul>
+                <li>Request enters</li>
+                <li>Each station (middleware) modifies or checks it</li>
+                <li>If something fails → stop line</li>
+                <li>If everything passes → final product (response)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>⚡ 10. Summary</h2>
+            <pre><code>
+{
+    "middleware": "Function between request and response",
+    "core_power": [
+        "control flow",
+        "request modification",
+        "security enforcement",
+        "error handling"
+    ],
+    "key_rule": "Always call next() unless ending response"
+}
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

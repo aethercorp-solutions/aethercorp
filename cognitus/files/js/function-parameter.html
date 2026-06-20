@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>function parameter</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">function parameter</h1>
+                    <p class="subtitle">A function parameter and a closure are related but different concepts.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Function Parameter</h2>
+            <p>A parameter is a variable that a function receives as input.</p>
+            <pre><code>
+function greet(name) {
+    console.log(`Hello, ${name}`);
+}
+
+greet("Paul");
+            </code></pre>
+            <p>Here:</p>
+            <ul>
+                <li>greet is the function.</li>
+                <li>name is the parameter.</li>
+                <li>"Paul" is the argument passed to the parameter.</li>
+            </ul>
+            <p>Think of a parameter as a placeholder for data.</p>
+        </section>
+
+        <section>
+            <h2>Closure</h2>
+            <p>A closure is a function that remembers variables from its outer scope, even after the outer function has finished executing.</p>
+            <pre><code>
+function createCounter() {
+    let count = 0;
+
+    return function () {
+        count++;
+        return count;
+    };
+}
+
+const counter = createCounter();
+
+console.log(counter()); // 1
+console.log(counter()); // 2
+console.log(counter()); // 3
+            </code></pre>
+            <p>Here:</p>
+            <ul>
+                <li>The inner function is a closure.</li>
+                <li>It remembers the count variable from createCounter().</li>
+                <li>Even after createCounter() finishes, count still exists because the closure keeps a reference to it.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Function Parameter</th>
+                        <th>Closure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Input to a function</td>
+                        <td>Function that remembers outer variables</td>
+                    </tr>
+                    <tr>
+                        <td>Receives data from caller</td>
+                        <td>Accesses data from surrounding scope</td>
+                    </tr>
+                    <tr>
+                        <td>Exists only during function execution</td>
+                        <td>Can keep variables alive after outer function returns</td>
+                    </tr>
+                    <tr>
+                        <td>Example: name in greet(name)</td>
+                        <td>Inner function in createCounter()</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Example Together</h2>
+            <pre><code>
+function multiplyBy(factor) {  // factor = parameter
+    return function(number) {  // closure
+        return number * factor;
+    };
+}
+
+const double = multiplyBy(2);
+
+console.log(double(5)); // 10
+            </code></pre>
+            <p>In this example:</p>
+            <ul>
+                <li>factor is a function parameter.</li>
+                <li>The returned function is a closure because it remembers factor.</li>
+                <li>Even after multiplyBy(2) has finished, the closure still knows that factor is 2.</li>
+            </ul>
+            <p>Interview Answer</p>
+            <p>A parameter is an input variable passed into a function. A closure is a function that captures and remembers variables from its surrounding scope, allowing it to access them even after the outer function has returned. Parameters provide data to a function, while closures preserve data from their lexical environment.</p>
+        </section>
+
+        <section>
+            <p>A function as a parameter means you pass a function into another function, just like you pass a number or a string.</p>
+            <h2>Simple Example</h2>
+            <pre><code>
+function greet(name) {
+    console.log("Hello " + name);
+}
+
+function execute(fn) {
+    fn("Paul");
+}
+
+execute(greet);
+            </code></pre>
+            <p>What Happens?</p>
+            <ol>
+                <li>greet is a function.</li>
+                <li>execute accepts a parameter named fn.</li>
+                <li>We pass greet into execute.</li>
+                <li>Inside execute, fn("Paul") calls greet("Paul").</li>
+            </ol>
+            <p>Output:</p>
+            <pre><code>
+Hello Paul
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real-Life Analogy</h2>
+            <p>Imagine a coffee shop:</p>
+            <pre><code>
+makeCoffee(recipe)
+            </code></pre>
+            <p>The coffee shop doesn't know which recipe to use.</p>
+            <p>You can pass:</p>
+            <pre><code>
+espressoRecipe
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+latteRecipe
+            </code></pre>
+            <p>as the parameter.</p>
+            <p>The function receives another function and executes it.</p>
+        </section>
+
+        <section>
+            <h2>Common Example: Callback</h2>
+            <pre><code>
+function processData(callback) {
+    console.log("Processing...");
+    callback();
+}
+
+processData(function() {
+    console.log("Done!");
+});
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+Processing...
+Done!
+            </code></pre>
+            <p>Here:</p>
+            <ul>
+                <li>callback is a function parameter.</li>
+                <li>The anonymous function is passed into processData.</li>
+                <li>processData calls it later.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why Use Functions as Parameters?</h2>
+            <p>They allow you to customize behavior without changing the function.</p>
+            <pre><code>
+function calculate(a, b, operation) {
+    return operation(a, b);
+}
+
+function add(x, y) {
+    return x + y;
+}
+
+function multiply(x, y) {
+    return x * y;
+}
+
+console.log(calculate(2, 3, add));      // 5
+console.log(calculate(2, 3, multiply)); // 6
+            </code></pre>
+            <p>calculate() stays the same, but the operation changes depending on the function passed in.</p>
+            <p>This concept is the foundation of callbacks, event handlers, Promises, Array methods (map, filter, reduce), and React hooks.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

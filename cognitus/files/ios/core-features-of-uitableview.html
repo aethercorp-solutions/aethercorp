@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Core Features of UITableView</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Core Features of UITableView</h1>
+                    <p class="subtitle">
+                        UITableView is one of the core UI components in UIKit for displaying vertically scrolling lists in iOS apps. It is highly optimized, reusable, and supports dynamic content.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Core Features of UITableView</h2>
+            <p>1. Reusable Cells</p>
+            <p>Instead of creating a new view for every row, table views reuse cells for performance.</p>
+            <pre><code>
+tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+            </code></pre>
+            <p>Benefits:</p>
+            <ul>
+                <li>Lower memory usage</li>
+                <li>Smooth scrolling</li>
+                <li>Efficient rendering</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Sections and Rows</h2>
+            <p>A table can be divided into sections.</p>
+            <p>Example:</p>
+            <ul>
+                <li>Section 0 → Favorites</li>
+                <li>Section 1 → Recent</li>
+            </ul>
+            <p>Structure:</p>
+            <pre><code>
+func numberOfSections(in tableView: UITableView) -> Int
+func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Multiple Cell Styles</h2>
+            <p>Built-in styles:</p>
+            <ul>
+                <li>.default</li>
+                <li>.subtitle</li>
+                <li>.value1</li>
+                <li>.value2</li>
+            </ul>
+            <p>Or use custom cells.</p>
+            <pre><code>
+UITableViewCell(style: .subtitle, reuseIdentifier: "Cell")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Custom Cells</h2>
+            <p>You can subclass UITableViewCell to create complex layouts.</p>
+            <p>Example:</p>
+            <ul>
+                <li>Profile image</li>
+                <li>Title</li>
+                <li>Subtitle</li>
+                <li>Buttons</li>
+                <li>Toggle switches</li>
+            </ul>
+            <pre><code>
+class UserCell: UITableViewCell {
+    @IBOutlet weak var nameLabel: UILabel!
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Dynamic Row Heights</h2>
+            <p>Automatic sizing based on content.</p>
+            <pre><code>
+tableView.rowHeight = UITableView.automaticDimension
+tableView.estimatedRowHeight = 100
+            </code></pre>
+            <p>Useful for:</p>
+            <ul>
+                <li>Chat apps</li>
+                <li>Social feeds</li>
+                <li>Multi-line text</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Editing Support</h2>
+            <p>Supports:</p>
+            <ul>
+                <li>Delete</li>
+                <li>Insert</li>
+                <li>Reorder</li>
+            </ul>
+            <p>Example delete:</p>
+            <pre><code>
+func tableView(_ tableView: UITableView,
+               commit editingStyle: UITableViewCell.EditingStyle,
+               forRowAt indexPath: IndexPath) {
+
+    if editingStyle == .delete {
+        data.remove(at: indexPath.row)
+        tableView.deleteRows(at: [indexPath], with: .automatic)
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Swipe Actions</h2>
+            <p>Modern contextual actions.</p>
+            <pre><code>
+func tableView(_ tableView: UITableView,
+ trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
+-> UISwipeActionsConfiguration?
+            </code></pre>
+            <p>Examples:</p>
+            <ul>
+                <li>Delete</li>
+                <li>Favorite</li>
+                <li>Archive</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Selection Handling</h2>
+            <p>Detect row taps.</p>
+            <pre><code>
+func tableView(_ tableView: UITableView,
+    didSelectRowAt indexPath: IndexPath)
+            </code></pre>
+            <p>Used for:</p>
+            <ul>
+                <li>Navigation</li>
+                <li>Detail screens</li>
+                <li>Option selection</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Headers and Footers</h2>
+            <p>Per-section headers and footers.</p>
+            <pre><code>
+func tableView(_ tableView: UITableView,
+    titleForHeaderInSection section: Int) -> String?
+            </code></pre>
+            <p>Or use custom views.</p>
+        </section>
+
+        <section>
+            <h2>10. Pull to Refresh</h2>
+            <p>Built-in refresh control.</p>
+            <pre><code>
+let refreshControl = UIRefreshControl()
+tableView.refreshControl = refreshControl
+            </code></pre>
+            <p>Common in:</p>
+            <ul>
+                <li>Feeds</li>
+                <li>Email apps</li>
+                <li>News apps</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>11. Prefetching</h2>
+            <p>Loads data before cells appear.</p>
+            <pre><code>
+UITableViewDataSourcePrefetching
+            </code></pre>
+            <p>Useful for:</p>
+            <ul>
+                <li>Infinite scrolling</li>
+                <li>Image loading</li>
+                <li>API pagination</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>12. Animations</h2>
+            <p>Animated updates:</p>
+            <pre><code>
+tableView.insertRows(at: [indexPath], with: .fade)
+tableView.reloadRows(at: [indexPath], with: .automatic)
+            </code></pre>
+            <p>Animation types:</p>
+            <ul>
+                <li>.fade</li>
+                <li>.automatic</li>
+                <li>.left</li>
+                <li>.right</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>13. Diffable Data Source (Modern API)</h2>
+            <p>Modern safer data updates.</p>
+            <pre><code>
+UITableViewDiffableDataSource
+            </code></pre>
+            <p>Advantages:</p>
+            <ul>
+                <li>Easier state management</li>
+                <li>Automatic animations</li>
+                <li>Prevents sync crashes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>14. Search Integration</h2>
+            <p>Works with UISearchController.</p>
+            <pre><code>
+navigationItem.searchController = searchController
+            </code></pre>
+            <p>Supports:</p>
+            <ul>
+                <li>Live filtering</li>
+                <li>Search suggestions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>15. Accessibility Support</h2>
+            <p>Built-in support for:</p>
+            <ul>
+                <li>VoiceOver</li>
+                <li>Dynamic Type</li>
+                <li>Accessibility labels</li>
+            </ul>
+            <p>Important for inclusive apps.</p>
+        </section>
+
+        <section>
+            <h2>Basic UITableView Setup</h2>
+            <p>Simple Example</p>
+            <pre><code>
+import UIKit
+
+class ViewController: UIViewController,
+                      UITableViewDataSource,
+                      UITableViewDelegate {
+
+    let tableView = UITableView()
+    let items = ["Apple", "Banana", "Orange"]
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.addSubview(tableView)
+        tableView.frame = view.bounds
+
+        tableView.dataSource = self
+        tableView.delegate = self
+
+        tableView.register(UITableViewCell.self,
+                           forCellReuseIdentifier: "Cell")
+    }
+
+    func tableView(_ tableView: UITableView,
+                   numberOfRowsInSection section: Int) -> Int {
+        items.count
+    }
+
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath)
+    -> UITableViewCell {
+
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: "Cell",
+            for: indexPath
+        )
+
+        cell.textLabel?.text = items[indexPath.row]
+
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView,
+                   didSelectRowAt indexPath: IndexPath) {
+
+        print(items[indexPath.row])
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common Real-World Uses</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>App Type</th>
+                        <th>Usage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Chat apps</td>
+                        <td>Messages</td>
+                    </tr>
+                    <tr>
+                        <td>Email apps</td>
+                        <td>Inbox</td>
+                    </tr>
+                    <tr>
+                        <td>Settings</td>
+                        <td>Options list</td>
+                    </tr>
+                    <tr>
+                        <td>Social media</td>
+                        <td>Feed</td>
+                    </tr>
+                    <tr>
+                        <td>E-commerce</td>
+                        <td>Product lists</td>
+                    </tr>
+                    <tr>
+                        <td>Music apps</td>
+                        <td>Songs/playlists</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>UITableView vs UICollectionView</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>UITableView</th>
+                        <th>UICollectionView</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vertical lists</td>
+                        <td>Excellent</td>
+                        <td>Good</td>
+                    </tr>
+                    <tr>
+                        <td>Grid layouts</td>
+                        <td>Limited</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>Simplicity</td>
+                        <td>Easier</td>
+                        <td>More flexible</td>
+                    </tr>
+                    <tr>
+                        <td>Complex layouts</td>
+                        <td>Moderate</td>
+                        <td>Best</td>
+                    </tr>
+                    <tr>
+                        <td>Modern UI</td>
+                        <td>Okay</td>
+                        <td>Preferred</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Today many modern apps prefer UICollectionView with compositional layouts because it is more flexible, but UITableView is still excellent for structured vertical lists and settings-style interfaces.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

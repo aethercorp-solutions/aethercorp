@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cosine Similarity Search</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Cosine Similarity Search</h1>
+                    <p class="subtitle">
+                        Cosine Similarity Search is a way to find items that are most similar in meaning by comparing their vector embeddings.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple Analogy</h2>
+            <p>Imagine each document, sentence, or image is converted into a list of numbers (a vector embedding).</p>
+            <p>Example:</p>
+            <ul>
+                <li>"I love dogs" → [0.8, 0.2, 0.5]</li>
+                <li>"Dogs are amazing pets" → [0.7, 0.3, 0.4]</li>
+                <li>"I like pizza" → [0.1, 0.9, 0.2]</li>
+            </ul>
+            <p>Even though the words are different, the first two vectors point in a similar direction because they have similar meanings.</p>
+        </section>
+
+        <section>
+            <h2>What Cosine Similarity Measures</h2>
+            <p>Instead of comparing the size of vectors, it compares their direction.</p>
+            <p>Think of vectors as arrows:</p>
+            <pre><code>
+Similar Meaning
+      ↗
+     ↗
+    ↗
+
+Different Meaning
+      ↗
+      →
+            </code></pre>
+            <p>The smaller the angle between the arrows, the more similar they are.</p>
+            <p>Formula</p>
+            <p>Cosine similarity is:</p>
+            <pre><code>
+                Cosine Similarity = (A * B) / |A||B|
+            </code></pre>
+
+            <p>Result:</p>
+            <ul>
+                <li>1 = exactly the same direction (very similar)</li>
+                <li>0 = unrelated</li>
+                <li>-1 = opposite meaning (rare in embeddings)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>How Search Works</h2>
+            <p>Suppose your database contains:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Text</th>
+                        <th>Embedding</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>"How to train a dog"</td>
+                        <td>Vector A</td>
+                    </tr>
+                    <tr>
+                        <td>"Dog obedience tips"</td>
+                        <td>Vector B</td>
+                    </tr>
+                    <tr>
+                        <td>"Best pizza recipes"</td>
+                        <td>Vector C</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>User searches:</p>
+            <p>"Teach my puppy commands"</p>
+            <p>Steps:</p>
+            <ol>
+                <li>Convert query into an embedding vector.</li>
+                <li>Compare it against all stored vectors using cosine similarity.</li>
+                <li>Sort by highest score.</li>
+                <li>Return the closest matches.</li>
+            </ol>
+            <p>Result:</p>
+            <pre><code>
+"Dog obedience tips"      0.95
+"How to train a dog"      0.92
+"Best pizza recipes"      0.10
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why LLM Applications Use It</h2>
+            <p>When building AI apps:</p>
+            <ol>
+                <li>Store document embeddings in a vector database or MongoDB.</li>
+                <li>User asks a question.</li>
+                <li>Convert question into an embedding.</li>
+                <li>Use cosine similarity search to find relevant documents.</li>
+                <li>Send those documents to the LLM.</li>
+            </ol>
+            <p>This is the basis of RAG (Retrieval-Augmented Generation).</p>
+            <pre><code>
+User Question
+      ↓
+Embedding Model
+      ↓
+Vector Search
+(Cosine Similarity)
+      ↓
+Relevant Documents
+      ↓
+LLM
+      ↓
+Answer
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>MongoDB Example</h2>
+            <p>MongoDB Atlas supports vector search.</p>
+            <pre><code>
+const results = await collection.aggregate([
+  {
+    $vectorSearch: {
+      index: "vector_index",
+      path: "embedding",
+      queryVector: queryEmbedding,
+      numCandidates: 100,
+      limit: 5
+    }
+  }
+]);
+            </code></pre>
+            <p>Internally, MongoDB finds vectors with the highest cosine similarity (or another distance metric).</p>
+            <p>One-Sentence Summary</p>
+            <p>Cosine Similarity Search finds the vectors whose directions are closest to a query vector, allowing AI systems to retrieve content with similar meaning rather than just matching keywords.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

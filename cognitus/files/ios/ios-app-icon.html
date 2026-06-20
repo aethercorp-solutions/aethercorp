@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>When you tap an iOS app icon</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">When you tap an iOS app icon</h1>
+                    <p class="subtitle">
+                        When you tap an iOS app icon, a long chain of system-level processes happens before your UI appears on screen. The process involves the operating system, security checks, memory management, the app lifecycle, rendering systems, and event handling.
+                        <p>Here’s a detailed breakdown of how an iOS application runs inside the iOS system.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. User Taps the App Icon</h2>
+            <p>When the user taps the app icon on the Home Screen:</p>
+            <ol>
+                <li>The SpringBoard process receives the tap.</li>
+                <li>
+                    SpringBoard is the iOS system app responsible for:
+                    <ul>
+                        <li>Home Screen</li>
+                        <li>App launching</li>
+                        <li>App switching</li>
+                        <li>Notifications</li>
+                        <li>Basic window management</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>The icon contains metadata pointing to the app bundle installed on the device.</p>
+        </section>
+
+        <section>
+            <h2>2. iOS Locates the App Bundle</h2>
+            <p>An iOS app is packaged as an .app bundle.</p>
+            <p>Inside the bundle are:</p>
+            <ul>
+                <li>Executable binary</li>
+                <li>Assets</li>
+                <li>Storyboards</li>
+                <li>Frameworks</li>
+                <li>Info.plist</li>
+                <li>Resources</li>
+            </ul>
+            <p>Example structure:</p>
+            <pre><code>
+MyApp.app/
+ ├── MyApp              ← executable binary
+ ├── Info.plist
+ ├── Assets.car
+ ├── Frameworks/
+ ├── Base.lproj/
+ └── embedded.mobileprovision
+            </code></pre>
+            <p>The system reads the Info.plist to understand:</p>
+            <ul>
+                <li>App identifier</li>
+                <li>Launch storyboard</li>
+                <li>Supported orientations</li>
+                <li>Required capabilities</li>
+                <li>Scene configuration</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Security Verification</h2>
+            <p>Before the app runs, iOS performs strict security checks.</p>
+            <p>Code Signing Validation</p>
+            <p>iOS verifies:</p>
+            <ul>
+                <li>Apple-issued certificate</li>
+                <li>App signature</li>
+                <li>Provisioning profile</li>
+                <li>Binary integrity</li>
+            </ul>
+            <p>If modified or unsigned:</p>
+            <ul>
+                <li>iOS refuses execution</li>
+            </ul>
+            <p>This is part of Apple’s secure boot chain.</p>
+        </section>
+
+        <section>
+            <h2>4. Process Creation</h2>
+            <p>After verification:</p>
+            <ul>
+                <li>iOS kernel creates a new process for the app.</li>
+                <li>A unique sandbox is assigned.</li>
+            </ul>
+            <p>The kernel:</p>
+            <ul>
+                <li>Allocates memory</li>
+                <li>Creates threads</li>
+                <li>Maps executable code into memory</li>
+                <li>Sets permissions</li>
+            </ul>
+            <p>Each app becomes an isolated process.</p>
+        </section>
+
+        <section>
+            <h2>5. Sandbox Initialization</h2>
+            <p>Every iOS app runs in a sandbox.</p>
+            <p>The sandbox restricts:</p>
+            <ul>
+                <li>File access</li>
+                <li>Hardware access</li>
+                <li>Network permissions</li>
+                <li>Inter-process communication</li>
+            </ul>
+            <p>Apps cannot directly access:</p>
+            <ul>
+                <li>Other apps' files</li>
+                <li>System memory</li>
+                <li>Sensitive APIs</li>
+            </ul>
+            <p>Unless explicit entitlements are granted.</p>
+        </section>
+
+        <section>
+            <h2>6. Dynamic Loader Starts</h2>
+            <p>The dynamic linker (dyld) loads required frameworks.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>UIKit</li>
+                <li>SwiftUI</li>
+                <li>Foundation</li>
+            </ul>
+            <p>The loader:</p>
+            <ul>
+                <li>Resolves symbols</li>
+                <li>Loads shared libraries</li>
+                <li>Initializes runtime systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Swift Runtime / Objective-C Runtime Initialization</h2>
+            <p>Depending on the app:</p>
+            <p>Swift Runtime</p>
+            <p>Initializes:</p>
+            <ul>
+                <li>ARC (Automatic Reference Counting)</li>
+                <li>Metadata</li>
+                <li>Generics</li>
+                <li>Protocol dispatch</li>
+                <li>Concurrency runtime</li>
+            </ul>
+            <p>Objective-C Runtime</p>
+            <p>Initializes:</p>
+            <ul>
+                <li>Class registration</li>
+                <li>Method dispatch tables</li>
+                <li>Dynamic messaging</li>
+            </ul>
+            <p>Objective-C uses:</p>
+            <pre><code>
+objc_msgSend()
+            </code></pre>
+            <p>for dynamic method calls.</p>
+        </section>
+
+        <section>
+            <h2>8. Entry Point Starts</h2>
+            <p>Historically iOS apps started with:</p>
+            <pre><code>
+UIApplicationMain()
+            </code></pre>
+            <p>Modern Swift apps often use:</p>
+            <pre><code>
+@main
+struct MyApp: App {
+}
+            </code></pre>
+            <p>or:</p>
+            <pre><code>
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+}
+            </code></pre>
+            <p>The actual low-level entry point is still essentially:</p>
+            <pre><code>
+main()
+            </code></pre>
+            <p>which eventually calls:</p>
+            <pre><code>
+UIApplicationMain(
+    argc,
+    argv,
+    nil,
+    NSStringFromClass(AppDelegate.self)
+)
+            </code></pre>
+            <p>UIApplicationMain() is extremely important because it:</p>
+            <ul>
+                <li>Creates the application object</li>
+                <li>Starts the main event loop</li>
+                <li>Connects app delegate</li>
+                <li>Initializes UIKit</li>
+                <li>Starts handling events</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. UIApplication Object Creation</h2>
+            <p>A singleton UIApplication instance is created.</p>
+            <p>Responsibilities:</p>
+            <ul>
+                <li>Event handling</li>
+                <li>Touch delivery</li>
+                <li>App lifecycle</li>
+                <li>Background execution</li>
+                <li>Notifications</li>
+            </ul>
+            <p>There is only one application object per app process.</p>
+        </section>
+
+        <section>
+            <h2>10. App Delegate Initialization</h2>
+            <p>The App Delegate becomes the central lifecycle manager.</p>
+            <p>Example:</p>
+            <pre><code>
+class AppDelegate: UIResponder, UIApplicationDelegate
+            </code></pre>
+            <p>Important methods:</p>
+            <pre><code>
+application(
+    _:didFinishLaunchingWithOptions:
+)
+            </code></pre>
+            <p>Called after launch setup.</p>
+        </section>
+
+        <section>
+            <h2>11. Scene System Initialization (Modern iOS)</h2>
+            <p>Modern iOS uses scenes.</p>
+            <p>A scene represents a UI session/window.</p>
+            <p>The system creates:</p>
+            <pre><code>
+UIScene
+            </code></pre>
+            <p>then:</p>
+            <pre><code>
+UIWindowScene
+            </code></pre>
+            <p>Then your:</p>
+            <pre><code>
+SceneDelegate
+            </code></pre>
+            <p>or SwiftUI scene lifecycle starts.</p>
+        </section>
+
+        <section>
+            <h2>12. Window Creation</h2>
+            <p>The system creates:</p>
+            <pre><code>
+UIWindow
+            </code></pre>
+            <p>The window:</p>
+            <ul>
+                <li>Receives touch events</li>
+                <li>Hosts view hierarchy</li>
+                <li>Renders content</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>13. Root View Controller Setup</h2>
+            <p>Your root controller is attached.</p>
+            <p>Example:</p>
+            <pre><code>
+window.rootViewController =
+    UINavigationController(
+        rootViewController: HomeVC()
+    )
+            </code></pre>
+            <p>or SwiftUI:</p>
+            <pre><code>
+WindowGroup {
+    ContentView()
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>14. View Hierarchy Loads</h2>
+            <p>UIKit now loads:</p>
+            <ul>
+                <li>Views</li>
+                <li>Constraints</li>
+                <li>Storyboards/XIBs</li>
+                <li>SwiftUI view trees</li>
+            </ul>
+            <p>Lifecycle begins:</p>
+            <pre><code>
+viewDidLoad()
+viewWillAppear()
+viewDidAppear()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>15. Main Run Loop Starts</h2>
+            <p>This is one of the most important concepts.</p>
+            <p>iOS starts the:</p>
+            <pre><code>
+Main Run Loop
+            </code></pre>
+            <p>The run loop continuously waits for:</p>
+            <ul>
+                <li>Touches</li>
+                <li>Gestures</li>
+                <li>Timers</li>
+                <li>Network callbacks</li>
+                <li>Rendering updates</li>
+                <li>System events</li>
+            </ul>
+            <p>Simplified loop:</p>
+            <pre><code>
+while app_is_running:
+    wait_for_events()
+    process_events()
+    update_ui()
+            </code></pre>
+            <p>This loop runs on the main thread.</p>
+        </section>
+
+        <section>
+            <h2>16. Event Handling System</h2>
+            <p>Touch flow:</p>
+            <pre><code>
+Hardware Touch
+    ↓
+IOKit
+    ↓
+SpringBoard
+    ↓
+UIApplication
+    ↓
+UIWindow
+    ↓
+UIView
+    ↓
+Responder Chain
+            </code></pre>
+            <p>The responder chain determines which object handles the event.</p>
+        </section>
+
+        <section>
+            <h2>17. Rendering Pipeline</h2>
+            <p>UIKit/SwiftUI do not directly draw pixels.</p>
+            <p>Rendering flow:</p>
+            <pre><code>
+UIView/SwiftUI
+   ↓
+CALayer
+   ↓
+Core Animation
+   ↓
+Metal/OpenGL
+   ↓
+GPU
+   ↓
+Display
+            </code></pre>
+            <p>Core Animation</p>
+            <p>Handles:</p>
+            <ul>
+                <li>Animations</li>
+                <li>Layer compositing</li>
+                <li>Smooth rendering</li>
+            </ul>
+            <p>Metal</p>
+            <p>Modern low-level GPU API used by iOS.</p>
+            <p>Metal</p>
+        </section>
+
+        <section>
+            <h2>18. Memory Management</h2>
+            <p>iOS aggressively manages memory.</p>
+            <p>Swift uses:</p>
+            <pre><code>
+ARC (Automatic Reference Counting)
+            </code></pre>
+            <p>Objects are automatically retained/released.</p>
+            <p>When memory pressure occurs:</p>
+            <ul>
+                <li>Background apps may be suspended</li>
+                <li>Unused resources purged</li>
+                <li>App may receive warnings</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+didReceiveMemoryWarning()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>19. Backgrounding</h2>
+            <p>When user leaves app:</p>
+            <p>States change:</p>
+            <pre><code>
+Active
+Inactive
+Background
+Suspended
+            </code></pre>
+            <p>The app usually becomes suspended.</p>
+            <p>Suspended apps:</p>
+            <ul>
+                <li>Remain in memory</li>
+                <li>Execute no code</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>20. App Termination</h2>
+            <p>Apps terminate when:</p>
+            <ul>
+                <li>User force quits</li>
+                <li>Memory pressure occurs</li>
+                <li>Crash happens</li>
+                <li>System shutdown</li>
+            </ul>
+            <p>The process is destroyed by the kernel.</p>
+            <p>Memory/resources are reclaimed.</p>
+        </section>
+
+        <section>
+            <h2>Complete High-Level Flow</h2>
+            <pre><code>
+User taps app
+    ↓
+SpringBoard receives request
+    ↓
+Security validation
+    ↓
+Kernel creates process
+    ↓
+Sandbox initialized
+    ↓
+dyld loads frameworks
+    ↓
+Swift/ObjC runtime starts
+    ↓
+UIApplicationMain()
+    ↓
+UIApplication created
+    ↓
+AppDelegate starts
+    ↓
+Scene/Window created
+    ↓
+Root ViewController loads
+    ↓
+RunLoop starts
+    ↓
+UI rendered
+    ↓
+App responds to events
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Important Core iOS Components</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Kernel</td>
+                        <td>Process/memory management</td>
+                    </tr>
+                    <tr>
+                        <td>SpringBoard</td>
+                        <td>App launcher/UI shell</td>
+                    </tr>
+                    <tr>
+                        <td>dyld</td>
+                        <td>Dynamic loader</td>
+                    </tr>
+                    <tr>
+                        <td>UIKit</td>
+                        <td>UI framework</td>
+                    </tr>
+                    <tr>
+                        <td>Core Animation</td>
+                        <td>Rendering</td>
+                    </tr>
+                    <tr>
+                        <td>Metal</td>
+                        <td>GPU rendering</td>
+                    </tr>
+                    <tr>
+                        <td>RunLoop</td>
+                        <td>Event processing</td>
+                    </tr>
+                    <tr>
+                        <td>Sandbox</td>
+                        <td>Security isolation</td>
+                    </tr>
+                    <tr>
+                        <td>ARC</td>
+                        <td>Memory management</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>SwiftUI vs UIKit Startup</h2>
+            <p>UIKit</p>
+            <pre><code>
+UIApplicationMain()
+    ↓
+AppDelegate
+    ↓
+SceneDelegate
+    ↓
+UIViewController
+            </code></pre>
+            <p>SwiftUI</p>
+            <pre><code>
+@main
+App
+    ↓
+Scene
+    ↓
+View hierarchy
+            </code></pre>
+            <p>SwiftUI still ultimately depends on UIKit internally on iOS.</p>
+        </section>
+
+        <section>
+            <h2>Important Threads</h2>
+            <p>Main Thread</p>
+            <p>Handles:</p>
+            <ul>
+                <li>UI</li>
+                <li>Events</li>
+                <li>Rendering coordination</li>
+            </ul>
+            <p>Background Threads</p>
+            <p>Handle:</p>
+            <ul>
+                <li>Networking</li>
+                <li>Database</li>
+                <li>Heavy computation</li>
+            </ul>
+            <p>Blocking the main thread causes UI freezing.</p>
+        </section>
+
+        <section>
+            <h2>Modern Internal Technologies Used by iOS</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mach Kernel</td>
+                        <td>Core kernel</td>
+                    </tr>
+                    <tr>
+                        <td>XNU</td>
+                        <td>Hybrid kernel</td>
+                    </tr>
+                    <tr>
+                        <td>Grand Central Dispatch</td>
+                        <td>Concurrency</td>
+                    </tr>
+                    <tr>
+                        <td>CoreFoundation</td>
+                        <td>Base system framework</td>
+                    </tr>
+                    <tr>
+                        <td>Swift Runtime</td>
+                        <td>Swift execution</td>
+                    </tr>
+                    <tr>
+                        <td>Objective-C Runtime</td>
+                        <td>Dynamic messaging</td>
+                    </tr>
+                    <tr>
+                        <td>Core Animation</td>
+                        <td>Animation engine</td>
+                    </tr>
+                    <tr>
+                        <td>Metal</td>
+                        <td>GPU rendering</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Extremely Simplified Mental Model</h2>
+            <p>You can think of an iOS app as:</p>
+            <pre><code>
+A sandboxed process
++
+Event loop
++
+UI rendering tree
++
+Lifecycle managed by iOS
+            </code></pre>
+            <p>The operating system:</p>
+            <ul>
+                <li>Creates the process</li>
+                <li>Manages memory</li>
+                <li>Delivers events</li>
+                <li>Suspends/resumes apps</li>
+                <li>Protects the system</li>
+                <li>Renders frames through GPU pipelines</li>
+            </ul>
+            <p>while your app mainly:</p>
+            <ul>
+                <li>Defines UI</li>
+                <li>Responds to events</li>
+                <li>Manages data</li>
+                <li>Requests system services</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

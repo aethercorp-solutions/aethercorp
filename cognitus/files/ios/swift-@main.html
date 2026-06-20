@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@main</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">@main</h1>
+                    <p class="subtitle">
+                        In Swift, @main is an attribute that tells the compiler:
+                        <p>“This is the starting point of the app.”</p>
+                        <p>It defines where the application begins execution.</p>
+                        <p>In modern iOS development — especially with SwiftUI — @main replaces the older AppDelegate entry setup that used UIApplicationMain.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Basic Example</h2>
+            <pre><code>
+import SwiftUI
+
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+            </code></pre>
+            <p>This is the entry point of the app.</p>
+            <p>When the app launches:</p>
+            <ol>
+                <li>iOS starts the process</li>
+                <li>Swift runtime looks for @main</li>
+                <li>Creates the MyApp object</li>
+                <li>Executes the app lifecycle</li>
+                <li>Displays ContentView</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>What @main Actually Does</h2>
+            <p>Before Swift had @main, apps needed a main() function like in C/C++.</p>
+            <p>Example:</p>
+            <pre><code>
+int main() {
+    return UIApplicationMain(...);
+}
+            </code></pre>
+            <p>Swift hides this complexity.</p>
+            <p>When you write:</p>
+            <pre><code>
+@main
+struct MyApp: App
+            </code></pre>
+            <p>Swift automatically generates the equivalent startup code behind the scenes.</p>
+        </section>
+
+        <section>
+            <h2>Think of It Like This</h2>
+            <p>@main = “Start execution here.”</p>
+            <p>Similar concepts in other languages:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Language</th>
+                        <th>Entry Point</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>C</td>
+                        <td>main()</td>
+                    </tr>
+                    <tr>
+                        <td>Java</td>
+                        <td>public static void main()</td>
+                    </tr>
+                    <tr>
+                        <td>Kotlin</td>
+                        <td>fun main()</td>
+                    </tr>
+                    <tr>
+                        <td>Swift</td>
+                        <td>@main</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>In SwiftUI Apps</h2>
+            <p>Most modern iOS apps use:</p>
+            <pre><code>
+@main
+struct MyApp: App
+            </code></pre>
+            <p>The struct conforms to the App protocol.</p>
+        </section>
+
+        <section>
+            <h2>Understanding the App Protocol</h2>
+            <p>Example:</p>
+            <pre><code>
+@main
+struct DemoApp: App {
+    var body: some Scene {
+        WindowGroup {
+            HomeView()
+        }
+    }
+}
+            </code></pre>
+            <p>Components</p>
+            <p>@main</p>
+            <p>Marks this type as the app entry point.</p>
+
+            <pre><code>
+struct DemoApp
+            </code></pre>
+            <p>Defines the application container.</p>
+
+            <pre><code>
+: App
+            </code></pre>
+            <p>Conforms to the App protocol.</p>
+            <p>This protocol manages:</p>
+            <ul>
+                <li>App lifecycle</li>
+                <li>Scene management</li>
+                <li>Window creation</li>
+                <li>Environment setup</li>
+            </ul>
+
+            <pre><code>
+body
+            </code></pre>
+            <p>Required property of App.</p>
+            <p>Returns scenes to display.</p>
+            
+            <pre><code>
+WindowGroup
+            </code></pre>
+            <p>Creates one or more app windows.</p>
+            <p>Usually contains the root view.</p>
+        </section>
+
+        <section>
+            <h2>What Happens During Launch</h2>
+            <p>Step-by-step</p>
+            <pre><code>
+@main
+struct MyApp: App
+            </code></pre>
+            <p>Step 1 — App Starts</p>
+            <p>iOS launches the executable.</p>
+        </section>
+
+        <section>
+            <h2>Step 2 — Swift Finds @main</h2>
+            <p>Compiler identifies the app entry type.</p>
+        </section>
+
+        <section>
+            <h2>Step 3 — Creates App Instance</h2>
+            <pre><code>
+let app = MyApp()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4 — Loads Scene</h2>
+            <pre><code>
+body
+            </code></pre>
+            <p>is evaluated.</p>
+        </section>
+
+        <section>
+            <h2>Step 5 — Creates WindowGroup</h2>
+            <p>Window system initializes.</p>
+        </section>
+
+        <section>
+            <h2>Step 6 — Displays Root View</h2>
+            <pre><code>
+ContentView()
+            </code></pre>
+            <p>appears onscreen.</p>
+        </section>
+
+        <section>
+            <h2>How It Replaced Old UIKit Setup</h2>
+            <p>Before SwiftUI, apps commonly used:</p>
+            <pre><code>
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate
+            </code></pre>
+            <p>or manually:</p>
+            <pre><code>
+UIApplicationMain(
+    CommandLine.argc,
+    CommandLine.unsafeArgv,
+    nil,
+    NSStringFromClass(AppDelegate.self)
+)
+            </code></pre>
+            <p>Modern SwiftUI simplifies this into:</p>
+            <pre><code>
+@main
+struct MyApp: App
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Difference Between @main and @UIApplicationMain</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>@main</th>
+                        <th>@UIApplicationMain</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Modern Swift</td>
+                        <td>Older UIKit approach</td>
+                    </tr>
+                    <tr>
+                        <td>Works with SwiftUI</td>
+                        <td>UIKit lifecycle</td>
+                    </tr>
+                    <tr>
+                        <td>More flexible</td>
+                        <td>Specific to UIApplication</td>
+                    </tr>
+                    <tr>
+                        <td>Recommended now</td>
+                        <td>Legacy style</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Can @main Be Used Outside iOS?</h2>
+            <p>Yes.</p>
+            <p>Swift supports @main for:</p>
+            <ul>
+                <li>Console apps</li>
+                <li>macOS apps</li>
+                <li>Server-side Swift</li>
+                <li>Command-line tools</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+@main
+struct Program {
+    static func main() {
+        print("Hello")
+    }
+}
+            </code></pre>
+            <p>Equivalent to:</p>
+            <pre><code>
+func main() {
+    print("Hello")
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Rules of @main</h2>
+            <p>Only One Allowed</p>
+            <p>You can only have ONE entry point.</p>
+            <p>Invalid:</p>
+            <pre><code>
+@main
+struct App1 {}
+
+@main
+struct App2 {}
+            </code></pre>
+            <p>Compiler error occurs.</p>
+        </section>
+
+        <section>
+            <h2>@main Can Be Applied To</h2>
+            <p>Usually:</p>
+            <ul>
+                <li>Struct</li>
+                <li>Class</li>
+                <li>Enum</li>
+            </ul>
+            <p>But it must provide a valid entry mechanism.</p>
+        </section>
+
+        <section>
+            <h2>SwiftUI Lifecycle vs UIKit Lifecycle</h2>
+            <p>SwiftUI (@main)</p>
+            <pre><code>
+@main
+struct MyApp: App
+            </code></pre>
+            <p>Lifecycle handled declaratively.</p>
+        </section>
+
+        <section>
+            <h2>UIKit</h2>
+            <pre><code>
+class AppDelegate: UIResponder
+            </code></pre>
+            <p>Lifecycle handled manually.</p>
+        </section>
+
+        <section>
+            <h2>Combining @main with AppDelegate</h2>
+            <p>Sometimes you still need UIKit delegates.</p>
+            <p>Example:</p>
+            <pre><code>
+import SwiftUI
+
+@main
+struct DemoApp: App {
+
+    @UIApplicationDelegateAdaptor(AppDelegate.self)
+    var appDelegate
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+            </code></pre>
+            <p>Useful for:</p>
+            <ul>
+                <li>Push notifications</li>
+                <li>Firebase setup</li>
+                <li>Deep links</li>
+                <li>Legacy SDKs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Internal Compiler Behavior</h2>
+            <p>The compiler synthesizes startup code similar to:</p>
+            <pre><code>
+static func main() {
+    UIApplicationMain(...)
+}
+            </code></pre>
+            <p>You don’t see it, but it is generated automatically.</p>
+        </section>
+
+        <section>
+            <h2>Why Apple Introduced @main</h2>
+            <p>Goals:</p>
+            <ul>
+                <li>Simplify app startup</li>
+                <li>Reduce boilerplate</li>
+                <li>Support declarative UI</li>
+                <li>Modernize lifecycle management</li>
+                <li>Improve readability</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Real-World SwiftUI App Structure</h2>
+            <pre><code>
+@main
+struct BankingApp: App {
+
+    @StateObject var authManager = AuthManager()
+
+    var body: some Scene {
+        WindowGroup {
+            LoginView()
+                .environmentObject(authManager)
+        }
+    }
+}
+            </code></pre>
+            <p>This becomes the root container for:</p>
+            <ul>
+                <li>Global state</li>
+                <li>Dependency injection</li>
+                <li>App configuration</li>
+                <li>Scene setup</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Important Concepts Related to @main</h2>
+            <p>App Lifecycle</p>
+            <p>Events like:</p>
+            <ul>
+                <li>App launch</li>
+                <li>Background</li>
+                <li>Foreground</li>
+                <li>Termination</li>
+            </ul>
+            <p>Handled within SwiftUI scene phases.</p>
+            <p>Example:</p>
+            <pre><code>
+@Environment(\.scenePhase) var scenePhase
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Multiple Windows Support</h2>
+            <p>WindowGroup supports multiwindow apps on:</p>
+            <ul>
+                <li>iPadOS</li>
+                <li>macOS</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Common Beginner Confusion</h2>
+            <p>“Why no main() function?”</p>
+            <p>Swift generates it automatically.</p>
+            <p>@main replaces it.</p>
+        </section>
+
+        <section>
+            <h2>“Why does SwiftUI app start without AppDelegate?”</h2>
+            <p>Because the App protocol now manages lifecycle behavior.</p>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <p>@main in Swift:</p>
+            <ul>
+                <li>Marks the application entry point</li>
+                <li>Replaces manual main() setup</li>
+                <li>Commonly used with SwiftUI</li>
+                <li>Works with the App protocol</li>
+                <li>Simplifies app lifecycle management</li>
+                <li>Modern replacement for @UIApplicationMain</li>
+            </ul>
+            <p>Core example:</p>
+            <pre><code>
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+            </code></pre>
+            <p>This tells iOS:</p>
+            <p>“Launch the app starting from this SwiftUI application structure.”</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

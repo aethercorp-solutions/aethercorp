@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Transactional Application</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Transactional Application</h1>
+                    <p class="subtitle">
+                        A transactional application is a software application that handles business transactions and ensures that data is saved accurately and reliably.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>A transaction is a single unit of work, such as:</h2>
+            <ul>
+                <li>Transferring money between bank accounts</li>
+                <li>Placing an online order</li>
+                <li>Booking a flight ticket</li>
+                <li>Processing a payment</li>
+                <li>Updating inventory after a sale</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example: Online Shopping</h2>
+            <p>When you buy a product:</p>
+            <ol>
+                <li>Create an order</li>
+                <li>Charge the customer's credit card</li>
+                <li>Reduce inventory stock</li>
+                <li>Send confirmation</li>
+            </ol>
+            <p>All these steps should succeed together.</p>
+            <p>If the payment succeeds but inventory update fails, the system should undo (rollback) the payment or order creation to keep data consistent.</p>
+        </section>
+
+        <section>
+            <h2>Key Characteristics</h2>
+            <p>✅ Data accuracy</p>
+            <p>✅ Reliability</p>
+            <p>✅ Consistency</p>
+            <p>✅ Supports many users at the same time</p>
+            <p>✅ Prevents data corruption</p>
+        </section>
+
+        <section>
+            <h2>Real-World Examples</h2>
+            <ul>
+                <li>Banking apps</li>
+                <li>E-commerce websites</li>
+                <li>Reservation systems</li>
+                <li>Payroll systems</li>
+                <li>Hospital management systems</li>
+                <li>CRM and ERP systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Transactional vs Non-Transactional</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transactional App</th>
+                        <th>Non-Transactional App</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Banking app</td>
+                        <td>Blog website</td>
+                    </tr>
+                    <tr>
+                        <td>Online shopping</td>
+                        <td>News website</td>
+                    </tr>
+                    <tr>
+                        <td>Ticket booking</td>
+                        <td>Portfolio website</td>
+                    </tr>
+                    <tr>
+                        <td>Payment system</td>
+                        <td>Documentation site</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>For Full-Stack Developers</h2>
+            <p>A transactional application usually involves:</p>
+            <ul>
+                <li>Frontend: React, React Native, Angular</li>
+                <li>Backend: Node.js, Java, .NET, Python</li>
+                <li>Database: MySQL, PostgreSQL, MongoDB</li>
+                <li>Transaction handling:</li>
+            </ul>
+
+            <pre><code>
+BEGIN;
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+COMMIT;
+            </code></pre>
+            <p>If something fails:</p>
+            <pre><code>
+ROLLBACK;
+            </code></pre>
+            <p>Simple Definition</p>
+            <p>A transactional application is an application that performs important business operations where data must remain correct, complete, and consistent even when errors occur.</p>
+            <p>Examples: banking apps, payment systems, e-commerce platforms, and booking systems.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

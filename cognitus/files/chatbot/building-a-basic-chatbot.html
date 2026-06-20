@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Building a Chatbot</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Building a Chatbot</h1>
+                    <p class="subtitle">A chatbot is simply a program that:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>A chatbot is simply a program that:</h2>
+            <ol>
+                <li>Receives a user's message.</li>
+                <li>Understands what the user wants.</li>
+                <li>Generates a response.</li>
+                <li>Sends the response back.</li>
+            </ol>
+
+            <pre><code>
+User
+  ↓
+Mobile App / Website
+  ↓
+Backend Server
+  ↓
+AI Model (GPT, Claude, Gemini)
+  ↓
+Response
+  ↓
+User
+            </code></pre>
+            <p>Example</p>
+            <p>User types:</p>
+            <pre><code>
+What is the weather today?
+            </code></pre>
+            <p>Chatbot receives:</p>
+            <pre><code>
+const message = "What is the weather today?";
+            </code></pre>
+            <p>Send to AI:</p>
+            <pre><code>
+const response = await openai.chat.completions.create({
+    model: "gpt-5",
+    messages: [
+        {
+        role: "user",
+        content: message
+        }
+    ]
+});
+            </code></pre>
+            <p>AI returns:</p>
+            <pre><code>
+Today is sunny with a high of 30°C.
+            </code></pre>
+            <p>Display to user.</p>
+        </section>
+
+        <section>
+            <h2>Building a Basic Chatbot</h2>
+            <p>Frontend (React Native)</p>
+            <p>User enters a message:</p>
+            <pre><code>
+&lt;TextInput /&gt;
+&lt;Button title="Send" /&gt;
+            </code></pre>
+
+            <p>Send message to API:</p>
+            <pre><code>
+axios.post("/chat", {
+    message: userMessage
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <p>Backend (Node.js + Express)</p>
+            <pre><code>
+app.post("/chat", async (req, res) => {
+    const { message } = req.body;
+    
+    const aiResponse = await askAI(message);
+    
+    res.json({
+        reply: aiResponse
+    });
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>AI Layer</h2>
+            <p>Use an AI service such as:</p>
+            <ul>
+                <li>OpenAI</li>
+                <li>Google Gemini</li>
+                <li>Anthropic Claude</li>
+            </ul>
+            <p>The AI generates the answer.</p>
+        </section>
+
+        <section>
+            <h2>Advanced Chatbot Features</h2>
+            <p>Memory</p>
+            <p>Store previous conversations:</p>
+            <pre><code>
+[
+  { role: "user", content: "My name is Paul" },
+  { role: "assistant", content: "Nice to meet you" }
+]
+            </code></pre>
+            <p>Later:</p>
+            <pre><code>
+User: What's my name?
+Bot: Your name is Paul.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Knowledge Base (RAG)</h2>
+            <p>Store company documents in:</p>
+            <ul>
+                <li>MongoDB</li>
+                <li>Pinecone</li>
+                <li>PostgreSQL</li>
+                <li>Elasticsearch</li>
+            </ul>
+            <p>When user asks:</p>
+            <pre><code>
+What is our vacation policy?
+            </code></pre>
+            <p>Bot searches documents and answers from company data.</p>
+        </section>
+
+        <section>
+            <h2>Real Example for Your Stack</h2>
+            <p>Since you use React Native + AWS Lambda + Node.js, a common architecture is:</p>
+            <pre><code>
+React Native App
+      ↓
+API Gateway
+      ↓
+AWS Lambda (Node.js)
+      ↓
+OpenAI API
+      ↓
+MongoDB (chat history)
+            </code></pre>
+            <p>Flow:</p>
+            <ol>
+                <li>User sends message from React Native.</li>
+                <li>API Gateway receives request.</li>
+                <li>Lambda calls AI model.</li>
+                <li>Save conversation in MongoDB.</li>
+                <li>Return answer to app.</li>
+            </ol>
+            <p>This is essentially how customer support bots, AI assistants, and knowledge-base chatbots work. The AI model provides the intelligence, while your app handles the UI, user accounts, and conversation storage.</p>
+        </section>
+
+        <section>
+            <p>Yes. Using an AI model like ChatGPT behind your own application is one of the most common industry approaches today.</p>
+            <p>A typical production architecture looks like:</p>
+            <pre><code>
+React Native / Web App
+        ↓
+Backend API
+        ↓
+AI Service (GPT, Claude, Gemini)
+        ↓
+Database / Vector Database
+        ↓
+Response
+            </code></pre>
+        </section>
+        <section>
+            <p>Large companies often use one of these patterns:</p>
+            <p>1. Direct LLM Integration (Simple)</p>
+            <p>Good for prototypes and internal tools.</p>
+            <pre><code>
+User → App → GPT → Response
+            </code></pre>
+            <p>Examples:</p>
+            <ul>
+                <li>Simple customer support bots</li>
+                <li>FAQ assistants</li>
+                <li>Internal productivity tools</li>
+            </ul>
+            <p>The AI doesn't rely only on training data. It searches your company's documents, policies, manuals, CRM data, etc., before answering.</p>
+            <p>Many enterprise products use this approach:</p>
+            <ul>
+                <li>Microsoft Copilot</li>
+                <li>Salesforce Einstein</li>
+                <li>Notion AI</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. AI Agent Architecture</h2>
+            <p>Increasingly common in 2025–2026.</p>
+            <pre><code>
+User
+ ↓
+Agent
+ ├─ Search Database
+ ├─ Call APIs
+ ├─ Send Email
+ ├─ Query CRM
+ └─ Generate Response
+            </code></pre>
+            <p>Instead of only chatting, the AI performs actions.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Booking appointments</li>
+                <li>Creating support tickets</li>
+                <li>Updating Salesforce records</li>
+                <li>Generating reports</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>For Your Background</h2>
+            <p>Since you're building products with React Native, AWS Lambda, Node.js, and MongoDB, a modern production setup would be:</p>
+            <pre><code>
+React Native
+     ↓
+API Gateway
+     ↓
+Lambda (Node.js)
+     ↓
+GPT / Claude
+     ↓
+MongoDB Atlas
+     ↓
+Vector Database
+            </code></pre>
+            <p>Where:</p>
+            <ul>
+                <li>MongoDB stores users and chat history.</li>
+                <li>A vector database stores embeddings for document search.</li>
+                <li>GPT generates responses.</li>
+                <li>Lambda orchestrates everything.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What Large Companies Do</h2>
+            <p>Companies rarely use ChatGPT alone.</p>
+            <p>They typically combine:</p>
+            <ul>
+                <li>An LLM (GPT, Claude, Gemini)</li>
+                <li>RAG/document search</li>
+                <li>User authentication</li>
+                <li>Conversation memory</li>
+                <li>Business APIs</li>
+                <li>Monitoring and logging</li>
+                <li>Guardrails and security</li>
+            </ul>
+            <p>So the industry-standard answer is:</p>
+            <p>✅ Using ChatGPT (or another LLM) is standard.</p>
+            <p>✅ Using ChatGPT + RAG + your own backend is the current enterprise standard.</p>
+            <p>✅ Using AI agents that can call tools and company APIs is where many new systems are heading.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

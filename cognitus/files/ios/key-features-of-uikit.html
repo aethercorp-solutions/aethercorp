@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Key Features of UIKit</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Key Features of UIKit</h1>
+                    <p class="subtitle">UIKit is the primary UI framework used for building iOS apps before SwiftUI. It is still heavily used in production apps, especially for large-scale enterprise and legacy applications.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Core UIKit Features</h2>
+            <p>1. View-Based Architecture</p>
+            <p>UIKit is built around:</p>
+            <ul>
+                <li>UIView</li>
+                <li>UIViewController</li>
+            </ul>
+            <p>Everything visible on screen is a UIView.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Buttons</li>
+                <li>Labels</li>
+                <li>Images</li>
+                <li>Text fields</li>
+                <li>Tables</li>
+                <li>Collection views</li>
+            </ul>
+
+            <p>Example Hierarchy</p>
+            <pre><code>
+UIViewController
+ └── UIView
+      ├── UILabel
+      ├── UIButton
+      └── UIImageView
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. View Controllers</h2>
+            <p>UIViewController manages:</p>
+            <ul>
+                <li>Screen lifecycle</li>
+                <li>Navigation</li>
+                <li>User interaction</li>
+                <li>Data updates</li>
+            </ul>
+            <p>Important Lifecycle Methods</p>
+            <pre><code>
+override func viewDidLoad() {
+    super.viewDidLoad()
+}
+
+override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+}
+            </code></pre>
+            <p>Used for:</p>
+            <ul>
+                <li>API calls</li>
+                <li>UI setup</li>
+                <li>State restoration</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Storyboards & XIBs</h2>
+            <p>UIKit supports:</p>
+            <ul>
+                <li>Drag-and-drop UI design</li>
+                <li>Interface Builder</li>
+            </ul>
+            <p>Options</p>
+            <ul>
+                <li>Storyboards</li>
+                <li>XIB/Nib files</li>
+                <li>Programmatic UI</li>
+            </ul>
+            <p>Many modern teams now prefer programmatic UIKit for scalability.</p>
+        </section>
+
+        <section>
+            <h2>4. Auto Layout</h2>
+            <p>Auto Layout creates responsive UI for:</p>
+            <ul>
+                <li>Different iPhone sizes</li>
+                <li>iPad</li>
+                <li>Rotation</li>
+                <li>Dynamic Type</li>
+            </ul>
+            <p>NSLayoutConstraint Example</p>
+            <pre><code>
+button.translatesAutoresizingMaskIntoConstraints = false
+
+NSLayoutConstraint.activate([
+    button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+    button.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+])
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Navigation System</h2>
+            <p>UIKit provides:</p>
+            <p>UINavigationController</p>
+            <p>Stack-based navigation.</p>
+            <pre><code>
+navigationController?.pushViewController(detailVC, animated: true)
+            </code></pre>
+            <p>UITabBarController</p>
+            <p>Bottom tab navigation.</p>
+            <p>Modal Presentation</p>
+            <pre><code>
+present(vc, animated: true)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Table Views</h2>
+            <p>UITableView is one of UIKit’s most powerful components.</p>
+            <p>Used for:</p>
+            <ul>
+                <li>Feeds</li>
+                <li>Chats</li>
+                <li>Settings</li>
+                <li>Lists</li>
+            </ul>
+            <p>Features</p>
+            <ul>
+                <li>Cell reuse</li>
+                <li>Dynamic loading</li>
+                <li>Sections</li>
+                <li>Swipe actions</li>
+                <li>Editing</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Collection Views</h2>
+            <p>UICollectionView creates:</p>
+            <ul>
+                <li>Grids</li>
+                <li>Pinterest layouts</li>
+                <li>Carousels</li>
+                <li>Complex dashboards</li>
+            </ul>
+            <p>Very flexible and performant.</p>
+        </section>
+
+        <section>
+            <h2>8. Animations</h2>
+            <p>UIKit supports:</p>
+            <ul>
+                <li>Simple animations</li>
+                <li>Spring animations</li>
+                <li>Transition animations</li>
+            </ul>
+            <p>Example</p>
+            <pre><code>
+UIView.animate(withDuration: 0.3) {
+    self.view.alpha = 0
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Gesture Recognizers</h2>
+            <p>UIKit handles:</p>
+            <ul>
+                <li>Tap</li>
+                <li>Swipe</li>
+                <li>Pan</li>
+                <li>Pinch</li>
+                <li>Long press</li>
+            </ul>
+            <p>Example</p>
+            <pre><code>
+let tap = UITapGestureRecognizer(
+    target: self,
+    action: #selector(handleTap)
+)
+
+view.addGestureRecognizer(tap)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Event Handling</h2>
+            <p>UIKit uses:</p>
+            <ul>
+                <li>Target-action pattern</li>
+                <li>Delegates</li>
+                <li>Notifications</li>
+            </ul>
+            <p>Button Example</p>
+            <pre><code>
+button.addTarget(
+    self,
+    action: #selector(buttonTapped),
+    for: .touchUpInside
+)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>11. Delegation Pattern</h2>
+            <p>One of UIKit’s biggest architectural concepts.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>UITableViewDelegate</li>
+                <li>UITextFieldDelegate</li>
+                <li>UICollectionViewDelegate</li>
+            </ul>
+            <p>Example</p>
+            <pre><code>
+class ViewController: UIViewController, UITableViewDelegate {
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>12. Data Sources</h2>
+            <p>UIKit separates:</p>
+            <ul>
+                <li>UI</li>
+                <li>Data logic</li>
+            </ul>
+            <p>Example:</p>
+            <ul>
+                <li>UITableViewDataSource</li>
+            </ul>
+            <pre><code>
+func tableView(
+    _ tableView: UITableView,
+    numberOfRowsInSection section: Int
+) -> Int {
+    items.count
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. Dark Mode Support</h2>
+            <p>UIKit supports:</p>
+            <ul>
+                <li>Dynamic colors</li>
+                <li>Trait collections</li>
+            </ul>
+            <pre><code>
+label.textColor = .label
+view.backgroundColor = .systemBackground
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>14. Accessibility</h2>
+            <p>Built-in accessibility:</p>
+            <ul>
+                <li>VoiceOver</li>
+                <li>Dynamic text</li>
+                <li>Accessibility labels</li>
+            </ul>
+            <pre><code>
+button.accessibilityLabel = "Login Button"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>15. Multitasking & iPad Support</h2>
+            <p>UIKit supports:</p>
+            <ul>
+                <li>Split View</li>
+                <li>Slide Over</li>
+                <li>Multi-window apps</li>
+            </ul>
+            <p>Especially important for iPad apps.</p>
+        </section>
+
+        <section>
+            <h2>16. Keyboard Handling</h2>
+            <p>UIKit provides:</p>
+            <ul>
+                <li>Keyboard notifications</li>
+                <li>Input accessory views</li>
+                <li>First responder system</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>17. Advanced Graphics</h2>
+            <p>UIKit integrates with:</p>
+            <ul>
+                <li>Core Animation</li>
+                <li>Core Graphics</li>
+                <li>Metal</li>
+                <li>AVFoundation</li>
+            </ul>
+            <p>Allows:</p>
+            <ul>
+                <li>Custom drawing</li>
+                <li>Video rendering</li>
+                <li>High-performance animation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>18. Reusable Components</h2>
+            <p>UIKit encourages reusable UI:</p>
+            <ul>
+                <li>Custom views</li>
+                <li>Custom cells</li>
+                <li>Base controllers</li>
+            </ul>
+            <p>Useful in enterprise-scale apps.</p>
+        </section>
+
+        <section>
+            <h2>19. Mature Ecosystem</h2>
+            <p>UIKit advantages:</p>
+            <ul>
+                <li>Battle-tested</li>
+                <li>Huge community</li>
+                <li>Massive third-party library support</li>
+                <li>Stable production framework</li>
+            </ul>
+            <p>Many large apps still rely heavily on UIKit:</p>
+            <ul>
+                <li>Instagram</li>
+                <li>Facebook</li>
+                <li>Banking apps</li>
+                <li>Enterprise systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>20. Interoperability with SwiftUI</h2>
+            <p>Modern apps often combine UIKit + SwiftUI.</p>
+            <p>Example:</p>
+            <ul>
+                <li>UIKit navigation</li>
+                <li>SwiftUI components</li>
+            </ul>
+            <p>Hosting SwiftUI in UIKit</p>
+            <pre><code>
+let hosting = UIHostingController(
+    rootView: MySwiftUIView()
+)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>UIKit Architecture Patterns</h2>
+            <p>Common patterns used with UIKit:</p>
+            <ul>
+                <li>MVC</li>
+                <li>MVVM</li>
+                <li>Coordinator Pattern</li>
+                <li>VIPER</li>
+                <li>Clean Architecture</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>When UIKit Is Best</h2>
+            <p>UIKit is excellent for:</p>
+            <ul>
+                <li>Large production apps</li>
+                <li>Enterprise apps</li>
+                <li>Complex navigation</li>
+                <li>Advanced animations</li>
+                <li>Legacy app maintenance</li>
+                <li>Highly customized interfaces</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

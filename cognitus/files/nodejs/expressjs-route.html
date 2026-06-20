@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Express.js Route</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Express.js Route</h1>
+                    <p class="subtitle">
+                        Express.js is a minimal and flexible web application framework for Node.js. It helps developers build:
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Official site: Express.js</h2>
+            <ul>
+                <li>Web servers</li>
+                <li>REST APIs</li>
+                <li>Backend applications</li>
+                <li>Full-stack web apps</li>
+                <li>Real-time services</li>
+            </ul>
+
+            It simplifies handling:
+            <ul>
+                <li>HTTP requests/responses</li>
+                <li>Routing</li>
+                <li>Middleware</li>
+                <li>APIs</li>
+                <li>Static files</li>
+                <li>Authentication</li>
+                <li>Error handling</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why Express.js Exists</h2>
+            <p>Using raw Node.js HTTP modules is verbose.</p>
+            <p>Example without Express:</p>
+            <pre><code>
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+  if (req.url === '/') {
+    res.end('Hello');
+  }
+});
+
+server.listen(3000);
+            </code></pre>
+
+            <p>Express simplifies this dramatically:</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send('Hello');
+});
+
+app.listen(3000);
+            </code></pre>
+            <p>Express removes boilerplate and provides a clean structure.</p>
+        </section>
+
+        <section>
+            <h2>Core Concepts of Express.js</h2>
+            <p>1. Creating an Express Application</p>
+            <p>Install:</p>
+            <pre><code>
+npm install express
+            </code></pre>
+            <p>Basic app:</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+app.listen(3000, () => {
+  console.log('Server running');
+});
+            </code></pre>
+            <p>Here:</p>
+            <ul>
+                <li>express() creates the app</li>
+                <li>app.listen() starts the server</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Routing</h2>
+            <p>Routing means defining how the server responds to requests.</p>
+            <p>HTTP Methods</p>
+            <p>Common methods:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GET</td>
+                        <td>Retrieve data</td>
+                    </tr>
+                    <tr>
+                        <td>POST</td>
+                        <td>Create data</td>
+                    </tr>
+                    <tr>
+                        <td>PUT</td>
+                        <td>Update entire resource</td>
+                    </tr>
+                    <tr>
+                        <td>PATCH</td>
+                        <td>Partial update</td>
+                    </tr>
+                    <tr>
+                        <td>DELETE</td>
+                        <td>Remove data</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Example:</p>
+            <pre><code>
+app.get('/users', (req, res) => {
+    res.send('Get users');
+});
+
+app.post('/users', (req, res) => {
+    res.send('Create user');
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Request and Response Objects</h2>
+            <p>Every route gets:</p>
+            <pre><code>
+(req, res)
+            </code></pre>
+            <p>Request (req)</p>
+            <p>Contains incoming request data.</p>
+            <p>Examples:</p>
+            <pre><code>
+req.params
+req.query
+req.body
+req.headers
+            </code></pre>
+
+            <p>Example:</p>
+            <pre><code>
+app.get('/users/:id', (req, res) => {
+    console.log(req.params.id);
+});
+            </code></pre>
+
+            <p>If URL is:</p>
+            <pre><code>
+/users/10
+            </code></pre>
+
+            <p>Then:</p>
+            <pre><code>
+req.params.id === "10"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Response (res)</h2>
+            <p>Used to send data back.</p>
+            <p>Examples:</p>
+            <pre><code>
+res.send()
+res.json()
+res.status()
+res.redirect()
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+res.status(200).json({
+    message: 'Success'
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Middleware (Most Important Concept)</h2>
+            <p>Middleware functions run during the request-response cycle.</p>
+            <p>They can:</p>
+            <ul>
+                <li>Modify requests</li>
+                <li>Validate users</li>
+                <li>Log requests</li>
+                <li>Handle authentication</li>
+                <li>Parse JSON</li>
+                <li>Handle errors</li>
+            </ul>
+            <p>Structure:</p>
+            <pre><code>
+(req, res, next)
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+app.use((req, res, next) => {
+    console.log('Request received');
+    next();
+});
+            </code></pre>
+            <p>next() passes control to the next middleware.</p>
+        </section>
+
+        <section>
+            <h2>Types of Middleware</h2>
+            <p>Application Middleware</p>
+            <pre><code>
+app.use(...)
+            </code></pre>
+
+            <p>Route Middleware</p>
+            <pre><code>
+app.get('/admin', middlewareFunction);
+            </code></pre>
+
+            <p>Error Middleware</p>
+            <pre><code>
+app.use((err, req, res, next) => {
+    res.status(500).send('Error');
+});
+            </code></pre>
+
+            <p>Built-in Middleware</p>
+            <p>Express includes:</p>
+            <pre><code>
+express.json()
+express.static()
+express.urlencoded()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Parsing Request Body</h2>
+            <p>To read JSON data:</p>
+            <pre><code>
+app.use(express.json());
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+app.post('/users', (req, res) => {
+    console.log(req.body);
+});
+            </code></pre>
+
+            <p>Input:</p>
+            <pre><code>
+{
+    "name": "John"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Serving Static Files</h2>
+            <p>Example:</p>
+            <pre><code>
+app.use(express.static('public'));
+            </code></pre>
+            <p>If public/logo.png exists:</p>
+            <pre><code>
+http://localhost:3000/logo.png
+            </code></pre>
+            <p>works automatically.</p>
+        </section>
+
+        <section>
+            <h2>7. Route Parameters</h2>
+            <p>Dynamic routes:</p>
+            <pre><code>
+app.get('/products/:id', (req, res) => {
+    res.send(req.params.id);
+});
+            </code></pre>
+            <p>URL:</p>
+            <pre><code>
+/products/50
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+50
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Query Parameters</h2>
+            <p>Example:</p>
+            <pre><code>
+/users?page=2
+            </code></pre>
+            <p>Code:</p>
+            <pre><code>
+req.query.page
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. REST API with Express</h2>
+            <p>Example:</p>
+            <pre><code>
+const users = [];
+
+app.get('/users', (req, res) => {
+  res.json(users);
+});
+
+app.post('/users', (req, res) => {
+  users.push(req.body);
+  res.json(users);
+});
+            </code></pre>
+            <p>Express is extremely popular for REST APIs.</p>
+        </section>
+
+        <section>
+            <h2>10. Express Router</h2>
+            <p>Large apps split routes into modules.</p>
+            <p>users.js</p>
+            <pre><code>
+const router = require('express').Router();
+
+router.get('/', (req, res) => {
+  res.send('Users');
+});
+
+module.exports = router;
+            </code></pre>
+            <p>app.js</p>
+            <pre><code>
+const usersRouter = require('./users');
+
+app.use('/users', usersRouter);
+            </code></pre>
+            <p>This improves scalability.</p>
+        </section>
+
+        <section>
+            <h2>11. Error Handling</h2>
+            <p>Centralized error handling:</p>
+            <pre><code>
+app.use((err, req, res, next) => {
+    console.error(err);
+    
+    res.status(500).json({
+        error: 'Internal Server Error'
+    });
+});
+            </code></pre>
+            <p>Throw error:</p>
+            <pre><code>
+next(new Error('Something failed'));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>12. Template Engines</h2>
+            <p>Express can render HTML dynamically.</p>
+            <p>Popular engines:</p>
+            <ul>
+                <li>EJS</li>
+                <li>Pug</li>
+                <li>Handlebars</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+app.set('view engine', 'ejs');
+
+res.render('home', {
+  name: 'John'
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. Authentication</h2>
+            <p>Often used with:</p>
+            <ul>
+                <li>JWT</li>
+                <li>Sessions</li>
+                <li>OAuth</li>
+            </ul>
+            <p>JWT example:</p>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+            </code></pre>
+
+            <p>Middleware example:</p>
+            <pre><code>
+function auth(req, res, next) {
+    const token = req.headers.authorization;
+    
+    if (!token) {
+        return res.status(401).send('Unauthorized');
+    }
+    
+    next();
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>14. Database Integration</h2>
+            <p>Express commonly works with:</p>
+            <ul>
+                <li>MongoDB</li>
+                <li>PostgreSQL</li>
+                <li>MySQL</li>
+                <li>Redis</li>
+            </ul>
+
+            <p>Popular ORM/ODM:</p>
+            <ul>
+                <li>Mongoose</li>
+                <li>Prisma</li>
+                <li>Sequelize</li>
+            </ul>
+            <p>Example with MongoDB:</p>
+            <pre><code>
+const mongoose = require('mongoose');
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>15. Folder Structure</h2>
+            <p>Typical structure:</p>
+            <pre><code>
+project/
+│
+├── routes/
+├── controllers/
+├── models/
+├── middleware/
+├── services/
+├── config/
+├── public/
+├── views/
+├── app.js
+└── package.json
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>16. Express Request Lifecycle</h2>
+            <p>Flow:</p>
+            <pre><code>
+Client Request
+   ↓
+Middleware
+   ↓
+Route Handler
+   ↓
+Response
+            </code></pre>
+            <p>More detailed:</p>
+            <pre><code>
+Request
+ → App Middleware
+ → Route Middleware
+ → Controller
+ → Error Handler
+ → Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>17. Example Full API</h2>
+            <pre><code>
+const express = require('express');
+
+const app = express();
+
+app.use(express.json());
+
+const users = [];
+
+app.get('/users', (req, res) => {
+  res.json(users);
+});
+
+app.post('/users', (req, res) => {
+  users.push(req.body);
+
+  res.status(201).json({
+    message: 'User created'
+  });
+});
+
+app.listen(3000, () => {
+  console.log('Server started');
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Advantages of Express.js</h2>
+            <p>Simple</p>
+            <p>Minimal syntax.</p>
+
+            <p>Fast Development</p>
+            <p>Easy to create APIs quickly.</p>
+
+            <p>Huge Ecosystem</p>
+            <p>Many middleware/plugins.</p>
+
+            <p>Flexible</p>
+            <p>No strict architecture.</p>
+
+            <p>Massive Community</p>
+            <p>Lots of tutorials and packages.</p>
+        </section>
+
+        <section>
+            <h2>Disadvantages</h2>
+            <p>Minimal by Default</p>
+            <p>You configure many things manually.</p>
+            <p>Callback-heavy</p>
+            <p>Older codebases can become messy.</p>
+            <p>Not Opinionated</p>
+            <p>Can lead to inconsistent project structures.</p>
+        </section>
+
+        <section>
+            <h2>Express vs Other Frameworks</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Framework</th>
+                        <th>Language</th>
+                        <th>Style</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Express</td>
+                        <td>JavaScript</td>
+                        <td>Minimal</td>
+                    </tr>
+                    <tr>
+                        <td>NestJS</td>
+                        <td>TypeScript</td>
+                        <td>Enterprise</td>
+                    </tr>
+                    <tr>
+                        <td>Koa</td>
+                        <td>JavaScript</td>
+                        <td>Lightweight</td>
+                    </tr>
+                    <tr>
+                        <td>Fastify</td>
+                        <td>JavaScript</td>
+                        <td>High performance</td>
+                    </tr>
+                    <tr>
+                        <td>Django</td>
+                        <td>Python</td>
+                        <td>Batteries included</td>
+                    </tr>
+                    <tr>
+                        <td>Spring Boot</td>
+                        <td>Java</td>
+                        <td>Enterprise</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Express Middleware Ecosystem</h2>
+            <p>Popular middleware:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Package</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>cors</td>
+                        <td>Cross-origin requests</td>
+                    </tr>
+                    <tr>
+                        <td>morgan</td>
+                        <td>Logging</td>
+                    </tr>
+                    <tr>
+                        <td>helmet</td>
+                        <td>Security headers</td>
+                    </tr>
+                    <tr>
+                        <td>bcrypt</td>
+                        <td>Password hashing</td>
+                    </tr>
+                    <tr>
+                        <td>jsonwebtoken</td>
+                        <td>JWT auth</td>
+                    </tr>
+                    <tr>
+                        <td>multer</td>
+                        <td>File uploads</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Install example:</p>
+            <pre><code>
+npm install cors helmet morgan
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real-World Use Cases</h2>
+            <p>Express powers:</p>
+            <ul>
+                <li>REST APIs</li>
+                <li>Backend for React/Vue/Angular apps</li>
+                <li>Authentication servers</li>
+                <li>Microservices</li>
+                <li>Admin dashboards</li>
+                <li>Real-time chat apps (with Socket.IO)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Express + Frontend Flow</h2>
+            <p>Typical architecture:</p>
+            <pre><code>
+Frontend (React)
+       ↓
+Express API
+       ↓
+Database
+            </code></pre>
+            <p>Example:</p>
+            <ul>
+                <li>React sends request</li>
+                <li>Express processes request</li>
+                <li>Database queried</li>
+                <li>JSON returned</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Performance</h2>
+            <p>Express is:</p>
+            <ul>
+                <li>Lightweight</li>
+                <li>Non-blocking</li>
+                <li>Event-driven</li>
+            </ul>
+            <p>Because Node.js uses an event loop.</p>
+            <p>Good for:</p>
+            <ul>
+                <li>APIs</li>
+                <li>Real-time apps</li>
+                <li>I/O-heavy applications</li>
+            </ul>
+            <p>Less ideal for:</p>
+            <ul>
+                <li>CPU-heavy computations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Modern Express Best Practices</h2>
+            <p>Use Async/Await</p>
+            <pre><code>
+app.get('/users', async (req, res) => {
+    const users = await User.find();
+    res.json(users);
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Use Environment Variables</h2>
+            <pre><code>
+process.env.PORT
+            </code></pre>
+            <p>Use:</p>
+            <pre><code>
+npm install dotenv
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Separate Concerns</h2>
+            <p>Keep:</p>
+            <ul>
+                <li>Routes</li>
+                <li>Controllers</li>
+                <li>Services</li>
+                <li>Models</li>
+            </ul>
+            <p>separate.</p>
+        </section>
+
+        <section>
+            <h2>Use Validation</h2>
+            <p>Libraries:</p>
+            <ul>
+                <li>Joi</li>
+                <li>Zod</li>
+                <li>express-validator</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Minimal Production Setup</h2>
+            <p>Common stack:</p>
+            <ul>
+                <li>Express</li>
+                <li>MongoDB/PostgreSQL</li>
+                <li>JWT</li>
+                <li>Helmet</li>
+                <li>CORS</li>
+                <li>Rate limiting</li>
+                <li>Logging</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Learning Path</h2>
+            <p>Recommended order:</p>
+            <ol>
+                <li>Learn Node.js basics</li>
+                <li>Learn Express routing</li>
+                <li>Learn middleware</li>
+                <li>Build REST APIs</li>
+                <li>Connect databases</li>
+                <li>Add authentication</li>
+                <li>Learn deployment</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Official Documentation</h2>
+            <ul>
+                <li>Express.js Documentation</li>
+                <li>Node.js Official Site</li>
+                <li>npm Registry</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Typical Express.js Application</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Typical Express.js Application</h1>
+                    <p class="subtitle">In a typical Express.js application, these layers have different responsibilities:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. App (app.js / server.js)</h2>
+            <p>The app is the main entry point of your backend.</p>
+            <p>It:</p>
+            <ul>
+                <li>creates the Express application</li>
+                <li>configures global middleware</li>
+                <li>connects routes</li>
+                <li>starts the server</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+app.use('/auth', authRoutes);
+
+app.listen(3000);
+            </code></pre>
+            <p>Think of it as:</p>
+            <p>“The main building where everything is connected.”</p>
+        </section>
+
+        <section>
+            <h2>2. Router</h2>
+            <p>A router organizes endpoints into modules.</p>
+            <p>Instead of putting all APIs in one file, routers group related routes.</p>
+            <p>Example:</p>
+            <pre><code>
+const router = require('express').Router();
+
+router.post('/login', authController.login);
+router.post('/register', authController.register);
+
+module.exports = router;
+            </code></pre>
+            <p>Mounted in app:</p>
+            <pre><code>
+app.use('/auth', authRoutes);
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+POST /auth/login
+POST /auth/register
+            </code></pre>
+            <p>Think of router as:</p>
+            <p>“Traffic director for URLs.”</p>
+            <p>It decides:</p>
+            <ul>
+                <li>which endpoint exists</li>
+                <li>which middleware runs</li>
+                <li>which controller handles the request</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Middleware</h2>
+            <p>Middleware runs between request and response.</p>
+            <p>It can:</p>
+            <ul>
+                <li>inspect request</li>
+                <li>modify request</li>
+                <li>authenticate users</li>
+                <li>validate data</li>
+                <li>log requests</li>
+                <li>stop request</li>
+                <li>continue request</li>
+            </ul>
+            <p>Middleware signature:</p>
+            <pre><code>
+(req, res, next)
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+const authMiddleware = (req, res, next) => {
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(401).json({
+            message: 'Unauthorized'
+        });
+    }
+
+    req.user = decodedUser;
+
+    next();
+};
+            </code></pre>
+            <p>Used like:</p>
+            <pre><code>
+router.get('/profile', authMiddleware, profileController);
+            </code></pre>
+            <p>Flow:</p>
+            <pre><code>
+Request
+   ↓
+Middleware
+   ↓
+Controller
+   ↓
+Response
+            </code></pre>
+            <p>Think of middleware as:</p>
+            <p>“Security guards or inspectors in the hallway.”</p>
+            <p>There are several middleware types:</p>
+            <p>Global Middleware</p>
+            <p>Runs for every request.</p>
+            <pre><code>
+app.use(express.json());
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Route Middleware</h2>
+            <p>Runs only on specific routes.</p>
+            <pre><code>
+router.get('/profile', authMiddleware, controller);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Error Middleware</h2>
+            <p>Handles errors centrally.</p>
+            <pre><code>
+app.use((err, req, res, next) => {
+    res.status(500).json({
+        message: err.message
+    });
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Controller</h2>
+            <p>Controller handles the HTTP request/response logic.</p>
+            <p>It:</p>
+            <ul>
+                <li>receives request data</li>
+                <li>calls services</li>
+                <li>returns API response</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+exports.login = async (req, res) => {
+    const user = await authService.login(req.body);
+
+    return res.json({
+        status: true,
+        data: user
+    });
+};
+            </code></pre>
+            <p>Controller should NOT contain:</p>
+            <ul>
+                <li>database queries everywhere</li>
+                <li>large business logic</li>
+                <li>reusable core logic</li>
+            </ul>
+            <p>Think of controller as:</p>
+            <p>“The waiter taking orders and returning food.”</p>
+            <p>Responsibilities:</p>
+            <ul>
+                <li>request parsing</li>
+                <li>response formatting</li>
+                <li>calling services</li>
+                <li>handling HTTP status codes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Service</h2>
+            <p>Service contains the business logic.</p>
+            <p>This is where the actual application behavior happens.</p>
+            <p>Example:</p>
+            <pre><code>
+exports.login = async ({ email, password }) => {
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    const valid = await bcrypt.compare(password, user.password);
+
+    if (!valid) {
+        throw new Error('Invalid password');
+    }
+
+    return generateToken(user);
+};
+            </code></pre>
+            <p>Think of service as:</p>
+            <p>“The kitchen doing the real work.”</p>
+            <p>Services should:</p>
+            <ul>
+                <li>contain reusable logic</li>
+                <li>interact with database</li>
+                <li>call external APIs</li>
+                <li>handle business rules</li>
+            </ul>
+            <p>Services should NOT:</p>
+            <ul>
+                <li>send HTTP responses</li>
+                <li>use res.json()</li>
+                <li>depend heavily on Express</li>
+            </ul>
+            <p>Good services are reusable outside HTTP:</p>
+            <ul>
+                <li>cron jobs</li>
+                <li>queues</li>
+                <li>CLI scripts</li>
+                <li>microservices</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Full Flow Example</h2>
+            <p>Request arrives</p>
+            <pre><code>
+POST /auth/login
+            </code></pre>
+
+            <p>App receives request</p>
+            <pre><code>
+app.use('/auth', authRoutes);
+            </code></pre>
+
+            <p>Router matches route</p>
+            <pre><code>
+router.post('/login', validateLogin, authController.login);
+            </code></pre>
+
+            <p>Middleware executes</p>
+            <pre><code>
+validateLogin
+            </code></pre>
+            <p>Checks:</p>
+            <ul>
+                <li>email exists</li>
+                <li>password exists</li>
+            </ul>
+            <p>Then:</p>
+            <pre><code>
+next();
+            </code></pre>
+
+            <p>Controller executes</p>
+            <pre><code>
+authController.login
+            </code></pre>
+            <p>Controller:</p>
+            <ul>
+                <li>gets request body</li>
+                <li>calls service</li>
+            </ul>
+            <pre><code>
+const token = await authService.login(req.body);
+            </code></pre>
+
+            <p>Service executes</p>
+            <pre><code>
+authService.login
+            </code></pre>
+            <p>Service:</p>
+            <ul>
+                <li>queries database</li>
+                <li>validates password</li>
+                <li>generates JWT</li>
+            </ul>
+            <p>Returns result to controller.</p>
+
+            <p>Controller sends response</p>
+            <pre><code>
+res.json({
+    token
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Clean Architecture Example</h2>
+            <p>Structure:</p>
+            <pre><code>
+src/
+ ├── app.js
+ ├── routes/
+ │    └── auth.routes.js
+ ├── controllers/
+ │    └── auth.controller.js
+ ├── middleware/
+ │    └── auth.middleware.js
+ ├── services/
+ │    └── auth.service.js
+ ├── models/
+ │    └── user.model.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real Analogy</h2>
+            <p>Imagine a restaurant:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Analogy</th>
+                        <th>Responsibility</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>App</td>
+                        <td>Building</td>
+                        <td>Connects everything</td>
+                    </tr>
+                    <tr>
+                        <td>Router</td>
+                        <td>Receptionist</td>
+                        <td>Directs customers</td>
+                    </tr>
+                    <tr>
+                        <td>Middleware</td>
+                        <td>Security guard</td>
+                        <td>Checks permissions</td>
+                    </tr>
+                    <tr>
+                        <td>Controller</td>
+                        <td>Waiter</td>
+                        <td>Takes order</td>
+                    </tr>
+                    <tr>
+                        <td>Service</td>
+                        <td>Kitchen</td>
+                        <td>Cooks food</td>
+                    </tr>
+                    <tr>
+                        <td>Database</td>
+                        <td>Storage room</td>
+                        <td>Stores ingredients</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <section>
+            <h2>Recommended Flow for Large Apps</h2>
+            <pre><code>
+Route
+  ↓
+Middleware
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Model / Database
+            </code></pre>
+            <p>This separation makes:</p>
+            <ul>
+                <li>cleaner code</li>
+                <li>easier debugging</li>
+                <li>reusable business logic</li>
+                <li>scalable architecture</li>
+                <li>easier testing</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

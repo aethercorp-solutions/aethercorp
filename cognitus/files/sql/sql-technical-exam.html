@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SQL technical exam</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">SQL technical exam</h1>
+                    <p class="subtitle">A SQL technical exam is a test that checks whether you can use SQL (Structured Query Language) to work with data in databases.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What Employers Usually Test</h2>
+            <p>1. Basic Queries</p>
+            <p>Retrieve data from a table.</p>
+            <pre><code>
+SELECT first_name, last_name
+FROM employees;
+            </code></pre>
+            <p>Meaning: Show employee names.</p>
+        </section>
+
+        <section>
+            <h2>2. Filtering Data (WHERE)</h2>
+            <p>Find specific records.</p>
+            <pre><code>
+SELECT *
+FROM employees
+WHERE salary > 50000;
+            </code></pre>
+            <p>Meaning: Show employees earning more than 50,000.</p>
+        </section>
+
+        <section>
+            <h2>3. Sorting (ORDER BY)</h2>
+            <p>Arrange results.</p>
+            <pre><code>
+SELECT *
+FROM employees
+ORDER BY salary DESC;
+            </code></pre>
+            <p>Meaning: Highest salary first.</p>
+        </section>
+
+        <section>
+            <h2>4. Grouping and Aggregation</h2>
+            <p>Calculate totals, averages, counts.</p>
+            <pre><code>
+SELECT department,
+       COUNT(*) AS employee_count,
+       AVG(salary) AS avg_salary
+FROM employees
+GROUP BY department;
+            </code></pre>
+            <p>Meaning: Count employees and average salary per department.</p>
+        </section>
+
+        <section>
+            <p>This SQL query summarizes employee data by department.</p>
+            <h2>Query</h2>
+            <pre><code>
+SELECT department,
+       COUNT(*) AS employee_count,
+       AVG(salary) AS avg_salary
+FROM employees
+GROUP BY department;
+            </code></pre>
+
+            <p>Step-by-step</p>
+            <p>1. FROM employees</p>
+            <p>Use data from the employees table.</p>
+            <p>Example:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>department</th>
+                        <th>salary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>John</td>
+                        <td>IT</td>
+                        <td>5000</td>
+                    </tr>
+                    <tr>
+                        <td>Mary</td>
+                        <td>IT</td>
+                        <td>6000</td>
+                    </tr>
+                    <tr>
+                        <td>Bob</td>
+                        <td>HR</td>
+                        <td>4000</td>
+                    </tr>
+                    <tr>
+                        <td>Alice</td>
+                        <td>HR</td>
+                        <td>5000</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>2. GROUP BY department</p>
+            <p>Put employees into groups based on their department.</p>
+            <p>IT Group</p>
+            <ul>
+                <li>John</li>
+                <li>Mary</li>
+            </ul>
+            <p>HR Group</p>
+            <ul>
+                <li>Bob</li>
+                <li>Alice</li>
+            </ul>
+
+            <p>3. COUNT(*) AS employee_count</p>
+            <p>Count how many employees are in each department.</p>
+            <ul>
+                <li>IT → 2 employees</li>
+                <li>HR → 2 employees</li>
+            </ul>
+
+            <p>4. AVG(salary) AS avg_salary</p>
+            <p>Calculate the average salary for each department.</p>
+            <p>IT</p>
+            <pre><code>
+(5000 + 6000) / 2 = 5500
+            </code></pre>
+            <p>HR</p>
+            <pre><code>
+(4000 + 5000) / 2 = 4500
+            </code></pre>
+
+            <p>Result</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>department</th>
+                        <th>employee_count</th>
+                        <th>avg_salary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>IT</td>
+                        <td>2</td>
+                        <td>5500</td>
+                    </tr>
+                    <tr>
+                        <td>HR</td>
+                        <td>2</td>
+                        <td>4500</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Simple Explanation</p>
+            <p>Think of GROUP BY as saying:</p>
+            <p>"Put employees into buckets based on department, then tell me how many people are in each bucket and what their average salary is."</p>
+            <p>This is one of the most common SQL interview questions because it demonstrates aggregation (COUNT, AVG) and grouping (GROUP BY).</p>
+        </section>
+
+        <section>
+            <h2>5. Joins</h2>
+            <p>Combine data from multiple tables.</p>
+            <p>Employees Table</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>name</th>
+                        <th>department_id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>John</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>John</td>
+                        <td>20</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Department Table</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>department</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>10</td>
+                        <td>IT</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td>HR</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <pre><code>
+SELECT e.name, d.department
+FROM employees e
+JOIN departments d
+ON e.department_id = d.id;
+            </code></pre>
+            <p>Result</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>department</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>John</th>
+                        <th>IT</th>
+                    </tr>
+                    <tr>
+                        <th>Mary</th>
+                        <th>HR</th>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <p>This SQL query combines data from two tables: employees and departments.</p>
+            <h2>Query</h2>
+            <pre><code>
+SELECT e.name, d.department
+FROM employees e
+JOIN departments d
+ON e.department_id = d.id;
+            </code></pre>
+
+            <p>Simple Explanation</p>
+            <p>Imagine you have these tables:</p>
+            <p>employees</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>name</th>
+                        <th>department_id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>John</td>
+                        <td>101</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Mary</td>
+                        <td>102</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Bob</td>
+                        <td>101</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>departments</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>department</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>101</td>
+                        <td>Engineering</td>
+                    </tr>
+                    <tr>
+                        <td>102</td>
+                        <td>HR</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>What happens?</p>
+            <pre><code>
+JOIN departments d
+ON e.department_id = d.id
+            </code></pre>
+            <p>This tells SQL:</p>
+            <p>"Match each employee's department_id with the department table's id."</p>
+
+            <p>So:</p>
+            <ul>
+                <li>John's department_id = 101 → Engineering</li>
+                <li>Mary's department_id = 102 → HR</li>
+                <li>Bob's department_id = 101 → Engineering</li>
+            </ul>
+
+            <p>Result</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>department</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>John</td>
+                        <td>Engineering</td>
+                    </tr>
+                    <tr>
+                        <td>Mary</td>
+                        <td>HR</td>
+                    </tr>
+                    <tr>
+                        <td>Bob</td>
+                        <td>Engineering</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Breaking it down</p>
+            <pre><code>
+SELECT e.name, d.department
+            </code></pre>
+            <p>Show:</p>
+            <ul>
+                <li>Employee name</li>
+                <li>Department name</li>
+            </ul>
+            <pre><code>
+FROM employees e
+            </code></pre>
+            <p>Use the employees table.</p>
+            <p>e is just a short nickname (alias) for employees.</p>
+
+            <pre><code>
+JOIN departments d
+            </code></pre>
+            <p>Combine with the departments table.</p>
+            <p>d is a nickname for departments.</p>
+
+            <pre><code>
+ON e.department_id = d.id
+            </code></pre>
+            <p>Match rows where the department IDs are the same.</p>
+
+            <p>Real-world analogy</p>
+            <p>Think of:</p>
+            <ul>
+                <li>employees table = people with department numbers</li>
+                <li>departments table = list of department numbers and names</li>
+            </ul>
+            <p>The JOIN looks up the department name for each employee so you see:</p>
+            <p>"John works in Engineering" instead of "John works in department 101".</p>
+            <p>This is one of the most common SQL operations because data is often split into multiple related tables.</p>
+        </section>
+
+        <section>
+            <h2>6. Subqueries</h2>
+            <p>Query inside another query.</p>
+            <pre><code>
+SELECT *
+FROM employees
+WHERE salary >
+(
+    SELECT AVG(salary)
+    FROM employees
+);
+            </code></pre>
+            <p>Meaning: Employees earning above average salary.</p>
+        </section>
+
+        <section>
+            <h2>7. Common SQL Exam Question</h2>
+            <p>Table: Orders</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>order_id</th>
+                        <th>customer</th>
+                        <th>amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Paul</td>
+                        <td>100</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>John</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Paul</td>
+                        <td>150</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Question: Find total amount spent by each customer.</p>
+            <pre><code>
+SELECT customer,
+       SUM(amount) AS total_spent
+FROM orders
+GROUP BY customer;
+            </code></pre>
+            <p>Result</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>customer</th>
+                        <th>total_spent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Paul</td>
+                        <td>250</td>
+                    </tr>
+                    <tr>
+                        <td>John</td>
+                        <td>200</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Typical SQL Technical Exam Topics</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Beginner</th>
+                        <th>Intermediate</th>
+                        <th>Advanced</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SELECT</td>
+                        <td>JOIN</td>
+                        <td>Window Functions</td>
+                    </tr>
+                    <tr>
+                        <td>WHERE</td>
+                        <td>GROUP BY</td>
+                        <td>CTEs</td>
+                    </tr>
+                    <tr>
+                        <td>ORDER BY</td>
+                        <td>HAVING</td>
+                        <td>Query Optimization</td>
+                    </tr>
+                    <tr>
+                        <td>INSERT</td>
+                        <td>Subqueries</td>
+                        <td>Indexes</td>
+                    </tr>
+                    <tr>
+                        <td>UPDATE</td>
+                        <td>UNION</td>
+                        <td>Database Design</td>
+                    </tr>
+                    <tr>
+                        <td>DELETE</td>
+                        <td>Aggregate Functions</td>
+                        <td>Stored Procedures</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>For a Senior/Staff Engineer Role</h2>
+            <p>Expect questions like:</p>
+            <ul>
+                <li>Find the 2nd highest salary.</li>
+                <li>Explain indexes and when to use them.</li>
+                <li>Optimize a slow query.</li>
+                <li>Design a database schema.</li>
+                <li>Explain normalization vs denormalization.</li>
+                <li>Use window functions (ROW_NUMBER, RANK, DENSE_RANK).</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+SELECT *
+FROM (
+    SELECT salary,
+           DENSE_RANK() OVER (ORDER BY salary DESC) AS rank_num
+    FROM employees
+) t
+WHERE rank_num = 2;
+            </code></pre>
+            <p>Meaning: Find the second highest salary.</p>
+            <p>Since you're a Full Stack / Backend developer, most interviews will focus heavily on:</p>
+            <ol>
+                <li>Joins</li>
+                <li>GROUP BY and aggregations</li>
+                <li>Subqueries</li>
+                <li>Indexes</li>
+                <li>Query optimization</li>
+                <li>Database design</li>
+            </ol>
+            <p>Master those six areas and you'll pass most SQL technical exams.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

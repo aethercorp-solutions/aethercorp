@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>XCTest example with a “test use case”</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">XCTest example with a “test use case”</h1>
+                    <p class="subtitle">
+                        Here’s a simple but realistic XCTest example with a “test use case” style so you can see how it’s used in practice.
+                    </p>
+                    <p>Let’s say you have a Login feature and you want to test it.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧠 1. Production Code (System Under Test)</h2>
+            <pre><code>
+import Foundation
+
+struct AuthService {
+    func login(username: String, password: String) -> Bool {
+        return username == "admin" && password == "1234"
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 2. XCTest Test Case (Unit Test)</h2>
+            <pre><code>
+import XCTest
+@testable import YourAppModuleName
+
+final class AuthServiceTests: XCTestCase {
+
+    var authService: AuthService!
+
+    override func setUp() {
+        super.setUp()
+        authService = AuthService()
+    }
+
+    override func tearDown() {
+        authService = nil
+        super.tearDown()
+    }
+
+    // MARK: - Test Case: Successful login
+
+    func testLogin_withValidCredentials_shouldReturnTrue() {
+        // Arrange
+        let username = "admin"
+        let password = "1234"
+
+        // Act
+        let result = authService.login(username: username, password: password)
+
+        // Assert
+        XCTAssertTrue(result, "Login should succeed with correct credentials")
+    }
+
+    // MARK: - Test Case: Failed login
+
+    func testLogin_withInvalidCredentials_shouldReturnFalse() {
+        // Arrange
+        let username = "user"
+        let password = "wrong"
+
+        // Act
+        let result = authService.login(username: username, password: password)
+
+        // Assert
+        XCTAssertFalse(result, "Login should fail with incorrect credentials")
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧩 3. “Test Use Case” Style (Cleaner Architecture Example)</h2>
+            <p>If you follow Clean Architecture, you usually test a Use Case, not just a service.</p>
+            <p>Use Case</p>
+            <pre><code>
+struct LoginUseCase {
+    let authService: AuthService
+
+    func execute(username: String, password: String) -> Bool {
+        authService.login(username: username, password: password)
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🧪 Test for Use Case</h2>
+            <pre><code>
+final class LoginUseCaseTests: XCTestCase {
+
+    func testExecute_withValidCredentials_shouldSucceed() {
+        // Arrange
+        let authService = AuthService()
+        let useCase = LoginUseCase(authService: authService)
+
+        // Act
+        let result = useCase.execute(username: "admin", password: "1234")
+
+        // Assert
+        XCTAssertTrue(result)
+    }
+
+    func testExecute_withInvalidCredentials_shouldFail() {
+        // Arrange
+        let authService = AuthService()
+        let useCase = LoginUseCase(authService: authService)
+
+        // Act
+        let result = useCase.execute(username: "bad", password: "user")
+
+        // Assert
+        XCTAssertFalse(result)
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>💡 Key XCTest Concepts Shown</h2>
+            <ul>
+                <li>Arrange → setup data</li>
+                <li>Act → call function</li>
+                <li>Assert → verify result</li>
+                <li>setUp() / tearDown() → lifecycle hooks</li>
+                <li>XCTAssertTrue / XCTAssertFalse → validation</li>
+            </ul>
+            <p>If you want, I can also show:</p>
+            <ul>
+                <li>XCTest with async/await (API testing)</li>
+                <li>Mocking dependencies (very important for real apps)</li>
+                <li>UI testing with XCUITest (login screens, buttons, etc.)</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>The purpose of XCTest (and test use cases like the example I showed) is to automatically verify that your code behaves correctly—without you manually running the app and checking everything yourself.</p>
+            <p>🧪 In simple terms</p>
+            <p>It’s a way to answer:</p>
+            <p>“If I change my code, did I accidentally break something?”</p>
+        </section>
+
+        <section>
+            <h2>🎯 Why this matters</h2>
+            <p>1. Prevent bugs before users see them</p>
+            <p>Instead of discovering issues in production:</p>
+            <ul>
+                <li>You run tests</li>
+                <li>Tests fail immediately if something breaks</li>
+                <li>You fix it before release</li>
+            </ul>
+
+            <p>2. Make code changes safer (regression protection)</p>
+            <p>Example:</p>
+            <p>You update login logic.</p>
+            <p>Without tests:</p>
+            <ul>
+                <li>You might unknowingly break login</li>
+            </ul>
+            <p>With tests:</p>
+            <ul>
+                <li>
+                    XCTest tells you instantly:
+                    <p>“Login no longer works for valid users”</p>
+                </li>
+            </ul>
+
+            <p>3. Confirm business logic works correctly</p>
+            <p>Your “use case” test ensures:</p>
+            <ul>
+                <li>Login succeeds with correct credentials</li>
+                <li>Login fails with wrong credentials</li>
+            </ul>
+            <p>So you're not just testing code—you’re testing real app behavior rules</p>
+
+            <p>4. Support refactoring</p>
+            <p>You can safely rewrite code like:</p>
+            <ul>
+                <li>switching API layer</li>
+                <li>changing architecture (MVC → Clean Architecture)</li>
+                <li>optimizing logic</li>
+            </ul>
+            <p>If tests still pass → behavior is still correct</p>
+
+            <p>5. Acts like executable documentation</p>
+            <p>Your tests describe:</p>
+            <p>“This is how the system is supposed to behave”</p>
+            <p>So other developers (or future you) can understand expected behavior quickly.</p>
+        </section>
+
+        <section>
+            <h2>🧠 Why “Use Case” testing is special</h2>
+            <p>Instead of testing low-level code:</p>
+            <pre><code>
+AuthService.login()
+            </code></pre>
+            <p>You test higher-level behavior:</p>
+            <pre><code>
+LoginUseCase.execute()
+            </code></pre>
+            <p>This ensures you're validating:</p>
+            <ul>
+                <li>real app flows</li>
+                <li>not just isolated functions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Real-world analogy</h2>
+            <p>Think of XCTest like:</p>
+            <ul>
+                <li>🏗️ Building inspection checklist</li>
+                <li>Every feature = must pass inspection before shipping</li>
+            </ul>
+            <p>If I simplify it even more:</p>
+            <p>👉 XCTest = “automatic QA robot for your code”</p>
+            <p>If you want, I can show how this connects to:</p>
+            <ul>
+                <li>CI/CD (GitHub Actions running tests automatically)</li>
+                <li>mocking APIs (very important in real apps)</li>
+                <li>or how big companies structure test cases in production apps</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

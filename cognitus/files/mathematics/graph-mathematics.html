@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Graph theory</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Graph theory</h1>
+                    <p class="subtitle">Graph theory is a branch of mathematics that studies graphs, which are structures used to represent objects and the relationships between them.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple Idea</h2>
+            <p>Imagine a social network:</p>
+            <ul>
+                <li>People = objects</li>
+                <li>Friendships = relationships</li>
+            </ul>
+            <p>Graph theory models this as:</p>
+            <pre><code>
+Alice ----- Bob
+  |
+  |
+Charlie
+            </code></pre>
+            <ul>
+                <li>Alice, Bob, Charlie are called vertices (nodes).</li>
+                <li>The lines connecting them are called edges.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Formal Definition</h2>
+            <p>A graph is written as:</p>
+            <pre><code>
+G=(V,E)
+            </code></pre>
+            <p>where:</p>
+            <ul>
+                <li>G = graph</li>
+                <li>V = set of vertices (nodes)</li>
+                <li>E = set of edges (connections)</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+V = {A, B, C}
+
+E = {{A,B}, {A,C}}
+            </code></pre>
+            <p>Meaning:</p>
+            <ul>
+                <li>A is connected to B</li>
+                <li>A is connected to C</li>
+            </ul>
+            <p>Graph:</p>
+            <pre><code>
+                B
+                |
+                A
+                |
+                C
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why Graph Theory Exists</h2>
+            <p>Many real-world systems are naturally networks:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Real World</th>
+                        <th>Vertex</th>
+                        <th>Edge    </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Facebook</td>
+                        <td>Person</td>
+                        <td>Friendship</td>
+                    </tr>
+                    <tr>
+                        <td>Internet</td>
+                        <td>Computer</td>
+                        <td>Network connection</td>
+                    </tr>
+                    <tr>
+                        <td>Road Map</td>
+                        <td>City</td>
+                        <td>Road</td>
+                    </tr>
+                    <tr>
+                        <td>Airline Network</td>
+                        <td>Airport</td>
+                        <td>Flight route</td>
+                    </tr>
+                    <tr>
+                        <td>AI Knowledge Graph</td>
+                        <td>Concept</td>
+                        <td>Relationship</td>
+                    </tr>
+                    <tr>
+                        <td>Family Tree</td>
+                        <td>Person</td>
+                        <td>Parent-child relation</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Two Main Types of Graphs</h2>
+            <p>1. Undirected Graph</p>
+            <p>Relationships go both ways.</p>
+            <pre><code>
+Alice ---- Bob
+            </code></pre>
+            <p>Friendship example:</p>
+            <p>If Alice is friends with Bob,</p>
+            <p>Bob is also friends with Alice.</p>
+            <p>Edge:</p>
+            <pre><code>
+{Alice, Bob}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Directed Graph (Digraph)</h2>
+            <p>Relationships have direction.</p>
+            <pre><code>
+Alice ---&gt; Bob
+            </code></pre>
+            <p>Example:</p>
+            <ul>
+                <li>Alice follows Bob on social media.</li>
+                <li>Bob may not follow Alice.</li>
+            </ul>
+            <p>Edge:</p>
+            <pre><code>
+(Alice, Bob)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example: Cities and Roads</h2>
+            <p>Suppose:</p>
+            <pre><code>
+Manila
+   |
+Quezon City
+   |
+Makati
+            </code></pre>
+            <p>Vertices:</p>
+            <pre><code>
+V = {Manila, QuezonCity, Makati}
+            </code></pre>
+            <p>Edges:</p>
+            <pre><code>
+E = {
+    {Manila, QuezonCity},
+    {QuezonCity, Makati}
+}
+            </code></pre>
+            <p>Graph theory can answer:</p>
+            <ul>
+                <li>Is Makati reachable from Manila?</li>
+                <li>What is the shortest route?</li>
+                <li>Which city is most connected?</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Important Concepts</h2>
+            <p>Path</p>
+            <p>A sequence of connected vertices.</p>
+            <pre><code>
+A -> B -> C -> D
+            </code></pre>
+            <p>Path from A to D:</p>
+            <pre><code>
+A, B, C, D
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Degree</h2>
+            <p>Number of connections a vertex has.</p>
+            <pre><code>
+B
+|
+A---C
+|
+D
+            </code></pre>
+            <p>Degree of A = 3</p>
+        </section>
+
+        <section>
+            <h2>Cycle</h2>
+            <p>A path that returns to the starting vertex.</p>
+            <pre><code>
+A --- B
+|     |
+D --- C
+            </code></pre>
+            <p>You can travel:</p>
+            <pre><code>
+A → B → C → D → A
+            </code></pre>
+            <p>This is a cycle.</p>
+        </section>
+
+        <section>
+            <h2>Why Graph Theory is Important in Computing</h2>
+            <p>Graph theory is everywhere in computer science:</p>
+            <ul>
+                <li>Search engines rank webpages using graphs.</li>
+                <li>GPS finds shortest paths using graph algorithms.</li>
+                <li>Social networks analyze relationships using graphs.</li>
+                <li>Compilers use dependency graphs.</li>
+                <li>AI uses knowledge graphs and graph neural networks.</li>
+                <li>Operating systems use process and resource graphs.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>In One Sentence</h2>
+            <p>Graph theory is the mathematical study of objects (vertices) and the relationships (edges) between them, allowing us to model and analyze networks, connections, and pathways in the real world and computing.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Industry Standard Authentication and Authorization</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Industry Standard Authentication and Authorization</h1>
+                    <p class="subtitle">
+                        In an industry-standard AWS + Node.js + Lambda architecture, authentication and authorization are separated into different responsibilities:
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Industry Standard Authentication and Authorization</h2>
+            <ul>
+                <li>Authentication = “Who are you?”</li>
+                <li>Authorization = “What are you allowed to do?”</li>
+            </ul>
+            <p>In serverless systems, these are commonly implemented using:</p>
+            <ul>
+                <li>Amazon Web Services</li>
+                <li>AWS Lambda</li>
+                <li>Amazon API Gateway</li>
+                <li>Amazon Cognito</li>
+                <li>JWT access tokens</li>
+                <li>IAM policies</li>
+                <li>RBAC (Role-Based Access Control)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. High-Level Architecture</h2>
+            <pre><code>
+Client (React / React Native / Web)
+        │
+        │ Login
+        ▼
+Authentication Provider
+(Cognito / Firebase / Auth0 / Google)
+        │
+        │ Returns JWT Token
+        ▼
+Client stores Access Token
+        │
+        │ API Request + Bearer Token
+        ▼
+API Gateway
+        │
+        │ JWT Validation / Authorizer
+        ▼
+AWS Lambda
+        │
+        │ Authorization Logic
+        ▼
+Business Logic + Database
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Authentication (Identity Verification)</h2>
+            <p>Authentication proves the user identity.</p>
+            <p>Example:</p>
+            <pre><code>
+Email + Password
+Google Login
+Apple Login
+Azure AD
+Firebase Auth
+Cognito
+            </code></pre>
+            <p>After login, the authentication provider issues a:</p>
+            <ul>
+                <li>Access Token (JWT)</li>
+                <li>ID Token</li>
+                <li>Refresh Token</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. JWT Authentication Flow</h2>
+            <p>Step 1 — User Logs In</p>
+            <pre><code>
+POST /login
+{
+  "email": "admin@test.com",
+  "password": "123456"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2 — Server Validates Credentials</h2>
+            <p>Example using bcrypt:</p>
+            <pre><code>
+const bcrypt = require('bcrypt');
+
+const isValid = await bcrypt.compare(password, user.passwordHash);
+
+if (!isValid) {
+   throw new Error('Invalid credentials');
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3 — Generate JWT</h2>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+const token = jwt.sign(
+  {
+    userId: user._id,
+    role: user.role
+  },
+  process.env.JWT_SECRET,
+  {
+    expiresIn: '1h'
+  }
+);
+            </code></pre>
+            <p>JWT contains:</p>
+            <pre><code>
+{
+    "userId": "123",
+    "role": "admin",
+    "exp": 999999999
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Client Sends JWT</h2>
+            <pre><code>
+Authorization: Bearer eyJhbGci...
+            </code></pre>
+            <p>This is standard industry practice.</p>
+        </section>
+
+        <section>
+            <h2>5. API Gateway Authentication</h2>
+            <p>In AWS serverless:</p>
+            <pre><code>
+Client
+   ↓
+API Gateway
+   ↓
+Lambda
+            </code></pre>
+            <p>API Gateway can validate JWT before Lambda executes.</p>
+            <p>Two common approaches:</p>
+        </section>
+
+        <section>
+            <h2>OPTION A — API Gateway JWT Authorizer (Industry Standard)</h2>
+            <p>Best modern approach.</p>
+            <p>Usually with:</p>
+            <ul>
+                <li>Cognito</li>
+                <li>Auth0</li>
+                <li>Firebase</li>
+                <li>Azure AD</li>
+            </ul>
+            <p>API Gateway validates:</p>
+            <ul>
+                <li>Signature</li>
+                <li>Expiration</li>
+                <li>Issuer</li>
+                <li>Audience</li>
+            </ul>
+            <p>If token invalid:</p>
+            <pre><code>
+401 Unauthorized
+            </code></pre>
+            <p>Lambda never runs.</p>
+        </section>
+
+        <section>
+            <h2>Flow</h2>
+            <pre><code>
+JWT Token
+   ↓
+API Gateway Authorizer
+   ↓
+Valid?
+   ↓ yes
+Lambda Executes
+            </code></pre>
+            <p>This reduces Lambda cost.</p>
+        </section>
+
+        <section>
+            <h2>OPTION B — Lambda Middleware Validation</h2>
+            <p>You manually validate token inside Lambda.</p>
+            <p>Example:</p>
+            <pre><code>
+const jwt = require('jsonwebtoken');
+
+exports.authMiddleware = async (event) => {
+
+   const token = event.headers.Authorization;
+
+   const decoded = jwt.verify(
+      token.replace('Bearer ', ''),
+      process.env.JWT_SECRET
+   );
+
+   return decoded;
+};
+            </code></pre>
+            <p>Common when using:</p>
+            <ul>
+                <li>Express.js inside Lambda</li>
+                <li>serverless-http</li>
+                <li>custom auth systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Authorization (Permissions)</h2>
+            <p>Authentication only says:</p>
+            <pre><code>
+You ARE John.
+            </code></pre>
+            <p>Authorization says:</p>
+            <pre><code>
+John CAN delete users.
+            </code></pre>
+            <p>This happens AFTER authentication.</p>
+        </section>
+
+        <section>
+            <h2>7. Role-Based Access Control (RBAC)</h2>
+            <p>Industry standard.</p>
+            <p>Example roles:</p>
+            <pre><code>
+admin
+manager
+staff
+customer
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>JWT Contains Role</h2>
+            <pre><code>
+{
+    "userId": "123",
+    "role": "admin"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Authorization Middleware</h2>
+            <pre><code>
+const authorize = (...roles) => {
+    return (req, res, next) => {
+    
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({
+                message: 'Forbidden'
+            });
+        }
+    
+        next();
+    };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Usage</h2>
+            <pre><code>
+router.delete(
+   '/users/:id',
+   authenticate,
+   authorize('admin'),
+   deleteUser
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Authentication vs Authorization</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Authentication</th>
+                        <th>Authorization</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Purpose</td>
+                        <td>Verify identity</td>
+                        <td>Verify permissions</td>
+                    </tr>
+                    <tr>
+                        <td>Example</td>
+                        <td>Login</td>
+                        <td>Can delete user</td>
+                    </tr>
+                    <tr>
+                        <td>Returns</td>
+                        <td>JWT Token</td>
+                        <td>Access granted/denied</td>
+                    </tr>
+                    <tr>
+                        <td>Happens First?</td>
+                        <td>Yes</td>
+                        <td>After authentication</td>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>401</td>
+                        <td>403</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>9. Industry-Standard AWS Patterns</h2>
+            <p>A. Cognito + API Gateway + Lambda</p>
+            <p>Most AWS-native solution.</p>
+            <pre><code>
+React Native
+   ↓
+Cognito
+   ↓
+JWT
+   ↓
+API Gateway Authorizer
+   ↓
+Lambda
+            </code></pre>
+            <p>Advantages:</p>
+            <ul>
+                <li>Fully managed</li>
+                <li>Scalable</li>
+                <li>MFA support</li>
+                <li>Social login</li>
+                <li>Refresh tokens</li>
+                <li>Secure JWT validation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Common Enterprise Architecture</h2>
+            <pre><code>
+Frontend
+   ↓
+API Gateway
+   ↓
+Lambda Authorizer
+   ↓
+Microservices Lambdas
+   ↓
+MongoDB / DynamoDB / RDS
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>11. Lambda Authorizer</h2>
+            <p>Custom authorization layer.</p>
+            <p>Used when:</p>
+            <ul>
+                <li>Complex permission system</li>
+                <li>Multi-tenant SaaS</li>
+                <li>Dynamic permissions</li>
+                <li>External identity providers</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <pre><code>
+exports.handler = async (event) => {
+
+    const token = event.authorizationToken;
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    return {
+        principalId: decoded.userId,
+        policyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+                {
+                Action: 'execute-api:Invoke',
+                Effect: 'Allow',
+                Resource: event.methodArn
+                }
+            ]
+        },
+        context: {
+            role: decoded.role
+        }
+    };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>12. Best Practices (Industry Standard)</h2>
+            <p>NEVER Store Sessions in Lambda Memory</p>
+            <p>Lambda is stateless.</p>
+            <p>Use:</p>
+            <ul>
+                <li>JWT</li>
+                <li>Redis</li>
+                <li>DynamoDB</li>
+            </ul>
+            <p>NOT:</p>
+            <pre><code>
+global.user = ...
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. Use Access + Refresh Tokens</h2>
+            <p>Standard architecture:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Lifetime</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Access Token</td>
+                        <td>15 mins–1 hour</td>
+                    </tr>
+                    <tr>
+                        <td>Refresh Token</td>
+                        <td>Days/Months</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>14. Store Secrets Properly</h2>
+            <p>Use:</p>
+            <ul>
+                <li>AWS Secrets Manager</li>
+                <li>AWS Systems Manager Parameter Store</li>
+            </ul>
+            <p>NOT hardcoded secrets.</p>
+        </section>
+
+        <section>
+            <h2>15. Principle of Least Privilege</h2>
+            <p>Lambda IAM roles should only access needed services.</p>
+            <p>Bad:</p>
+            <pre><code>
+AdministratorAccess
+            </code></pre>
+            <p>Good:</p>
+            <pre><code>
+Only DynamoDB read/write
+Only S3 upload
+Only SES send email
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>16. Multi-Tenant SaaS Authorization</h2>
+            <p>Industry SaaS pattern:</p>
+            <pre><code>
+{
+    "userId": "123",
+    "tenantId": "companyA",
+    "role": "admin"
+}
+            </code></pre>
+            <p>Then every query filters:</p>
+            <pre><code>
+{
+    tenantId: req.user.tenantId
+}
+            </code></pre>
+            <p>Critical for SaaS isolation.</p>
+        </section>
+
+        <section>
+            <h2>17. Advanced Authorization Models</h2>
+            <p>RBAC</p>
+            <p>Role-based.</p>
+            <pre><code>
+admin
+manager
+user
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>ABAC (Attribute-Based)</h2>
+            <p>Checks attributes.</p>
+            <p>Example:</p>
+            <pre><code>
+department = finance
+location = PH
+subscription = premium
+            </code></pre>
+            <p>Used in enterprise systems.</p>
+        </section>
+
+        <section>
+            <h2>18. Typical Production Stack</h2>
+            <p>Very common modern AWS stack:</p>
+            <pre><code>
+React Native App
+    ↓
+Cognito Authentication
+    ↓
+API Gateway JWT Authorizer
+    ↓
+Lambda (Node.js)
+    ↓
+MongoDB Atlas / DynamoDB
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>19. Express.js Inside Lambda</h2>
+            <p>Many teams use:</p>
+            <pre><code>
+serverless-http
+express
+middy
+            </code></pre>
+            <p>Architecture:</p>
+            <pre><code>
+API Gateway
+   ↓
+Express App
+   ↓
+Middleware
+   ↓
+Controllers
+   ↓
+Services
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Authentication Middleware</h2>
+            <pre><code>
+app.use(async (req, res, next) => {
+
+    const token = req.headers.authorization;
+    
+    try {
+    
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+        req.user = decoded;
+    
+        next();
+    
+    } catch (e) {
+    
+        return res.status(401).json({
+            message: 'Unauthorized'
+        });
+    }
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>20. Recommended Industry Setup</h2>
+            <p>For your AWS Lambda + Node.js architecture:</p>
+            <p>Best Practice Stack</p>
+            <pre><code>
+React Native
+   ↓
+Cognito / Firebase Auth
+   ↓
+JWT Access Token
+   ↓
+API Gateway Authorizer
+   ↓
+Lambda (Node.js)
+   ↓
+RBAC Middleware
+   ↓
+MongoDB
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>21. Security Recommendations</h2>
+            <p>Use HTTPS Only</p>
+            <p>Never allow plain HTTP.</p>
+        </section>
+
+        <section>
+            <h2>Validate JWT Audience + Issuer</h2>
+            <p>Prevents token spoofing.</p>
+        </section>
+
+        <section>
+            <h2>Use Short Access Token Expiry</h2>
+            <p>Example:</p>
+            <pre><code>
+15 minutes
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Implement Refresh Token Rotation</h2>
+            <p>Enterprise-grade security.</p>
+        </section>
+
+        <section>
+            <h2>22. Common Mistakes</h2>
+            <p>Storing Passwords Plain Text</p>
+            <p>Always use:</p>
+            <pre><code>
+bcrypt.hash(password, 10)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Trusting Client Roles</h2>
+            <p>Never trust frontend role checks.</p>
+            <p>Backend must validate.</p>
+        </section>
+
+        <section>
+            <h2>Putting Permissions Only in Frontend</h2>
+            <p>Frontend checks are only UX.</p>
+            <p>Backend is real security.</p>
+        </section>
+
+        <section>
+            <h2>23. Enterprise Middleware Structure</h2>
+            <p>Typical Node.js architecture:</p>
+            <pre><code>
+middlewares/
+  auth.js
+  authorize.js
+
+controllers/
+  userController.js
+
+services/
+  userService.js
+
+repositories/
+  userRepository.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>24. Example Full Request Lifecycle</h2>
+            <pre><code>
+1. User logs in
+2. Cognito returns JWT
+3. React Native stores token
+4. Client calls API
+5. API Gateway validates JWT
+6. Lambda executes
+7. auth middleware extracts user
+8. authorize middleware checks role
+9. controller executes
+10. service accesses database
+11. response returned
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>25. Industry Standard Summary</h2>
+            <p>Authentication</p>
+            <ul>
+                <li>Verify identity</li>
+                <li>Usually JWT</li>
+                <li>Cognito/Auth0/Firebase</li>
+                <li>API Gateway Authorizer</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Authorization</h2>
+            <ul>
+                <li>Verify permissions</li>
+                <li>RBAC/ABAC</li>
+                <li>Middleware checks</li>
+                <li>IAM + app-level permissions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>26. Recommended AWS Enterprise Pattern</h2>
+            <p>Best modern AWS architecture:</p>
+            <pre><code>
+Cognito
+   ↓
+JWT Authorizer
+   ↓
+API Gateway
+   ↓
+Lambda
+   ↓
+RBAC Middleware
+   ↓
+Business Services
+            </code></pre>
+            <p>This is scalable, secure, serverless-native, and commonly used in enterprise SaaS systems.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

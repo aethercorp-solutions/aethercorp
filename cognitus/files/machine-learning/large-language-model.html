@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>LLM (Large Language Model)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">LLM (Large Language Model)</h1>
+                    <p class="subtitle">An LLM (Large Language Model) processes text in several stages:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Input Text → Tokens</h2>
+            <p>The text you type is split into smaller pieces called tokens.</p>
+            <p>Example:</p>
+            <pre><code>
+"How LLM processes work?"
+            </code></pre>
+            <p>might become:</p>
+            <pre><code>
+["How", " L", "LM", " processes", " work", "?"]
+            </code></pre>
+            <p>A token can be a word, part of a word, punctuation, or even a single character.</p>
+        </section>
+
+        <section>
+            <h2>2. Tokens → Embeddings</h2>
+            <p>Each token is converted into a list of numbers called an embedding.</p>
+            <p>Example:</p>
+            <pre><code>
+"How" → [0.12, -0.45, 0.89, ...]
+            </code></pre>
+            <p>These vectors capture semantic meaning so the model can perform mathematical operations on language.</p>
+        </section>
+
+        <section>
+            <h2>3. Transformer Layers</h2>
+            <p>The embeddings pass through many layers of a neural network called a Transformer.</p>
+            <p>A key component is Attention:</p>
+            <p>Attention Mechanism</p>
+            <p>The model looks at all previous tokens and determines which ones are most important.</p>
+            <p>Example:</p>
+            <pre><code>
+The cat sat on the mat because it was soft.
+            </code></pre>
+            <p>When processing "it", the model pays more attention to "mat" than "cat".</p>
+        </section>
+
+        <section>
+            <h2>4. Predict the Next Token</h2>
+            <p>The model doesn't directly "think" in sentences.</p>
+            <p>Instead, it repeatedly predicts:</p>
+            <p>"Given everything so far, what token is most likely to come next?"</p>
+            <p>Example:</p>
+            <p>Input:</p>
+            <pre><code>
+The capital of France is
+            </code></pre>
+            <p>Possible probabilities:</p>
+            <pre><code>
+Paris     98%
+London     1%
+Berlin     1%
+            </code></pre>
+            <p>The model chooses a token and appends it.</p>
+        </section>
+
+        <section>
+            <h2>5. Repeat</h2>
+            <p>The newly generated token is added to the context and the process repeats:</p>
+            <pre><code>
+The capital of France is Paris
+            </code></pre>
+            <p>Then it predicts the next token:</p>
+            <pre><code>
+.
+            </code></pre>
+            <p>Then the next, and so on until the response is complete.</p>
+        </section>
+
+        <section>
+            <h2>Training Phase (Before You Use It)</h2>
+            <p>During training, the model reads enormous amounts of text and learns patterns by trying to predict missing words.</p>
+            <p>Example:</p>
+            <pre><code>
+The sky is ___
+            </code></pre>
+            <p>Expected:</p>
+            <pre><code>
+blue
+            </code></pre>
+            <p>The model adjusts billions of parameters to reduce prediction errors.</p>
+            <p>Modern models may contain hundreds of billions or even trillions of learned parameters.</p>
+        </section>
+
+        <section>
+            <h2>Simplified Flow</h2>
+            <pre><code>
+User Input
+    ↓
+Tokenization
+    ↓
+Embeddings
+    ↓
+Transformer Layers
+    ↓
+Attention Mechanism
+    ↓
+Next Token Prediction
+    ↓
+Output Token
+    ↓
+Repeat Until Complete
+            </code></pre>
+            <p>A useful way to think about an LLM is:</p>
+            <p>It is a massive probability engine trained on huge amounts of text that repeatedly predicts the most likely next token, using attention to understand context and relationships between words.</p>
+        </section>
+
+        <section>
+            <p>Here's a very simple PyTorch example that teaches a model to learn the relationship:</p>
+            <pre><code>
+y = 2x + 1
+            </code></pre>
+            <h2>Install PyTorch</h2>
+            <pre><code>
+pip install torch
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Simple Example</h2>
+            <pre><code>
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+# Training data
+x = torch.tensor([[1.0], [2.0], [3.0], [4.0]])
+y = torch.tensor([[3.0], [5.0], [7.0], [9.0]])
+
+# Create a simple linear model
+model = nn.Linear(1, 1)
+
+# Loss function
+criterion = nn.MSELoss()
+
+# Optimizer
+optimizer = optim.SGD(model.parameters(), lr=0.01)
+
+# Train the model
+for epoch in range(1000):
+    prediction = model(x)
+    loss = criterion(prediction, y)
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+# Test the model
+test = torch.tensor([[5.0]])
+result = model(test)
+
+print(f"Prediction for x=5: {result.item():.2f}")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What's Happening?</h2>
+            <p>1. We provide examples:</p>
+            <pre><code>
+x=1 → y=3
+x=2 → y=5
+x=3 → y=7
+x=4 → y=9
+            </code></pre>
+
+            <p>2. PyTorch creates a model:</p>
+            <pre><code>
+y = wx + b
+            </code></pre>
+            <p>Initially:</p>
+            <pre><code>
+w = random
+b = random
+            </code></pre>
+            <p>so:</p>
+            <pre><code>
+x=5
+y=2(5)+1
+y=11
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Neural Network Example</h2>
+            <p>A slightly bigger model:</p>
+            <pre><code>
+model = nn.Sequential(
+    nn.Linear(1, 10),
+    nn.ReLU(),
+    nn.Linear(10, 1)
+)
+            </code></pre>
+            <p>This is a neural network with:</p>
+            <pre><code>
+Input
+  ↓
+10 Neurons
+  ↓
+ReLU Activation
+  ↓
+Output
+            </code></pre>
+            <p>This same pattern is used for:</p>
+            <ul>
+                <li>Image recognition</li>
+                <li>Chatbots</li>
+                <li>Speech recognition</li>
+                <li>Recommendation systems</li>
+                <li>Large Language Models (LLMs)</li>
+            </ul>
+            <p>The difference is that LLMs have billions of parameters and use Transformer architectures instead of a simple linear layer.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
