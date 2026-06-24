@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Request a Quote (RFQ)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Request a Quote (RFQ)</h1>
+                    <p class="subtitle">
+                        For a professional software company such as TryCastanet or Aether Computing Research, an industry-standard Request a Quote (RFQ) form collects enough information to qualify leads, estimate effort, prevent spam, and automatically route inquiries.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Recommended Fields</h2>
+            <p>Contact Information</p>
+            <ul>
+                <li>Full Name *</li>
+                <li>Company Name</li>
+                <li>Email Address *</li>
+                <li>Phone Number</li>
+                <li>Country / Time Zone</li>
+            </ul>
+
+            <p>Project Information</p>
+            <ul>
+                <li>Project Title *</li>
+                <li>
+                    Service Needed *
+                    <ul>
+                        <li>Web Development</li>
+                        <li>Mobile App Development</li>
+                        <li>AI Solutions</li>
+                        <li>Cloud & AWS</li>
+                        <li>UI/UX Design</li>
+                        <li>Consulting</li>
+                        <li>Other</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>Project Details</p>
+            <ul>
+                <li>Project Description *</li>
+                <li>Business Goals</li>
+                <li>Target Users</li>
+                <li>Existing Website/App (optional)</li>
+            </ul>
+
+            <p>Budget & Timeline</p>
+            <ul>
+                <li>
+                    Estimated Budget *
+                    <ul>
+                        <li>Under $5,000</li>
+                        <li>$5,000–$10,000</li>
+                        <li>$10,000–$25,000</li>
+                        <li>$25,000–$50,000</li>
+                        <li>$50,000+</li>
+                    </ul>
+                </li>
+                <li>Desired Start Date</li>
+                <li>Desired Launch Date</li>
+            </ul>
+
+            <p>Attachments</p>
+            <ul>
+                <li>Requirements Document</li>
+                <li>Wireframes</li>
+                <li>Screenshots</li>
+                <li>RFP/PDF</li>
+            </ul>
+
+            <p>Security</p>
+            <ul>
+                <li>CAPTCHA</li>
+                <li>Privacy Policy Consent Checkbox *</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Industry Standard Next.js Form</h2>
+<pre><code>
+&quot;use client&quot;;
+
+import { useState } from &quot;react&quot;;
+
+export default function QuotePage() {
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent&lt;HTMLFormElement&gt;) {
+    e.preventDefault();
+
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+
+    const response = await fetch(&quot;/api/quote&quot;, {
+      method: &quot;POST&quot;,
+      body: formData,
+    });
+
+    if (response.ok) {
+      alert(&quot;Quote request submitted successfully.&quot;);
+      e.currentTarget.reset();
+    } else {
+      alert(&quot;Failed to submit quote request.&quot;);
+    }
+
+    setLoading(false);
+  }
+
+  return (
+    &lt;div className=&quot;max-w-3xl mx-auto p-6&quot;&gt;
+      &lt;h1 className=&quot;text-3xl font-bold mb-6&quot;&gt;
+        Request a Quote
+      &lt;/h1&gt;
+
+      &lt;form
+        onSubmit={handleSubmit}
+        className=&quot;space-y-4&quot;
+      &gt;
+        &lt;input
+          name=&quot;name&quot;
+          placeholder=&quot;Full Name&quot;
+          required
+          className=&quot;w-full border p-3 rounded&quot;
+        /&gt;
+
+        &lt;input
+          name=&quot;company&quot;
+          placeholder=&quot;Company Name&quot;
+          className=&quot;w-full border p-3 rounded&quot;
+        /&gt;
+
+        &lt;input
+          type=&quot;email&quot;
+          name=&quot;email&quot;
+          placeholder=&quot;Email Address&quot;
+          required
+          className=&quot;w-full border p-3 rounded&quot;
+        /&gt;
+
+        &lt;input
+          name=&quot;phone&quot;
+          placeholder=&quot;Phone Number&quot;
+          className=&quot;w-full border p-3 rounded&quot;
+        /&gt;
+
+        &lt;select
+          name=&quot;service&quot;
+          required
+          className=&quot;w-full border p-3 rounded&quot;
+        &gt;
+          &lt;option value=&quot;&quot;&gt;Select Service&lt;/option&gt;
+          &lt;option&gt;Web Development&lt;/option&gt;
+          &lt;option&gt;Mobile Development&lt;/option&gt;
+          &lt;option&gt;AI Solutions&lt;/option&gt;
+          &lt;option&gt;AWS Cloud&lt;/option&gt;
+          &lt;option&gt;Consulting&lt;/option&gt;
+        &lt;/select&gt;
+
+        &lt;select
+          name=&quot;budget&quot;
+          required
+          className=&quot;w-full border p-3 rounded&quot;
+        &gt;
+          &lt;option value=&quot;&quot;&gt;Budget Range&lt;/option&gt;
+          &lt;option&gt;Under $5,000&lt;/option&gt;
+          &lt;option&gt;$5,000-$10,000&lt;/option&gt;
+          &lt;option&gt;$10,000-$25,000&lt;/option&gt;
+          &lt;option&gt;$25,000-$50,000&lt;/option&gt;
+          &lt;option&gt;$50,000+&lt;/option&gt;
+        &lt;/select&gt;
+
+        &lt;textarea
+          name=&quot;description&quot;
+          placeholder=&quot;Describe your project&quot;
+          required
+          rows={6}
+          className=&quot;w-full border p-3 rounded&quot;
+        /&gt;
+
+        &lt;input
+          type=&quot;file&quot;
+          name=&quot;attachment&quot;
+          accept=&quot;.pdf,.doc,.docx,.png,.jpg&quot;
+          className=&quot;w-full border p-3 rounded&quot;
+        /&gt;
+
+        &lt;label className=&quot;flex gap-2&quot;&gt;
+          &lt;input type=&quot;checkbox&quot; required /&gt;
+          &lt;span&gt;
+            I agree to the Privacy Policy
+          &lt;/span&gt;
+        &lt;/label&gt;
+
+        &lt;button
+          disabled={loading}
+          className=&quot;bg-black text-white px-6 py-3 rounded&quot;
+        &gt;
+          {loading ? &quot;Submitting...&quot; : &quot;Request Quote&quot;}
+        &lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+        </section>
+
+        <section>
+            <h2>Industry Standard Backend Architecture</h2>
+            <p>For production:</p>
+            <pre><code>
+Next.js Frontend
+       │
+       ▼
+API Gateway
+       │
+       ▼
+AWS Lambda
+       │
+ ┌─────┼─────────┐
+ ▼     ▼         ▼
+SES  DynamoDB  CloudWatch
+ ▼
+Sales Team Email
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Processing Flow</h2>
+            <ol>
+                <li>User submits form</li>
+                <li>CAPTCHA validation</li>
+                <li>Zod validation</li>
+                <li>Rate limiting</li>
+                <li>Store lead in DynamoDB</li>
+                <li>Send notification email via SES</li>
+                <li>Send confirmation email to customer</li>
+                <li>Log request in CloudWatch</li>
+                <li>Alert admins on failures</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Enterprise Security Checklist</h2>
+            <p>✅ Zod validation</p>
+            <p>✅ Google reCAPTCHA v3 or Cloudflare Turnstile</p>
+            <p>✅ AWS WAF protection</p>
+            <p>✅ Rate limiting (IP + Email)</p>
+            <p>✅ DynamoDB lead storage</p>
+            <p>✅ SES transactional emails</p>
+            <p>✅ CloudWatch monitoring</p>
+            <p>✅ File upload virus scanning (S3 + Lambda)</p>
+            <p>✅ Audit logging</p>
+            <p>✅ GDPR/Privacy consent</p>
+        </section>
+
+        <section>
+            <h2>Database Design (DynamoDB)</h2>
+            <pre><code>
+{
+    "id": "uuid",
+    "createdAt": "2026-06-22T10:00:00Z",
+    "name": "John Doe",
+    "company": "Acme Inc",
+    "email": "john@example.com",
+    "phone": "+123456789",
+    "service": "AI Solutions",
+    "budget": "$10,000-$25,000",
+    "description": "Need an AI chatbot",
+    "status": "NEW"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Additional Enterprise Features</h2>
+            <ul>
+                <li>CRM integration (HubSpot, Salesforce)</li>
+                <li>Slack notifications</li>
+                <li>Calendly scheduling link</li>
+                <li>Lead scoring</li>
+                <li>Automatic quote generation</li>
+                <li>Admin dashboard</li>
+                <li>Analytics conversion tracking</li>
+                <li>Multi-language support/li>
+            </ul>
+            <p>For your AWS serverless stack, the most professional setup is:</p>
+            <p>Next.js → API Gateway → Lambda → DynamoDB → SES → CloudWatch + WAF + CAPTCHA</p>
+            <p>This is the architecture commonly used by agencies, SaaS companies, and enterprise consulting firms because it is scalable, secure, and inexpensive to operate.</p>
+        </section>
+
+        <section>
+          <h2>Request for Quote (RFQ)</h2>
+          <p>For a professional Request for Quote (RFQ) system using AWS + Node.js + Next.js, the goal is:</p>
+          <ol>
+            <li>Customer submits a quote request.</li>
+            <li>System validates and blocks spam.</li>
+            <li>Data is stored safely.</li>
+            <li>Email notifications are sent.</li>
+            <li>Admin can review all quote requests.</li>
+            <li>System scales automatically and costs very little.</li>
+          </ol>
+        </section>
+
+        <section>
+          <h2>Architecture</h2>
+          <pre><code>
+Customer
+    │
+    ▼
+Next.js Website
+    │
+    ▼
+API Gateway
+    │
+    ▼
+AWS Lambda (Node.js)
+    │
+ ┌──┼─────────────┐
+ ▼  ▼             ▼
+SES DynamoDB   CloudWatch
+ │    │            │
+ ▼    ▼            ▼
+Email  Store     Logs
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Frontend (Next.js)</h2>
+          <p>The website contains a quote form.</p>
+          <p>Example Fields</p>
+          <pre><code>
+Name *
+Email *
+Phone
+Company
+Project Type *
+Budget
+Timeline
+Project Description *
+          </code></pre>
+          <p>Example:</p>
+<pre><code>
+  &lt;form&gt;
+    &lt;input name="name" /&gt;
+    &lt;input name="email" /&gt;
+    &lt;input name="phone" />
+    &lt;textarea name="projectDescription" /&gt;
+  &lt;/form&gt;
+</code></pre>
+        </section>
+
+        <section>
+          <h2>Responsibilities</h2>
+          <ul>
+            <li>Collect user data</li>
+            <li>Client-side validation</li>
+            <li>CAPTCHA verification</li>
+            <li>Call AWS API</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>API Gateway</h2>
+          <p>Acts as the public endpoint.</p>
+          <p>Example:</p>
+          <pre><code>
+POST /quote
+          </code></pre>
+          <p>Benefits:</p>
+          <ul>
+            <li>HTTPS automatically</li>
+            <li>Rate limiting</li>
+            <li>Security</li>
+            <li>Scales automatically</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>AWS Lambda (Node.js)</h2>
+          <p>Lambda handles the business logic.</p>
+          <p>Example flow:</p>
+          <pre><code>
+export const handler = async (event) => {
+  const body = JSON.parse(event.body);
+
+  // validate
+
+  // save to DynamoDB
+
+  // send email
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      success: true
+    })
+  };
+};
+          </code></pre>
+          <p>Responsibilities:</p>
+          <ul>
+            <li>Validate input</li>
+            <li>Check spam</li>
+            <li>Store quote</li>
+            <li>Send emails</li>
+            <li>Generate quote ID</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Validation (Zod)</h2>
+          <p>Industry standard validation.</p>
+          <pre><code>
+import { z } from "zod";
+
+const QuoteSchema = z.object({
+  name: z.string().min(2),
+  email: z.email(),
+  projectDescription: z.string().min(20)
+});
+          </code></pre>
+          <p>Prevents:</p>
+          <ul>
+            <li>Invalid emails</li>
+            <li>Missing fields</li>
+            <li>Garbage input</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>CAPTCHA Protection</h2>
+          <p>Use:</p>
+          <ul>
+            <li>Google reCAPTCHA</li>
+            <li>Cloudflare Turnstile</li>
+          </ul>
+
+          <p>Cloudflare Turnstile is popular because:</p>
+          <ul>
+            <li>Free</li>
+            <li>Better UX</li>
+            <li>Privacy-friendly</li>
+          </ul>
+
+          <p>Flow:</p>
+          <pre><code>
+User
+ ↓
+Turnstile Token
+ ↓
+Lambda verifies token
+ ↓
+Accept request
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>DynamoDB</h2>
+          <p>Stores quote requests.</p>
+          <p>Table:</p>
+          <pre><code>
+Quotes
+          </code></pre>
+          <p>Item:</p>
+          <pre><code>
+{
+  "quoteId": "Q-20260622-001",
+  "name": "Paul",
+  "email": "paul@example.com",
+  "projectType": "Mobile App",
+  "description": "...",
+  "createdAt": "2026-06-22T10:00:00Z",
+  "status": "NEW"
+}
+          </code></pre>
+          <p>Partition Key:</p>
+          <pre><code>
+quoteId
+          </code></pre>
+          <p>Why DynamoDB?</p>
+          <ul>
+            <li>Serverless</li>
+            <li>Fast</li>
+            <li>Auto scaling</li>
+            <li>No database servers</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Generate Unique Quote IDs</h2>
+          <p>Example:</p>
+          <pre><code>
+import { randomUUID } from "crypto";
+
+const quoteId = randomUUID();
+          </code></pre>
+          <p>Example:</p>
+          <pre><code>
+e2d79306-7cb8-42b5-ae6d-c887f5d1f72e
+          </code></pre>
+          <p>UUID collisions are practically impossible.</p>
+        </section>
+
+        <section>
+          <h2>Send Email (SES)</h2>
+          <p>Use Amazon SES</p>
+          <p>Customer receives:</p>
+          <pre><code>
+Thank you for your request.
+
+Quote ID:
+Q-20260622-001
+          </code></pre>
+          <p>Admin receives:</p>
+          <pre><code>
+New Quote Request
+
+Name: Paul
+Email: paul@example.com
+          </code></pre>
+
+          <p>Lambda example:</p>
+          <pre><code>
+await ses.send(
+  new SendEmailCommand({
+    ...
+  })
+);
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Rate Limiting</h2>
+          <p>Industry standard:</p>
+          <p>Layer 1</p>
+          <p>API Gateway throttling</p>
+          <pre><code>
+10 requests/minute
+          </code></pre>
+
+          <p>Layer 2</p>
+          <p>Per-IP limit</p>
+          <p>Store in DynamoDB:</p>
+          <pre><code>
+1 quote every 5 minutes
+          </code></pre>
+
+          <p>Layer 3</p>
+          <p>CAPTCHA</p>
+          <p>Blocks bots.</p>
+        </section>
+
+        <section>
+          <h2>Logging</h2>
+          <p>Use Amazon CloudWatch</p>
+          <p>Logs:</p>
+          <pre><code>
+console.log("Quote submitted");
+          </code></pre>
+          <p>Track:</p>
+          <ul>
+            <li>Success</li>
+            <li>Failures</li>
+            <li>Spam attempts</li>
+            <li>Email delivery</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Admin Dashboard</h2>
+          <p>Create a protected Next.js page.</p>
+          <pre><code>
+/admin/quotes
+          </code></pre>
+          <p>Reads DynamoDB.</p>
+          <pre><code>
+Quote ID
+Customer
+Date
+Status
+          </code></pre>
+          <p>Statuses:</p>
+          <pre><code>
+NEW
+REVIEWING
+QUOTED
+WON
+LOST
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Authentication</h2>
+          <p>For admin users:</p>
+          <p>Option 1</p>
+          <p>Use Amazon Cognito</p>
+          <p>Option 2</p>
+          <p>Use NextAuth</p>
+          <p>Cognito is generally preferred for an AWS serverless stack.</p>
+        </section>
+
+        <section>
+          <h2>File Uploads (Optional)</h2>
+          <p>Customer uploads:</p>
+          <ul>
+            <li>PDF</li>
+            <li>DOCX</li>
+            <li>Images</li>
+          </ul>
+          <p>Store in:</p>
+          <p>Amazon S3</p>
+          <p>Flow:</p>
+          <pre><code>
+Browser
+ ↓
+S3
+ ↓
+Lambda
+ ↓
+DynamoDB
+          </code></pre>
+          <p>Never upload files through Lambda for large files.</p>
+        </section>
+
+        <section>
+          <h2>Production AWS Stack</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Service</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Frontend</td>
+                <td>Next.js</td>
+              </tr>
+              <tr>
+                <td>Hosting</td>
+                <td>Vercel or AWS Amplify</td>
+              </tr>
+              <tr>
+                <td>API</td>
+                <td>API Gateway</td>
+              </tr>
+              <tr>
+                <td>Backend</td>
+                <td>Lambda</td>
+              </tr>
+              <tr>
+                <td>Database</td>
+                <td>DynamoDB</td>
+              </tr>
+              <tr>
+                <td>Email</td>
+                <td>SES</td>
+              </tr>
+              <tr>
+                <td>Files</td>
+                <td>S3</td>
+              </tr>
+              <tr>
+                <td>Auth</td>
+                <td>Cognito</td>
+              </tr>
+              <tr>
+                <td>Logging</td>
+                <td>CloudWatch</td>
+              </tr>
+              <tr>
+                <td>Validation</td>
+                <td>Zod</td>
+              </tr>
+              <tr>
+                <td>Spam Protection</td>
+                <td>Turnstile</td>
+              </tr>
+              <tr>
+                <td>Monitoring</td>
+                <td>AWS X-Ray</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>Industry-Standard Flow</h2>
+          <pre><code>
+Customer
+   ↓
+Next.js Form
+   ↓
+Turnstile CAPTCHA
+   ↓
+API Gateway
+   ↓
+Lambda
+   ↓
+Zod Validation
+   ↓
+Rate Limit Check
+   ↓
+Store in DynamoDB
+   ↓
+Send SES Emails
+   ↓
+CloudWatch Logging
+   ↓
+Admin Dashboard
+          </code></pre>
+          <p>For your background in AWS serverless and Next.js, this architecture is the typical production design because it is secure, highly scalable, inexpensive at low traffic, and requires no server management.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

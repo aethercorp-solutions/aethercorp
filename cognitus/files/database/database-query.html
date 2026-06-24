@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SQL queries vs Mongodb queries</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">SQL queries vs Mongodb queries</h1>
+                    <p class="subtitle">
+                        Think of it like this: SQL queries are like filling out a strict form, while MongoDB queries are like searching through flexible notes or JSON documents.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>🧾 SQL (Structured Query Language)</h2>
+            <p>Used in traditional relational databases like MySQL, PostgreSQL, etc.</p>
+            <p>How it works:</p>
+            <ul>
+                <li>Data is stored in tables (like Excel sheets)</li>
+                <li>Every row has fixed columns</li>
+                <li>You must follow a strict structure</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+SELECT name, age
+FROM users
+WHERE age > 18;
+            </code></pre>
+            <p>Key idea:</p>
+            <p>You are telling the database:</p>
+            <p>“Go to this table, pick these columns, and filter rows like this.”</p>
+        </section>
+
+        <section>
+            <h2>🍃 MongoDB Query</h2>
+            <p>Used in MongoDB</p>
+            <p>How it works:</p>
+            <ul>
+                <li>Data is stored as documents (JSON-like objects)</li>
+                <li>Each record can have different fields</li>
+                <li>More flexible structure</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+db.users.find({
+    age: { $gt: 18 }
+    }, {
+    name: 1,
+    age: 1
+});
+            </code></pre>
+            <p>Key idea:</p>
+            <p>You are telling the database:</p>
+            <p>“Find documents that match this pattern.”</p>
+        </section>
+
+        <section>
+            <h2>⚖️ Simple Difference</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>SQL</th>
+                        <th>MongoDB</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Data format</td>
+                        <td>Tables (rows & columns)</td>
+                        <td>JSON-like documents</td>
+                    </tr>
+                    <tr>
+                        <td>Structure</td>
+                        <td>Fixed</td>
+                        <td>Flexible</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

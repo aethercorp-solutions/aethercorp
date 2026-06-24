@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Zod</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Zod</h1>
+                    <p class="subtitle">Zod is not specific to Next.js</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>
+                Zod is a TypeScript-first schema validation library that can be used anywhere JavaScript or TypeScript runs:
+            </h2>
+            <ul>
+                <li>✅ Next.js</li>
+                <li>✅ React</li>
+                <li>✅ React Native</li>
+                <li>✅ Node.js</li>
+                <li>✅ Express.js</li>
+                <li>✅ AWS Lambda</li>
+                <li>✅ NestJS</li>
+                <li>✅ Vue</li>
+                <li>✅ Angular</li>
+                <li>✅ CLI applications</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why use Zod?</h2>
+            <p>It validates data at runtime and provides TypeScript type inference.</p>
+            <p>Example:</p>
+            <pre><code>
+import { z } from "zod";
+
+const UserSchema = z.object({
+  name: z.string(),
+  email: z.email(),
+  age: z.number().min(18),
+});
+
+const result = UserSchema.safeParse({
+  name: "Paul",
+  email: "paul@example.com",
+  age: 25,
+});
+
+if (!result.success) {
+  console.log(result.error);
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>AWS Lambda Example</h2>
+            <pre><code>
+import { z } from "zod";
+
+const QuoteSchema = z.object({
+  name: z.string().min(2),
+  email: z.email(),
+  project: z.string().min(10),
+});
+
+export const handler = async (event) => {
+  const body = JSON.parse(event.body);
+
+  const validated = QuoteSchema.safeParse(body);
+
+  if (!validated.success) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify(validated.error.flatten()),
+    };
+  }
+
+  // Safe validated data
+  const quote = validated.data;
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: "Success" }),
+  };
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>React Native Example</h2>
+            <pre><code>
+const LoginSchema = z.object({
+    email: z.email(),
+    password: z.string().min(8),
+});
+    
+const result = LoginSchema.safeParse({
+    email,
+    password,
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Industry Standard Usage</h2>
+            <p>For your AWS serverless projects (Lambda + API Gateway + DynamoDB), a common stack is:</p>
+            <pre><code>
+Frontend (Next.js / React Native)
+          ↓
+      API Gateway
+          ↓
+      AWS Lambda
+          ↓
+    Zod Validation
+          ↓
+ DynamoDB / MongoDB
+            </code></pre>
+            <p>The key idea is: never trust client input. Validate every request in Lambda using Zod before writing to DynamoDB or processing business logic.</p>
+            <p>For a Request-for-Quote system, using Zod in the Lambda layer is considered an industry-standard approach.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

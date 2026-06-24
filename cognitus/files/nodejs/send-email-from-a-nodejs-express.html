@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Send email from a Node.js + Express</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Send email from a Node.js + Express</h1>
+                    <p class="subtitle">A common way to send email from a Node.js + Express application is to use the popular email library Nodemailer.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Install Nodemailer</h2>
+            <pre><code>
+npm install nodemailer
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Create an email utility</h2>
+            <pre><code>
+// email.js
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD, // App Password for Gmail
+  },
+});
+
+async function sendEmail(to, subject, html) {
+  const info = await transporter.sendMail({
+    from: `"My App" <${process.env.EMAIL_USER}>`,
+    to,
+    subject,
+    html,
+  });
+
+  return info;
+}
+
+module.exports = sendEmail;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Create an Express route</h2>
+            <pre><code>
+// app.js
+const express = require("express");
+const sendEmail = require("./email");
+
+const app = express();
+
+app.use(express.json());
+
+app.post("/send-email", async (req, res) => {
+  try {
+    const { to, subject, message } = req.body;
+
+    await sendEmail(
+      to,
+      subject,
+      `&lt;h1&gt;Hello!&lt;/h1&gt;&lt;p&gt;${message}&lt;/p&gt;`
+    );
+
+    res.json({
+      success: true,
+      message: "Email sent successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Set environment variables</h2>
+            <p>Create a .env file:</p>
+            <pre><code>
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
+            </code></pre>
+            <p>Then load it:</p>
+            <pre><code>
+npm install dotenv
+            </code></pre>
+            <pre><code>
+require("dotenv").config();
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Gmail note</h2>
+            <p>If you're using Gmail, use a Google App Password instead of your regular password. You can generate one from your Google Account security settings after enabling 2-Step Verification.</p>
+            <p>Production recommendation</p>
+            <p>For production applications, it's usually better to use a dedicated email provider rather than Gmail, such as:</p>
+            <ul>
+                <li>SendGrid</li>
+                <li>Resend</li>
+                <li>Mailgun</li>
+                <li>Amazon SES</li>
+            </ul>
+            <p>For example, with Resend:</p>
+            <pre><code>
+npm install resend
+            </code></pre>
+            <pre><code>
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+await resend.emails.send({
+  from: "noreply@yourdomain.com",
+  to: "user@example.com",
+  subject: "Welcome",
+  html: "&lt;h1&gt;Welcome!&lt;/h1&gt;",
+});
+            </code></pre>
+            <p>If you're building a contact form, password reset flow, OTP system, or transactional email service, I can show a more complete production-ready example with templates, queues, retries, and rate limiting.</p>
+        </section>
+
+        <section>
+            <p>They're actually different things that work at different layers.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nodemailer</th>
+                        <th>Dedicated Email Provider</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A Node.js library</td>
+                        <td>An email delivery service</td>
+                    </tr>
+                    <tr>
+                        <td>Runs in your application</td>
+                        <td>Runs on external infrastructure</td>
+                    </tr>
+                    <tr>
+                        <td>Creates and sends email messages</td>
+                        <td>Delivers emails to recipients</td>
+                    </tr>
+                    <tr>
+                        <td>Free/open-source</td>
+                        <td>Usually paid (with free tiers)</td>
+                    </tr>
+                    <tr>
+                        <td>Needs an SMTP server or API behind it</td>
+                        <td>Provides SMTP servers and APIs</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Analogy</p>
+            <p>Think of sending a package:</p>
+            <ul>
+                <li>Nodemailer = the software you use to prepare the package and hand it off.</li>
+                <li>Resend, SendGrid, Mailgun, Amazon SES = the postal service that actually delivers it.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Option 1: Nodemailer + Gmail</h2>
+            <pre><code>
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: "you@gmail.com",
+        pass: "app-password"
+    }
+});
+            </code></pre>
+            <p>Pros:</p>
+            <ul>
+                <li>Easy to start</li>
+                <li>Good for development and small projects</li>
+                <li>No extra service to set up</li>
+            </ul>
+
+            <p>Cons:</p>
+            <ul>
+                <li>Sending limits</li>
+                <li>Emails may end up in spam more often</li>
+                <li>Not designed for high-volume transactional email</li>
+                <li>Harder to track delivery status</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Option 2: Nodemailer + Dedicated Provider</h2>
+            <p>You can still use Nodemailer, but connect it to a provider's SMTP server:</p>
+            <pre><code>
+const transporter = nodemailer.createTransport({
+    host: "smtp.sendgrid.net",
+    port: 587,
+    auth: {
+        user: "apikey",
+        pass: process.env.SENDGRID_API_KEY
+    }
+});
+            </code></pre>
+            <p>Pros:</p>
+            <ul>
+                <li>Better deliverability</li>
+                <li>Domain authentication (SPF, DKIM, DMARC)</li>
+                <li>Analytics and logs</li>
+                <li>Higher sending limits</li>
+            </ul>
+            <p>Cons:</p>
+            <ul>
+                <li>Additional cost</li>
+                <li>Requires domain setup</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Option 3: Provider SDK/API (No Nodemailer)</h2>
+            <p>For example with Resend:</p>
+            <pre><code>
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+await resend.emails.send({
+  from: "hello@yourdomain.com",
+  to: "user@example.com",
+  subject: "Welcome",
+  html: "&lt;h1&gt;Hello&lt;/h1&gt;"
+});
+            </code></pre>
+            <p>Pros:</p>
+            <ul>
+                <li>Simpler integration</li>
+                <li>Better error reporting</li>
+                <li>Modern APIs</li>
+                <li>Faster access to provider features</li>
+            </ul>
+            <p>Cons:</p>
+            <ul>
+                <li>Vendor-specific code</li>
+                <li>Need to learn each provider's API</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What should you use?</h2>
+            <p>For learning or small side projects</p>
+            <ul>
+                <li>Nodemailer + Gmail is fine.</li>
+            </ul>
+            <p>For production apps</p>
+            <ul>
+                <li>Use a dedicated provider such as Resend, SendGrid, or Amazon SES</li>
+                <li>Prefer the provider's API/SDK over SMTP when available.</li>
+            </ul>
+            <p>A common production stack today is:</p>
+            <pre><code>
+Express API
+    ↓
+Resend SDK
+    ↓
+Resend Infrastructure
+    ↓
+Recipient Inbox
+            </code></pre>
+            <p>rather than:</p>
+            <pre><code>
+Express API
+    ↓
+Nodemailer
+    ↓
+Gmail SMTP
+    ↓
+Recipient Inbox
+            </code></pre>
+            <p>The second approach works, but the first is generally more reliable and scalable once you have real users.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

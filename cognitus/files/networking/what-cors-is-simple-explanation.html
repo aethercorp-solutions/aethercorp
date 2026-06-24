@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What CORS is (simple explanation)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What CORS is (simple explanation)</h1>
+                    <p class="subtitle">
+                        CORS (Cross-Origin Resource Sharing) is a browser security rule.
+                        <p>It controls whether a web page running on one origin (domain) is allowed to request data from another origin.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>An origin = protocol + domain + port</h2>
+            <p>Example:</p>
+            <ul>
+                <li>http://localhost:3000 (Next.js frontend)</li>
+                <li>http://localhost:5000 (Node/Express API)</li>
+            </ul>
+            <p>These are different origins, so the browser blocks requests by default unless the API explicitly allows them.</p>
+        </section>
+
+        <section>
+            <h2>Why CORS exists</h2>
+            <p>Without CORS:</p>
+            <ul>
+                <li>Any website could call your API in the background</li>
+                <li>Steal data from logged-in users (cookies/tokens)</li>
+                <li>Perform unauthorized actions</li>
+            </ul>
+            <p>So the browser says:</p>
+            <p>“I will only allow this request if the server says it’s safe.”</p>
+        </section>
+
+        <section>
+            <h2>How CORS works (behind the scenes)</h2>
+            <ol>
+                <li>
+                    Your frontend sends a request:
+                    <pre><code>
+GET /api/data
+Origin: http://localhost:3000
+                    </code></pre>
+                </li>
+                <li>
+                    If it’s a “non-simple request” (like POST with JSON or Authorization header), the browser first sends a preflight request:
+                    <pre><code>
+OPTIONS /api/data
+Origin: http://localhost:3000
+                    </code></pre>
+                </li>
+                <li>
+                    Server responds with allowed rules:
+                    <pre><code>
+Access-Control-Allow-Origin: http://localhost:3000
+Access-Control-Allow-Methods: GET, POST
+Access-Control-Allow-Headers: Content-Type, Authorization
+                    </code></pre>
+                </li>
+                <li>If allowed → browser sends real request.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ Setup CORS in Node.js + Express</h2>
+            <ol>
+                <li>
+                    Install middleware
+                    <pre><code>
+npm install cors
+                    </code></pre>
+                </li>
+                <li>
+                    Basic setup (allow all origins — dev only)
+                    <pre><code>
+import express from "express";
+import cors from "cors";
+
+const app = express();
+
+app.use(cors());
+
+app.get("/api/data", (req, res) => {
+  res.json({ message: "Hello world" });
+});
+
+app.listen(5000);
+                    </code></pre>
+                </li>
+                <li>
+                    Secure setup (recommended)
+                    <pre><code>
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true, // if using cookies/auth
+  })
+);
+                    </code></pre>
+                </li>
+                <li>
+                    If using multiple environments
+                    <pre><code>
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://your-production-site.com",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+                    </code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✅ Setup CORS in Next.js</h2>
+            <p>Option 1: If calling external API (Express backend)</p>
+            <p>You don’t “enable CORS” in Next.js — you just call the API:</p>
+            <pre><code>
+const res = await fetch("http://localhost:5000/api/data");
+const data = await res.json();
+            </code></pre>
+            <p>But your Express server must allow Next.js origin.</p>
+        </section>
+
+        <section>
+            <h2>Option 2: Proxy via Next.js API routes (best practice)</h2>
+            <p>This avoids CORS completely.</p>
+            <pre><code>
+/pages/api/data.js
+            </code></pre>
+            <pre><code>
+export default async function handler(req, res) {
+    const response = await fetch("http://localhost:5000/api/data");
+    const data = await response.json();
+    
+    res.status(200).json(data);
+}
+            </code></pre>
+            <p>Now frontend calls:</p>
+            <pre><code>
+fetch("/api/data");
+            </code></pre>
+            <p>👉 No CORS needed because it’s same-origin.</p>
+        </section>
+
+        <section>
+            <h2>Option 3: Next.js rewrite proxy (cleanest)</h2>
+            <p>next.config.js</p>
+            <pre><code>
+module.exports = {
+    async rewrites() {
+        return [
+        {
+            source: "/api/:path*",
+            destination: "http://localhost:5000/api/:path*",
+        },
+        ];
+    },
+};
+            </code></pre>
+            <p>Now:</p>
+            <pre><code>
+fetch("/api/data");
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔥 Best practices</h2>
+            <ol>
+                <li>
+                    Never use * in production with auth
+                    <p>Bad:</p>
+                    <pre><code>
+origin: "*"
+                    </code></pre>
+                </li>
+                <li>
+                    Use credentials: true only if needed
+                    <p>If you're using cookies or sessions.</p>
+                </li>
+                <li>
+                    Prefer Next.js proxy (rewrite or API route)
+                    <p>It avoids:</p>
+                    <ul>
+                        <li>CORS issues</li>
+                        <li>exposed backend URLs</li>
+                        <li>authentication headaches</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>🚀 Summary</h2>
+            <ul>
+                <li>CORS = browser security rule, not backend limitation</li>
+                <li>Express must explicitly allow frontend origin</li>
+                <li>Next.js doesn’t “fix CORS” — it avoids it via proxying</li>
+                <li>Best solution: Next.js rewrite or API routes</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

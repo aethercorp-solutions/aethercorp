@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is a Vector Embedding?</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is a Vector Embedding?</h1>
+                    <p class="subtitle">
+                        Vector embeddings are the foundation of modern AI search, recommendation systems, semantic search, and Retrieval-Augmented Generation (RAG).
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is a Vector Embedding?</h2>
+            <p>A vector embedding is simply a list of numbers that represents the meaning of something.</p>
+            <p>Example:</p>
+            <p>Text:</p>
+            <p>"I love dogs"</p>
+            <p>Embedding:</p>
+            <pre><code>
+[0.21, -0.44, 0.82, 0.15, ...]
+            </code></pre>
+            <p>Modern AI models produce vectors with hundreds or thousands of dimensions.</p>
+            <p>For example:</p>
+            <ul>
+                <li>OpenAI embeddings: 1536+ numbers</li>
+                <li>Some models: 768 numbers</li>
+                <li>Others: 3072+ numbers</li>
+            </ul>
+            <p>Each number alone means nothing.</p>
+            <p>The pattern of all numbers together represents meaning.</p>
+        </section>
+
+        <section>
+            <h2>2. How AI Creates Embeddings</h2>
+            <p>Suppose we have:</p>
+            <pre><code>
+Dog
+Puppy
+Cat
+Car
+Truck
+            </code></pre>
+            <p>The AI reads billions of documents and learns:</p>
+            <pre><code>
+Dog appears near:
+- pet
+- bark
+- animal
+- puppy
+
+Car appears near:
+- engine
+- wheel
+- road
+            </code></pre>
+            <p>Eventually it learns relationships.</p>
+            <p>Then it converts words into vectors.</p>
+            <p>Example (simplified):</p>
+            <pre><code>
+Dog   = [0.8, 0.9, 0.2]
+Puppy = [0.7, 0.8, 0.3]
+Cat   = [0.75, 0.85, 0.1]
+Car   = [0.1, 0.2, 0.9]
+            </code></pre>
+            <p>Notice:</p>
+            <pre><code>
+Dog
+Puppy
+Cat
+            </code></pre>
+            <p>are close together.</p>
+            <pre><code>
+Car
+            </code></pre>
+            <p>is far away.</p>
+        </section>
+
+        <section>
+            <h2>3. Visualizing Vector Space</h2>
+            <p>Imagine a giant coordinate system.</p>
+            <pre><code>
+    Cat
+    *
+Dog *
+    Puppy *
+
+
+
+
+                    Car *
+                        Truck *
+            </code></pre>
+            <p>Similar meanings cluster together.</p>
+            <p>This space is called:</p>
+            <p>Embedding Space</p>
+        </section>
+
+        <section>
+            <h2>4. Sentence Embeddings</h2>
+            <p>AI doesn't only embed words.</p>
+            <p>It embeds entire sentences.</p>
+            <p>Example:</p>
+            <pre><code>
+I want a dog
+            </code></pre>
+            <p>might become:</p>
+            <pre><code>
+[0.22, 0.77, -0.11, ...]
+            </code></pre>
+            <p>And:</p>
+            <pre><code>
+I would like a puppy
+            </code></pre>
+            <p>might become:</p>
+            <p>Different words.</p>
+            <p>Same meaning.</p>
+            <p>Very close vectors.</p>
+        </section>
+
+        <section>
+            <h2>5. How Semantic Search Works</h2>
+            <p>Traditional search:</p>
+            <pre><code>
+Search: dog
+            </code></pre>
+            <p>Looks for exact keyword:</p>
+            <pre><code>
+dog
+            </code></pre>
+            <p>If document says:</p>
+            <pre><code>
+puppy
+            </code></pre>
+            <p>it might miss it.</p>
+
+            <p>Vector Search:</p>
+            <p>Convert query into embedding:</p>
+            <pre><code>
+dog
+            </code></pre>
+            <p>↓</p>
+            <pre><code>
+[0.8, 0.9, 0.2]
+            </code></pre>
+            <p>Database already stores embeddings.</p>
+            <pre><code>
+Document A: puppy
+[0.7,0.8,0.3]
+
+Document B: car
+[0.1,0.2,0.9]
+            </code></pre>
+            <p>AI calculates similarity.</p>
+            <p>Result:</p>
+            <pre><code>
+dog ↔ puppy
+= very similar
+
+dog ↔ car
+= not similar
+            </code></pre>
+            <p>Therefore:</p>
+            <p>puppy</p>
+            <p>is returned even without the word "dog".</p>
+        </section>
+
+        <section>
+            <h2>6. How Similarity is Calculated</h2>
+            <p>Most systems use:</p>
+            <p>Cosine Similarity</p>
+            <p>It measures the angle between vectors.</p>
+            <pre><code>
+Same direction
+= similarity near 1.0
+
+Different direction
+= similarity near 0
+
+Opposite direction
+= similarity near -1
+            </code></pre>
+            <p>Formula:</p>
+            <pre><code>
+similarity =
+(A · B) / (|A| × |B|)
+            </code></pre>
+            <p>Think:</p>
+            <pre><code>
+Same meaning
+→ small angle
+
+Different meaning
+→ large angle
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. How AI Search Works</h2>
+            <p>Suppose you have documents:</p>
+            <pre><code>
+1. Dogs are loyal pets
+2. Cats like climbing
+3. Electric cars use batteries
+            </code></pre>
+            <p>Store embeddings:</p>
+            <pre><code>
+Doc1 → Vector
+Doc2 → Vector
+Doc3 → Vector
+            </code></pre>
+            <p>User searches:</p>
+            <p>Which animal is man's best friend?</p>
+            <p>AI creates query embedding.</p>
+            <p>Then compares against all document vectors.</p>
+            <p>Result:</p>
+            <pre><code>
+Doc1
+            </code></pre>
+            <p>because its vector is closest.</p>
+            <p>Even though:</p>
+            <p>man's best friend</p>
+            <p>never appears in the document.</p>
+        </section>
+
+        <section>
+            <h2>8. How ChatGPT RAG Uses Embeddings</h2>
+            <p>Suppose your company has:</p>
+            <pre><code>
+10,000 PDFs
+            </code></pre>
+            <p>Steps:</p>
+            <p>Step 1</p>
+            <p>Split documents into chunks.</p>
+            <pre><code>
+Chunk 1
+Chunk 2
+Chunk 3
+            </code></pre>
+            <p>Step 2</p>
+            <p>Create embeddings.</p>
+            <p>Chunk → Vector</p>
+            <p>Step 3</p>
+            <p>Store in vector database.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Pinecone</li>
+                <li>Weaviate</li>
+                <li>Qdrant</li>
+                <li>Milvus</li>
+            </ul>
+            <p>Step 4</p>
+            <p>User asks:</p>
+            <pre><code>
+What is our refund policy?
+            </code></pre>
+            <p>Step 5</p>
+            <p>Question becomes embedding.</p>
+            <p>Step 6</p>
+            <p>Nearest chunks found.</p>
+            <p>Step 7</p>
+            <p>Relevant chunks sent to LLM.</p>
+            <p>Step 8</p>
+            <p>LLM generates answer.</p>
+            <p>This is Retrieval-Augmented Generation (RAG).</p>
+        </section>
+
+        <section>
+            <h2>9. Why Dimensions Can Be 1536+</h2>
+            <p>A single dimension might capture tiny patterns such as:</p>
+            <pre><code>
+Animalness
+Vehicle-ness
+Technology
+Emotion
+Food
+Location
+Action
+            </code></pre>
+            <p>But modern models don't manually define dimensions.</p>
+            <p>They learn them automatically.</p>
+            <p>Example:</p>
+            <pre><code>
+[0.41,
+-0.82,
+0.12,
+...
+1536 values]
+            </code></pre>
+            <p>The entire vector collectively encodes meaning.</p>
+        </section>
+
+        <section>
+            <h2>10. Real Example</h2>
+            <p>Query:</p>
+            <pre><code>
+How do I authenticate users with AWS Cognito?
+            </code></pre>
+            <p>Embedding:</p>
+            <pre><code>
+[0.14, 0.82, -0.22, ...]
+            </code></pre>
+            <p>Possible documents:</p>
+            <pre><code>
+AWS Cognito Authentication Guide
+            </code></pre>
+            <pre><code>
+User Login with Cognito JWT
+            </code></pre>
+            <pre><code>
+MongoDB Indexing Tutorial
+            </code></pre>
+            <p>Similarity:</p>
+            <pre><code>
+Guide 1 = 0.95
+Guide 2 = 0.92
+Guide 3 = 0.20
+            </code></pre>
+            <p>The first two are returned.</p>
+            <p>This is exactly how AI-powered documentation search works.</p>
+        </section>
+
+        <section>
+            <h2>11. Connecting It To Your AWS + Next.js Projects</h2>
+            <p>For a Request-for-Quote platform:</p>
+            <pre><code>
+Customer submits RFQ
+            </code></pre>
+            <p>Create embedding:</p>
+            <pre><code>
+"Need React Native app with AWS backend"
+            </code></pre>
+            <p>Store vector in:</p>
+            <ul>
+                <li>Amazon OpenSearch Service</li>
+                <li>Pinecone</li>
+                <li>Qdrant</li>
+            </ul>
+            <p>Later search:</p>
+            <pre><code>
+mobile app project
+            </code></pre>
+            <p>The system can find similar RFQs even if the wording is different.</p>
+            <p>That's the power of embeddings: AI searches by meaning, not just keywords.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

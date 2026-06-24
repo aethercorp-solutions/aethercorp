@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Production-grade AWS serverless “Request a Quote” system</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Production-grade AWS serverless “Request a Quote” system</h1>
+                    <p class="subtitle">
+                        Below is a production-grade AWS serverless “Request a Quote” system. This is the kind of architecture used in real SaaS backends.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>You’ll get:</h2>
+            <ul>
+                <li>API Gateway (HTTP API)</li>
+                <li>Lambda (Node.js)</li>
+                <li>DynamoDB (storage + rate limit tracking)</li>
+                <li>SES (email delivery)</li>
+                <li>Cloudflare Turnstile CAPTCHA (bot protection)</li>
+                <li>CloudWatch + optional admin logging dashboard</li>
+                <li>IAM least-privilege setup</li>
+                <li>Clean scalable structure (ready for Serverless Framework or CDK)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🧠 1. Architecture Overview</h2>
+            <pre><code>
+Next.js frontend
+      ↓
+API Gateway (POST /quote)
+      ↓
+Lambda (validation + captcha + rate limit)
+      ↓
+DynamoDB (store leads + rate limit logs)
+      ↓
+SES (send email notification)
+      ↓
+CloudWatch Logs (monitoring)
+            </code></pre>
+            <p>Optional:</p>
+            <ul>
+                <li>Admin dashboard reads from DynamoDB</li>
+                <li>Alerts via SNS</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📦 2. DynamoDB Tables</h2>
+            <p>Table 1: QuoteRequests</p>
+            <pre><code>
+PK: quoteId (string)
+email: string
+name: string
+project: string
+ip: string
+createdAt: number
+status: "NEW" | "SENT" | "FAILED"
+            </code></pre>
+            <p>Table 2: RateLimit</p>
+            <pre><code>
+PK: rateKey (email+ip)
+ttl: number (auto-expire after 24h)
+count: number
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚙️ 3. Serverless Framework Setup</h2>
+            <p>📁 serverless.yml</p>
+            <pre><code>
+service: quote-system
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-1
+  environment:
+    TABLE_QUOTES: QuoteRequests
+    TABLE_RATE: RateLimit
+    EMAIL_FROM: noreply@yourdomain.com
+    EMAIL_TO: your@email.com
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:UpdateItem
+          Resource: "*"
+
+        - Effect: Allow
+          Action:
+            - ses:SendEmail
+          Resource: "*"
+
+functions:
+  submitQuote:
+    handler: src/submitQuote.handler
+    events:
+      - httpApi:
+          path: /quote
+          method: POST
+
+resources:
+  Resources:
+
+    QuoteTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: QuoteRequests
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: quoteId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: quoteId
+            KeyType: HASH
+
+    RateTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: RateLimit
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: rateKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: rateKey
+            KeyType: HASH
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🔐 4. CAPTCHA (Cloudflare Turnstile)</h2>
+            <p>Frontend sends:</p>
+            <pre><code>
+captchaToken
+            </code></pre>
+            <p>Backend verifies:</p>
+            <pre><code>
+async function verifyCaptcha(token: string) {
+    const res = await fetch(
+        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                secret: process.env.TURNSTILE_SECRET!,
+                response: token,
+            }),
+        }
+    );
+    
+    const data = await res.json();
+    return data.success;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>⚡ 5. Lambda Function (Core Logic)</h2>
+            <p>📁 src/submitQuote.ts</p>
+            <pre><code>
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { randomUUID } from "crypto";
+
+const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const ses = new SESClient({});
+
+const TABLE_QUOTES = process.env.TABLE_QUOTES!;
+const TABLE_RATE = process.env.TABLE_RATE!;
+
+export const handler = async (event: any) => {
+  try {
+    const body = JSON.parse(event.body || "{}");
+
+    const { name, email, project, captchaToken } = body;
+
+    const ip =
+      event.headers["x-forwarded-for"]?.split(",")[0] || "unknown";
+
+    // 1. CAPTCHA VERIFY
+    const captchaOk = await verifyCaptcha(captchaToken);
+    if (!captchaOk) {
+      return response(400, "Invalid CAPTCHA");
+    }
+
+    // 2. RATE LIMIT (1 per day per email+ip)
+    const rateKey = `${email}:${ip}`;
+
+    const rate = await ddb.send(
+      new GetCommand({
+        TableName: TABLE_RATE,
+        Key: { rateKey },
+      })
+    );
+
+    if (rate.Item) {
+      return response(429, "Rate limit exceeded (1 per day)");
+    }
+
+    await ddb.send(
+      new PutCommand({
+        TableName: TABLE_RATE,
+        Item: {
+          rateKey,
+          ttl: Math.floor(Date.now() / 1000) + 86400,
+          count: 1,
+        },
+      })
+    );
+
+    // 3. STORE QUOTE
+    const quoteId = randomUUID();
+
+    await ddb.send(
+      new PutCommand({
+        TableName: TABLE_QUOTES,
+        Item: {
+          quoteId,
+          name,
+          email,
+          project,
+          ip,
+          createdAt: Date.now(),
+          status: "NEW",
+        },
+      })
+    );
+
+    // 4. SEND EMAIL (SES)
+    await ses.send(
+      new SendEmailCommand({
+        Source: process.env.EMAIL_FROM!,
+        Destination: { ToAddresses: [process.env.EMAIL_TO!] },
+        Message: {
+          Subject: { Data: `New Quote Request: ${name}` },
+          Body: {
+            Text: {
+              Data: `
+Name: ${name}
+Email: ${email}
+
+Project:
+${project}
+
+IP: ${ip}
+              `,
+            },
+          },
+        },
+      })
+    );
+
+    return response(200, { success: true, quoteId });
+  } catch (err: any) {
+    console.error(err);
+    return response(500, "Server error");
+  }
+};
+
+function response(statusCode: number, body: any) {
+  return {
+    statusCode,
+    body: JSON.stringify(body),
+  };
+}
+
+async function verifyCaptcha(token: string) {
+  const res = await fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        secret: process.env.TURNSTILE_SECRET!,
+        response: token,
+      }),
+    }
+  );
+
+  const data = await res.json();
+  return data.success;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>🌐 6. Frontend (Next.js + CAPTCHA)</h2>
+            <pre><code>
+const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    
+    const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+        ...form,
+        captchaToken,
+        }),
+    });
+    
+    const data = await res.json();
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>📊 7. Logging Dashboard (Admin)</h2>
+            <p>Option A (fast MVP)</p>
+            <ul>
+                <li>Use DynamoDB scan + Next.js admin page</li>
+            </ul>
+            <p>Option B (real production)</p>
+            <ul>
+                <li>Amazon OpenSearch + Kibana</li>
+                <li>OR CloudWatch Logs Insights</li>
+            </ul>
+            <p>Simple Admin API:</p>
+            <pre><code>
+GET /admin/quotes
+            </code></pre>
+            <p>Returns latest leads:</p>
+            <pre><code>
+[
+  {
+    "name": "Paul",
+    "email": "test@email.com",
+    "project": "App build",
+    "createdAt": 123456789
+  }
+]
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
