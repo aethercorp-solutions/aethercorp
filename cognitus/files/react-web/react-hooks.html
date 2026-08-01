@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>React Hooks</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">React Hooks</h1>
+                    <p class="subtitle">React Hooks are special functions that let you use React features (like state, lifecycle, and context) inside function components. Before Hooks, these features were only available in class components.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of a Hook as a tool that React gives your component.</h2>
+            <ul>
+                <li>useState → remembers data</li>
+                <li>useEffect → runs code after rendering</li>
+                <li>useRef → stores a value without causing a re-render</li>
+                <li>useContext → shares data across components</li>
+                <li>Custom hooks → reuse logic between components</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. useState - Store Data</h2>
+            <p>Imagine you have a counter.</p>
+            <pre><code>
+import { useState } from "react";
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;div&gt;
+        &lt;h1&gt;{count}&lt;/h1&gt;
+
+        &lt;button onClick={() => setCount(count + 1)}&gt;
+            Add
+        &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How it works</h2>
+            <pre><code>
+const [count, setCount] = useState(0);
+            </code></pre>
+            <p>React gives you two things:</p>
+            <pre><code>
+count      -> current value
+setCount() -> changes the value
+            </code></pre>
+            <p>Initially</p>
+            <p>After clicking the button</p>
+            <pre><code>
+setCount(1)
+            </code></pre>
+            <p>React updates the UI automatically.</p>
+        </section>
+
+        <section>
+            <h2>2. useEffect - Run Code After Rendering</h2>
+            <p>Suppose you want to print something every time the page loads.</p>
+            <pre><code>
+import { useEffect } from "react";
+
+function Home() {
+
+  useEffect(() => {
+    console.log("Page Loaded");
+  }, []);
+
+  return &lt;h1&gt;Home&lt;/h1&gt;
+}
+            </code></pre>
+            <p>The empty dependency array ([]) means the effect runs only once when the component first mounts.</p>
+            <p>Another example:</p>
+            <pre><code>
+useEffect(() => {
+    console.log("Count changed");
+}, [count]);
+            </code></pre>
+            <p>Now it runs every time count changes.</p>
+        </section>
+
+        <section>
+            <h2>3. useRef - Remember Something Without Re-rendering</h2>
+            <p>Suppose you have an input.</p>
+            <pre><code>
+import { useRef } from "react";
+
+function Login() {
+  const inputRef = useRef&lt;HTMLInputElement&gt;(null);
+
+  return (
+    &lt;&gt;
+        &lt;input ref={inputRef} /&gt;
+
+        &lt;button
+            onClick={() => inputRef.current?.focus()}
+        &gt;
+        Focus
+        &lt;/button&gt;
+    &lt;/&gt;
+  );
+}
+            </code></pre>
+            <p>When you click the button:</p>
+            <pre><code>
+inputRef
+      ↓
+&lt;input&gt;
+            </code></pre>
+            <p>React focuses the input.</p>
+            <p>Unlike useState, changing useRef.current does not cause the component to re-render.</p>
+        </section>
+
+        <section>
+            <h2>4. useContext - Share Data</h2>
+            <p>Instead of passing props through many components, use Context.</p>
+            <pre><code>
+App
+ │
+ ├── Header
+ │
+ ├── Sidebar
+ │
+ └── Dashboard
+            </code></pre>
+            <p>Suppose all components need the logged-in user.</p>
+            <p>Without Context:</p>
+            <pre><code>
+App
+ ↓
+Header
+ ↓
+Sidebar
+ ↓
+Dashboard
+            </code></pre>
+            <p>You keep passing props.</p>
+            <p>With Context:</p>
+            <pre><code>
+User Context
+
+       ↑
+Header
+Sidebar
+Dashboard
+            </code></pre>
+            <p>Everyone can access the same shared data.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>In-App Purchase (IAP)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">In-App Purchase (IAP)</h1>
+                    <p class="subtitle">
+                        In-App Purchase (IAP) is a way for users to buy digital content, features, or subscriptions inside a mobile app without leaving the app. The payment is processed by the platform (Apple App Store or Google Play Store), and the app unlocks the purchased content after successful payment.
+                        <p>Since you've been working with React Native and previously used react-native-iap, understanding how IAP works is very useful.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple Analogy</h2>
+            <p>Imagine a video game.</p>
+            <p>You download the game for free.</p>
+            <p>Inside the game you can buy:</p>
+            <ul>
+                <li>Extra lives</li>
+                <li>More coins</li>
+                <li>New characters</li>
+                <li>Premium membership</li>
+            </ul>
+            <p>Those purchases are In-App Purchases.</p>
+            <p>The app itself doesn't collect your credit card.</p>
+            <p>Instead:</p>
+            <pre><code>
+App
+   ↓
+Apple App Store / Google Play
+   ↓
+User Pays
+   ↓
+Store Confirms Payment
+   ↓
+App Unlocks Content
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why Use In-App Purchases?</h2>
+            <p>Instead of charging users before downloading the app,</p>
+            <p>developers often do:</p>
+            <pre><code>
+Free Download
+
+↓
+
+User likes app
+
+↓
+
+Offer Premium Features
+
+↓
+
+User Pays
+            </code></pre>
+            <p>This usually increases downloads because people can try the app first.</p>
+        </section>
+
+        <section>
+            <h2>Types of In-App Purchases</h2>
+            <p>There are four major types.</p>
+        </section>
+
+        <section>
+            <h2>1. Consumable</h2>
+            <p>Can be purchased multiple times.</p>
+            <p>Example:</p>
+            <p>Game Coins</p>
+            <pre><code>
+Buy 100 Coins
+
+↓
+
+Coins Added
+
+↓
+
+Spend Coins
+
+↓
+
+Need More?
+
+↓
+
+Buy Again
+            </code></pre>
+            <p>Examples</p>
+            <ul>
+                <li>Coins</li>
+                <li>Gems</li>
+                <li>Energy</li>
+                <li>Lives</li>
+                <li>Tokens</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+100 Gems
+$0.99
+
+Buy again
+Buy again
+Buy again
+            </code></pre>
+            <p>Consumables never permanently unlock something.</p>
+        </section>
+
+        <section>
+            <h2>2. Non-Consumable</h2>
+            <p>Purchased only once.</p>
+            <p>Example:</p>
+            <pre><code>
+Remove Ads
+
+$4.99
+
+↓
+
+Forever Removed
+            </code></pre>
+            <p>Examples</p>
+            <ul>
+                <li>Remove Ads</li>
+                <li>Premium Theme</li>
+                <li>Unlock All Levels</li>
+                <li>Lifetime Premium</li>
+            </ul>
+            <p>Apple and Google remember the purchase forever.</p>
+            <p>If user reinstalls the app:</p>
+            <pre><code>
+Restore Purchases
+
+↓
+
+Still Premium
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Auto-Renewable Subscription</h2>
+            <p>This is the most common today.</p>
+            <p>Example:</p>
+            <p>Netflix</p>
+            <p>Spotify</p>
+            <p>YouTube Premium</p>
+            <p>ChatGPT Plus</p>
+            <p>Every month:</p>
+            <pre><code>
+User Pays
+
+↓
+
+Subscription Active
+
+↓
+
+30 Days Later
+
+↓
+
+Automatically Charged Again
+            </code></pre>
+            <p>Examples</p>
+            <ul>
+                <li>Monthly Premium</li>
+                <li>Yearly Premium</li>
+                <li>AI Subscription</li>
+                <li>Cloud Storage</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Non-Renewing Subscription</h2>
+            <p>Expires after a fixed time but does NOT automatically renew.</p>
+            <p>Example</p>
+            <pre><code>
+3 Month Access
+
+↓
+
+Expires
+
+↓
+
+User Must Buy Again
+            </code></pre>
+            <p>Rarely used today.</p>
+        </section>
+
+        <section>
+            <h2>Real World Examples</h2>
+            <p>Spotify</p>
+            <pre><code>
+Free
+
+↓
+
+Ads
+
+↓
+
+Upgrade
+
+↓
+
+Premium Subscription
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>YouTube</h2>
+            <pre><code>
+Free
+
+↓
+
+Ads
+
+↓
+
+YouTube Premium
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Mobile Games</h2>
+            <pre><code>
+Free
+
+↓
+
+Buy Coins
+
+↓
+
+Buy Gems
+
+↓
+
+Buy Weapons
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Your TryCastanet App</h2>
+            <p>Suppose:</p>
+            <p>Free users can schedule only 3 contacts.</p>
+            <p>Premium users can schedule unlimited contacts.</p>
+            <p>Flow:</p>
+            <pre><code>
+Free User
+
+↓
+
+Schedules 3 Contacts
+
+↓
+
+Hits Limit
+
+↓
+
+Premium Screen
+
+↓
+
+Monthly Subscription
+
+↓
+
+Unlimited Scheduling
+            </code></pre>
+            <p>This is exactly where IAP fits.</p>
+        </section>
+
+        <section>
+            <h2>How It Works Behind the Scenes</h2>
+            <p>Imagine user presses:</p>
+            <pre><code>
+Upgrade to Premium
+            </code></pre>
+            <p>The app does NOT directly charge the credit card.</p>
+            <p>Instead:</p>
+            <pre><code>
+App
+
+↓
+
+Apple/Google Store
+
+↓
+
+Payment Screen
+
+↓
+
+User Pays
+
+↓
+
+Store Verifies
+
+↓
+
+Receipt Returned
+
+↓
+
+App Unlocks Premium
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Complete Purchase Flow</h2>
+            <pre><code>
+User Opens App
+
+↓
+
+Clicks Premium
+
+↓
+
+App Requests Products
+
+↓
+
+Store Returns Products
+
+↓
+
+User Selects Product
+
+↓
+
+Payment Sheet Opens
+
+↓
+
+User Pays
+
+↓
+
+Store Confirms Purchase
+
+↓
+
+Receipt Sent
+
+↓
+
+Server Validates Receipt
+
+↓
+
+Premium Enabled
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Components Involved</h2>
+            <pre><code>
+Your App
+     │
+     │ React Native IAP
+     │
+Apple StoreKit / Google Billing
+     │
+Payment
+     │
+Receipt
+     │
+Your Backend
+     │
+Database
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Product IDs</h2>
+            <p>Every purchase has a unique Product ID.</p>
+            <p>Example:</p>
+            <pre><code>
+premium_monthly
+
+premium_yearly
+
+remove_ads
+
+coins_100
+
+coins_500
+            </code></pre>
+            <p>These IDs are created in:</p>
+            <p>Apple App Store Connect</p>
+            <p>or</p>
+            <p>Google Play Console</p>
+            <p>Your app requests these IDs.</p>
+            <p>Example:</p>
+            <pre><code>
+[
+  "premium_monthly",
+  "premium_yearly"
+]
+            </code></pre>
+            <p>The store returns:</p>
+            <pre><code>
+Premium Monthly
+
+$4.99
+
+Premium Yearly
+
+$39.99
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Purchase Process</h2>
+            <p>Step 1</p>
+            <p>Request products</p>
+            <pre><code>
+App
+
+↓
+
+Store
+
+↓
+
+Available Products
+            </code></pre>
+            <p>Example response</p>
+            <pre><code>
+Premium Monthly
+
+$4.99
+
+Premium Yearly
+
+$39.99
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2</h2>
+            <p>User chooses</p>
+            <pre><code>
+Monthly
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3</h2>
+            <p>Payment sheet</p>
+            <p>Apple</p>
+            <pre><code>
+Face ID
+
+or
+
+Password
+            </code></pre>
+            <p>Android</p>
+            <pre><code>
+Google Pay
+
+Credit Card
+
+GCash (if available)
+
+Carrier Billing
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4</h2>
+            <p>Store processes payment</p>
+            <pre><code>
+Approved
+
+or
+
+Cancelled
+
+or
+
+Failed
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 5</h2>
+            <p>App receives purchase</p>
+            <p>Example purchase information:</p>
+            <pre><code>
+Product ID
+
+Transaction ID
+
+Purchase Token
+
+Receipt
+
+Purchase Date
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 6</h2>
+            <p>Unlock premium</p>
+            <pre><code>
+Premium = true
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Receipt Validation</h2>
+            <p>This is one of the most important parts.</p>
+            <p>Never trust only the app.</p>
+            <p>Instead:</p>
+            <pre><code>
+App
+
+↓
+
+Receipt
+
+↓
+
+Backend Server
+
+↓
+
+Apple Verification
+
+↓
+
+Valid?
+
+↓
+
+Yes
+
+↓
+
+Unlock Premium
+            </code></pre>
+            <p>Without validation, attackers could fake purchases on modified devices.</p>
+        </section>
+
+        <section>
+            <h2>Why Backend Validation Is Important</h2>
+            <p>Without validation:</p>
+            <pre><code>
+Hacker
+
+↓
+
+Fake Purchase
+
+↓
+
+Premium Forever
+            </code></pre>
+            <p>With validation:</p>
+            <pre><code>
+Receipt
+
+↓
+
+Apple Server
+
+↓
+
+Verified
+
+↓
+
+Premium Enabled
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Restoring Purchases</h2>
+            <p>Suppose:</p>
+            <p>User bought Premium.</p>
+            <p>Then:</p>
+            <ul>
+                <li>Deletes app</li>
+                <li>Gets a new phone</li>
+            </ul>
+            <p>Should they pay again?</p>
+            <p>No.</p>
+            <p>They press:</p>
+            <pre><code>
+Restore Purchases
+            </code></pre>
+            <p>The store checks purchase history.</p>
+            <pre><code>
+Store
+
+↓
+
+Premium Found
+
+↓
+
+Unlocked Again
+            </code></pre>
+            <p>Consumables usually are not restored after they've been used, but non-consumables and active subscriptions are.</p>
+        </section>
+
+        <section>
+            <h2>Subscription Renewal</h2>
+            <p>Monthly subscription:</p>
+            <pre><code>
+July
+
+↓
+
+Paid
+
+↓
+
+Premium Active
+
+↓
+
+August
+
+↓
+
+Charged Again
+
+↓
+
+Premium Continues
+            </code></pre>
+            <p>If payment fails:</p>
+            <pre><code>
+Subscription Expired
+
+↓
+
+Premium Removed
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>React Native Architecture</h2>
+            <pre><code>
+React Native UI
+
+↓
+
+react-native-iap
+
+↓
+
+StoreKit (iOS)
+
+Google Billing (Android)
+
+↓
+
+App Store / Google Play
+
+↓
+
+Receipt
+
+↓
+
+Backend API
+
+↓
+
+MongoDB
+
+↓
+
+Premium Status
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example Flow in Code</h2>
+            <pre><code>
+User taps "Subscribe"
+
+↓
+
+requestSubscription()
+
+↓
+
+Apple/Google payment sheet
+
+↓
+
+Purchase successful
+
+↓
+
+purchaseUpdatedListener()
+
+↓
+
+Send receipt to backend
+
+↓
+
+Backend validates receipt
+
+↓
+
+Save premium status
+
+↓
+
+Unlock features
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common React Native IAP APIs</h2>
+            <p>If you're using react-native-iap, you'll typically work with these methods:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>initConnection()</td>
+                        <td>Connect to the billing service when the app starts.</td>
+                    </tr>
+                    <tr>
+                        <td>getProducts()</td>
+                        <td>Retrieve one-time purchase products.</td>
+                    </tr>
+                    <tr>
+                        <td>getSubscriptions()</td>
+                        <td>Retrieve subscription products.</td>
+                    </tr>
+                    <tr>
+                        <td>requestPurchase()</td>
+                        <td>Start a one-time purchase.</td>
+                    </tr>
+                    <tr>
+                        <td>requestSubscription()</td>
+                        <td>Start a subscription purchase.</td>
+                    </tr>
+                    <tr>
+                        <td>purchaseUpdatedListener()</td>
+                        <td>Listen for successful purchases.</td>
+                    </tr>
+                    <tr>
+                        <td>purchaseErrorListener()</td>
+                        <td>Listen for purchase failures or cancellations.</td>
+                    </tr>
+                    <tr>
+                        <td>finishTransaction()</td>
+                        <td>Tell the store the purchase has been processed so it isn't delivered repeatedly.</td>
+                    </tr>
+                    <tr>
+                        <td>getAvailablePurchases()</td>
+                        <td>Restore owned non-consumables and active subscriptions.</td>
+                    </tr>
+                    <tr>
+                        <td>endConnection()</td>
+                        <td>Close the billing connection when appropriate.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Common Errors</h2>
+            <p>You've encountered some of these before.</p>
+            <p>E_IAP_NOT_AVAILABLE</p>
+            <p>Billing is unavailable.</p>
+            <p>Possible reasons:</p>
+            <ul>
+                <li>Running on an unsupported simulator (especially for purchases)</li>
+                <li>App Store/Play Store not configured correctly</li>
+                <li>Billing service unavailable</li>
+            </ul>
+
+            <p>skus is required</p>
+            <p>You called:</p>
+            <pre><code>
+getProducts([])
+            </code></pre>
+            <p>instead of providing valid product IDs such as:</p>
+            <pre><code>
+["premium_monthly"]
+            </code></pre>
+
+            <p>Previous request was cancelled</p>
+            <p>Usually caused by:</p>
+            <ul>
+                <li>Starting another purchase before the previous one completed</li>
+                <li>Initializing the billing connection multiple times</li>
+                <li>Not properly finishing a previous transaction</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Initialize the billing connection once when the app starts.</li>
+                <li>Fetch products or subscriptions before displaying your purchase screen.</li>
+                <li>Validate receipts on your backend, not just in the app.</li>
+                <li>Call finishTransaction() after successfully processing a purchase.</li>
+                <li>Provide a Restore Purchases option for users.</li>
+                <li>Listen for purchase updates, because purchases may complete after the app resumes.</li>
+                <li>Handle cancellations and network errors gracefully.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Complete End-to-End Flow</h2>
+            <pre><code>
+User opens app
+        │
+        ▼
+Initialize billing connection
+        │
+        ▼
+Load products/subscriptions
+        │
+        ▼
+User taps "Buy Premium"
+        │
+        ▼
+Apple/Google payment sheet
+        │
+        ▼
+Payment succeeds
+        │
+        ▼
+Receive purchase + receipt
+        │
+        ▼
+Send receipt to backend
+        │
+        ▼
+Backend validates with Apple/Google
+        │
+        ▼
+Store premium status in your database
+        │
+        ▼
+Return success to the app
+        │
+        ▼
+Unlock premium features
+            </code></pre>
+            <p>Understanding this complete lifecycle is essential because every production-quality IAP implementation revolves around the same core steps: display products → initiate purchase → receive transaction → validate with the store → grant entitlements → restore and renew when necessary. Once you understand that flow, implementing IAP in React Native, native iOS (StoreKit), or Android (Google Play Billing) becomes much easier.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Refactoring React Components</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Refactoring React Components</h1>
+                    <p class="subtitle">
+                        When a React component becomes large (300–1000+ lines), the goal of refactoring is separation of concerns. A component should mainly describe the UI, while business logic, API calls, and utilities live elsewhere. React itself encourages extracting reusable logic into custom hooks rather than keeping everything in one component.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Example project structure</h2>
+            <pre><code>
+src/
+├── components/
+│   ├── Dashboard/
+│   │   ├── Dashboard.tsx
+│   │   ├── UserList.tsx
+│   │   ├── UploadButton.tsx
+│   │   └── SearchBar.tsx
+│
+├── hooks/
+│   ├── useUsers.ts
+│   ├── useUpload.ts
+│   └── useSearch.ts
+│
+├── services/
+│   ├── api.ts
+│   └── userService.ts
+│
+├── utils/
+│   ├── formatDate.ts
+│   ├── validators.ts
+│   └── constants.ts
+│
+└── types/
+    └── user.ts
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Before Refactoring</h2>
+            <p>Everything is inside one component.</p>
+<pre><code>function Dashboard() {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [search, setSearch] = useState("");
+
+    useEffect(() =&gt; {
+        async function loadUsers() {
+            setLoading(true);
+
+            const response = await fetch("/api/users");
+            const data = await response.json();
+
+            setUsers(data);
+            setLoading(false);
+        }
+
+        loadUsers();
+    }, []);
+
+    function removeUser(id) {
+        setUsers(users.filter(user =&gt; user.id !== id));
+    }
+
+    function filteredUsers() {
+        return users.filter(user =&gt;
+            user.name.toLowerCase().includes(search.toLowerCase())
+        );
+    }
+
+    return (
+        &lt;&gt;
+            &lt;input
+                value={search}
+                onChange={(e) =&gt; setSearch(e.target.value)}
+            /&gt;
+
+            {loading &amp;&amp; &lt;p&gt;Loading...&lt;/p&gt;}
+
+            {filteredUsers().map(user =&gt; (
+                &lt;div key={user.id}&gt;
+                    {user.name}
+
+                    &lt;button
+                        onClick={() =&gt; removeUser(user.id)}
+                    &gt;
+                        Delete
+                    &lt;/button&gt;
+                &lt;/div&gt;
+            ))}
+        &lt;/&gt;
+    );
+}</code></pre>
+        <p>The component is responsible for:</p>
+        <ul>
+            <li>fetching data</li>
+            <li>searching</li>
+            <li>deleting</li>
+            <li>rendering UI</li>
+        </ul>
+        <p>Too many responsibilities.</p>
+        </section>
+
+        <section>
+            <h2>After Refactoring</h2>
+            <p>1. API Service</p>
+            <pre><code>
+// services/userService.ts
+
+export async function getUsers() {
+    const response = await fetch("/api/users");
+    return response.json();
+}
+            </code></pre>
+
+            <p>2. Custom Hook</p>
+            <pre><code>
+// hooks/useUsers.ts
+
+import { useState, useEffect } from "react";
+import { getUsers } from "../services/userService";
+
+export function useUsers() {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        async function load() {
+            setLoading(true);
+            const data = await getUsers();
+            setUsers(data);
+            setLoading(false);
+        }
+
+        load();
+    }, []);
+
+    function removeUser(id) {
+        setUsers(prev =>
+            prev.filter(user => user.id !== id)
+        );
+    }
+
+    return {
+        users,
+        loading,
+        removeUser
+    };
+}
+            </code></pre>
+
+            <p>3. Search Hook</p>
+            <pre><code>
+// hooks/useSearch.ts
+
+import { useState } from "react";
+
+export function useSearch(items) {
+    const [search, setSearch] = useState("");
+
+    const filtered = items.filter(item =>
+        item.name
+            .toLowerCase()
+            .includes(search.toLowerCase())
+    );
+
+    return {
+        search,
+        setSearch,
+        filtered
+    };
+}
+            </code></pre>
+
+            <p>4. UI Component</p>
+<pre><code>function Dashboard() {
+
+    const {
+        users,
+        loading,
+        removeUser
+    } = useUsers();
+
+    const {
+        search,
+        setSearch,
+        filtered
+    } = useSearch(users);
+
+    return (
+        &lt;&gt;
+            &lt;SearchBar
+                value={search}
+                onChange={setSearch}
+            /&gt;
+
+            {loading &amp;&amp; &lt;p&gt;Loading...&lt;/p&gt;}
+
+            &lt;UserList
+                users={filtered}
+                onDelete={removeUser}
+            /&gt;
+        &lt;/&gt;
+    );
+}</code></pre>
+        <p>Now the component is only about displaying UI.</p>
+        </section>
+
+        <section>
+            <h2>Another Example (Upload Hook)</h2>
+            <pre><code>
+// hooks/useUpload.ts
+
+export function useUpload() {
+
+    const [files, setFiles] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    function addFiles(newFiles) {
+        setFiles(prev => [...prev, ...newFiles]);
+    }
+
+    function removeFile(index) {
+        setFiles(prev =>
+            prev.filter((_, i) => i !== index)
+        );
+    }
+
+    async function upload() {
+        setLoading(true);
+
+        // upload logic
+
+        setLoading(false);
+    }
+
+    return {
+        files,
+        loading,
+        addFiles,
+        removeFile,
+        upload
+    };
+}
+            </code></pre>
+            <p>Component:</p>
+            <pre><code>
+const {
+    files,
+    loading,
+    addFiles,
+    removeFile,
+    upload
+} = useUpload();
+            </code></pre>
+            <p>Much cleaner.</p>
+        </section>
+
+        <section>
+            <h2>Good Refactoring Rules</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Move to...</th>
+                        <th>What belongs there</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>hooks/</td>
+                        <td>useState, useEffect, business logic</td>
+                    </tr>
+                    <tr>
+                        <td>services/</td>
+                        <td>API calls, Axios, Fetch</td>
+                    </tr>
+                    <tr>
+                        <td>components/</td>
+                        <td>Reusable UI</td>
+                    </tr>
+                    <tr>
+                        <td>utils/</td>
+                        <td>Pure helper functions</td>
+                    </tr>
+                    <tr>
+                        <td>constants/</td>
+                        <td>URLs, enums, configuration</td>
+                    </tr>
+                    <tr>
+                        <td>types/</td>
+                        <td>TypeScript interfaces</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>A Real Folder Structure</h2>
+            <pre><code>
+Dashboard/
+
+Dashboard.tsx          ← Only UI
+
+hooks/
+    useDashboard.ts
+    useUpload.ts
+    useSearch.ts
+
+components/
+    UploadModal.tsx
+    UploadCard.tsx
+    UserTable.tsx
+    Pagination.tsx
+
+services/
+    dashboardService.ts
+
+utils/
+    formatDate.ts
+    sortUsers.ts
+
+types/
+    dashboard.ts
+            </code></pre>
+            <p>The result is a Dashboard.tsx that is often under 100 lines and mostly reads like:</p>
+<pre><code>function Dashboard() {
+
+    const dashboard = useDashboard();
+    const upload = useUpload();
+
+    return (
+        &lt;&gt;
+            &lt;Header /&gt;
+
+            &lt;UploadCard {...upload} /&gt;
+
+            &lt;UserTable
+                users={dashboard.users}
+            /&gt;
+
+            &lt;Pagination /&gt;
+        &lt;/&gt;
+    );
+}</code></pre>
+        <p>This style is common in large React applications because it improves readability, makes logic reusable, and simplifies testing. A useful guideline is to extract reusable stateful logic into custom hooks, API communication into service modules, and presentation into smaller components, while keeping hooks pure and following the Rules of Hooks.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

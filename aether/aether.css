@@ -1,0 +1,170 @@
+/* BASE */
+body {
+  margin: 0;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0b0f19;
+  color: #e5e7eb;
+}
+
+/* TOPBAR */
+.topbar {
+  position: sticky;
+  top: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 20px;
+  z-index: 10;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand img {
+  width: 36px;
+  filter: drop-shadow(0 0 10px rgba(59,130,246,0.5));
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.brand p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* ACTIONS */
+.actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.actions input {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: white;
+  outline: none;
+  transition: 0.2s;
+}
+
+.actions input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
+
+/* HERO */
+.hero {
+  padding: 40px 20px;
+}
+
+.hero-card {
+  max-width: 1000px;
+  margin: auto;
+  padding: 24px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.1));
+  border: 1px solid rgba(255,255,255,0.08);
+  animation: fadeUp 0.6s ease;
+}
+
+.hero-card h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.hero-card p {
+  opacity: 0.7;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  list-style: none;
+  padding: 20px;
+}
+
+/* CARD */
+.grid li {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 16px;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.grid li::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, rgba(59,130,246,0.15), transparent 60%);
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.grid li:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(59,130,246,0.4);
+}
+
+.grid li:hover::before {
+  opacity: 1;
+}
+
+.grid a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  position: relative;
+}
+
+/* PAGINATION */
+.pagination {
+  text-align: center;
+  padding: 20px;
+}
+
+.pagination button {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.pagination button:hover {
+  background: rgba(59,130,246,0.2);
+}
+
+.pagination button.active {
+  background: #3b82f6;
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

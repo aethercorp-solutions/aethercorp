@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Google Client ID</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Google Client ID</h1>
+                    <p class="subtitle">A Google Client ID is like an ID card for your app that tells Google who is asking users to sign in.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple analogy</h2>
+            <p>Imagine you're entering an office building.</p>
+            <ul>
+                <li>You (the user) = the visitor</li>
+                <li>Google = the security guard</li>
+                <li>Your app = the company you're visiting</li>
+                <li>Google Client ID = the company's visitor ID</li>
+            </ul>
+            <p>When your app asks Google to let someone sign in, it says:</p>
+            <p>"Hi Google, I'm app 123456789-abc.apps.googleusercontent.com."</p>
+            <p>Google checks if that Client ID is valid and whether it matches the app's registered settings.</p>
+        </section>
+
+        <section>
+            <h2>What it looks like</h2>
+            <p>A Google Client ID looks something like this:</p>
+            <pre><code>
+123456789012-abcdefg123456.apps.googleusercontent.com
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why do you need it?</h2>
+            <p>Without a Client ID, Google doesn't know:</p>
+            <ul>
+                <li>Which app is requesting login.</li>
+                <li>Which redirect URLs are allowed.</li>
+                <li>Which users are allowed to sign in.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What happens during Google Sign-In?</h2>
+            <ol>
+                <li>Your app sends its Client ID to Google.</li>
+                <li>Google shows the login screen.</li>
+                <li>The user signs in.</li>
+                <li>Google verifies the Client ID.</li>
+                <li>Google sends your app an ID token, access token, or authorization code.</li>
+            </ol>
+            <pre><code>
+Your App
+    │
+    │ Client ID
+    ▼
+Google
+    │
+    │ User signs in
+    ▼
+Google verifies Client ID
+    │
+    ▼
+Returns token/code
+    │
+    ▼
+Your App
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Is the Client ID secret?</h2>
+            <p>No. A Client ID is public and is safe to include in frontend code (such as a Vite app, iOS app, or Android app).</p>
+            <p>The Client Secret is different:</p>
+            <ul>
+                <li>✅ Client ID → Public</li>
+                <li>❌ Client Secret → Private (keep it on your backend)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Different apps have different Client IDs</h2>
+            <p>Each platform typically has its own Client ID because Google identifies them separately.</p>
+            <p>For example:</p>
+            <ul>
+                <li>Web app → Web Client ID</li>
+                <li>iOS app → iOS Client ID</li>
+                <li>Android app → Android Client ID</li>
+            </ul>
+            <p>Even if they're all for the same project, they usually use different Client IDs.</p>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>Suppose you have a Vite frontend and an AWS Lambda backend.</p>
+            <ul>
+                <li>
+                    <ul>
+                        <li>Vite frontend</li>
+                        <li>User signs in.</li>
+                        <li>Receives an authorization code or ID token.</li>
+                    </ul>
+                </li>
+                <li>
+                    AWS Lambda backend
+                    <ul>
+                        <li>Verifies the token or exchanges the authorization code for access tokens.</li>
+                        <li>Uses those tokens to call Google APIs if needed.</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>In short, a Google Client ID identifies your application to Google, allowing Google to recognize your app and safely handle the sign-in process. It is not a password and is meant to be shared with your application's client side.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

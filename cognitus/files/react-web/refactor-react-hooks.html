@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Refactor React hooks</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Refactor React hooks</h1>
+                    <p class="subtitle">
+                        A good way to refactor React hooks is to move all state management and business logic into a custom hook, while keeping the component responsible only for rendering the UI.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Before (everything inside the component)</h2>
+            <pre><code>
+"use client";
+
+import { useState } from "react";
+
+export default function CounterPage() {
+  const [count, setCount] = useState(0);
+
+  const increment = () => {
+    setCount((prev) => prev + 1);
+  };
+
+  const decrement = () => {
+    setCount((prev) => prev - 1);
+  };
+
+  const reset = () => {
+    setCount(0);
+  };
+
+  return (
+    &lt;div&gt;
+        &lt;h1&gt;{count}&lt;/h1&gt;
+
+        &lt;button onClick={increment}&gt;+&lt;/button&gt;
+        &lt;button onClick={decrement}&gt;-&lt;/button&gt;
+        &lt;button onClick={reset}&gt;Reset&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 1. Create a custom hook</h2>
+            <pre><code>
+hooks/
+    useCounter.ts
+            </code></pre>
+            <pre><code>
+import { useState } from "react";
+
+export function useCounter(initialValue = 0) {
+  const [count, setCount] = useState(initialValue);
+
+  const increment = () => {
+    setCount((prev) => prev + 1);
+  };
+
+  const decrement = () => {
+    setCount((prev) => prev - 1);
+  };
+
+  const reset = () => {
+    setCount(initialValue);
+  };
+
+  return {
+    count,
+    increment,
+    decrement,
+    reset,
+  };
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2. Use the hook</h2>
+            <pre><code>
+"use client";
+
+import { useCounter } from "@/hooks/useCounter";
+
+export default function CounterPage() {
+  const {
+    count,
+    increment,
+    decrement,
+    reset,
+  } = useCounter();
+
+  return (
+    &lt;div&gt;
+        &lt;h1&gt;{count}&lt;/h1&gt;
+
+        &lt;button onClick={increment}&gt;+&lt;/button&gt;
+        &lt;button onClick={decrement}&gt;-&lt;/button&gt;
+        &lt;button onClick={reset}&gt;Reset&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+            </code></pre>
+            <p>Now your component is only responsible for displaying the UI.</p>
+        </section>
+
+        <section>
+            <h2>Real-world example (File Upload)</h2>
+            <p>Suppose your page originally looks like this:</p>
+            <pre><code>
+const [files, setFiles] = useState&lt;File[]&gt;([]);
+const [loading, setLoading] = useState(false);
+const [dragging, setDragging] = useState(false);
+
+const onDrop = (files: FileList) => {
+    ...
+};
+
+const upload = async () => {
+    ...
+};
+
+const removeFile = (index: number) => {
+    ...
+};
+            </code></pre>
+            <p>Move all of that into a hook.</p>
+
+            <pre><code>
+hooks/
+    useUpload.ts
+            </code></pre>
+            <pre><code>
+import { useState } from "react";
+
+export function useUpload() {
+  const [selectedFiles, setSelectedFiles] = useState&lt;File[]&gt;([]);
+  const [loading, setLoading] = useState(false);
+  const [dragging, setDragging] = useState(false);
+
+  const addFiles = (files: FileList | File[]) => {
+    const list = Array.from(files);
+    setSelectedFiles((prev) => [...prev, ...list]);
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles((prev) =>
+      prev.filter((_, i) => i !== index)
+    );
+  };
+
+  const upload = async () => {
+    setLoading(true);
+
+    try {
+      // upload logic here
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    selectedFiles,
+    loading,
+    dragging,
+    setDragging,
+    addFiles,
+    removeFile,
+    upload,
+  };
+}
+            </code></pre>
+            <p>Then your page becomes much cleaner.</p>
+<pre><code>
+    &quot;use client&quot;;
+    
+    import { useUpload } from &quot;@/hooks/useUpload&quot;;
+    
+    export default function Dashboard() {
+        const {
+        selectedFiles,
+        loading,
+        dragging,
+        setDragging,
+        addFiles,
+        removeFile,
+        upload,
+        } = useUpload();
+    
+        return (
+        &lt;div&gt;
+            &lt;button
+            disabled={loading}
+            onClick={upload}
+            &gt;
+            Upload
+            &lt;/button&gt;
+    
+            {selectedFiles.map((file, index) =&gt; (
+            &lt;div key={index}&gt;
+                {file.name}
+    
+                &lt;button onClick={() =&gt; removeFile(index)}&gt;
+                Remove
+                &lt;/button&gt;
+            &lt;/div&gt;
+            ))}
+        &lt;/div&gt;
+        );
+    }
+</code></pre>
+        </section>
+
+        <section>
+            <h2>Folder structure for larger projects</h2>
+            <pre><code>
+app/
+    dashboard/
+        page.tsx
+        components/
+            UploadCard.tsx
+            Header.tsx
+            Hero.tsx
+        hooks/
+            useUpload.ts
+            usePublications.ts
+            useModal.ts
+        services/
+            uploadService.ts
+            publicationService.ts
+        utils/
+            validatePdf.ts
+            formatDate.ts
+        types/
+            publication.ts
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Even better architecture</h2>
+            <p>As your application grows, separate responsibilities further:</p>
+            <pre><code>
+Component
+      │
+      ▼
+Custom Hook
+      │
+      ▼
+Service/API
+      │
+      ▼
+Backend
+            </code></pre>
+            <p>Example:</p>
+            <p>Component</p>
+            <pre><code>
+const { upload } = useUpload();
+            </code></pre>
+            <p>useUpload.ts</p>
+            <pre><code>
+const upload = async () => {
+    setLoading(true);
+
+    try {
+        await uploadService.upload(selectedFiles);
+    } finally {
+        setLoading(false);
+    }
+};
+            </code></pre>
+            <p>uploadService.ts</p>
+            <pre><code>
+import axios from "axios";
+
+export const uploadService = {
+  async upload(files: File[]) {
+    const formData = new FormData();
+
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    return axios.post("/api/upload", formData);
+  },
+};
+            </code></pre>
+            <p>This layered approach offers several benefits:</p>
+            <ul>
+                <li>Components focus only on rendering the UI.</li>
+                <li>Custom hooks manage state and user interactions.</li>
+                <li>Services handle API requests and business logic.</li>
+                <li>Utilities contain reusable helper functions.</li>
+                <li>Types centralize TypeScript interfaces.</li>
+            </ul>
+            <p>This pattern scales well in medium-to-large React and Next.js applications and keeps code easier to test, maintain, and reuse.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Claude (Anthropic) vs. ChatGPT explain simply</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Claude (Anthropic) vs. ChatGPT explain simply</h1>
+                    <p class="subtitle">Claude (Anthropic) vs. ChatGPT explain simply</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Here's a simple comparison:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ChatGPT</th>
+                        <th>Claude</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Made by OpenAI</td>
+                        <td>Made by Anthropic</td>
+                    </tr>
+                    <tr>
+                        <td>Good at coding, reasoning, writing, and general tasks</td>
+                        <td>Good at writing, summarizing, reasoning, and long documents</td>
+                    </tr>
+                    <tr>
+                        <td>Uses GPT models (such as GPT-5.5)</td>
+                        <td>Uses Claude models (such as Claude Opus and Claude Sonnet)</td>
+                    </tr>
+                    <tr>
+                        <td>Supports images, voice, file analysis, coding, and many integrations</td>
+                        <td>Supports images, file analysis, coding, and has a very large context window</td>
+                    </tr>
+                    <tr>
+                        <td>Often preferred for software development and interactive conversations</td>
+                        <td>Often preferred for editing, summarizing, and working with very long documents</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Think of them like two smart coworkers</h2>
+            <ul>
+                <li>ChatGPT is like an experienced software engineer who can also write, teach, solve problems, and help with almost anything.</li>
+                <li>Claude is like an excellent researcher and editor who is especially good at reading long documents and producing clear, thoughtful writing.</li>
+            </ul>
+
+            <p>Coding</p>
+            <p>ChatGPT</p>
+            <ul>
+                <li>Excellent at programming</li>
+                <li>Strong debugging abilities</li>
+                <li>Explains code well</li>
+                <li>Supports many programming languages</li>
+                <li>Good for building applications end-to-end</li>
+            </ul>
+            <p>Claude</p>
+            <ul>
+                <li>Also excellent at coding</li>
+                <li>Very good at understanding large codebases</li>
+                <li>Often provides detailed explanations</li>
+                <li>Strong at refactoring and documentation</li>
+            </ul>
+            <p>Writing</p>
+            <p>ChatGPT</p>
+            <ul>
+                <li>Creative stories</li>
+                <li>Professional emails</li>
+                <li>Blog posts</li>
+                <li>Marketing content</li>
+                <li>Technical documentation</li>
+            </ul>
+            <p>Claude</p>
+            <ul>
+                <li>Excellent at polishing writing</li>
+                <li>Great for reports</li>
+                <li>Strong at summarizing long documents</li>
+                <li>Produces natural, readable prose</li>
+            </ul>
+            <p>Long documents</p>
+            <p>If you upload:</p>
+            <ul>
+                <li>a 500-page PDF</li>
+                <li>a long legal contract</li>
+                <li>a large research paper</li>
+            </ul>
+            <p>Both models can help, but Claude is widely known for handling very large amounts of text comfortably.</p>
+            <p>Speed</p>
+            <p>Both are fast.</p>
+            <ul>
+                <li>ChatGPT is often faster for interactive coding sessions.</li>
+                <li>Claude is often very smooth for document analysis and writing tasks.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Which is better?</h2>
+            <p>There isn't a single winner.</p>
+            <p>Choose ChatGPT if you:</p>
+            <ul>
+                <li>Build software</li>
+                <li>Need coding help</li>
+                <li>Want explanations and tutoring</li>
+                <li>Use images, voice, or integrated tools</li>
+                <li>Want an all-purpose AI assistant</li>
+            </ul>
+            <p>Choose Claude if you:</p>
+            <ul>
+                <li>Read or summarize very long documents</li>
+                <li>Edit or improve writing</li>
+                <li>Analyze large codebases or reports</li>
+            </ul>
+            <p>For you</p>
+            <p>Based on the kinds of questions you've been asking recently—Objective-C, React, Node.js, AI research, interview preparation, and software architecture—ChatGPT is likely the better fit because it has particularly strong support for software development, debugging, and technical explanations while also handling writing and research well.</p>
+        </section>
+
+        <section>
+            <p>Both ChatGPT and Claude provide APIs that let your application send prompts and receive AI-generated responses. The overall workflow is very similar.</p>
+            <h2>Architecture</h2>
+            <pre><code>
+Your App (React/iOS/Android)
+           │
+           ▼
+    Your Backend (Node.js)
+           │
+    ┌──────┴──────┐
+    ▼             ▼
+OpenAI API    Anthropic API
+(ChatGPT)      (Claude)
+            </code></pre>
+            <p>For security, never call the AI API directly from your frontend. Keep your API keys on your backend.</p>
+            <p>1. Get an API key</p>
+            <ol>
+                <li>Create an account on the OpenAI developer platform.</li>
+                <li>Generate an API key.</li>
+                <li>Save it as an environment variable.</li>
+            </ol>
+            <p>Example:</p>
+            <pre><code>
+OPENAI_API_KEY=your_api_key
+            </code></pre>
+
+            <p>2. Install the SDK</p>
+            <pre><code>
+npm install openai
+            </code></pre>
+
+            <p>3. Example (Node.js)</p>
+            <pre><code>
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const response = await client.responses.create({
+  model: "gpt-5.5",
+  input: "Explain quantum computing simply."
+});
+
+console.log(response.output_text);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Claude (Anthropic) API</h2>
+            <p>1. Get an API key</p>
+            <p>Create an Anthropic developer account and generate an API key.</p>
+            <pre><code>
+ANTHROPIC_API_KEY=your_api_key
+            </code></pre>
+            <p>2. Install the SDK</p>
+            <pre><code>
+npm install @anthropic-ai/sdk
+            </code></pre>
+            <p>3. Example (Node.js)</p>
+            <pre><code>
+import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
+const response = await anthropic.messages.create({
+  model: "claude-sonnet-4",
+  max_tokens: 500,
+  messages: [
+    {
+      role: "user",
+      content: "Explain quantum computing simply."
+    }
+  ]
+});
+
+console.log(response.content[0].text);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Calling either model</h2>
+            <p>You can choose which provider to use based on a parameter.</p>
+            <pre><code>
+async function askAI(provider, prompt) {
+    if (provider === "openai") {
+        // Call OpenAI
+    } else if (provider === "claude") {
+        // Call Anthropic
+    }
+}
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+await askAI("openai", "Write a poem");
+
+await askAI("claude", "Write a poem");
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example Express API</h2>
+            <pre><code>
+app.post("/chat", async (req, res) => {
+
+    const { provider, prompt } = req.body;
+
+    let answer;
+
+    if (provider === "openai") {
+
+        answer = await askOpenAI(prompt);
+
+    } else {
+
+        answer = await askClaude(prompt);
+
+    }
+
+    res.json({
+        provider,
+        answer
+    });
+
+});
+            </code></pre>
+        </section>
+        <section>
+            <p>Your frontend can send:</p>
+            <pre><code>
+{
+    "provider": "openai",
+    "prompt": "Explain React hooks"
+}
+        </code></pre>
+            <p>or</p>
+            <pre><code>
+{
+    "provider": "claude",
+    "prompt": "Explain React hooks"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common features</h2>
+            <p>Both APIs support:</p>
+            <ul>
+                <li>Chat conversations</li>
+                <li>System instructions</li>
+                <li>Streaming responses</li>
+                <li>Image inputs (supported models)</li>
+                <li>File/document analysis (supported workflows)</li>
+                <li>JSON or structured outputs (depending on the model and API features)</li>
+                <li>Function/tool calling (supported models)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Which should you use?</h2>
+            <p>Since you're a full-stack developer working with Node.js, React, and AI applications, a good approach is to build your backend so it can switch between providers. That gives you flexibility to:</p>
+            <ul>
+                <li>Use ChatGPT for coding assistance, structured outputs, and broad AI capabilities.</li>
+                <li>Use Claude for long-document analysis, editing, or summarization.</li>
+                <li>Fall back to the other provider if one is unavailable or if costs/performance differ for a given task.</li>
+            </ul>
+            <p>This "provider abstraction" makes it easy to add additional AI providers in the future without changing your frontend.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>What is @aws-sdk/client-ses</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">What is @aws-sdk/client-ses</h1>
+                    <p class="subtitle">Let's start with the simplest explanation and gradually go deeper.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Level 1: What is @aws-sdk/client-ses?</h2>
+            <p>Imagine you have a company and you want your app to send emails.</p>
+            <p>Instead of creating your own email server (which is difficult), you ask Amazon to send emails for you.</p>
+            <p>Amazon SES (Simple Email Service) is Amazon's email sending service.</p>
+            <p>@aws-sdk/client-ses is simply the JavaScript library that lets your Node.js application talk to Amazon SES.</p>
+            <p>Think of it like this:</p>
+            <pre><code>
+Your App
+    │
+    │ "Please send this email."
+    ▼
+@aws-sdk/client-ses
+    │
+    ▼
+Amazon SES
+    │
+    ▼
+Recipient receives email
+            </code></pre>
+            <p>So:</p>
+            <ul>
+                <li>Your app creates the email.</li>
+                <li>@aws-sdk/client-ses sends the request.</li>
+                <li>Amazon SES delivers the email.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Level 2: What does AWS SDK mean?</h2>
+            <p>AWS has hundreds of services.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>S3 → store files</li>
+                <li>DynamoDB → database</li>
+                <li>Lambda → serverless functions</li>
+                <li>SES → email</li>
+                <li>SNS → notifications</li>
+            </ul>
+            <p>Instead of writing HTTP requests yourself, AWS provides an SDK (Software Development Kit).</p>
+
+            <p>The SDK already knows:</p>
+            <ul>
+                <li>API URLs</li>
+                <li>Authentication</li>
+                <li>Request formatting</li>
+                <li>Error handling</li>
+                <li>Response parsing</li>
+            </ul>
+            <p>So instead of writing:</p>
+            <pre><code>
+POST https://email.us-east-1.amazonaws.com
+Authorization: ...
+Content-Type: ...
+...
+            </code></pre>
+            <p>You simply write:</p>
+            <pre><code>
+const client = new SESClient(...);
+            </code></pre>
+            <p>The SDK handles the rest.</p>
+        </section>
+
+        <section>
+            <h2>Level 3: Why is it called client?</h2>
+            <p>Your Node.js application is the client.</p>
+            <p>Amazon SES is the server.</p>
+            <pre><code>
+Node.js App (Client)
+        │
+        ▼
+Amazon SES Server
+            </code></pre>
+            <p>The client sends requests.</p>
+            <p>The server performs the work.</p>
+            <p>That's why the package is named</p>
+            <pre><code>
+@aws-sdk/client-ses
+            </code></pre>
+            <p>It is the SES client.</p>
+        </section>
+
+        <section>
+            <h2>Level 4: Why @aws-sdk?</h2>
+            <p>This is the package namespace.</p>
+            <pre><code>
+@aws-sdk/
+    client-s3
+    client-ses
+    client-lambda
+    client-dynamodb
+            </code></pre>
+            <p>Each AWS service has its own package.</p>
+            <p>Example:</p>
+            <pre><code>
+import { SESClient } from "@aws-sdk/client-ses";
+import { S3Client } from "@aws-sdk/client-s3";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+            </code></pre>
+            <p>Instead of installing one huge SDK, you install only what you need.</p>
+        </section>
+
+        <section>
+            <h2>Level 5: Installing</h2>
+            <pre><code>
+npm install @aws-sdk/client-ses
+            </code></pre>
+            <p>Now your project knows how to communicate with SES.</p>
+        </section>
+
+        <section>
+            <h2>Level 6: Creating the client</h2>
+            <pre><code>
+import { SESClient } from "@aws-sdk/client-ses";
+
+const client = new SESClient({
+    region: "us-east-1"
+});
+            </code></pre>
+            <p>What happens here?</p>
+            <pre><code>
+Your Code
+      │
+      ▼
+Create SES Client
+      │
+      ▼
+Store configuration
+    Region
+    Credentials
+    Retry settings
+            </code></pre>
+            <p>Notice:</p>
+            <p>This does not send anything yet.</p>
+            <p>It just prepares the connection.</p>
+        </section>
+
+        <section>
+            <h2>Level 7: Authentication</h2>
+            <p>Amazon must know who is making the request.</p>
+            <p>The client automatically signs every request using:</p>
+            <pre><code>
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+const client = new SESClient({
+    region: "us-east-1",
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
+});
+            </code></pre>
+            <p>Before every request:</p>
+            <pre><code>
+Request
++
+Access Key
++
+Secret Key
+=
+Signed Request
+            </code></pre>
+            <p>Amazon verifies the signature.</p>
+        </section>
+
+        <section>
+            <h2>Level 8: Sending an email</h2>
+            <p>Example:</p>
+            <pre><code>
+import {
+    SESClient,
+    SendEmailCommand
+} from "@aws-sdk/client-ses";
+
+const client = new SESClient({
+    region: "us-east-1"
+});
+
+const command = new SendEmailCommand({
+    Source: "me@example.com",
+    Destination: {
+        ToAddresses: ["john@example.com"]
+    },
+    Message: {
+        Subject: {
+            Data: "Hello"
+        },
+        Body: {
+            Text: {
+                Data: "Welcome!"
+            }
+        }
+    }
+});
+
+await client.send(command);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Level 9: Why use a Command?</h2>
+            <p>AWS SDK v3 uses the Command Pattern.</p>
+            <p>Instead of:</p>
+            <pre><code>
+client.sendEmail(...)
+            </code></pre>
+            <p>you create a command.</p>
+            <pre><code>
+Create Command
+        │
+        ▼
+Client.send(command)
+            </code></pre>
+            <p>The command describes what you want to do.</p>
+            <p>Examples:</p>
+            <pre><code>
+SendEmailCommand
+
+DeleteIdentityCommand
+
+VerifyEmailIdentityCommand
+
+ListIdentitiesCommand
+            </code></pre>
+            <p>Each command represents one SES API operation.</p>
+        </section>
+
+        <section>
+            <h2>Level 10: What happens internally?</h2>
+            <p>When you call:</p>
+            <pre><code>
+await client.send(command);
+            </code></pre>
+            <p>the SDK performs many steps for you.</p>
+            <pre><code>
+Your Code
+      │
+      ▼
+Create JSON request
+      │
+      ▼
+Sign request
+      │
+      ▼
+Convert to HTTP
+      │
+      ▼
+HTTPS
+      │
+      ▼
+Amazon SES
+      │
+      ▼
+Validate
+      │
+      ▼
+Queue email
+      │
+      ▼
+Return response
+            </code></pre>
+            <p>All of this happens automatically.</p>
+        </section>
+
+        <section>
+            <h2>Level 11: The HTTP request behind the scenes</h2>
+            <p>Your code:</p>
+            <pre><code>
+await client.send(command);
+            </code></pre>
+            <p>is roughly equivalent to manually making an HTTPS request like:</p>
+            <pre><code>
+POST https://email.us-east-1.amazonaws.com
+            </code></pre>
+            <p>with a payload similar to:</p>
+            <pre><code>
+{
+    "Source": "me@example.com",
+    "Destination": {
+        "ToAddresses": [
+            "john@example.com"
+        ]
+    },
+    "Message": {
+        "Subject": {
+            "Data": "Hello"
+        },
+        "Body": {
+            "Text": {
+                "Data": "Welcome!"
+            }
+        }
+    }
+}
+            </code></pre>
+            <p>The SDK also:</p>
+            <ul>
+                <li>Adds authentication headers</li>
+                <li>Signs the request</li>
+                <li>Handles retries</li>
+                <li>Parses the response</li>
+                <li>Throws meaningful errors</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Level 12: Common commands</h2>
+            <p>The SES client supports many operations, such as:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SendEmailCommand</td>
+                        <td>Send a simple email</td>
+                    </tr>
+                    <tr>
+                        <td>SendRawEmailCommand</td>
+                        <td>Send a fully customized MIME email (attachments, HTML, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>VerifyEmailIdentityCommand</td>
+                        <td>Verify an email address with SES</td>
+                    </tr>
+                    <tr>
+                        <td>VerifyDomainIdentityCommand</td>
+                        <td>Verify ownership of a domain</td>
+                    </tr>
+                    <tr>
+                        <td>ListIdentitiesCommand</td>
+                        <td>List verified email identities</td>
+                    </tr>
+                    <tr>
+                        <td>DeleteIdentityCommand</td>
+                        <td>Remove a verified identity</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Level 13: Architecture</h2>
+            <p>A common flow in a Node.js backend looks like this:</p>
+            <pre><code>
+User clicks "Submit"
+          │
+          ▼
+Express Route
+          │
+          ▼
+Business Logic
+          │
+          ▼
+Create SES Client
+          │
+          ▼
+Create SendEmailCommand
+          │
+          ▼
+client.send(command)
+          │
+          ▼
+Amazon SES
+          │
+          ▼
+Recipient Mail Server
+          │
+          ▼
+Recipient's Inbox
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Key takeaway</h2>
+            <p>@aws-sdk/client-ses is the official AWS JavaScript library for communicating with Amazon SES. It handles authentication, request formatting, retries, and response parsing, allowing your application to send emails with simple JavaScript code instead of manually constructing and signing HTTPS requests. In AWS SDK v3, each API operation is represented by a command (such as SendEmailCommand), and the SESClient executes those commands by communicating securely with the SES service.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

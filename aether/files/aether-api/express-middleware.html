@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Express middleware</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Express middleware</h1>
+                    <p class="subtitle">This function is an Express middleware. Middleware is a function that runs before your main route handler. Its job is to make sure the request contains all the information needed before continuing.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Let's go through it step by step.</h2>
+            <pre><code>
+async function validCodeParameter(req, res, next) {
+            </code></pre>
+            <ul>
+                <li>req = the incoming request from the client.</li>
+                <li>res = used to send a response back to the client.</li>
+                <li>next = tells Express to continue to the next middleware or controller.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. Define the required fields</h2>
+            <pre><code>
+const requiredHeaders = [
+    "platform",
+    "code",
+    "device_id",
+    "device_token_id",
+];
+            </code></pre>
+            <p>These are the values the API expects every sign-in request to have.</p>
+            <p>For example:</p>
+            <pre><code>
+{
+    "platform": "ios",
+    "code": "4/0Abc123...",
+    "device_id": "iphone-123",
+    "device_token_id": "abcdef"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Copy values from the request body into the headers</h2>
+            <pre><code>
+for (const header of requiredHeaders) {
+            </code></pre>
+            <p>This loops through each required field.</p>
+            <p>First iteration:</p>
+            <pre><code>
+header = "platform"
+            </code></pre>
+            <p>Second iteration:</p>
+            <pre><code>
+header = "code"
+            </code></pre>
+            <p>and so on.</p>
+        </section>
+
+        <section>
+            <h2>3. Check whether the header already exists</h2>
+            <pre><code>
+if (
+    req.headers[header] === undefined &&
+    req.body &&
+    Object.prototype.hasOwnProperty.call(req.body, header)
+)
+            </code></pre>
+            <p>This checks three things:</p>
+            <p>A. Is the header missing?</p>
+            <pre><code>
+req.headers[header] === undefined
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+Headers:
+{
+}
+            </code></pre>
+            <p>No "platform" header exists.</p>
+        </section>
+
+        <section>
+            <h2>B. Does the request have a body?</h2>
+            <pre><code>
+req.body
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+{
+    "platform": "web",
+    "code": "abc123"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Copy it</h2>
+            <pre><code>
+req.headers[header] = req.body[header];
+            </code></pre>
+            <p>Suppose the client sends</p>
+            <pre><code>
+POST /signin
+            </code></pre>
+            <p>Headers:</p>
+            <pre><code>
+Content-Type: application/json
+            </code></pre>
+            <p>Body:</p>
+            <pre><code>
+{
+    "platform": "web",
+    "code": "xyz123",
+    "device_id": "browser",
+    "device_token_id": ""
+}
+            </code></pre>
+            <p>After the loop, Express changes the request internally to behave like:</p>
+            <p>Headers:</p>
+            <pre><code>
+platform: web
+code: xyz123
+device_id: browser
+device_token_id:
+            </code></pre>
+            <p>Now the rest of your backend can continue reading</p>
+            <pre><code>
+req.headers.platform
+            </code></pre>
+            <p>even though the client actually sent it in the JSON body.</p>
+        </section>
+
+        <section>
+            <h2>Why do this?</h2>
+            <p>Older versions of your backend expected:</p>
+            <pre><code>
+req.headers.platform
+            </code></pre>
+            <p>But newer clients (like your React web app) send:</p>
+            <pre><code>
+req.body.platform
+            </code></pre>
+            <p>Instead of changing all the existing backend code, this middleware copies the values into req.headers, keeping the rest of the code unchanged.</p>
+        </section>
+
+        <section>
+            <h2>5. Validate that everything exists</h2>
+            <pre><code>
+if (!validateHeaders(req, res, requiredHeaders)) {
+    return;
+}
+            </code></pre>
+            <p>This checks that every required value is now present.</p>
+            <p>It verifies:</p>
+            <ul>
+                <li>platform</li>
+                <li>code</li>
+                <li>device_id</li>
+                <li>device_token_id</li>
+            </ul>
+            <p>If any are missing, validateHeaders() sends an error response, for example:</p>
+            <pre><code>
+{
+    "status": false,
+    "message": "Missing required parameter: code"
+}
+            </code></pre>
+            <p>The return stops the request from continuing.</p>
+        </section>
+
+        <section>
+            <h2>6. Normalize the platform</h2>
+            <pre><code>
+normalizePlatform(req);
+            </code></pre>
+            <p>This likely converts different platform names into a standard format.</p>
+            <p>For example:</p>
+            <pre><code>
+WEB
+|
+web
+
+or
+
+iPhone
+|
+iOS
+            </code></pre>
+            <p>This keeps the rest of the application working with consistent values.</p>
+        </section>
+
+        <section>
+            <h2>7. Continue to the next middleware</h2>
+            <pre><code>
+next();
+            </code></pre>
+            <p>If everything is valid, Express moves on to the next middleware or your controller.</p>
+            <p>For example:</p>
+            <pre><code>
+app.post(
+    "/signin",
+    validCodeParameter,
+    UserController.signInWithGoogle
+);
+            </code></pre>
+            <p>The execution flow is:</p>
+            <pre><code>
+Client Request
+       │
+       ▼
+validCodeParameter
+       │
+       ├── Copy body values into headers
+       │
+       ├── Validate required fields
+       │
+       ├── Normalize platform
+       │
+       ▼
+next()
+       │
+       ▼
+UserController.signInWithGoogle()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>In simple terms</h2>
+            <p>Think of this middleware as a translator and security guard:</p>
+            <ul>
+                <li>Translator: If the client sends data in the JSON body instead of HTTP headers, it copies that data into the headers so the existing backend code can continue working without modification.</li>
+                <li>Security guard: It checks that all required values are present before allowing the request to proceed.</li>
+                <li>Traffic controller: If everything looks good, it calls next() to let the request continue to the sign-in logic. Otherwise, it stops the request and returns an error.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>This function checks whether all required headers are present in the request. If any are missing, it sends an error back to the client.</p>
+            <p>Let's go through it step by step.</p>
+            <pre><code>
+/**
+ * Utility: Validate required headers
+ */
+
+function validateHeaders(req, res, requiredHeaders) {
+    const missing = requiredHeaders.filter((header) => {
+        const value = req.headers[header];
+        return value === undefined || value === null;
+    });
+
+    if (missing.length > 0) {
+        return res.status(403).send({
+            status: false,
+            statusCode: 403,
+            message: `Missing required headers: ${missing.join(", ")}`,
+            data: [],
+        });
+    }
+
+    return true;
+}
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

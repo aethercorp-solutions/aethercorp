@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Retrieval-Augmented Generation (RAG) application</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Retrieval-Augmented Generation (RAG) application</h1>
+                    <p class="subtitle">
+                        If you're building a Retrieval-Augmented Generation (RAG) application, there are many excellent open-source frameworks. Each focuses on different parts of the RAG pipeline, such as document loading, embedding generation, vector search, retrieval, orchestration, or evaluation.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Here's an overview of the most popular ones.</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Framework</th>
+                        <th>Best For</th>
+                        <th>Language</th>
+                        <th>Strengths</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>LangChain</td>
+                        <td>General-purpose RAG</td>
+                        <td>Python, JavaScript</td>
+                        <td>Large ecosystem, many integrations</td>
+                    </tr>
+                    <tr>
+                        <td>LlamaIndex</td>
+                        <td>Document-centric RAG</td>
+                        <td>Python, TypeScript</td>
+                        <td>Excellent indexing and retrieval</td>
+                    </tr>
+                    <tr>
+                        <td>Haystack</td>
+                        <td>Production search & QA</td>
+                        <td>Python</td>
+                        <td>Modular pipelines and enterprise features</td>
+                    </tr>
+                    <tr>
+                        <td>DSPy</td>
+                        <td>Optimized LLM pipelines</td>
+                        <td>Python</td>
+                        <td>Automatically improves prompts and retrieval</td>
+                    </tr>
+                    <tr>
+                        <td>FastRAG</td>
+                        <td>Fast production RAG</td>
+                        <td>Python</td>
+                        <td>Optimized for speed</td>
+                    </tr>
+                    <tr>
+                        <td>RAGFlow</td>
+                        <td>Complete RAG platform</td>
+                        <td>Python</td>
+                        <td>UI + ingestion + retrieval</td>
+                    </tr>
+                    <tr>
+                        <td>Pathway</td>
+                        <td>Streaming RAG</td>
+                        <td>Python</td>
+                        <td>Real-time indexing</td>
+                    </tr>
+                    <tr>
+                        <td>txtai</td>
+                        <td>Semantic search</td>
+                        <td>Python</td>
+                        <td>Lightweight and easy to deploy</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>1. LangChain</h2>
+            <p>One of the most widely used frameworks.</p>
+            <p>Provides</p>
+            <ul>
+                <li>Document loaders</li>
+                <li>Text splitters</li>
+                <li>Embeddings</li>
+                <li>Vector database integrations</li>
+                <li>Prompt templates</li>
+                <li>Agents</li>
+                <li>Memory</li>
+                <li>Chains</li>
+            </ul>
+            <p>Typical pipeline:</p>
+            <pre><code>
+PDF
+ ↓
+Loader
+ ↓
+Chunking
+ ↓
+Embeddings
+ ↓
+Vector DB
+ ↓
+Retriever
+ ↓
+LLM
+ ↓
+Answer
+            </code></pre>
+            <p>Pros</p>
+            <ul>
+                <li>Huge community</li>
+                <li>Hundreds of integrations</li>
+                <li>JavaScript support</li>
+                <li>Easy to learn</li>
+            </ul>
+            <p>Cons</p>
+            <ul>
+                <li>Can feel complex</li>
+                <li>Frequent API changes</li>
+            </ul>
+            <p>Best for:</p>
+            <ul>
+                <li>Most applications</li>
+                <li>Learning RAG</li>
+                <li>Rapid prototyping</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. LlamaIndex</h2>
+            <p>Designed specifically for RAG.</p>
+            <p>Instead of focusing on LLM workflows, it focuses on:</p>
+            <ul>
+                <li>documents</li>
+                <li>indexes</li>
+                <li>retrieval</li>
+            </ul>
+            <p>Supports</p>
+            <ul>
+                <li>PDFs</li>
+                <li>Word</li>
+                <li>SQL</li>
+                <li>Notion</li>
+                <li>Confluence</li>
+                <li>Google Drive</li>
+                <li>Slack</li>
+                <li>GitHub</li>
+            </ul>
+
+            <p>Provides advanced retrieval techniques like</p>
+            <ul>
+                <li>Recursive retrieval</li>
+                <li>Tree indexes</li>
+                <li>Graph indexes</li>
+                <li>Hybrid search</li>
+                <li>Metadata filtering</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+Documents
+      ↓
+ Index
+      ↓
+ Retriever
+      ↓
+ LLM
+            </code></pre>
+            <p>Pros</p>
+            <p>Excellent document support.</p>
+            <p>Best for</p>
+            <ul>
+                <li>Knowledge bases</li>
+                <li>Company documentation</li>
+                <li>Chat with PDFs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Haystack</h2>
+            <p>Built for production AI search.</p>
+            <p>Features</p>
+            <ul>
+                <li>Dense retrieval</li>
+                <li>Sparse retrieval</li>
+                <li>Hybrid retrieval</li>
+                <li>Pipelines</li>
+                <li>Ranking</li>
+                <li>Evaluation</li>
+            </ul>
+            <p>Architecture</p>
+            <pre><code>
+Documents
+
+   ↓
+
+Retriever
+
+   ↓
+
+Ranker
+
+   ↓
+
+LLM
+
+   ↓
+
+Answer
+            </code></pre>
+            <p>Best for</p>
+            <ul>
+                <li>Enterprise search</li>
+                <li>Internal documentation</li>
+                <li>Production systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. DSPy</h2>
+            <p>Created by researchers at Stanford.</p>
+            <p>Instead of manually writing prompts, DSPy lets you define the task, and it optimizes prompts and retrieval automatically.</p>
+            <p>Example</p>
+            <pre><code>
+Prompt:
+
+"You are a helpful assistant..."
+            </code></pre>
+            <p>You define</p>
+            <pre><code>
+Question
+
+↓
+
+Retriever
+
+↓
+
+Reasoner
+
+↓
+
+Answer
+            </code></pre>
+            <p>DSPy tunes the prompt for better performance.</p>
+            <p>Good when</p>
+            <ul>
+                <li>You want maximum accuracy</li>
+                <li>You have evaluation datasets</li>
+                <li>You're optimizing RAG quality</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. FastRAG</h2>
+            <p>Goals</p>
+            <ul>
+                <li>High throughput</li>
+                <li>Fast inference</li>
+                <li>Production deployment</li>
+            </ul>
+            <p>Supports</p>
+            <ul>
+                <li>Retrieval</li>
+                <li>Re-ranking</li>
+                <li>Generation</li>
+                <li>Evaluation</li>
+            </ul>
+            <p>Great for</p>
+            <ul>
+                <li>Large document collections</li>
+                <li>Low-latency systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. RAGFlow</h2>
+            <p>More of a complete platform than just a library.</p>
+            <p>Includes</p>
+            <ul>
+                <li>Web UI</li>
+                <li>OCR</li>
+                <li>Parsing</li>
+                <li>Chunking</li>
+                <li>Embeddings</li>
+                <li>Vector database</li>
+                <li>LLM interface</li>
+            </ul>
+            <p>Good if you don't want to build everything yourself.</p>
+        </section>
+
+        <section>
+            <h2>7. Pathway</h2>
+            <p>Real-time RAG.</p>
+            <p>Instead of rebuilding indexes every night,</p>
+            <pre><code>
+New PDF
+
+↓
+
+Automatically indexed
+
+↓
+
+Immediately searchable
+            </code></pre>
+            <p>Useful for</p>
+            <ul>
+                <li>Live dashboards</li>
+                <li>Streaming logs</li>
+                <li>Financial data</li>
+                <li>News</li>
+                <li>IoT</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. txtai</h2>
+            <p>Very lightweight.</p>
+            <p>Features</p>
+            <ul>
+                <li>Semantic search</li>
+                <li>Embeddings</li>
+                <li>Question answering</li>
+                <li>Summarization</li>
+            </ul>
+            <p>Easy to deploy.</p>
+            <p>Good for</p>
+            <ul>
+                <li>Small projects</li>
+                <li>Personal search</li>
+                <li>Prototypes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Vector databases commonly used with RAG</h2>
+            <p>Most RAG frameworks integrate with vector databases such as:</p>
+            <ul>
+                <li>Chroma</li>
+                <li>Milvus</li>
+                <li>Qdrant</li>
+                <li>Weaviate</li>
+                <li>FAISS</li>
+                <li>Pinecone (managed service, not open source)</li>
+                <li>OpenSearch (supports vector search)</li>
+                <li>Elasticsearch (supports vector search)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Which framework should you choose?</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Recommended Framework</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Learning RAG</td>
+                        <td>LangChain</td>
+                    </tr>
+                    <tr>
+                        <td>Chat with PDFs</td>
+                        <td>LlamaIndex</td>
+                    </tr>
+                    <tr>
+                        <td>Enterprise search</td>
+                        <td>Haystack</td>
+                    </tr>
+                    <tr>
+                        <td>Best retrieval quality</td>
+                        <td>DSPy + LlamaIndex</td>
+                    </tr>
+                    <tr>
+                        <td>Real-time document updates</td>
+                        <td>Pathway</td>
+                    </tr>
+                    <tr>
+                        <td>Complete self-hosted platform</td>
+                        <td>RAGFlow</td>
+                    </tr>
+                    <tr>
+                        <td>Lightweight semantic search</td>
+                        <td>txtai</td>
+                    </tr>
+                    <tr>
+                        <td>High-performance production</td>
+                        <td>FastRAG</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>For your stack</h2>
+            <p>Based on your previous questions, you're building a serverless backend with Node.js/AWS and exploring RAG implementations. A strong architecture would be:</p>
+            <ul>
+                <li>Orchestration: LangChain (JavaScript/TypeScript)</li>
+                <li>Embeddings: a model from providers such as OpenAI or open-source embedding models</li>
+                <li>Vector database: Qdrant or Chroma for self-hosting, or OpenSearch if you're already using AWS</li>
+                <li>LLM: an API-hosted model or a self-hosted open-source model</li>
+                <li>Storage: Amazon S3 for documents and Amazon DynamoDB or your existing database for metadata</li>
+            </ul>
+            <p>This combination is well supported, works well with AWS Lambda, and scales from prototypes to production systems.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

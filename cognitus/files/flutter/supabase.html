@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Supabase</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Supabase</h1>
+                    <p class="subtitle">Supabase is an open-source Backend-as-a-Service (BaaS) built on PostgreSQL. It provides the backend infrastructure needed to build web and mobile applications without managing servers yourself.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Its main features include:</h2>
+            <ul>
+                <li>PostgreSQL Database – A fully managed relational database.</li>
+                <li>Authentication – Email/password, OAuth (Google, GitHub, Apple, etc.), magic links, phone authentication, and more.</li>
+                <li>Real-time – Listen for database changes instantly using WebSockets.</li>
+                <li>Storage – Store and serve images, videos, documents, and other files.</li>
+                <li>Edge Functions – Run serverless functions close to users using Deno.</li>
+                <li>Row Level Security (RLS) – PostgreSQL-based security rules to control data access.</li>
+                <li>Auto-generated APIs – Every table automatically gets REST and GraphQL APIs.</li>
+            </ul>
+            <p>Example</p>
+            <p>Creating a Supabase client in JavaScript:</p>
+            <pre><code>
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  'https://your-project.supabase.co',
+  'your-anon-key'
+)
+            </code></pre>
+            <p>Fetching data:</p>
+            <pre><code>
+const { data, error } = await supabase
+  .from('users')
+  .select('*')
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>When to use Supabase</h2>
+            <p>Supabase is a good choice if you need:</p>
+            <ul>
+                <li>User authentication</li>
+                <li>A PostgreSQL database</li>
+                <li>File storage</li>
+                <li>Real-time updates</li>
+                <li>Serverless backend functionality</li>
+                <li>Fast MVP or startup development</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Supabase vs Firebase</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Supabase</th>
+                        <th>Firebase</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Database</td>
+                        <td>PostgreSQL (SQL)</td>
+                        <td>Firestore/Realtime DB (NoSQL)</td>
+                    </tr>
+                    <tr>
+                        <td>Open Source</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Self-hosting</td>
+                        <td>✅</td>
+                        <td>Limited</td>
+                    </tr>
+                    <tr>
+                        <td>SQL Support</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Authentication</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Real-time</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>If you're already comfortable with SQL, Supabase is often easier to work with than Firebase because it uses standard PostgreSQL.</p>
+            <p>If you have a specific question about Supabase—such as authentication, database design, Row Level Security, Next.js integration, React Native, or Edge Functions—let me know and I can help with that.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

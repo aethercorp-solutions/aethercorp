@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TensorFlow as a tool that helps an app learn patterns</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">TensorFlow as a tool that helps an app learn patterns</h1>
+                    <p class="subtitle">Think of TensorFlow as a tool that helps an app learn patterns from how people use it. It doesn't understand people like a human—it finds patterns in data.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple Example</h2>
+            <p>Imagine you have a shopping app.</p>
+            <p>The app records things like:</p>
+            <ul>
+                <li>Which buttons users tap</li>
+                <li>How long they stay on each screen</li>
+                <li>Which products they view</li>
+                <li>Whether they buy something</li>
+                <li>When they stop using the app</li>
+            </ul>
+            <p>TensorFlow can analyze thousands or millions of these records to learn what different behaviors mean.</p>
+        </section>
+
+        <section>
+            <h2>Example 1: Predict if a user will leave the app</h2>
+            <p>User A:</p>
+            <ul>
+                <li>Opens app every day</li>
+                <li>Looks at 10 products</li>
+                <li>Makes purchases</li>
+            </ul>
+            <p>TensorFlow learns:</p>
+            <p>"This user will probably keep using the app."</p>
+
+            <p>User B:</p>
+            <ul>
+                <li>Opened app twice</li>
+                <li>Left after 5 seconds</li>
+                <li>Never came back</li>
+            </ul>
+            <p>TensorFlow learns:</p>
+            <p>"This user is likely to stop using the app."</p>
+            <p>The app can then send a discount or reminder notification.</p>
+        </section>
+
+        <section>
+            <h2>Example 2: Recommend content</h2>
+            <p>Netflix, YouTube, and TikTok do this.</p>
+            <p>TensorFlow learns:</p>
+            <p>User likes:</p>
+            <ul>
+                <li>Programming videos</li>
+                <li>AI videos</li>
+                <li>Swift tutorials</li>
+            </ul>
+            <p>It predicts:</p>
+            <p>"This user will probably enjoy a TensorFlow tutorial."</p>
+            <p>So it recommends one.</p>
+        </section>
+
+        <section>
+            <h2>Example 3: Detect unusual behavior</h2>
+            <p>Suppose normally a user:</p>
+            <ul>
+                <li>Logs in from Manila</li>
+                <li>Uses the app at 8 PM</li>
+            </ul>
+            <p>Suddenly:</p>
+            <ul>
+                <li>Login from another country</li>
+                <li>At 3 AM</li>
+                <li>Makes many purchases</li>
+            </ul>
+            <p>TensorFlow notices:</p>
+            <p>"This behavior is unusual."</p>
+            <p>The app may ask for additional verification.</p>
+        </section>
+
+        <section>
+            <h2>Example 4: Predict what button a user wants</h2>
+            <p>Suppose many users do:</p>
+            <pre><code>
+Home
+ ↓
+Search
+ ↓
+Product
+ ↓
+Checkout
+            </code></pre>
+            <p>TensorFlow learns this pattern.</p>
+            <p>When a new user follows the first steps, it predicts:</p>
+            <p>"They'll probably go to Checkout next."</p>
+            <p>The app can preload the checkout page, making it faster.</p>
+        </section>
+
+        <section>
+            <h2>Example 5: Group similar users</h2>
+            <p>TensorFlow can discover groups like:</p>
+            <p>Group 1</p>
+            <ul>
+                <li>Young users</li>
+                <li>Use app every day</li>
+                <li>Buy games</li>
+            </ul>
+            <p>Group 2</p>
+            <ul>
+                <li>Business users</li>
+                <li>Read reports</li>
+                <li>Use app during work hours</li>
+            </ul>
+            <p>Now the app can personalize what each group sees.</p>
+        </section>
+
+        <section>
+            <h2>What data TensorFlow uses</h2>
+            <p>It can learn from data such as:</p>
+            <ul>
+                <li>Time spent in the app</li>
+                <li>Screen visits</li>
+                <li>Button clicks</li>
+                <li>Search history</li>
+                <li>Purchases</li>
+                <li>Scroll behavior</li>
+                <li>Login frequency</li>
+                <li>Device type</li>
+                <li>Location (if permitted)</li>
+                <li>Time of day</li>
+            </ul>
+            <p>The more high-quality data it has, the better it can recognize patterns.</p>
+        </section>
+
+        <section>
+            <h2>How TensorFlow learns (simple view)</h2>
+            <pre><code>
+User actions
+      │
+      ▼
+Collect usage data
+      │
+      ▼
+TensorFlow training
+      │
+Learns patterns
+      │
+      ▼
+Makes predictions
+      │
+      ▼
+App becomes smarter
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real-world examples</h2>
+            <ul>
+                <li>YouTube recommends videos based on viewing behavior.</li>
+                <li>Netflix recommends movies based on watching patterns.</li>
+                <li>Spotify suggests music based on listening habits.</li>
+                <li>Amazon recommends products based on browsing and purchase history.</li>
+                <li>Many banking apps use machine learning to help detect potentially fraudulent transactions.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>TensorFlow in a mobile app</h2>
+            <p>A common architecture is:</p>
+            <pre><code>
+User uses app
+      │
+      ▼
+App records events
+(clicks, screens, time)
+      │
+      ▼
+Server stores the data
+      │
+      ▼
+TensorFlow trains a model
+      │
+      ▼
+Model predicts:
+• Will user leave?
+• What will they click?
+• What should we recommend?
+• Is this unusual behavior?
+      │
+      ▼
+App uses predictions
+to personalize the experience
+            </code></pre>
+            <p>For privacy-sensitive use cases, TensorFlow Lite can also run models directly on the user's device, so predictions happen locally without sending all behavior data to a server.</p>
+        </section>
+
+        <section>
+            <h2>In one sentence</h2>
+            <p>TensorFlow helps an app learn patterns from user behavior—such as what users like, what they might do next, or whether they may stop using the app—so the app can make predictions and provide a more personalized and efficient experience.</p>
+        </section>
+
+        <section>
+            <p>Here is a simple real-world example.</p>
+            <h2>Scenario: Shopping App</h2>
+            <p>Suppose you have an online shopping app.</p>
+            <p>Every time a user uses the app, you collect information like this:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Minutes in App</th>
+                        <th>Products Viewed</th>
+                        <th>Added to Cart</th>
+                        <th>Purchased</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Alice</td>
+                        <td>15</td>
+                        <td>20</td>
+                        <td>Yes</td>
+                        <th>Yes</th>
+                    </tr>
+                    <tr>
+                        <td>Bob</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>No</td>
+                        <th>No</th>
+                    </tr>
+                    <tr>
+                        <td>Charlie</td>
+                        <td>10</td>
+                        <td>15</td>
+                        <td>Yes</td>
+                        <th>Yes</th>
+                    </tr>
+                    <tr>
+                        <td>David</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>No</td>
+                        <th>No</th>
+                    </tr>
+                </tbody>
+            </table>
+            <p>This data is used to train a TensorFlow model.</p>
+        </section>
+
+        <section>
+            <h2>What TensorFlow learns</h2>
+            <p>After seeing thousands of users, TensorFlow discovers patterns such as:</p>
+            <ul>
+                <li>Users who spend more than 10 minutes are more likely to buy.</li>
+                <li>Users who add items to the cart are much more likely to complete a purchase.</li>
+                <li>Users who leave within 1 minute usually do not buy anything.</li>
+            </ul>
+            <p>No one writes these rules manually—the model learns them from the data.</p>
+        </section>
+
+        <section>
+            <h2>Predicting a new user</h2>
+            <p>Now a new user arrives.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Minutes</th>
+                        <th>Products Viewed</th>
+                        <th>Added to Cart</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>12</td>
+                        <td>18</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>TensorFlow predicts:</p>
+            <pre><code>
+Purchase Probability = 95%
+            </code></pre>
+            <p>The app might decide not to interrupt this user with pop-ups because they're already likely to buy.</p>
+        
+            <p>Another user:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Minutes</th>
+                        <th>Products Viewed</th>
+                        <th>Added to Cart</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2</td>
+                        <td>2</td>
+                        <td>No</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>TensorFlow predicts:</p>
+            <pre><code>
+Purchase Probability = 8%
+            </code></pre>
+            <p>The app could display:</p>
+            <p>"Get 10% off your first purchase!"</p>
+            <p>to encourage a sale.</p>
+        </section>
+
+        <section>
+            <h2>Another example: Video App</h2>
+            <p>Suppose the app records what users watch.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Watches AI</th>
+                        <th>Watches Programming</th>
+                        <th>Watches Cooking</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>John</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Mary</td>
+                        <td>No</td>
+                        <td>No</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Alex</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>No</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>A new user watches:</p>
+            <ul>
+                <li>AI video</li>
+                <li>Python tutorial</li>
+                <li>Swift tutorial</li>
+            </ul>
+            <p>TensorFlow predicts:</p>
+            <pre><code>
+This user likes programming content.
+            </code></pre>
+            <p>The app recommends:</p>
+            <ul>
+                <li>TensorFlow Basics</li>
+                <li>Machine Learning for Beginners</li>
+                <li>Swift Development</li>
+                <li>AI Programming</li>
+            </ul>
+            <p>instead of cooking videos.</p>
+        </section>
+
+        <section>
+            <h2>Another example: Banking App</h2>
+            <p>The app learns a user's normal behavior.</p>
+            <p>Normal:</p>
+            <pre><code>
+Location: Manila
+Time: 8:00 PM
+Transfer Amount: ₱2,000
+            </code></pre>
+            <p>One day:</p>
+            <pre><code>
+Location: Germany
+Time: 3:00 AM
+Transfer Amount: ₱250,000
+            </code></pre>
+            <p>TensorFlow detects that this pattern is very different from the user's usual behavior and predicts:</p>
+            <pre><code>
+Possible fraud = 97%
+            </code></pre>
+            <p>The app can then:</p>
+            <ul>
+                <li>Require fingerprint or face verification</li>
+                <li>Send an OTP</li>
+                <li>Temporarily hold the transaction until the user confirms it</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Behind the scenes</h2>
+            <pre><code>
+User Actions
+      │
+      ▼
+Collect Data
+(clicks, purchases, time)
+      │
+      ▼
+TensorFlow Training
+      │
+      ▼
+Learns Patterns
+      │
+      ▼
+Makes Predictions
+      │
+      ▼
+App Takes Action
+            </code></pre>
+            <p>For example:</p>
+            <ul>
+                <li>Shopping app: Predicts who is likely to buy.</li>
+                <li>YouTube: Predicts which video you'll watch next.</li>
+                <li>Netflix: Predicts which movie you'll enjoy.</li>
+                <li>Banking app: Predicts whether a transaction is suspicious.</li>
+                <li>Fitness app: Predicts when a user is likely to stop using the app and can send reminders to stay engaged.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

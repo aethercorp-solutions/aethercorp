@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Neural Network</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Neural Network</h1>
+                    <p class="subtitle">A neural network is a mathematical system that learns patterns from data.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple Explanation</h2>
+            <p>A neural network is a mathematical system that learns patterns from data.</p>
+            <p>Think of it like a huge collection of tiny calculators (neurons). Each calculator:</p>
+            <ol>
+                <li>Receives numbers as input.</li>
+                <li>Multiplies them by importance values called weights.</li>
+                <li>Adds them together.</li>
+                <li>Passes the result through a function that decides how much information to send forward.</li>
+            </ol>
+            <p>Example:</p>
+            <p>Suppose you want to predict house prices.</p>
+            <p>Inputs:</p>
+            <ul>
+                <li>House size = 100 sqm</li>
+                <li>Bedrooms = 3</li>
+            </ul>
+            <p>The neural network might learn:</p>
+            <pre><code>
+score = (100 × 5000) + (3 × 100000)
+      = 800000
+            </code></pre>
+            <p>This is a very simplified neural network.</p>
+            <p>The key mathematical techniques are:</p>
+            <ul>
+                <li>Linear Algebra (vectors and matrices)</li>
+                <li>Calculus (derivatives and gradients)</li>
+                <li>Probability & Statistics</li>
+                <li>Optimization (finding the best weights)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Detailed Explanation</h2>
+            <p>1. Linear Algebra</p>
+            <p>Neural networks mainly operate on vectors and matrices.</p>
+            <p>Input Vector</p>
+            <p>Suppose:</p>
+            <pre><code>
+x = [100, 3]
+            </code></pre>
+            <p>where:</p>
+            <ul>
+                <li>100 = house size</li>
+                <li>3 = bedrooms</li>
+            </ul>
+            <p>Weight Vector</p>
+            <pre><code>
+w = [5000, 100000]
+            </code></pre>
+            <p>The network computes:</p>
+            <pre><code>
+z = w·x
+            </code></pre>
+            <p>Dot product:</p>
+            <pre><code>
+z = (100 × 5000) + (3 × 100000)
+z = 800000
+            </code></pre>
+            <p>This is the first mathematical operation inside a neuron.</p>
+        </section>
+
+        <section>
+            <h2>2. Bias</h2>
+            <p>Neurons also learn an additional value called bias.</p>
+            <p>Formula:</p>
+            <pre><code>
+z = wx + b
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+z = 800000 + 50000
+z = 850000
+            </code></pre>
+            <p>Bias helps shift predictions up or down.</p>
+        </section>
+
+        <section>
+            <h2>3. Activation Functions</h2>
+            <p>If neurons only performed multiplication and addition, the network would just be one big linear equation.</p>
+            <p>Activation functions add non-linearity.</p>
+            <p>ReLU</p>
+            <p>Most common:</p>
+            <pre><code>
+ReLU(x) = max(0, x)
+            </code></pre>
+            <p>Examples:</p>
+            <pre><code>
+ReLU(5) = 5
+ReLU(-5) = 0
+            </code></pre>
+            <p>This allows neural networks to learn complex patterns.</p>
+        </section>
+
+        <section>
+            <h2>4. Matrix Multiplication</h2>
+            <p>Real neural networks process thousands of inputs simultaneously.</p>
+            <p>Instead of:</p>
+            <pre><code>
+z = wx + b
+            </code></pre>
+            <p>we use:</p>
+            <pre><code>
+Z = XW + B
+            </code></pre>
+            <p>Where:</p>
+            <pre><code>
+X = input matrix
+W = weight matrix
+B = bias matrix
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+X =
+[100  3]
+            </code></pre>
+            <pre><code>
+W =
+[5000
+ 100000]
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+Z = XW
+= 800000
+            </code></pre>
+            <p>Modern GPUs are optimized for this operation.</p>
+        </section>
+
+        <section>
+            <h2>6. Calculus (Derivatives)</h2>
+            <p>The network must determine:</p>
+            <p>Which weight caused the error?</p>
+            <p>This is where derivatives are used.</p>
+            <p>Derivative:</p>
+            <pre><code>
+dLoss/dWeight
+            </code></pre>
+            <p>Meaning:</p>
+            <p>If I change this weight slightly, how much will the loss change?</p>
+            <p>Large derivative:</p>
+            <pre><code>
+Weight is very important.
+            </code></pre>
+            <p>Small derivative:</p>
+            <p>Weight has little effect.</p>
+        </section>
+
+        <section>
+            <h2>7. Gradient Descent</h2>
+            <p>After calculating derivatives, weights are updated.</p>
+            <p>Formula:</p>
+            <pre><code>
+new_weight =
+old_weight - learning_rate × gradient
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+weight = 5000
+gradient = 50
+learning_rate = 0.01
+            </code></pre>
+            <pre><code>
+new_weight =
+5000 - (0.01 × 50)
+            </code></pre>
+            <pre><code>
+4999.5
+            </code></pre>
+            <p>The network keeps adjusting weights to reduce error.</p>
+        </section>
+
+        <section>
+            <h2>8. Backpropagation</h2>
+            <p>This is the main learning algorithm.</p>
+            <p>Process:</p>
+            <pre><code>
+Forward Pass
+    ↓
+Prediction
+    ↓
+Compute Loss
+    ↓
+Compute Gradients
+    ↓
+Update Weights
+    ↓
+Repeat
+            </code></pre>
+            <p>Backpropagation uses the Chain Rule from calculus.</p>
+            <p>Chain Rule:</p>
+            <pre><code>
+dL/dW =
+(dL/dY) ×
+(dY/dZ) ×
+(dZ/dW)
+            </code></pre>
+            <p>This efficiently computes gradients for millions or billions of parameters.</p>
+        </section>
+
+        <section>
+            <h2>9. Probability</h2>
+            <p>For classification tasks:</p>
+            <p>Example:</p>
+            <p>Cat vs Dog</p>
+            <p>Output:</p>
+            <pre><code>
+Cat = 0.9
+Dog = 0.1
+            </code></pre>
+            <p>The network converts raw scores into probabilities using:</p>
+            <p>Softmax</p>
+            <pre><code>
+P(class) =
+e^x / Σ(e^x)
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+Cat = 90%
+Dog = 10%
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Optimization Algorithms</h2>
+            <p>Instead of basic gradient descent, modern AI uses advanced optimizers.</p>
+            <p>Popular ones:</p>
+            <ul>
+                <li>SGD</li>
+                <li>Momentum</li>
+                <li>RMSProp</li>
+                <li>Adam</li>
+            </ul>
+            <p>Adam</p>
+            <p>Used by most modern neural networks including transformer training.</p>
+            <p>It automatically adjusts learning rates for each parameter.</p>
+        </section>
+
+        <section>
+            <h2>How ChatGPT Uses These Techniques</h2>
+            <p>A transformer model like OpenAI's GPT combines:</p>
+            <ol>
+                <li>
+                    Linear Algebra
+                    <ul>
+                        <li>Huge matrix multiplications.</li>
+                    </ul>
+                </li>
+                <li>
+                    Calculus
+                    <ul>
+                        <li>Backpropagation.</li>
+                    </ul>
+                </li>
+                <li>
+                    Probability
+                    <ul>
+                        <li>Predict next word probabilities.</li>
+                    </ul>
+                </li>
+                <li>
+                    Optimization
+                    <ul>
+                        <li>Adam optimizer.</li>
+                    </ul>
+                </li>
+                <li>
+                    Information Theory
+                    <ul>
+                        <li>Cross-entropy loss.</li>
+                    </ul>
+                </li>
+            </ol>
+            <p>A simplified training cycle:</p>
+            <pre><code>
+Input:
+"The sky is"
+
+Model predicts:
+"green"
+
+Actual:
+"blue"
+
+Loss computed
+      ↓
+Backpropagation
+      ↓
+Update billions of weights
+      ↓
+Model improves
+            </code></pre>
+            <p>After seeing trillions of examples, the network learns language patterns, reasoning patterns, coding patterns, and world knowledge.</p>
+            <p>In one sentence:</p>
+            <p>A neural network is essentially a very large mathematical function that uses linear algebra to make predictions, calculus to measure mistakes, and optimization algorithms to continuously adjust its weights until it learns useful patterns from data.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

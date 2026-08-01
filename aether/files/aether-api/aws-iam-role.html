@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS IAM Role</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS IAM Role</h1>
+                    <p class="subtitle">Think of an AWS IAM Role like a temporary employee ID badge.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple Analogy</h2>
+            <p>Imagine you work in a company.</p>
+            <ul>
+                <li>👤 IAM User = A permanent employee with their own ID card.</li>
+                <li>🎭 IAM Role = A temporary badge that gives someone permission to do a specific job.</li>
+            </ul>
+            <p>For example:</p>
+            <ul>
+                <li>Alice is a developer.</li>
+                <li>She normally doesn't have access to the finance room.</li>
+                <li>When she needs to fix a finance server, she's given a temporary badge.</li>
+                <li>After she's done, the badge expires.</li>
+            </ul>
+            <p>That's exactly how an IAM Role works.</p>
+        </section>
+
+        <section>
+            <h2>What is IAM?</h2>
+            <p>IAM stands for Identity and Access Management.</p>
+            <p>It controls:</p>
+            <ul>
+                <li>Who can access AWS</li>
+                <li>What they can do</li>
+                <li>Which AWS services they can use</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What is an IAM Role?</h2>
+            <p>An IAM Role is a set of permissions that can be temporarily assumed by:</p>
+            <ul>
+                <li>AWS services</li>
+                <li>Users</li>
+                <li>Applications</li>
+                <li>Another AWS account</li>
+            </ul>
+            <p>Unlike an IAM User, a role has no permanent username or password.</p>
+            <p>Instead, AWS gives temporary credentials.</p>
+        </section>
+
+        <section>
+            <h2>Example 1: AWS Lambda</h2>
+            <p>Suppose you have a Lambda function.</p>
+            <pre><code>
+Lambda Function
+        │
+        ▼
+Needs to upload a file
+        │
+        ▼
+Amazon S3
+            </code></pre>
+            <p>Without permissions:</p>
+            <pre><code>
+Lambda
+   │
+   ▼
+S3
+❌ Access Denied
+            </code></pre>
+            <p>So you create an IAM Role.</p>
+            <pre><code>
+IAM Role
+
+Permission:
+✓ Upload to S3
+✓ Read S3
+            </code></pre>
+            <p>Attach it to Lambda.</p>
+            <pre><code>
+Lambda
+     │
+Uses IAM Role
+     │
+     ▼
+S3
+            </code></pre>
+            <p>Now Lambda can upload files.</p>
+        </section>
+
+        <section>
+            <h2>Example Policy</h2>
+            <p>The role might have this permission:</p>
+            <pre><code>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::my-bucket/*"
+        }
+    ]
+}
+            </code></pre>
+            <p>Meaning:</p>
+            <p>Allow uploading files to my-bucket.</p>
+        </section>
+
+        <section>
+            <h2>Example 2: Your Serverless API</h2>
+            <p>Your AWS Lambda sends emails using Amazon Simple Email Service.</p>
+            <pre><code>
+React Native App
+        │
+        ▼
+API Gateway
+        │
+        ▼
+Lambda
+        │
+        ▼
+SES
+            </code></pre>
+            <p>Lambda needs permission.</p>
+            <p>So attach this role:</p>
+            <pre><code>
+Lambda Role
+
+✓ ses:SendEmail
+            </code></pre>
+            <p>Then your code simply becomes:</p>
+            <pre><code>
+const ses = new SESClient({
+    region: process.env.AWS_REGION
+});
+            </code></pre>
+            <p>Notice:</p>
+            <p>There are no AWS access keys.</p>
+            <p>Why?</p>
+            <p>Because Lambda automatically receives temporary credentials from its IAM Role.</p>
+        </section>
+
+        <section>
+            <h2>What Happens Behind the Scenes?</h2>
+            <p>When Lambda starts:</p>
+            <pre><code>
+AWS
+ │
+ │ creates temporary credentials
+ ▼
+Access Key
+Secret Key
+Session Token
+            </code></pre>
+            <p>Lambda automatically receives them.</p>
+            <p>Your SDK uses them automatically.</p>
+            <pre><code>
+Your Code
+
+ses.send(...)
+            </code></pre>
+            <p>AWS SDK silently does this:</p>
+            <pre><code>
+Find IAM Role
+      │
+      ▼
+Request temporary credentials
+      │
+      ▼
+Sign request
+      │
+      ▼
+Send to AWS
+            </code></pre>
+            <p>That's why you don't write:</p>
+            <pre><code>
+accessKeyId: "...",
+secretAccessKey: "..."
+            </code></pre>
+            <p>inside Lambda.</p>
+        </section>
+
+        <section>
+            <h2>Another Example</h2>
+            <p>Suppose Lambda wants to:</p>
+            <ul>
+                <li>Read from Amazon DynamoDB</li>
+                <li>Upload to Amazon S3</li>
+                <li>Send email using Amazon Simple Email Service</li>
+            </ul>
+            <p>Role permissions:</p>
+            <pre><code>
+IAM Role
+
+✓ DynamoDB Read
+✓ S3 Upload
+✓ SES Send Email
+            </code></pre>
+            <p>Whenever Lambda accesses those services, AWS checks:</p>
+            <pre><code>
+Does this role allow it?
+
+YES
+            </code></pre>
+            <p>Action succeeds.</p>
+            <p>Otherwise:</p>
+            <pre><code>
+❌ AccessDeniedException
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why not just use Access Keys?</h2>
+            <p>Imagine putting your house key inside every app.</p>
+            <p>Bad idea.</p>
+            <p>If someone steals the code:</p>
+            <pre><code>
+Access Key
+Secret Key
+            </code></pre>
+            <p>they own your AWS account until you rotate those keys.</p>
+            <p>IAM Roles solve this because:</p>
+            <ul>
+                <li>no permanent credentials</li>
+                <li>temporary credentials</li>
+                <li>automatically rotated</li>
+                <li>safer</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>IAM User vs IAM Role</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>IAM User</th>
+                        <th>IAM Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Permanent identity</td>
+                        <td>Temporary identity</td>
+                    </tr>
+                    <tr>
+                        <td>Has username</td>
+                        <td>No username</td>
+                    </tr>
+                    <tr>
+                        <td>Has password/access keys</td>
+                        <td>No permanent keys</td>
+                    </tr>
+                    <tr>
+                        <td>Used by people</td>
+                        <td>Used by AWS services, apps, or users temporarily</td>
+                    </tr>
+                    <tr>
+                        <td>Credentials don't rotate automatically</td>
+                        <td>Temporary credentials rotate automatically</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>In Your AWS Lambda Project</h2>
+            <p>Based on your setup (React Native → API Gateway → Lambda → MongoDB/SES), the flow is:</p>
+            <pre><code>
+React Native
+      │
+      ▼
+API Gateway
+      │
+      ▼
+Lambda Function
+      │
+      │ assumes
+      ▼
+IAM Role
+      │
+      ├── Can access S3
+      ├── Can send SES Email
+      ├── Can write CloudWatch Logs
+      └── Can call other AWS services
+            </code></pre>
+            <p>Your Lambda function never stores AWS credentials. Instead, it automatically assumes its IAM Role, receives temporary credentials from AWS, and uses those to securely access the AWS services it's authorized to use. This is the recommended and most secure pattern for serverless applications.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

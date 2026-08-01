@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS SES service</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS SES service</h1>
+                    <p class="subtitle">This is actually a well-structured AWS SES service. Let's go through it like you're explaining it to a junior backend developer. I'll start simple and gradually go into more detail.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Big Picture</h2>
+            <p>This entire file has one job:</p>
+            <p>Send emails whenever someone submits an RFQ (Request for Quote).</p>
+            <p>When someone fills out your website form:</p>
+            <pre><code>
+Customer
+     │
+     ▼
+Submits RFQ Form
+     │
+     ▼
+Backend API
+     │
+     ▼
+sendRFQEmail()
+     │
+     ├────────────► Email #1 → Company/Admin
+     │
+     └────────────► Email #2 → Customer
+            </code></pre>
+            <p>So this file is an email service.</p>
+        </section>
+
+        <section>
+            <h2>Part 1</h2>
+            <pre><code>
+const {
+    SESClient,
+    SendEmailCommand,
+} = require("@aws-sdk/client-ses");
+            </code></pre>
+            <p>Simple explanation</p>
+            <p>You're importing two tools from AWS.</p>
+            <p>Think of it like bringing tools from a toolbox.</p>
+            <pre><code>
+AWS Toolbox
+│
+├── SESClient
+└── SendEmailCommand
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What each one does</h2>
+            <p>SESClient</p>
+            <p>This is your connection to Amazon SES.</p>
+            <pre><code>
+Your Server
+      │
+      ▼
+ SESClient
+      │
+      ▼
+ Amazon SES
+            </code></pre>
+            <p>It knows how to talk to AWS.</p>
+
+            <p>SendEmailCommand</p>
+            <p>This describes what email you want to send.</p>
+            <p>Think of it like filling out a mailing form.</p>
+            <pre><code>
+To:
+Subject:
+Body:
+            </code></pre>
+            <p>It doesn't send anything yet.</p>
+            <p>It only describes the email.</p>
+        </section>
+
+        <section>
+            <h2>Part 2</h2>
+            <pre><code>
+const ses = new SESClient({
+    region: process.env.AWS_REGION,
+});
+            </code></pre>
+            <p>Simple explanation</p>
+            <p>Here you're creating your SES connection.</p>
+            <p>Imagine opening a phone line to Amazon.</p>
+            <pre><code>
+Node Server
+     │
+     ▼
+SES Client
+     │
+     ▼
+AWS Region
+            </code></pre>
+            <p>If</p>
+            <pre><code>
+AWS_REGION=ap-southeast-1
+            </code></pre>
+            <p>then every request goes to the Singapore SES servers.</p>
+        </section>
+
+        <section>
+            <h2>Why no credentials?</h2>
+            <p>Notice there are no access keys.</p>
+            <p>That's because your comment says</p>
+            <pre><code>
+// Uses Lambda IAM Role automatically
+            </code></pre>
+            <p>AWS Lambda already has permission.</p>
+            <p>Instead of</p>
+            <pre><code>
+Access Key
+Secret Key
+            </code></pre>
+            <p>Lambda says</p>
+            <p>"I'm this Lambda function."</p>
+            <p>AWS verifies its IAM Role.</p>
+            <p>Much safer.</p>
+        </section>
+
+        <section>
+            <h2>Part 3</h2>
+            <pre><code>
+const sendWithTimeout = async (...)
+            </code></pre>
+            <p>This is a helper function.</p>
+            <p>Why?</p>
+            <p>Sometimes AWS might never respond because of:</p>
+            <ul>
+                <li>network issues</li>
+                <li>AWS problems</li>
+                <li>internet timeout</li>
+            </ul>
+            <p>Without protection:</p>
+            <pre><code>
+Your API
+      │
+      ▼
+Waiting...
+Waiting...
+Waiting...
+Forever...
+            </code></pre>
+            <p>Your API never finishes.</p>
+
+            <p>Instead,</p>
+            <pre><code>
+Promise.race()
+            </code></pre>
+            <p>creates a race.</p>
+            <pre><code>
+        Race
+        ┌──────────────┐
+        │              │
+        ▼              ▼
+SES Response      15 sec timer
+            </code></pre>
+            <p>Whichever finishes first wins.</p>
+
+            <p>If SES responds in 2 seconds</p>
+            <pre><code>
+SES wins
+            </code></pre>
+            <p>The email succeeds.</p>
+
+            <p>If SES never responds</p>
+            <pre><code>
+15 second timer wins
+            </code></pre>
+
+            <p>It throws</p>
+            <pre><code>
+SES request timeout
+            </code></pre>
+            <p>This prevents your API from hanging forever.</p>
+        </section>
+
+        <section>
+            <h2>Part 4</h2>
+            <pre><code>
+const sendRFQEmail = async (quote) => {
+            </code></pre>
+            <p>This is the main function.</p>
+            <p>It receives</p>
+            <pre><code>
+quote
+            </code></pre>
+            <p>Imagine</p>
+            <pre><code>
+{
+    companyName: "ABC Corp",
+    contactName: "John",
+    email: "john@test.com",
+    budget: "$5000"
+}
+            </code></pre>
+            <p>Everything needed to create emails.</p>
+        </section>
+
+        <section>
+            <h2>Part 5</h2>
+            <pre><code>
+console.log(...)
+            </code></pre>
+            <p>These are only logs.</p>
+            <p>They help developers know what's happening.</p>
+            <p>Example</p>
+            <pre><code>
+RFQ EMAIL PROCESS START
+
+Quote ID: RFQ-001
+
+Sending notification email...
+
+Notification sent.
+
+Sending receipt...
+
+Receipt sent.
+            </code></pre>
+            <p>Very useful when debugging.</p>
+        </section>
+
+        <section>
+            <h2>Part 6</h2>
+            <pre><code>
+if (!process.env.SES_FROM_EMAIL)
+            </code></pre>
+            <p>Before sending emails,</p>
+            <p>the program checks</p>
+            <p>"Do we even know who the sender is?"</p>
+            <p>Suppose</p>
+            <pre><code>
+SES_FROM_EMAIL=
+            </code></pre>
+            <p>is empty.</p>
+            <p>Instead of sending an invalid request,</p>
+            <p>it immediately throws</p>
+            <pre><code>
+SES_FROM_EMAIL is missing
+            </code></pre>
+            <p>This is called fail fast.</p>
+            <p>Better to stop early than send bad data.</p>
+        </section>
+
+        <section>
+            <h2>Part 7</h2>
+            <pre><code>
+notificationParams
+            </code></pre>
+            <p>This builds Email #1.</p>
+            <p>Nothing is sent yet.</p>
+            <p>You're only creating the email object.</p>
+            <p>Think of writing a letter.</p>
+            <pre><code>
+To:
+Subject:
+Body:
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+To:
+admin@company.com
+
+Subject:
+New RFQ Received
+
+Body:
+Customer details...
+            </code></pre>
+            <p>Inside</p>
+            <pre><code>
+Destination
+            </code></pre>
+            <p>you choose the receiver.</p>
+            <pre><code>
+Admin
+            </code></pre>
+
+            <p>Inside</p>
+            <pre><code>
+Source
+            </code></pre>
+
+            <p>you choose the sender.</p>
+            <pre><code>
+no-reply@company.com
+            </code></pre>
+
+            <p>Inside</p>
+            <pre><code>
+Message
+            </code></pre>
+            <p>you write the content.</p>
+        </section>
+
+        <section>
+            <h2>Part 8</h2>
+            <pre><code>
+new SendEmailCommand(notificationParams)
+            </code></pre>
+            <p>Think of it like placing the letter into an envelope.</p>
+            <pre><code>
+Email Data
+        │
+        ▼
+SendEmailCommand
+            </code></pre>
+            <p>Still not sent.</p>
+        </section>
+
+        <section>
+            <h2>Part 9</h2>
+            <pre><code>
+await sendWithTimeout(...)
+            </code></pre>
+            <p>Now the email is actually sent.</p>
+            <pre><code>
+notificationParams
+        │
+        ▼
+SendEmailCommand
+        │
+        ▼
+SESClient.send()
+        │
+        ▼
+Amazon SES
+        │
+        ▼
+Recipient Inbox
+            </code></pre>
+            <p>AWS returns</p>
+            <pre><code>
+notificationResult
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+{
+    MessageId: "010201abcdef..."
+}
+            </code></pre>
+            <p>That MessageId is Amazon's tracking number.</p>
+        </section>
+
+        <section>
+            <h2>Part 10</h2>
+            <p>Now Email #2.</p>
+            <pre><code>
+Admin gets email
+
+Customer gets receipt
+            </code></pre>
+            <p>This is why there are two emails.</p>
+        </section>
+
+        <section>
+            <h2>Part 11</h2>
+            <pre><code>
+if (quote.email)
+            </code></pre>
+            <p>Before sending the receipt,</p>
+            <p>the code checks</p>
+            <pre><code>
+Does the customer actually have an email?
+            </code></pre>
+            <p>If</p>
+            <pre><code>
+email = ""
+            </code></pre>
+            <p>there's nowhere to send it.</p>
+            <p>Instead it logs</p>
+            <pre><code>
+Customer email missing
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Part 12</h2>
+            <p>Notice this</p>
+            <pre><code>
+try {
+
+}
+    catch(receiptError){
+
+}
+            </code></pre>
+            <p>around Email #2.</p>
+            <p>This is intentional.</p>
+            <p>Imagine</p>
+            <pre><code>
+Admin email succeeds
+
+Customer email fails
+            </code></pre>
+            <p>Should the RFQ be deleted?</p>
+            <pre><code>
+No.
+            </code></pre>
+            <p>The RFQ was already submitted.</p>
+            <p>The company still received it.</p>
+            <p>So the developer decided</p>
+            <pre><code>
+Customer receipt failed
+
+↓
+
+Ignore it
+
+↓
+
+RFQ still succeeds
+            </code></pre>
+            <p>This is good design because sending the receipt is optional, while notifying the company is critical.</p>
+        </section>
+
+        <section>
+            <h2>Part 13</h2>
+            <p>The outer</p>
+            <pre><code>
+try
+            </code></pre>
+            <p>protects everything.</p>
+            <p>If anything important fails</p>
+            <pre><code>
+SES offline
+
+Invalid credentials
+
+Timeout
+
+Wrong region
+
+Permission denied
+            </code></pre>
+            <p>it prints detailed logs.</p>
+            <p>Example</p>
+            <pre><code>
+Name:
+TimeoutError
+
+Message:
+SES request timeout
+
+Metadata:
+...
+            </code></pre>
+            <p>Then</p>
+            <pre><code>
+throw error;
+            </code></pre>
+            <p>passes the error back to the API route.</p>
+        </section>
+
+        <section>
+            <h2>Part 14</h2>
+            <p>Finally</p>
+            <pre><code>
+module.exports = {
+    sendRFQEmail,
+};
+            </code></pre>
+            <p>This exports the function so other files can use it.</p>
+            <p>Example:</p>
+            <pre><code>
+const { sendRFQEmail } = require("./emailService");
+
+await sendRFQEmail(quote);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Complete Flow</h2>
+            <p>Here's the entire process from start to finish:</p>
+            <pre><code>
+Customer submits RFQ
+          │
+          ▼
+API receives request
+          │
+          ▼
+sendRFQEmail(quote)
+          │
+          ▼
+Create SESClient (connection to AWS)
+          │
+          ▼
+Validate environment variables
+          │
+          ▼
+Build notification email for company
+          │
+          ▼
+Create SendEmailCommand
+          │
+          ▼
+Send email to Amazon SES (15-second timeout)
+          │
+          ▼
+Admin receives RFQ notification
+          │
+          ▼
+Does the customer have an email?
+      │
+      ├── No → Skip receipt email
+      │
+      └── Yes
+            │
+            ▼
+      Build receipt email
+            │
+            ▼
+      Create SendEmailCommand
+            │
+            ▼
+      Send email to Amazon SES (15-second timeout)
+            │
+            ▼
+      Customer receives confirmation
+            │
+            ▼
+Return success with AWS MessageId
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why this is a good implementation</h2>
+            <p>This code follows several backend best practices:</p>
+            <ul>
+                <li>Separation of concerns: All email-related logic is isolated in one service file.</li>
+                <li>IAM Role authentication: It relies on the Lambda execution role instead of embedding AWS access keys, which is more secure.</li>
+                <li>Timeout protection: Promise.race() prevents the API from hanging indefinitely if SES is slow or unreachable.</li>
+                <li>Input validation: It checks required environment variables before attempting to send emails.</li>
+                <li>Graceful degradation: If the customer receipt email fails, the more important admin notification and RFQ creation still succeed.</li>
+                <li>Comprehensive logging: Detailed logs make troubleshooting much easier in environments like AWS Lambda and CloudWatch.</li>
+            </ul>
+            <p>Overall, this is a solid, production-oriented pattern for sending transactional emails from a Node.js application using Amazon SES.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

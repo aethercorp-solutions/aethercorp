@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>BigQuery</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">BigQuery</h1>
+                    <p class="subtitle">BigQuery is Google Cloud's serverless data warehouse. It's designed to store and analyze very large amounts of data quickly using SQL.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simply put:</h2>
+            <p>Firebase Analytics collects your app data.</p>
+            <p>GA4 organizes and reports on it.</p>
+            <p>BigQuery lets you analyze the raw data in almost any way you want.</p>
+        </section>
+
+        <section>
+            <h2>Simple analogy</h2>
+            <p>Imagine you own a library.</p>
+            <ul>
+                <li>Firebase Analytics = The librarian records every book borrowed.</li>
+                <li>GA4 = A dashboard showing "Most borrowed books" and "Visitors this week."</li>
+                <li>BigQuery = The entire library database, where you can ask any question you want.</li>
+            </ul>
+            <p>For example:</p>
+            <p>"Which users from the Philippines logged in more than 20 times last month and later purchased Premium?"</p>
+            <p>GA4 may not provide that exact report, but BigQuery can.</p>
+        </section>
+
+        <section>
+            <h2>How it fits together</h2>
+            <pre><code>
+React Native App
+       │
+       ▼
+Firebase Analytics
+       │
+       ▼
+Google Analytics 4 (GA4)
+       │
+       ▼
+BigQuery
+       │
+       ▼
+SQL Queries
+       │
+       ▼
+Dashboards / AI / Reports
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What does BigQuery store?</h2>
+            <p>Suppose users perform these actions:</p>
+            <pre><code>
+User A opened app
+User A logged in
+User A searched "John"
+User A viewed Contact #45
+User A upgraded to Premium
+            </code></pre>
+            <p>BigQuery stores each event with details such as:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Event</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>9:00 AM</td>
+                        <td>User A</td>
+                        <td>app_open</td>
+                        <td>Android</td>
+                    </tr>
+                    <tr>
+                        <td>9:01 AM</td>
+                        <td>User A</td>
+                        <td>login</td>
+                        <td>Email</td>
+                    </tr>
+                    <tr>
+                        <td>9:02 AM</td>
+                        <td>User A</td>
+                        <td>search</td>
+                        <td>"John"</td>
+                    </tr>
+                    <tr>
+                        <td>9:03 AM</td>
+                        <td>User A</td>
+                        <td>view_contact</td>
+                        <td>Contact #45</td>
+                    </tr>
+                    <tr>
+                        <td>9:05 AM</td>
+                        <td>User A</td>
+                        <td>purchase</td>
+                        <td>Premium</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Instead of summarized reports, you have access to the underlying event data.</p>
+        </section>
+
+        <section>
+            <h2>Querying with SQL</h2>
+            <p>BigQuery uses SQL, which is similar to querying a database.</p>
+            <p>Count users</p>
+            <pre><code>
+SELECT COUNT(DISTINCT user_pseudo_id)
+FROM `myproject.analytics.events_*`
+            </code></pre>
+
+            <p>Most popular events</p>
+            <pre><code>
+SELECT
+  event_name,
+  COUNT(*) AS total
+FROM `myproject.analytics.events_*`
+GROUP BY event_name
+ORDER BY total DESC;
+            </code></pre>
+            <p>Example result:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>app_open</td>
+                        <td>58,230</td>
+                    </tr>
+                    <tr>
+                        <td>search</td>
+                        <td>18,120</td>
+                    </tr>
+                    <tr>
+                        <td>contact_created</td>
+                        <td>9,580</td>
+                    </tr>
+                    <tr>
+                        <td>purchase</td>
+                        <td>840</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Premium purchases today</p>
+            <pre><code>
+SELECT *
+FROM `myproject.analytics.events_*`
+WHERE event_name = 'purchase'
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why developers use BigQuery</h2>
+            <p>GA4 provides many standard reports, but BigQuery lets you answer much more specific questions, such as:</p>
+            <ul>
+                <li>Which users are likely to stop using the app?</li>
+                <li>Which features lead to Premium purchases?</li>
+                <li>How many users return after seven days?</li>
+                <li>Which country has the highest engagement?</li>
+                <li>What is the average number of contacts created before a subscription?</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>BigQuery + AI</h2>
+            <p>BigQuery is often used as the data source for machine learning.</p>
+            <p>Example workflow:</p>
+            <pre><code>
+App Usage
+      │
+      ▼
+Firebase Analytics
+      │
+      ▼
+BigQuery
+      │
+      ▼
+Python / TensorFlow / Scikit-learn
+      │
+      ▼
+Prediction Model
+      │
+      ▼
+Personalized Recommendations
+            </code></pre>
+            <p>For example, an AI model could learn that users who:</p>
+            <ul>
+                <li>import more than 100 contacts,</li>
+                <li>schedule at least five reminders,</li>
+                <li>and use the app three days in a row,</li>
+            </ul>
+            <p>have a high probability of subscribing to Premium.</p>
+            <p>Your app could then show those users a well-timed subscription offer.</p>
+        </section>
+
+        <section>
+            <h2>Example for your React Native app</h2>
+            <p>Suppose your app logs:</p>
+            <pre><code>
+analytics().logEvent('contact_created');
+analytics().logEvent('contact_scheduled');
+analytics().logEvent('premium_purchase');
+            </code></pre>
+            <p>After exporting to BigQuery, you could ask:</p>
+            <ul>
+                <li>How many contacts are created per user?</li>
+                <li>Which users schedule reminders most often?</li>
+                <li>Which actions happen before a Premium purchase?</li>
+                <li>What is the average session length?</li>
+                <li>Which app version has the highest crash rate (when combined with other telemetry)?</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Advantages</h2>
+            <ul>
+                <li>Very fast: Can analyze millions or billions of rows in seconds.</li>
+                <li>Serverless: No database servers to manage.</li>
+                <li>SQL support: Easy for anyone familiar with SQL.</li>
+                <li>Scalable: Handles massive datasets.</li>
+                <li>Integrates well: Works with GA4, Firebase, Looker Studio, Python, TensorFlow, and many other tools.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Typical architecture</h2>
+            <pre><code>
+React Native App
+       │
+       ▼
+Firebase Analytics
+       │
+       ▼
+GA4
+       │
+       ▼
+BigQuery
+       │
+       ├── SQL Reports
+       ├── AI Models
+       ├── Custom Dashboards
+       ├── Looker Studio
+       └── Backend APIs
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>When should you use it?</h2>
+            <ul>
+                <li>Use Firebase Analytics to collect user events.</li>
+                <li>Use GA4 to view standard dashboards and reports.</li>
+                <li>
+                    Use BigQuery when you need:
+                    <ul>
+                        <li>custom analytics,</li>
+                        <li>advanced SQL queries,</li>
+                        <li>AI or machine learning,</li>
+                        <li>large-scale reporting,</li>
+                        <li>or your own dashboards and APIs.</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>In practice, many teams start with Firebase Analytics and GA4. As their app grows and they need deeper insights or predictive features, they enable BigQuery export so they can analyze the raw event data in much greater detail.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

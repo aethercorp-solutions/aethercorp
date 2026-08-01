@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Smart API client</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Smart API client</h1>
+                    <p class="subtitle"> Subtitle </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <pre><code>
+import axios from "axios";
+import type { AxiosError, AxiosInstance } from "axios";
+
+const BASE_URL = "https://p5wrsahdo1.execute-api.us-east-2.amazonaws.com/api/v1";
+
+export interface UserToken {
+    accessToken: string;
+    refreshToken: string;
+    expirationDate: string;
+}
+
+class TokenStorage {
+
+    private token?: UserToken;
+
+    getToken() {
+        return this.token;
+    }
+
+    setToken(token: UserToken) {
+        this.token = token;
+    }
+
+    clear() {
+        this.token = undefined;
+    }
+
+}
+
+export const tokenStorage = new TokenStorage();
+
+class ApiService {
+
+    private api: AxiosInstance;
+
+    private isRefreshing = false;
+
+    private refreshPromise: Promise&lt;void&gt; | null = null;
+
+    constructor() {
+
+        this.api = axios.create({
+            baseURL: BASE_URL,
+            timeout: 30000,
+        });
+
+        this.initializeInterceptors();
+    }
+
+    get client() {
+        return this.api;
+    }
+
+    private initializeInterceptors() {
+
+        this.api.interceptors.request.use(async (config) => {
+
+            const token = tokenStorage.getToken();
+
+            if (token) {
+                config.headers.Authorization = `Bearer ${token.accessToken}`;
+            }
+
+            return config;
+        });
+
+        this.api.interceptors.response.use(
+            (response) => response,
+            this.handleError.bind(this)
+        );
+    }
+
+    private async handleError(error: AxiosError) {
+
+        const originalRequest: any = error.config;
+
+        if (!originalRequest) {
+            return Promise.reject(error);
+        }
+
+        if (
+            (error.response?.status === 401 ||
+                error.response?.status === 403) &&
+            !originalRequest._retry
+        ) {
+
+            originalRequest._retry = true;
+
+            try {
+
+                await this.refreshAccessToken();
+
+                const token = tokenStorage.getToken();
+
+                if (token) {
+                    originalRequest.headers.Authorization =
+                        `Bearer ${token.accessToken}`;
+                }
+
+                return this.api(originalRequest);
+
+            } catch (err) {
+
+                tokenStorage.clear();
+
+                return Promise.reject(err);
+            }
+
+        }
+
+        return Promise.reject(error);
+    }
+
+    private async refreshAccessToken() {
+
+        if (this.isRefreshing && this.refreshPromise) {
+            return this.refreshPromise;
+        }
+
+        this.isRefreshing = true;
+
+        this.refreshPromise = (async () => {
+
+            const token = tokenStorage.getToken();
+
+            if (!token) {
+                throw new Error("No refresh token.");
+            }
+
+            const response = await axios.post(
+                `${BASE_URL}/users/refresh-token`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token.accessToken}`,
+                    },
+                }
+            );
+
+            const newToken = response.data.data;
+
+            tokenStorage.setToken({
+                accessToken: newToken.access_token,
+                refreshToken: token.refreshToken,
+                expirationDate: newToken.expiration_date,
+            });
+
+        })();
+
+        try {
+
+            await this.refreshPromise;
+
+        } finally {
+
+            this.isRefreshing = false;
+            this.refreshPromise = null;
+
+        }
+
+    }
+
+}
+
+export default new ApiService();
+            </code></pre>
+            <p>This code is creating a smart API client using Axios. Its job is to:</p>
+            <ol>
+                <li>Automatically attach the user's access token to every request.</li>
+                <li>Detect when the access token expires.</li>
+                <li>Automatically get a new access token using the refresh endpoint.</li>
+                <li>Retry the original request without the user noticing.</li>
+            </ol>
+            <p>Think of it like this:</p>
+            <p>Your access token is a temporary ID card.
+                When it expires, this code automatically goes to the security office, gets a new ID card, and continues what it was doing.</p>
+        </section>
+
+        <section>
+            <h2>Step 1. Import Axios</h2>
+            <pre><code>
+import axios from "axios";
+import type { AxiosError, AxiosInstance } from "axios";
+            </code></pre>
+            <ul>
+                <li>axios sends HTTP requests.</li>
+                <li>AxiosError is the error type.</li>
+                <li>AxiosInstance is a custom Axios client.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 2. API URL</h2>
+            <pre><code>
+const BASE_URL =
+"https://p5wrsahdo1.execute-api.us-east-2.amazonaws.com/api/v1";
+            </code></pre>
+            <p>Instead of writing</p>
+            <pre><code>
+https://p5wrsahdo1.execute-api.us-east-2.amazonaws.com/api/v1/signin
+            </code></pre>
+            <p>every time, you only write</p>
+            <pre><code>
+api.client.post("/signin")
+            </code></pre>
+            <p>because Axios automatically adds the base URL.</p>
+        </section>
+
+        <section>
+            <h2>Step 3. Token Interface</h2>
+            <pre><code>
+export interface UserToken {
+    accessToken: string;
+    refreshToken: string;
+    expirationDate: string;
+}
+            </code></pre>
+            <p>This simply describes what a token object looks like.</p>
+            <p>Example:</p>
+            <pre><code>
+{
+    accessToken: "abc123",
+    refreshToken: "xyz456",
+    expirationDate: "2026-07-03"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4. Token Storage</h2>
+            <pre><code>
+class TokenStorage {
+
+    private token?: UserToken;
+
+}
+            </code></pre>
+            <p>This class stores the current user's token in memory.</p>
+            <p>Imagine it as a small box.</p>
+            <pre><code>
++----------------+
+| Token Storage  |
++----------------+
+| access token   |
+| refresh token  |
++----------------+
+            </code></pre>
+            <p>Get Token</p>
+            <pre><code>
+getToken() {
+    return this.token;
+}
+            </code></pre>
+            <p>Returns the stored token.</p>
+        </section>
+
+        <section>
+            <h2>Save Token</h2>
+            <pre><code>
+setToken(token: UserToken) {
+    this.token = token;
+}
+            </code></pre>
+            <p>Stores a new token.</p>
+        </section>
+
+        <section>
+            <h2>Clear Token</h2>
+            <pre><code>
+clear() {
+    this.token = undefined;
+}
+            </code></pre>
+            <p>Removes the token during logout or when refresh fails.</p>
+            <p>Then:</p>
+            <pre><code>
+export const tokenStorage = new TokenStorage();
+            </code></pre>
+            <p>creates one global storage that the whole app shares.</p>
+        </section>
+
+        <section>
+            <h2>Step 5. ApiService</h2>
+            <pre><code>
+class ApiService {
+            </code></pre>
+            <p>This class manages all API requests.</p>
+        </section>
+
+        <section>
+            <h2>Create Axios</h2>
+            <pre><code>
+this.api = axios.create({
+    baseURL: BASE_URL,
+    timeout: 30000,
+});
+            </code></pre>
+            <p>Every request automatically uses</p>
+            <pre><code>
+https://.../api/v1
+            </code></pre>
+            <p>and waits up to 30 seconds.</p>
+        </section>
+
+        <section>
+            <h2>Step 6. Interceptors</h2>
+            <p>This is the most important part.</p>
+            <p>Think of interceptors as security guards.</p>
+            <p>Every request passes through them.</p>
+            <pre><code>
+App
+  |
+  V
+Interceptor
+  |
+  V
+Server
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Request Interceptor</h2>
+            <pre><code>
+this.api.interceptors.request.use(...)
+            </code></pre>
+            <p>Runs before every request.</p>
+
+            <p>It gets the token.</p>
+            <pre><code>
+const token = tokenStorage.getToken();
+            </code></pre>
+            <p>Suppose</p>
+            <pre><code>
+accessToken = abc123
+            </code></pre>
+            <p>Then it adds</p>
+            <pre><code>
+Authorization: Bearer abc123
+            </code></pre>
+            <p>to every request.</p>
+            <p>So when you write</p>
+            <pre><code>
+api.client.get("/users")
+            </code></pre>
+            <p>Axios actually sends</p>
+            <pre><code>
+GET /users
+
+Authorization: Bearer abc123
+            </code></pre>
+            <p>automatically.</p>
+            <p>You don't have to write the Authorization header every time.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

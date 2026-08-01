@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>How OpenAI Works (Simple Explanation)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">How OpenAI Works (Simple Explanation)</h1>
+                    <p class="subtitle">
+                        Think of OpenAI as a very advanced autocomplete system that has read a huge amount of text and learned patterns in language.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>When you type:</h2>
+            <pre><code>
+"Write an email to my manager"
+            </code></pre>
+            <p>The AI does not search for the answer. Instead, it predicts the most likely next word, then the next, and so on, until it generates a complete response.</p>
+        </section>
+
+        <section>
+            <h2>How OpenAI Was Trained</h2>
+            <p>1. Pre-Training</p>
+            <p>The model is trained on large amounts of text from books, websites, articles, code, and other public sources.</p>
+            <p>Example:</p>
+            <p>Input:</p>
+            <pre><code>
+The capital of France is
+            </code></pre>
+            <p>Expected output:</p>
+            <pre><code>
+Paris
+            </code></pre>
+            <p>The model learns billions of these language patterns.</p>
+        </section>
+
+        <section>
+            <h2>2. Fine-Tuning</h2>
+            <p>After pre-training, humans help improve the model by:</p>
+            <ul>
+                <li>Rating responses</li>
+                <li>Correcting bad answers</li>
+                <li>Teaching helpful behavior</li>
+            </ul>
+            <p>This makes the model more useful and safer.</p>
+        </section>
+
+        <section>
+            <h2>3. Inference (What Happens When You Ask a Question)</h2>
+            <p>When you send:</p>
+            <pre><code>
+How do I send an email in Node.js?
+            </code></pre>
+            <p>Flow:</p>
+            <pre><code>
+User
+  ↓
+OpenAI API
+  ↓
+GPT Model
+  ↓
+Generated Response
+  ↓
+User
+            </code></pre>
+            <p>The model predicts the best response based on its training and the context of your conversation.</p>
+        </section>
+
+        <section>
+            <h2>Typical Application Architecture</h2>
+            <p>For a React Native app with a Node.js backend:</p>
+            <pre><code>
+React Native App
+        ↓
+Node.js API
+        ↓
+OpenAI API
+        ↓
+GPT Model
+        ↓
+Response
+        ↓
+React Native App
+            </code></pre>
+            <p>Example</p>
+            <p>User:</p>
+            <pre><code>
+What should I eat after a workout?
+            </code></pre>
+            <p>Backend sends:</p>
+            <pre><code>
+const response = await openai.responses.create({
+    model: "gpt-5",
+    input: "What should I eat after a workout?"
+});
+            </code></pre>
+            <p>OpenAI returns:</p>
+            <pre><code>
+{
+    "output_text": "A combination of protein and carbohydrates..."
+}
+            </code></pre>
+            <p>Backend sends the result back to the mobile app.</p>
+        </section>
+
+        <section>
+            <h2>Modern AI Applications (RAG)</h2>
+            <p>Most production apps don't rely only on the model.</p>
+            <p>They combine:</p>
+            <pre><code>
+User Question
+       ↓
+Search User Data
+       ↓
+Search Documents
+       ↓
+OpenAI
+       ↓
+Answer
+            </code></pre>
+            <p>This is called:</p>
+            <p>Retrieval-Augmented Generation (RAG)</p>
+            <p>Example:</p>
+            <p>User:</p>
+            <pre><code>
+What is my current nutrition goal?
+            </code></pre>
+            <p>Flow:</p>
+            <pre><code>
+User
+ ↓
+Backend API
+ ↓
+Fetch User Profile
+ ↓
+Fetch Nutrition Documents
+ ↓
+OpenAI
+ ↓
+Personalized Answer
+            </code></pre>
+            <p>The AI uses both its knowledge and your application's data.</p>
+        </section>
+
+        <section>
+            <h2>How Tool Calling Works</h2>
+            <p>Modern OpenAI models can decide when to call external tools.</p>
+            <p>Example:</p>
+            <p>User:</p>
+            <pre><code>
+What's the weather today?
+            </code></pre>
+            <p>Flow:</p>
+            <pre><code>
+User
+ ↓
+GPT
+ ↓
+Weather API
+ ↓
+GPT
+ ↓
+Final Answer
+            </code></pre>
+            <p>The AI acts like an orchestrator.</p>
+        </section>
+
+        <section>
+            <h2>How You Would Implement It</h2>
+            <p>Since you're a full-stack developer, a common production setup would be:</p>
+            <pre><code>
+React Native
+      ↓
+AWS API Gateway
+      ↓
+AWS Lambda (Node.js)
+      ↓
+LangGraph / Agent Logic
+      ↓
+OpenAI API
+      ↓
+MongoDB
+      ↓
+External APIs
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example Agent Flow</h2>
+            <pre><code>
+User asks question
+       ↓
+Load conversation history
+       ↓
+Retrieve relevant documents (RAG)
+       ↓
+Fetch user data
+       ↓
+Call OpenAI
+       ↓
+Generate answer
+       ↓
+Store conversation
+            </code></pre>
+            <p>This is essentially how assistants, nutrition coaches, customer support bots, and AI agents are built today.</p>
+            <p>In One Sentence</p>
+            <p>OpenAI works by using a large language model that predicts the next most likely tokens based on the user's prompt, and modern applications enhance it with user data, document retrieval (RAG), APIs, and tools to produce accurate, personalized responses.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

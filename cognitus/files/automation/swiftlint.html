@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SwiftLint</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">SwiftLint</h1>
+                    <p class="subtitle">
+                        SwiftLint is a static analysis tool for Swift that helps you write cleaner, more consistent, and less error-prone code. It analyzes your Swift source files and reports violations of coding style and best practices, similar to how ESLint works for JavaScript.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What SwiftLint does</h2>
+            <p>For example, it can detect:</p>
+            <ul>
+                <li>Variables that should be constants (let instead of var)</li>
+                <li>Lines that are too long</li>
+                <li>Force unwrapping (!)</li>
+                <li>Force casting (as!)</li>
+                <li>Trailing whitespace</li>
+                <li>Unused imports</li>
+                <li>Missing documentation comments (if configured)</li>
+                <li>Functions or types that are too large</li>
+                <li>Naming convention violations</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+// ❌ SwiftLint warning
+var name = "Paul"
+
+// ✅ Preferred
+let name = "Paul"
+            </code></pre>
+            <p>Another example:</p>
+            <pre><code>
+// ❌ Force unwrap
+let image = UIImage(named: "logo")!
+
+// ✅ Safer
+guard let image = UIImage(named: "logo") else {
+    return
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why use SwiftLint?</h2>
+            <p>Benefits include:</p>
+            <ul>
+                <li>Consistent coding style across the team</li>
+                <li>Catches common mistakes before runtime</li>
+                <li>Makes code reviews easier</li>
+                <li>Makes code reviews easier</li>
+                <li>Integrates with Xcode and CI/CD pipelines</li>
+            </ul>
+            <p>This is especially useful if you're working in a team or maintaining a large iOS project.</p>
+        </section>
+
+        <section>
+            <h2>How to install</h2>
+            <p>Using Homebrew</p>
+            <pre><code>
+brew install swiftlint
+            </code></pre>
+            <p>Or add it as a Swift Package plugin in Xcode for newer projects. SwiftLint supports both approaches.</p>
+        </section>
+
+        <section>
+            <h2>Running SwiftLint</h2>
+            <p>From your project directory:</p>
+            <pre><code>
+swiftlint
+            </code></pre>
+            <p>To automatically fix some issues:</p>
+            <pre><code>
+swiftlint --fix
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Configuration</h2>
+            <p>Create a file named:</p>
+            <pre><code>
+.swiftlint.yml
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+disabled_rules:
+  - trailing_whitespace
+
+opt_in_rules:
+  - force_unwrapping
+  - empty_count
+
+line_length: 120
+
+identifier_name:
+  min_length: 2
+            </code></pre>
+            <p>This lets you enable, disable, or customize rules for your project.</p>
+        </section>
+
+        <section>
+            <h2>Integrating with Xcode</h2>
+            <p>Add a Run Script Build Phase:</p>
+            <pre><code>
+if command -v swiftlint >/dev/null; then
+    swiftlint
+else
+    echo "warning: SwiftLint not installed"
+fi
+            </code></pre>
+            <p>Now every build will automatically check your code and show warnings in Xcode.</p>
+        </section>
+
+        <section>
+            <h2>SwiftLint vs ESLint</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>SwiftLint</th>
+                        <th>ESLint</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Swift</td>
+                        <td>JavaScript / TypeScript</td>
+                    </tr>
+                    <tr>
+                        <td>Checks Swift style and best practices</td>
+                        <td>Checks JS/TS style and best practices</td>
+                    </tr>
+                    <tr>
+                        <td>.swiftlint.yml</td>
+                        <td>eslint.config.js / .eslintrc</td>
+                    </tr>
+                    <tr>
+                        <td>Runs during Xcode builds or CI</td>
+                        <td>Runs during npm scripts or CI</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Since you've been working on iOS projects and setting up CI/CD with Bitbucket, SwiftLint is commonly added to the pipeline so that every pull request is checked automatically. A typical pipeline looks like:</p>
+            <ol>
+                <li>Build the app.</li>
+                <li>Run unit tests.</li>
+                <li>Run SwiftLint.</li>
+                <li>If linting fails, fail the build.</li>
+                <li>Upload to TestFlight if all checks pass.</li>
+            </ol>
+            <p>This helps enforce coding standards before code is merged.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

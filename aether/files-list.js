@@ -1,0 +1,21 @@
+const htmlFiles = [
+  "files/OpenAI/how-open-ai-works-simple-explanations.html",
+  "files/OpenAI/openai-explain-simply.html",
+  "files/OpenAI/openai-model-computer-scientist-view.html",
+  "files/aether-api/aws-iam-role.html",
+  "files/aether-api/aws-ses-service.html",
+  "files/aether-api/cloudflare-turnstile.html",
+  "files/aether-api/environment-files.html",
+  "files/aether-api/express-middleware.html",
+  "files/aether-api/google-client-id.html",
+  "files/aether-api/smart-api-client-using-axios.html",
+  "files/aws/large-social-platforms.html",
+  "files/crm/customer-relationship-management-crm.html",
+  "files/file-format/md-file.html",
+  "files/mongodb/mongodb-query-explained-simply.html",
+  "files/neural-network/neural-network-simple-explanation.html",
+  "files/rag/long-context-in-an-llm.html",
+  "files/rag/production-grade-retrieval-augmented-generation-rag-system.html",
+  "files/rag/retrieval-augmented-generation-application.html",
+  "files/vite/vite.html"
+];

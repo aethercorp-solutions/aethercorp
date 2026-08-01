@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>OpenAI model</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">OpenAI model</h1>
+                    <p class="subtitle">At its core, an OpenAI model is a very large neural network called a Transformer.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Computer Scientist View</h2>
+            <p>At its core, an OpenAI model is a very large neural network called a Transformer.</p>
+            <p>The goal is simple:</p>
+            <p>Given a sequence of tokens, predict the next token.</p>
+            <p>Example:</p>
+            <pre><code>
+I love eating pizza because it tastes
+            </code></pre>
+            <p>The model predicts:</p>
+            <p>During training:</p>
+            <pre><code>
+Input:  I love eating pizza because it tastes
+Target: good
+            </code></pre>
+            <p>The model adjusts billions of parameters (weights) to reduce prediction errors.</p>
+        </section>
+
+        <section>
+            <h2>Mathematical View</h2>
+            <p>The model learns a function:</p>
+            <pre><code>
+f(tokens) → probability distribution
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+Input:
+[I, love, eating, pizza]
+
+Output:
+good    = 0.75
+great   = 0.15
+amazing = 0.08
+terrible= 0.02
+            </code></pre>
+            <p>The model selects the next token and repeats the process until a response is complete.</p>
+        </section>
+
+        <section>
+            <h2>How a Transformer Works</h2>
+            <p>A Transformer consists of:</p>
+            <pre><code>
+Tokens
+  ↓
+Embeddings
+  ↓
+Self-Attention
+  ↓
+Feed Forward Networks
+  ↓
+Output Probabilities
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>1. Tokenization</h2>
+            <p>Text is converted into small pieces called tokens.</p>
+            <pre><code>
+"OpenAI is amazing"
+            </code></pre>
+            <p>Becomes:</p>
+            <pre><code>
+[Open, AI, is, amazing]
+            </code></pre>
+            <p>(or smaller subword pieces depending on the tokenizer).</p>
+        </section>
+
+        <section>
+            <h2>2. Embeddings</h2>
+            <p>Tokens become vectors.</p>
+            <pre><code>
+"cat" → [0.23, -0.11, 0.77, ...]
+            </code></pre>
+            <p>These vectors capture semantic meaning.</p>
+            <p>Words with similar meanings are close together in vector space.</p>
+        </section>
+
+        <section>
+            <h2>3. Self-Attention</h2>
+            <p>This is the breakthrough idea behind the Transformer.</p>
+            <p>When processing:</p>
+            <pre><code>
+The animal didn't cross the street because it was tired.
+            </code></pre>
+            <p>The model learns that:</p>
+            <pre><code>
+it → animal
+            </code></pre>
+            <p>not:</p>
+            <pre><code>
+it → street
+            </code></pre>
+            <p>Self-attention lets every token look at every other token and determine what is important.</p>
+        </section>
+
+        <section>
+            <h2>4. Feed-Forward Layers</h2>
+            <p>After attention, neural network layers process the information further.</p>
+            <pre><code>
+Attention
+    ↓
+Neural Network
+    ↓
+Better Representation
+            </code></pre>
+            <p>This happens dozens or hundreds of times across Transformer layers.</p>
+        </section>
+
+        <section>
+            <h2>Engineer View</h2>
+            <p>As an engineer, think of GPT as:</p>
+            <pre><code>
+Tokenizer
+    ↓
+Transformer
+    ↓
+Probability Generator
+            </code></pre>
+            <p>During Training</p>
+            <p>Millions or billions of examples are processed.</p>
+            <pre><code>
+text = "The sky is blue"
+
+input  = "The sky is"
+target = "blue"
+            </code></pre>
+            <p>Loss is calculated:</p>
+            <pre><code>
+loss = predicted - actual
+            </code></pre>
+            <p>Backpropagation updates weights:</p>
+            <pre><code>
+weights = weights - learning_rate * gradient
+            </code></pre>
+            <p>Repeated trillions of times.</p>
+        </section>
+
+        <section>
+            <h2>Simplified Training Pipeline</h2>
+            <pre><code>
+Internet Data
+      ↓
+Cleaning
+      ↓
+Tokenization
+      ↓
+GPU Cluster
+      ↓
+Transformer Training
+      ↓
+Checkpoint
+      ↓
+Fine-Tuning
+      ↓
+GPT Model
+            </code></pre>
+            <p>Large-scale training runs on thousands of GPUs working in parallel.</p>
+            <p>NVIDIA GPUs are commonly used because matrix operations are highly parallelizable.</p>
+        </section>
+
+        <section>
+            <h2>Inference (When You Ask a Question)</h2>
+            <p>Suppose you ask:</p>
+            <pre><code>
+How do I send email in Node.js?
+            </code></pre>
+            <p>Flow:</p>
+            <pre><code>
+Prompt
+   ↓
+Tokenize
+   ↓
+Transformer
+   ↓
+Probability Distribution
+   ↓
+Generate Next Token
+   ↓
+Repeat
+   ↓
+Final Response
+            </code></pre>
+            <p>The model is not "thinking" like a human.</p>
+            <p>It is repeatedly doing:</p>
+            <pre><code>
+What token is most likely next?
+            </code></pre>
+            <p>very efficiently.</p>
+        </section>
+
+        <section>
+            <h2>What OpenAI Adds Beyond the Base Transformer</h2>
+            <p>A production system typically includes:</p>
+            <pre><code>
+User Prompt
+      ↓
+Safety Checks
+      ↓
+System Instructions
+      ↓
+Conversation Memory
+      ↓
+Tool Calling
+      ↓
+GPT Model
+      ↓
+Post Processing
+      ↓
+Response
+            </code></pre>
+            <p>Additional capabilities include:</p>
+            <ul>
+                <li>Tool calling (weather, databases, APIs)</li>
+                <li>Structured outputs (JSON)</li>
+                <li>Reasoning optimizations</li>
+                <li>Safety systems</li>
+                <li>Fine-tuning and alignment</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple Mental Model</h2>
+            <p>If you're building software, imagine:</p>
+            <pre><code>
+Database stores facts
+API executes actions
+GPT decides what to say
+            </code></pre>
+            <p>Or:</p>
+            <pre><code>
+Traditional App:
+if/else rules
+       ↓
+Output
+
+GPT App:
+Neural Network
+       ↓
+Output
+            </code></pre>
+            <p>A traditional program follows explicit instructions written by developers. A GPT model learns statistical patterns from enormous datasets and uses those learned patterns to generate the next token, one token at a time.</p>
+            <p>In one sentence:</p>
+            <p>From a computer science perspective, OpenAI models are massive Transformer neural networks trained with gradient descent to predict the next token; from an engineering perspective, they are scalable probabilistic inference systems wrapped with memory, retrieval, tools, safety layers, and APIs to build intelligent applications.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

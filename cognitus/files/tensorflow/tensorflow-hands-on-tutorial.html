@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TensorFlow Hands-on Tutorial (Beginner to Intermediate)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">TensorFlow Hands-on Tutorial (Beginner to Intermediate)</h1>
+                    <p class="subtitle">
+                        Since you've asked before about TensorFlow and Firebase Analytics, I'll teach TensorFlow from the ground up with a hands-on project. By the end, you'll have trained your own AI model and understand how machine learning works in practice.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What you'll build</h2>
+            <p>You'll create an AI model that predicts the price of a house based on its size.</p>
+            <p>Example dataset:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Size (sq ft)</th>
+                        <th>Price ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>500</td>
+                        <td>120000</td>
+                    </tr>
+                    <tr>
+                        <td>800</td>
+                        <td>180000</td>
+                    </tr>
+                    <tr>
+                        <td>1000</td>
+                        <td>230000</td>
+                    </tr>
+                    <tr>
+                        <td>1200</td>
+                        <td>275000</td>
+                    </tr>
+                    <tr>
+                        <td>1500</td>
+                        <td>340000</td>
+                    </tr>
+                    <tr>
+                        <td>1800</td>
+                        <td>390000</td>
+                    </tr>
+                    <tr>
+                        <td>2000</td>
+                        <td>430000</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Eventually you'll ask:</p>
+            <p>"If a house is 1700 sq ft, what should its price be?"</p>
+            <p>TensorFlow will predict it.</p>
+        </section>
+
+        <section>
+            <h2>Step 1 Install Python</h2>
+            <p>Download</p>
+            <p>https://python.org</p>
+            <p>Verify</p>
+            <pre><code>
+python3 --version
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+Python 3.12.1
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2 Create a Virtual Environment</h2>
+            <p>Mac/Linux</p>
+            <pre><code>
+python3 -m venv tfenv
+            </code></pre>
+            <p>Activate</p>
+            <pre><code>
+source tfenv/bin/activate
+            </code></pre>
+            <p>Windows</p>
+            <pre><code>
+tfenv\Scripts\activate
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3 Install TensorFlow</h2>
+            <pre><code>
+pip install tensorflow
+            </code></pre>
+            <p>Verify</p>
+            <pre><code>
+python
+            </code></pre>
+            <p>Inside Python</p>
+            <pre><code>
+import tensorflow as tf
+
+print(tf.__version__)
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+2.19.x
+            </code></pre>
+            <p>Exit</p>
+            <pre><code>
+exit()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4 Install Extra Libraries</h2>
+            <pre><code>
+pip install numpy pandas matplotlib scikit-learn
+            </code></pre>
+            <p>These libraries are commonly used alongside TensorFlow:</p>
+            <ul>
+                <li>NumPy → math</li>
+                <li>Pandas → datasets</li>
+                <li>Matplotlib → graphs</li>
+                <li>Scikit-learn → preprocessing and evaluation</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 5 Create Your First Tensor</h2>
+            <p>Create</p>
+            <pre><code>
+import tensorflow as tf
+
+x = tf.constant([1,2,3])
+
+print(x)
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+tf.Tensor([1 2 3], shape=(3,), dtype=int32)
+            </code></pre>
+            <p>TensorFlow stores data as tensors, which are like multidimensional arrays.</p>
+        </section>
+
+        <section>
+            <h2>Step 6 Tensor Math</h2>
+            <pre><code>
+a = tf.constant([1,2,3])
+b = tf.constant([4,5,6])
+
+print(a+b)
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+[5 7 9]
+            </code></pre>
+            <p>Multiplication</p>
+            <pre><code>
+print(a*b)
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+[4 10 18]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 7 Create Training Data</h2>
+            <pre><code>
+import numpy as np
+
+house_size = np.array([
+500,
+800,
+1000,
+1200,
+1500,
+1800,
+2000
+])
+
+house_price = np.array([
+120000,
+180000,
+230000,
+275000,
+340000,
+390000,
+430000
+])
+            </code></pre>
+            <p>This is your dataset.</p>
+        </section>
+
+        <section>
+            <h2>Step 8 Normalize Data</h2>
+            <p>Machine learning performs better when values are on a similar scale.</p>
+            <pre><code>
+house_size = house_size / 2000
+house_price = house_price / 500000
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 9 Build Your First Model</h2>
+            <pre><code>
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(units=1)
+])
+            </code></pre>
+            <p>This means:</p>
+            <pre><code>
+Input
+
+↓
+
+Neuron
+
+↓
+
+Output
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 10 Compile the Model</h2>
+            <pre><code>
+model.compile(
+    optimizer='adam',
+    loss='mean_squared_error'
+)
+            </code></pre>
+            <p>Optimizer</p>
+            <pre><code>
+Adam
+            </code></pre>
+            <p>helps the model learn efficiently.</p>
+            <p>Loss</p>
+            <pre><code>
+Mean Squared Error
+            </code></pre>
+            <p>measures prediction error.</p>
+        </section>
+
+        <section>
+            <h2>Step 11 Train the Model</h2>
+            <pre><code>
+model.fit(
+    house_size,
+    house_price,
+    epochs=500
+)
+            </code></pre>
+            <p>You'll see output like</p>
+            <pre><code>
+Epoch 1
+
+loss=0.24
+
+Epoch 50
+
+loss=0.03
+
+Epoch 500
+
+loss=0.0004
+            </code></pre>
+            <p>Notice the loss decreases as the model learns.</p>
+        </section>
+
+        <section>
+            <h2>Step 12 Make a Prediction</h2>
+            <p>Predict the price of a 1700 sq ft house.</p>
+            <p>Normalize the input first:</p>
+            <pre><code>
+prediction = model.predict([1700/2000])
+
+print(prediction)
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+0.76
+            </code></pre>
+            <p>Convert back to dollars:</p>
+            <pre><code>
+print(prediction*500000)
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+380000
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 13 Visualize the Data</h2>
+            <pre><code>
+import matplotlib.pyplot as plt
+
+plt.scatter(house_size*2000, house_price*500000)
+plt.xlabel("Size")
+plt.ylabel("Price")
+plt.show()
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 14 Save the Model</h2>
+            <pre><code>
+model.save("house_model.keras")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 15 Load the Model</h2>
+            <pre><code>
+new_model = tf.keras.models.load_model("house_model.keras")
+            </code></pre>
+            <p>Predict again</p>
+            <pre><code>
+new_model.predict([1700/2000])
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Understanding What Happened</h2>
+            <p>The model learns a function:</p>
+            <pre><code>
+House Size
+
+↓
+
+Weights
+
+↓
+
+Bias
+
+↓
+
+Predicted Price
+            </code></pre>
+            <p>During training, TensorFlow adjusts the weights and bias to reduce prediction errors.</p>
+        </section>
+
+        <section>
+            <h2>Step 16 Multiple Features</h2>
+            <p>Now predict using both size and number of bedrooms.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Size</th>
+                        <th>Bedrooms</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>500</td>
+                        <td>1</td>
+                        <td>120000</td>
+                    </tr>
+                    <tr>
+                        <td>800</td>
+                        <td>2</td>
+                        <td>180000</td>
+                    </tr>
+                    <tr>
+                        <td>1200</td>
+                        <td>3</td>
+                        <td>280000</td>
+                    </tr>
+                    <tr>
+                        <td>1500</td>
+                        <td>3</td>
+                        <td>340000</td>
+                    </tr>
+                    <tr>
+                        <td>2000</td>
+                        <td>4</td>
+                        <td>430000</td>
+                    </tr>
+                </tbody>
+            </table>
+            <pre><code>
+X = np.array([
+[500,1],
+[800,2],
+[1200,3],
+[1500,3],
+[2000,4]
+])
+
+y = np.array([
+120000,
+180000,
+280000,
+340000,
+430000
+])
+            </code></pre>
+            <p>TensorFlow now uses two input features.</p>
+        </section>
+
+        <section>
+            <h2>Step 17 Add More Layers (Deep Learning)</h2>
+            <pre><code>
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(32, activation='relu'),
+    tf.keras.layers.Dense(16, activation='relu'),
+    tf.keras.layers.Dense(1)
+])
+            </code></pre>
+            <p>This is a simple neural network:</p>
+            <pre><code>
+Input
+
+↓
+
+32 neurons
+
+↓
+
+16 neurons
+
+↓
+
+Output
+            </code></pre>
+            <p>Hidden layers allow the model to learn more complex relationships.</p>
+        </section>
+
+        <section>
+            <h2>Step 18 Evaluate</h2>
+            <pre><code>
+loss = model.evaluate(X, y)
+
+print(loss)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 19 Predict New Data</h2>
+            <pre><code>
+prediction = model.predict([
+    [1700,3]
+])
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 20 Real-World Applications</h2>
+            <p>Once you're comfortable with this workflow, you can build models for:</p>
+            <ul>
+                <li>Image classification (cats vs. dogs)</li>
+                <li>Face recognition</li>
+                <li>Fraud detection</li>
+                <li>Sales forecasting</li>
+                <li>Customer churn prediction</li>
+                <li>Product recommendation</li>
+                <li>Sentiment analysis</li>
+                <li>Time-series forecasting</li>
+                <li>Object detection</li>
+                <li>Medical diagnosis support</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>TensorFlow Workflow Summary</h2>
+            <pre><code>
+Collect Data
+      │
+      ▼
+Clean & Normalize Data
+      │
+      ▼
+Build Neural Network
+      │
+      ▼
+Compile Model
+      │
+      ▼
+Train (fit)
+      │
+      ▼
+Evaluate
+      │
+      ▼
+Predict
+      │
+      ▼
+Save & Deploy
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Next Hands-on Projects</h2>
+            <p>Since you're a full-stack developer interested in analytics and AI, a good progression would be:</p>
+            <ol>
+                <li>Linear Regression (this tutorial) — learn the fundamentals.</li>
+                <li>Image Classification with TensorFlow/Keras — classify handwritten digits (MNIST).</li>
+                <li>Customer Churn Prediction — train a model on tabular business data, similar to Firebase Analytics use cases.</li>
+                <li>TensorFlow + Firebase — export TensorFlow models to TensorFlow Lite or use Firebase ML for on-device inference in Android or iOS.</li>
+                <li>Custom Business Analytics AI — build a model that predicts user retention, conversions, or churn using analytics events.</li>
+            </ol>
+            <p>This sequence builds practical skills that translate directly to real-world business applications.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Row Level Security (RLS)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Row Level Security (RLS)</h1>
+                    <p class="subtitle">
+                        Row Level Security (RLS) in Supabase is a PostgreSQL security feature that controls which rows (records) a user can read, insert, update, or delete.
+                        <p>Think of it as authorization at the database level instead of your API.</p>
+                        <p>Without RLS:</p>
+                        <ul>
+                            <li>Any authenticated user could potentially access all rows (depending on your API configuration).</li>
+                        </ul>
+                        <p>With RLS:</p>
+                        <ul>
+                            <li>Users can only access the rows your policies allow.</li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple Example</h2>
+            <p>Imagine you have a todos table.</p>
+            <table>
+                <head>
+                    <tr>
+                        <th>id</th>
+                        <th>title</th>
+                        <th>user_id</th>
+                    </tr>
+                </head>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Buy milk</td>
+                        <td>user_1</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Study Supabase</td>
+                        <td>user_2</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Go gym</td>
+                        <td>user_1</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>If Alice logs in (user_1), she should only see:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>title</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Buy milk</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Go gym</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>She should never see:</h2>
+            <pre><code>
+Study Supabase
+            </code></pre>
+            <p>RLS makes this happen automatically.</p>
+        </section>
+
+        <section>
+            <h2>Without RLS</h2>
+            <pre><code>
+const { data } = await supabase
+    .from('todos')
+    .select('*');
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+Buy milk
+Study Supabase
+Go gym
+            </code></pre>
+            <p>Everyone sees everything.</p>
+        </section>
+
+        <section>
+            <h2>With RLS</h2>
+            <p>Enable it:</p>
+            <pre><code>
+ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
+            </code></pre>
+            <p>Now nobody can access anything until you add policies.</p>
+            <p>If you run:</p>
+            <pre><code>
+const { data } = await supabase
+    .from('todos')
+    .select('*');
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+[]
+            </code></pre>
+            <p>No rows.</p>
+        </section>
+
+        <section>
+            <h2>Policy Example</h2>
+            <p>Suppose every row has</p>
+            <pre><code>
+user_id
+            </code></pre>
+            <p>that stores the owner's ID.</p>
+            <p>Create this policy:</p>
+            <pre><code>
+CREATE POLICY "Users can view own todos"
+
+ON todos
+
+FOR SELECT
+
+USING (
+    auth.uid() = user_id
+);
+            </code></pre>
+            <p>Now when a user queries</p>
+            <pre><code>
+supabase
+    .from("todos")
+    .select("*");
+            </code></pre>
+            <p>Supabase automatically converts it conceptually into:</p>
+            <pre><code>
+SELECT *
+
+FROM todos
+
+WHERE user_id = auth.uid();
+            </code></pre>
+            <p>You don't have to write the WHERE clause yourself.</p>
+        </section>
+
+        <section>
+            <h2>Insert Policy</h2>
+            <p>Allow users to insert only their own rows.</p>
+            <pre><code>
+CREATE POLICY "Users can insert own todos"
+
+ON todos
+
+FOR INSERT
+
+WITH CHECK (
+    auth.uid() = user_id
+);
+            </code></pre>
+            <p>Now this works:</p>
+            <pre><code>
+await supabase
+.from("todos")
+.insert({
+    title: "Learn RLS",
+    user_id: user.id
+});
+            </code></pre>
+            <p>But this is rejected:</p>
+            <pre><code>
+await supabase
+.from("todos")
+.insert({
+    title: "Hack",
+    user_id: "someone_else"
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Update Policy</h2>
+            <pre><code>
+CREATE POLICY "Users update own todos"
+
+ON todos
+
+FOR UPDATE
+
+USING (
+    auth.uid() = user_id
+);
+            </code></pre>
+            <p>Only the owner can update.</p>
+        </section>
+
+        <section>
+            <h2>Delete Policy</h2>
+            <pre><code>
+CREATE POLICY "Users delete own todos"
+
+ON todos
+
+FOR DELETE
+
+USING (
+    auth.uid() = user_id
+);
+            </code></pre>
+            <p>auth.uid()</p>
+            <p>This is the most commonly used function.</p>
+            <pre><code>
+auth.uid()
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+Logged in user
+
+UUID
+
+9a7b4b53-xxxx-xxxx
+            </code></pre>
+            <p>Table</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>title</th>
+                        <th>user_id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Buy Milk</td>
+                        <td>9a7b4b53...</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Study</td>
+                        <td>22222222...</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Policy</p>
+            <pre><code>
+auth.uid() = user_id
+            </code></pre>
+            <p>Only row 1 is visible.</p>
+        </section>
+
+        <section>
+            <h2>auth.role()</h2>
+            <p>You can also check the user's role.</p>
+            <pre><code>
+auth.role() = 'authenticated'
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+auth.role() = 'anon'
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+USING (
+    auth.role() = 'authenticated'
+)
+            </code></pre>
+            <p>Only logged-in users can read.</p>
+        </section>
+
+        <section>
+            <h2>Public Read Example</h2>
+            <p>Suppose a posts table has:</p>
+            <pre><code>
+title
+
+content
+
+published
+            </code></pre>
+            <p>Anyone can read published posts.</p>
+            <pre><code>
+CREATE POLICY "Public posts"
+
+ON posts
+
+FOR SELECT
+
+USING (
+    published = true
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Admin Example</h2>
+            <p>Suppose you store:</p>
+            <pre><code>
+profiles
+
+id
+
+role
+            </code></pre>
+            <p>A policy can allow admins to read everything:</p>
+            <pre><code>
+USING (
+
+EXISTS (
+
+SELECT 1
+
+FROM profiles
+
+WHERE id = auth.uid()
+
+AND role = 'admin'
+
+)
+
+)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>RLS Execution Flow</h2>
+            <pre><code>
+User logs in
+        │
+        ▼
+Gets JWT
+        │
+        ▼
+Calls Supabase
+        │
+        ▼
+Supabase extracts auth.uid()
+        │
+        ▼
+Database checks RLS policy
+        │
+        ▼
+Allowed?
+    │
+ ┌──┴─────┐
+ │ Yes    │
+ ▼        ▼
+Return   Reject
+Rows
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real Project Example</h2>
+            <p>Imagine you're building a note-taking app.</p>
+            <p>Table:</p>
+            <pre><code>
+notes
+
+id
+
+title
+
+content
+
+user_id
+            </code></pre>
+            <p>Policies:</p>
+            <p>Read:</p>
+            <pre><code>
+USING (
+    auth.uid() = user_id
+)
+            </code></pre>
+            <p>Insert:</p>
+            <pre><code>
+WITH CHECK (
+    auth.uid() = user_id
+)
+            </code></pre>
+            <p>Update:</p>
+            <pre><code>
+USING (
+    auth.uid() = user_id
+)
+            </code></pre>
+            <p>Delete:</p>
+            <pre><code>
+USING (
+    auth.uid() = user_id
+)
+            </code></pre>
+            <p>Now your frontend can simply do:</p>
+            <pre><code>
+const { data } = await supabase
+    .from("notes")
+    .select("*");
+            </code></pre>
+            <p>No need for:</p>
+            <pre><code>
+.where("user_id", user.id)
+            </code></pre>
+            <p>Even if someone modifies your frontend or calls the API directly, the database will still enforce access control.</p>
+        </section>
+
+        <section>
+            <h2>Best Practices</h2>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

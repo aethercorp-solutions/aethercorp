@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Refactoring React components</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Refactoring React components</h1>
+                    <p class="subtitle">
+                        Refactoring React components means breaking a large component into smaller, reusable pieces so the code is easier to read, maintain, and test.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Before Refactoring</h2>
+            <p>Imagine everything is inside one file:</p>
+            <pre><code>
+function Dashboard() {
+    return (
+        &lt;div&gt;
+        &lt;header&gt;Header&lt;/header&gt;
+
+        &lt;section&gt;
+            &lt;h1&gt;Welcome&lt;/h1&gt;
+            &lt;button&gt;Upload&lt;/button&gt;
+        &lt;/section&gt;
+
+        &lt;div&gt;
+            &lt;p&gt;24 Publications&lt;/p&gt;
+            &lt;p&gt;128 Researchers&lt;/p&gt;
+        &lt;/div&gt;
+
+        &lt;table&gt;
+            {/* publications */}
+        &lt;/table&gt;
+
+        &lt;footer&gt;Footer&lt;/footer&gt;
+        &lt;/div&gt;
+    );
+}
+              </code></pre>
+              <p>This component keeps getting longer as you add features.</p>
+        </section>
+
+        <section>
+            <h2>After Refactoring</h2>
+            <p>Split it into smaller components.</p>
+            <pre><code>
+Dashboard/
+│
+├── Dashboard.tsx
+├── Header.tsx
+├── Hero.tsx
+├── StatsGrid.tsx
+├── PublicationsTable.tsx
+└── Footer.tsx
+            </code></pre>
+            <p>Now Dashboard.tsx becomes:</p>
+            <pre><code>
+export default function Dashboard() {
+    return (
+        &lt;&gt;
+        &lt;Header /&gt;
+        &lt;Hero /&gt;
+        &lt;StatsGrid /&gt;
+        &lt;PublicationsTable /&gt;
+        &lt;Footer /&gt;
+        &lt;/&gt;
+    );
+}
+            </code></pre>
+            <p>Each component is responsible for only one part of the UI.</p>
+        </section>
+
+        <section>
+            <h2>Why refactor?</h2>
+            <p>1. Easier to Read</p>
+            <p>Instead of 500 lines:</p>
+            <pre><code>
+function Dashboard() {
+    // 500 lines...
+}
+            </code></pre>
+            <p>You have:</p>
+            <pre><code>
+function Dashboard() {
+    return (
+    &lt;&gt;
+        &lt;Header /&gt;
+        &lt;Hero /&gt;
+        &lt;StatsGrid /&gt;
+        &lt;PublicationsTable /&gt;
+    &lt;/&gt;
+    );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Reusable</h2>
+            <p>Instead of writing this button everywhere:</p>
+            <pre><code>
+&lt;button className="bg-blue-600 text-white rounded"&gt;
+    Upload
+&lt;/button&gt;
+            </code></pre>
+            <p>Create:</p>
+            <pre><code>
+function Button({ children }) {
+    return (
+        &lt;button className="bg-blue-600 text-white rounded"&gt;
+        {children}
+        &lt;/button&gt;
+    );
+}
+            </code></pre>
+            <p>Now use it anywhere:</p>
+            <pre><code>
+&lt;Button&gt;Upload&lt;/Button&gt;
+&lt;Button&gt;Save&lt;/Button&gt;
+&lt;Button&gt;Delete&lt;/Button&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Easier to Fix</h2>
+            <p>If the upload card has a bug:</p>
+            <pre><code>
+UploadCard.tsx ❌
+            </code></pre>
+            <p>You only edit:</p>
+            <pre><code>
+UploadCard.tsx
+            </code></pre>
+            <p>Not a huge Dashboard.tsx.</p>
+        </section>
+
+        <section>
+            <h2>4. Easier to Test</h2>
+            <p>You can test one component:</p>
+            <pre><code>
+&lt;StatsGrid /&gt;
+            </code></pre>
+            <p>without loading the whole dashboard.</p>
+        </section>
+
+        <section>
+            <h2>Passing Data with Props</h2>
+            <p>Parent:</p>
+            <pre><code>
+&lt;Header username="Paul" /&gt;
+            </code></pre>
+            <p>Child:</p>
+            <pre><code>
+function Header({ username }) {
+    return &lt;h1&gt;Hello {username}&lt;/h1&gt;
+}
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+Hello Paul
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Moving Logic into Hooks</h2>
+            <p>If your component contains lots of state and functions:</p>
+            <pre><code>
+const [selectedFiles, setSelectedFiles] = useState([]);
+const [loading, setLoading] = useState(false);
+
+function uploadFiles() {}
+function removeFile() {}
+function validatePdf() {}
+            </code></pre>
+            <p>Move them into a custom hook:</p>
+            <pre><code>
+const {
+    selectedFiles,
+    loading,
+    uploadFiles,
+    removeFile,
+} = useUpload();
+            </code></pre>
+            <p>Now the component focuses on rendering the UI.</p>
+        </section>
+
+        <section>
+            <h2>Good Folder Structure</h2>
+            <pre><code>
+dashboard/
+│
+├── page.tsx
+│
+├── components/
+│   ├── Header.tsx
+│   ├── Hero.tsx
+│   ├── StatsGrid.tsx
+│   ├── UploadCard.tsx
+│   ├── PublicationsTable.tsx
+│   └── AlertModal.tsx
+│
+├── hooks/
+│   └── useUpload.ts
+│
+├── services/
+│   └── ApiService.ts
+│
+├── utils/
+│   └── validatePdf.ts
+│
+└── types/
+    └── publication.ts
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Rule of Thumb</h2>
+            <p>A component should have one main responsibility.</p>
+            <p>For example:</p>
+            <ul>
+                <li>Header.tsx → navigation only</li>
+                <li>Hero.tsx → welcome section only</li>
+                <li>UploadCard.tsx → upload UI only</li>
+                <li>PublicationsTable.tsx → display publications only</li>
+                <li>AlertModal.tsx → show alerts only</li>
+                <li>useUpload.ts → upload logic only</li>
+                <li>ApiService.ts → API requests only</li>
+            </ul>
+            <p>This separation makes your application cleaner and easier to extend.</p>
+        </section>
+
+        <section>
+            <h2>Simple analogy</h2>
+            <p>Think of building a car:</p>
+            <ul>
+                <li>Before refactoring: One person builds the entire car from start to finish.</li>
+                <li>After refactoring: Different specialists build the engine, wheels, doors, and seats. Each part is independent, easier to improve, and can be replaced without affecting the whole car.</li>
+            </ul>
+            <p>That's exactly what React component refactoring does: it breaks a large, hard-to-manage component into smaller, focused components that work together.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

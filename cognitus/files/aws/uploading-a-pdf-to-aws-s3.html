@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Uploading a PDF to AWS S3</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Uploading a PDF to AWS S3</h1>
+                    <p class="subtitle">
+                        Below is a common Node.js + AWS SDK v3 implementation (good for a Next.js / serverless backend).
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Uploading a PDF to AWS S3 usually involves these steps:</h2>
+            <ol>
+                <li>Create an S3 bucket</li>
+                <li>Configure permissions (IAM)</li>
+                <li>Upload the PDF from your backend/frontend</li>
+                <li>Store the S3 URL or key in your database</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>1. Create an S3 Bucket</h2>
+            <p>Go to:</p>
+            <p>AWS S3 Console</p>
+            <p>Create a bucket:</p>
+            <p>Example:</p>
+            <pre><code>
+aether-research-publications
+            </code></pre>
+            <p>Recommended settings:</p>
+            <ul>
+                <li>Block public access: keep ON (recommended)</li>
+                <li>Enable encryption: ON</li>
+                <li>Enable versioning: optional</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Create IAM User Permission</h2>
+            <p>Create an IAM policy:</p>
+            <pre><code>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Effect": "Allow",
+        "Action": [
+            "s3:PutObject",
+            "s3:GetObject",
+            "s3:DeleteObject"
+        ],
+        "Resource": "arn:aws:s3:::aether-research-publications/*"
+        }
+    ]
+}
+            </code></pre>
+            <p>Attach it to your backend IAM user or Lambda role.</p>
+        </section>
+
+        <section>
+            <h2>3. Install AWS SDK</h2>
+            <p>Node.js:</p>
+            <pre><code>
+npm install @aws-sdk/client-s3
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Configure AWS Client</h2>
+            <p>Create:</p>
+            <pre><code>
+lib/s3.ts
+            </code></pre>
+            <pre><code>
+import { S3Client } from "@aws-sdk/client-s3";
+
+export const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials:{
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!
+  }
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Upload PDF API (Next.js Example)</h2>
+            <p>Example:</p>
+            <pre><code>
+app/api/upload/route.ts
+            </code></pre>
+            <pre><code>
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { s3 } from "@/lib/s3";
+
+
+export async function POST(req:Request){
+
+  const formData = await req.formData();
+
+  const file = formData.get("file") as File;
+
+
+  if(!file){
+    return Response.json({
+      error:"No file uploaded"
+    },{
+      status:400
+    });
+  }
+
+
+  const buffer = Buffer.from(
+    await file.arrayBuffer()
+  );
+
+
+  const fileName =
+    `publications/${Date.now()}-${file.name}`;
+
+
+  await s3.send(
+    new PutObjectCommand({
+      Bucket:process.env.AWS_BUCKET_NAME,
+      Key:fileName,
+      Body:buffer,
+      ContentType:"application/pdf"
+    })
+  );
+
+
+  return Response.json({
+    success:true,
+    key:fileName
+  });
+
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Frontend Upload Component</h2>
+            <p>Example React:</p>
+            <pre><code>
+"use client";
+
+import {useState} from "react";
+
+
+export default function UploadPDF(){
+
+const [file,setFile]=useState&lt;File|null&gt;(null);
+
+
+async function upload(){
+
+ if(!file)return;
+
+
+ const formData=new FormData();
+
+ formData.append(
+   "file",
+   file
+ );
+
+
+ const res=await fetch(
+   "/api/upload",
+   {
+    method:"POST",
+    body:formData
+   }
+ );
+
+
+ const data=await res.json();
+
+ console.log(data);
+
+}
+
+
+return (
+
+    &lt;div&gt;
+
+    &lt;input
+        type="file"
+        accept="application/pdf"
+        onChange={(e)=>
+            setFile(
+            e.target.files?.[0] || null
+        )
+        }
+    /&gt;
+
+
+    &lt;button
+        onClick={upload}
+        &gt;
+        Upload PDF
+    &lt;/button&gt;
+
+
+    &lt;/div&gt;
+
+);
+
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Environment Variables</h2>
+            <p>.env</p>
+            <pre><code>
+AWS_REGION=ap-southeast-1
+
+AWS_ACCESS_KEY_ID=xxxxx
+
+AWS_SECRET_ACCESS_KEY=xxxxx
+
+AWS_BUCKET_NAME=aether-research-publications
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Save Metadata in Database</h2>
+            <p>For a research publication system, don't only save the PDF.</p>
+            <p>Example MongoDB/PostgreSQL record:</p>
+            <pre><code>
+{
+    "title":"Large Language Models Research",
+    "author":"Paul Dionisio",
+    "fileName":"llm-paper.pdf",
+    "s3Key":"publications/172157-paper.pdf",
+    "status":"published",
+    "uploadedAt":"2026-07-21"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Generate Secure Download URL (Recommended)</h2>
+            <p>Instead of making PDFs public, use a signed URL.</p>
+            <p>Install:</p>
+            <pre><code>
+npm install @aws-sdk/s3-request-presigner
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+import {
+    GetObjectCommand
+} from "@aws-sdk/client-s3";
+    
+import {
+    getSignedUrl
+} from "@aws-sdk/s3-request-presigner";
+    
+    
+const command =
+    new GetObjectCommand({
+        Bucket:"aether-research-publications",
+        Key:"publications/paper.pdf"
+});
+    
+    
+const url =
+    await getSignedUrl(
+        s3,
+        command,
+        {
+        expiresIn:3600
+        }
+);
+    
+    
+console.log(url);
+            </code></pre>
+            <p>The user gets a temporary download link.</p>
+        </section>
+
+        <section>
+            <h2>For your Aether Computing Research RAG system</h2>
+            <p>The ideal architecture would be:</p>
+            <pre><code>
+User uploads PDF
+        |
+        |
+Next.js Upload API
+        |
+        |
+AWS S3
+        |
+        |
+PDF Processing Worker
+        |
+        |
+Extract Text
+        |
+        |
+Chunk Documents
+        |
+        |
+Generate Embeddings
+        |
+        |
+Vector Database
+        |
+        |
+RAG AI Assistant
+        |
+        |
+Answer Research Questions
+            </code></pre>
+            <p>For production, I would separate:</p>
+            <ul>
+                <li>S3 → PDF storage</li>
+                <li>Lambda/ECS → PDF processing</li>
+                <li>Textract/PyMuPDF → text extraction</li>
+                <li>OpenAI embeddings / Bedrock embeddings → vectors</li>
+                <li>PostgreSQL pgvector / Pinecone / OpenSearch → vector search</li>
+                <li>LLM → final RAG response</li>
+            </ul>
+            <p>This matches a scalable AI research publication platform architecture.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

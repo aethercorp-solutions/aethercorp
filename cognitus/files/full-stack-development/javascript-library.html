@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JavaScript library</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JavaScript library</h1>
+                    <p class="subtitle">
+                        A JavaScript library is a collection of pre-written JavaScript code that helps developers perform common tasks more easily and quickly.
+                        <p>Instead of writing everything from scratch, you can use a library's functions and features in your project.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Example</h2>
+            <p>Without a library:</p>
+            <pre><code>
+document.getElementById("demo").style.color = "blue";
+            </code></pre>
+            <p>With a library like jQuery:</p>
+            <pre><code>
+$("#demo").css("color", "blue");
+            </code></pre>
+            <p>The library provides simpler and more convenient methods.</p>
+        </section>
+
+        <section>
+            <h2>Popular JavaScript Libraries</h2>
+            <ul>
+                <li>jQuery – Simplifies DOM manipulation and event handling.</li>
+                <li>React – Builds interactive user interfaces.</li>
+                <li>Lodash – Provides utility functions for working with arrays, objects, and strings.</li>
+                <li>D3.js – Creates data visualizations.</li>
+                <li>Chart.js – Builds charts and graphs.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Library vs Framework</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Library</th>
+                        <th>Framework</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>You call the library when needed.</td>
+                        <td>The framework controls the application flow.</td>
+                    </tr>
+                    <tr>
+                        <td>More flexibility.</td>
+                        <td>More structure and rules.</td>
+                    </tr>
+                    <tr>
+                        <td>Example: React, jQuery</td>
+                        <td>Example: Angular, Vue.js</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>In Simple Words</h2>
+            <p>A JavaScript library is like a toolbox containing ready-made tools (functions and methods) that help you write less code and build applications faster.</p>
+        </section>
+
+        <section>
+            <p>The key idea is who is in control.</p>
+            <ul>
+                <li>With a library, you are in control.</li>
+                <li>With a framework, the framework is in control.</li>
+            </ul>
+            <p>This concept is often called Inversion of Control (IoC).</p>
+            <h2>Library: You call the code</h2>
+            <p>Your application decides when to use the library.</p>
+            <pre><code>
+import _ from "lodash";
+
+const numbers = [3, 1, 2];
+
+const sorted = _.sortBy(numbers);
+
+console.log(sorted);
+            </code></pre>
+            <p>Here:</p>
+            <ol>
+                <li>Your code starts running.</li>
+                <li>Your code decides to call sortBy().</li>
+                <li>The library returns the result.</li>
+                <li>Your code continues.</li>
+            </ol>
+            <p>Flow:</p>
+            <pre><code>
+Your App
+   ↓
+Library Function
+   ↓
+Your App
+            </code></pre>
+            <p>You are driving the program.</p>
+        </section>
+
+        <section>
+            <h2>Framework: The framework calls your code</h2>
+            <p>Take React as an example.</p>
+            <p>You write a component:</p>
+            <pre><code>
+function App() {
+    return &lt;h1&gt;Hello&lt;/h1&gt;
+}
+            </code></pre>
+            <p>Notice that you never call App() yourself.</p>
+            <p>Instead, React does something like this internally:</p>
+            <pre><code>
+// React (simplified)
+const html = App();
+render(html);
+            </code></pre>
+            <p>React decides:</p>
+            <ul>
+                <li>when to create the component</li>
+                <li>when to call it again</li>
+                <li>when to update the screen</li>
+            </ul>
+            <p>So React is driving the application.</p>
+            <p>Flow:</p>
+            <pre><code>
+React Framework
+      ↓
+ Calls your component
+      ↓
+Your code returns UI
+      ↓
+React updates the page
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Another example: Express.js</h2>
+            <p>In an Express server, you write:</p>
+            <pre><code>
+app.get("/users", (req, res) => {
+    res.send("Hello");
+});
+            </code></pre>
+            <p>You never write:</p>
+            <pre><code>
+handler(req, res);
+            </code></pre>
+            <p>Instead, Express waits for an HTTP request.</p>
+            <p>When someone visits /users, Express calls your function.</p>
+            <pre><code>
+Browser Request
+       ↓
+Express receives request
+       ↓
+Express calls your callback
+       ↓
+Your code sends a response
+            </code></pre>
+            <p>Express controls the flow.</p>
+        </section>
+
+        <section>
+            <h2>Another example: Next.js</h2>
+            <p>With Next.js, you simply create a file:</p>
+            <pre><code>
+app/page.tsx
+            </code></pre>
+            <pre><code>
+export default function Home() {
+    return &lt;h1&gt;Home Page&lt;/h1&gt;
+}
+            </code></pre>
+            <p>You never write:</p>
+            <pre><code>
+Home();
+            </code></pre>
+            <p>Next.js decides:</p>
+            <ul>
+                <li>when to render the page</li>
+                <li>whether to render it on the server or client</li>
+                <li>how to route requests</li>
+                <li>when to fetch data</li>
+                <li>when to cache content</li>
+            </ul>
+            <p>Again, the framework controls the lifecycle, while you provide the page component.</p>
+        </section>
+
+        <section>
+            <h2>Easy analogy</h2>
+            <p>Library = Calculator</p>
+            <p>You decide when to pick up the calculator and use it.</p>
+            <pre><code>
+You
+ ↓
+Calculator
+ ↓
+You
+            </code></pre>
+            <p>Framework = Restaurant Kitchen</p>
+            <p>You don't decide every step of the cooking process. The kitchen has an established workflow:</p>
+            <ol>
+                <li>Customer orders.</li>
+                <li>Kitchen receives the order.</li>
+                <li>Chef prepares the food.</li>
+                <li>Waiter serves it.</li>
+            </ol>
+            <p>Your role is like the chef—you provide the cooking logic—but the restaurant's system controls when your work happens.</p>
+            <pre><code>
+Restaurant System
+       ↓
+Calls the Chef
+       ↓
+Chef cooks
+       ↓
+Restaurant serves customer
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <ul>
+                <li>Library: You call the library. Your application controls the execution flow.</li>
+                <li>Framework: The framework calls your code. It controls the application's lifecycle, routing, rendering, and execution, while you provide the pieces (components, pages, handlers) that it invokes when needed.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

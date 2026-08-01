@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Bitbucket Pipelines</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Bitbucket Pipelines</h1>
+                    <p class="subtitle">
+                        Bitbucket Cloud has a built-in CI/CD service called Bitbucket Pipelines. You define your pipeline in a bitbucket-pipelines.yml file at the root of your repository, and Bitbucket automatically runs it when code is pushed, a pull request is created, or another configured trigger occurs.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Step 1. Enable Bitbucket Pipelines</h2>
+            <ol>
+                <li>Open your Bitbucket repository.</li>
+                <li>Go to Repository Settings → Pipelines.</li>
+                <li>Click Enable Pipelines.</li>
+                <li>Commit a bitbucket-pipelines.yml file to the root of your repository.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Step 2. Create bitbucket-pipelines.yml</h2>
+            <p>Example: Node.js (React, Express, Next.js)</p>
+            <pre><code>
+image: node:22
+
+pipelines:
+  default:
+    - step:
+        name: Install & Test
+        caches:
+          - node
+        script:
+          - npm ci
+          - npm run lint
+          - npm test
+          - npm run build
+            </code></pre>
+            <p>Whenever you push code:</p>
+            <pre><code>
+git push origin main
+            </code></pre>
+            <p>Bitbucket automatically:</p>
+            <ul>
+                <li>Creates a temporary container</li>
+                <li>Installs dependencies</li>
+                <li>Runs tests</li>
+                <li>Builds the project</li>
+                <li>Reports success or failure</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Step 3. Add Environment Variables</h2>
+            <p>Never commit secrets.</p>
+            <p>Go to:</p>
+            <pre><code>
+Repository Settings
+    ↓
+Repository Variables
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+SUPABASE_URL
+SUPABASE_KEY
+FIREBASE_TOKEN
+APPLE_API_KEY
+            </code></pre>
+            <p>Access them in the pipeline:</p>
+            <pre><code>
+script:
+  - echo $SUPABASE_URL
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4. Cache Dependencies</h2>
+            <p>Caching makes builds much faster.</p>
+            <pre><code>
+caches:
+  - node
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+caches:
+  - pip
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+caches:
+  - gradle
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example: React Project</h2>
+            <pre><code>
+image: node:22
+
+pipelines:
+  default:
+    - step:
+        name: Build React
+        caches:
+          - node
+        script:
+          - npm ci
+          - npm run build
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example: Flutter</h2>
+            <pre><code>
+image: ghcr.io/cirruslabs/flutter:stable
+
+pipelines:
+  default:
+    - step:
+        name: Flutter Test
+        script:
+          - flutter pub get
+          - flutter analyze
+          - flutter test
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example: iOS (Using Self-hosted macOS Runner)</h2>
+            <p>Because Bitbucket Cloud runners are Linux by default, iOS builds require a self-hosted macOS runner connected to a Mac with Xcode installed.</p>
+            <pre><code>
+pipelines:
+  default:
+    - step:
+        runs-on:
+          - self.hosted
+          - macos
+        script:
+          - xcodebuild \
+            -workspace MyApp.xcworkspace \
+            -scheme MyApp \
+            -sdk iphoneos \
+            archive
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example: Deploy to AWS</h2>
+            <pre><code>
+image: amazon/aws-cli
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Deploy
+          script:
+            - aws s3 sync build s3://mybucket
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example: Deploy via SSH</h2>
+            <pre><code>
+pipelines:
+  branches:
+    main:
+      - step:
+          script:
+            - apt-get update
+            - apt-get install -y openssh-client
+            - scp -r build/* user@server:/var/www/html
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Run Different Pipelines Per Branch</h2>
+            <pre><code>
+pipelines:
+  branches:
+
+    develop:
+      - step:
+          script:
+            - npm test
+
+    staging:
+      - step:
+          script:
+            - npm run build
+
+    main:
+      - step:
+          script:
+            - npm run build
+            - npm run deploy
+            </code></pre>
+            <p>This lets you:</p>
+            <ul>
+                <li>develop → Run tests</li>
+                <li>staging → Build and deploy to staging</li>
+                <li>main → Deploy to production</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Manual Deployments</h2>
+            <p>You can define a pipeline that only runs when manually triggered:</p>
+            <pre><code>
+pipelines:
+  custom:
+    deploy-production:
+      - step:
+          script:
+            - ./deploy.sh
+            </code></pre>
+            <p>You can start it from the Bitbucket UI whenever you're ready.</p>
+        </section>
+
+        <section>
+            <h2>Typical CI/CD Workflow</h2>
+            <pre><code>
+Developer
+     │
+     ▼
+git push
+     │
+     ▼
+Bitbucket
+     │
+     ▼
+Pipeline Starts
+     │
+     ├── Install dependencies
+     ├── Run tests
+     ├── Lint
+     ├── Build app
+     ├── Package artifacts
+     └── Deploy
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example for your projects</h2>
+            <p>Based on the technologies you've been working with, a practical Bitbucket pipeline could look like this:</p>
+            <p>React + Node.js + AWS</p>
+            <pre><code>
+Push
+   ↓
+Install dependencies
+   ↓
+Run ESLint
+   ↓
+Run unit tests
+   ↓
+Build React app
+   ↓
+Deploy AWS Lambda
+   ↓
+Invalidate CloudFront
+            </code></pre>
+            <p>iOS</p>
+            <pre><code>
+Push
+   ↓
+Run SwiftLint
+   ↓
+Run Unit Tests
+   ↓
+Archive App
+   ↓
+Upload to TestFlight
+   ↓
+Update TestFlight release notes using the App Store Connect API
+            </code></pre>
+            <p>This aligns well with the TestFlight automation workflow you were asking about earlier.</p>
+            <p>For more details and advanced features such as deployment environments, reusable steps, runners, and pipeline configuration options, see the official documentation: Bitbucket Pipelines documentation and Getting started with Bitbucket Pipelines.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

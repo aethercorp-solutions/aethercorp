@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Firebase Analytics and Tensorflow</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Firebase Analytics and Tensorflow</h1>
+                    <p class="subtitle">
+                        Firebase Analytics and Tensorflow
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of it this way:</h2>
+
+            <ul>
+                <li>Firebase Analytics tells you what users are doing.</li>
+                <li>TensorFlow helps you predict what users will do next or find hidden patterns.</li>
+            </ul>
+            <p>Firebase collects the data, while TensorFlow analyzes it intelligently.</p>
+        </section>
+
+        <section>
+            <h2>Simple Example</h2>
+            <p>Suppose you have a mobile app.</p>
+            <p>Firebase Analytics records events like:</p>
+            <pre><code>
+User A
+-------
+App Open
+View Product
+Add to Cart
+Purchase
+
+User B
+-------
+App Open
+View Product
+Leave App
+
+User C
+-------
+App Open
+Search
+View Product
+Add to Cart
+Purchase
+            </code></pre>
+            <p>Firebase stores these events.</p>
+            <p>TensorFlow can learn from thousands of users like these.</p>
+        </section>
+
+        <section>
+            <h2>What TensorFlow Can Do</h2>
+            <p>1. Predict if a user will purchase</p>
+            <p>Firebase data:</p>
+            <pre><code>
+Age: 28
+Opened app: 15 times
+Viewed 20 products
+Added to cart: Yes
+            </code></pre>
+            <p>TensorFlow learns from previous customers and predicts:</p>
+            <pre><code>
+Chance of purchase:
+92%
+            </code></pre>
+            <p>Now your app can show:</p>
+            <ul>
+                <li>discount</li>
+                <li>free shipping</li>
+                <li>premium offer</li>
+            </ul>
+            <p>to encourage the purchase.</p>
+        </section>
+
+        <section>
+            <h2>2. Predict if a user will stop using your app</h2>
+            <p>Firebase knows:</p>
+            <pre><code>
+Last login: 15 days ago
+Notifications opened: 0
+Session length: 5 seconds
+            </code></pre>
+            <p>TensorFlow predicts:</p>
+            <pre><code>
+95% chance this user will uninstall the app.
+            </code></pre>
+            <p>You can automatically send:</p>
+            <p>"We miss you! Here's a 20% discount."</p>
+            <p>before they leave permanently.</p>
+        </section>
+
+        <section>
+            <h2>3. Recommend products</h2>
+            <p>Firebase records:</p>
+            <pre><code>
+User likes
+
+✔ Shoes
+✔ Hats
+✔ Jackets
+            </code></pre>
+            <p>TensorFlow notices:</p>
+            <p>People who buy</p>
+            <pre><code>
+Shoes
+Hat
+            </code></pre>
+            <p>usually also buy</p>
+            <pre><code>
+Socks
+            </code></pre>
+            <p>Your app shows:</p>
+            <p>
+                Recommended for you:
+                Sports Socks
+            </p>
+            <p>Exactly like Amazon or Netflix recommendations.</p>
+        </section>
+
+        <section>
+            <h2>4. Predict user lifetime value</h2>
+            <p>Firebase data:</p>
+            <pre><code>
+Sessions: 120
+Purchases: 18
+Average purchase: $15
+            </code></pre>
+            <p>TensorFlow predicts</p>
+            <pre><code>
+Estimated lifetime value:
+$520
+            </code></pre>
+            <p>You now know this user is worth keeping.</p>
+        </section>
+
+        <section>
+            <h2>5. Detect unusual behavior</h2>
+            <p>Suppose Firebase records</p>
+            <pre><code>
+User opens app
+
+500 times
+
+within one hour.
+            </code></pre>
+            <p>TensorFlow recognizes</p>
+            <pre><code>
+This doesn't look like normal user behavior.
+
+Possible:
+• Bot
+• Fraud
+• Script
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How the Process Works</h2>
+            <pre><code>
+Users
+   │
+   ▼
+Firebase Analytics
+   │
+   ├── App Open
+   ├── Login
+   ├── Purchase
+   ├── Search
+   ├── Screen Views
+   └── Custom Events
+   │
+   ▼
+Export data
+(BigQuery)
+   │
+   ▼
+TensorFlow
+   │
+   ├── Train model
+   ├── Find patterns
+   ├── Predict users
+   └── Classify users
+   │
+   ▼
+Your App
+   │
+   ├── Show offers
+   ├── Recommend products
+   ├── Personalize content
+   └── Send notifications
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example for Your TryCastanet App</h2>
+            <p>Imagine your contact management app logs these Firebase events:</p>
+            <pre><code>
+login
+
+import_contacts
+
+schedule_contact
+
+archive_contact
+
+premium_clicked
+
+subscription_purchased
+
+notification_opened
+
+daily_active
+            </code></pre>
+            <p>TensorFlow could learn patterns such as:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Firebase Data</th>
+                        <th>TensorFlow Prediction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Imported 300 contacts</td>
+                        <td>Likely to subscribe</td>
+                    </tr>
+                    <tr>
+                        <td>Schedules contacts daily</td>
+                        <td>Power user</td>
+                    </tr>
+                    <tr>
+                        <td>Never opens notifications</td>
+                        <td>Don't send many notifications</td>
+                    </tr>
+                    <tr>
+                        <td>Clicks Premium often</td>
+                        <td>High purchase intent</td>
+                    </tr>
+                    <tr>
+                        <td>Stops scheduling contacts</td>
+                        <td>Risk of becoming inactive</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Based on those predictions, your app could:</h2>
+            <ul>
+                <li>Show a Premium trial to users likely to subscribe.</li>
+                <li>Send reminders to users who are becoming inactive.</li>
+                <li>Recommend features users haven't discovered yet.</li>
+                <li>Reduce unnecessary notifications for users who ignore them.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example Code Flow</h2>
+            <pre><code>
+React Native App
+      │
+      ▼
+Firebase Analytics
+
+analytics().logEvent("schedule_contact")
+
+analytics().logEvent("premium_clicked")
+
+analytics().logEvent("subscription_purchased")
+      │
+      ▼
+Firebase
+      │
+      ▼
+BigQuery Export
+      │
+      ▼
+Python + TensorFlow
+
+model.fit(firebase_data)
+
+prediction = model.predict(new_user)
+      │
+      ▼
+Backend API
+      │
+      ▼
+App receives prediction
+
+"Show Premium Offer"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The Key Idea</h2>
+            <p>Think of it like this:</p>
+            <ul>
+                <li>Firebase Analytics = The diary that records everything users do.</li>
+                <li>BigQuery = The library where all that diary data is stored for analysis.</li>
+                <li>TensorFlow = The detective that studies the diary to uncover patterns and make predictions.</li>
+                <li>Your app = The actor that uses those predictions to deliver personalized experiences.</li>
+            </ul>
+            <p>By combining Firebase Analytics with TensorFlow, you can move beyond simply understanding past behavior and start making informed predictions about future user actions, enabling smarter features such as recommendations, churn prevention, subscription targeting, and personalized notifications.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JSX and TSX, style and layout</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">JSX and TSX, style and layout</h1>
+                    <p class="subtitle">In JSX and TSX, style and layout are different concepts.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Style</h2>
+            <p>Style controls how something looks.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Text color</li>
+                <li>Font size</li>
+                <li>Background color</li>
+                <li>Border</li>
+                <li>Padding</li>
+                <li>Margin</li>
+            </ul>
+            <p>JSX (.jsx)</p>
+            <pre><code>
+function App() {
+    return (
+        &lt;h1 style={{ color: "blue", fontSize: "32px" }}&gt;
+            Hello World
+        &lt;/h1&gt;
+    );
+}
+                  
+export default App;
+            </code></pre>
+
+            <p>TSX (.tsx)</p>
+            <p>Exactly the same, but with TypeScript.</p>
+            <pre><code>
+function App() {
+    return (
+        &lt;h1 style={{ color: "blue", fontSize: "32px" }}&gt;
+        Hello World
+        &lt;/h1&gt;
+    );
+}
+    
+export default App;
+            </code></pre>
+
+            <p>You can also use CSS.</p>
+            <pre><code>
+&lt;h1 className="title"&gt;Hello&lt;/h1&gt;
+            </code></pre>
+
+            <pre><code>
+.title {
+    color: blue;
+    font-size: 32px;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Layout</h2>
+            <p>Layout controls where things are positioned on the page.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Horizontal alignment</li>
+                <li>Vertical alignment</li>
+                <li>Two columns</li>
+                <li>Three columns</li>
+                <li>Sidebar</li>
+                <li>Header</li>
+                <li>Footer</li>
+                <li>Grid of cards</li>
+            </ul>
+            <p>The most common layout tools are Flexbox and CSS Grid.</p>
+            <pre><code>
+function App() {
+    return (
+        &lt;div
+            style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+            }}
+        &gt;
+        &lt;button&lt;Login&lt;/button&gt;
+        &lt;button&lt;Register&lt;/button&gt;
+        &lt;/div&gt;
+    );
+}
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
++--------------------------------------+
+| Login                     Register   |
++--------------------------------------+
+            </code></pre>
+
+            <p>Grid Example</p>
+            <pre><code>
+function App() {
+    return (
+        &lt;div
+            style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "20px",
+            }}
+        &gt;
+        &lt;div>Card 1&lt;/div&gt;
+        &lt;div>Card 2&lt;/div&gt;
+        &lt;div>Card 3&lt;/div&gt;
+        &lt;div>Card 4&lt;/div&gt;
+    &lt;/div&gt;
+    );
+}
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

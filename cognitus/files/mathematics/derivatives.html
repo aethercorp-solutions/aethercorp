@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Derivatives</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Derivatives</h1>
+                    <p class="subtitle">
+                        The easiest way to understand derivatives is to think of them as measuring how much something changes.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Imagine you're driving a car</h2>
+            <p>Suppose your odometer says:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Distance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1 PM</td>
+                        <td>10 km</td>
+                    </tr>
+                    <tr>
+                        <td>2 PM</td>
+                        <td>70 km</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>You traveled 60 km in 1 hour.</p>
+            <p>Your average speed is</p>
+            <p>60 km/hour</p>
+            <p>But what if someone asks:</p>
+            <p>How fast were you going exactly at 1:30 PM?</p>
+            <p>You can't answer using average speed.</p>
+            <p>You need the instantaneous speed.</p>
+            <p>That's exactly what a derivative is.</p>
+            <p>Derivative = Instantaneous rate of change.</p>
+        </section>
+
+        <section>
+            <h2>A hill example</h2>
+            <p>Imagine you're walking up a hill.</p>
+            <pre><code>
+                  *
+                *
+              *
+            *
+          *
+        *
+            </code></pre>
+            <p>Sometimes the hill is steep.</p>
+            <p>Sometimes it's flat.</p>
+            <p>The derivative tells you:</p>
+            <p>"How steep is the hill at this exact point?"</p>
+            <ul>
+                <li>Positive derivative → going uphill</li>
+                <li>Negative derivative → going downhill</li>
+                <li>Zero derivative → flat</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>In mathematics</h2>
+            <p>Suppose</p>
+            <pre><code>
+y = x²
+            </code></pre>
+            <p>If</p>
+            <pre><code>
+x = 2
+
+y = 4
+            </code></pre>
+            <p>Move just a tiny little bit</p>
+            <pre><code>
+x = 2.001
+
+y = 4.004001
+            </code></pre>
+            <p>The derivative measures</p>
+            <pre><code>
+How much y changed
+------------------
+How much x changed
+            </code></pre>
+            <p>For</p>
+            <pre><code>
+y = x²
+            </code></pre>
+            <p>the derivative is</p>
+            <pre><code>
+dy/dx = 2x
+            </code></pre>
+            <p>Meaning</p>
+            <p>At</p>
+            <pre><code>
+x = 2
+            </code></pre>
+            <p>the slope is</p>
+            <pre><code>
+2 × 2 = 4
+            </code></pre>
+            <p>So if x increases just a tiny amount,</p>
+            <p>y increases about 4 times as much.</p>
+            <p>Here's an interactive visualization of the derivative as the slope of a tangent line:</p>
+            <img src="../../images/derivative-as-the-slope-of-a-tangent-line.png", alt="derivative-as-the-slope-of-a-tangent-line", class="article-image" />
+        </section>
+
+        <section>
+            <h2>Why is this useful?</h2>
+            <p>Because almost everything changes.</p>
+            <ul>
+                <li>Stock prices</li>
+                <li>Temperature</li>
+                <li>Weight</li>
+                <li>Heart rate</li>
+                <li>House prices</li>
+                <li>AI model error</li>
+            </ul>
+            <p>The derivative tells us</p>
+            <p>How fast is it changing right now?</p>
+        </section>
+
+        <section>
+            <h2>How AI uses derivatives</h2>
+            <p>Suppose you're teaching AI to recognize cats.</p>
+            <p>Initially</p>
+            <pre><code>
+Prediction
+
+Dog ❌
+            </code></pre>
+            <p>Actual answer</p>
+            <pre><code>
+Cat
+            </code></pre>
+            <p>AI is wrong.</p>
+            <p>It measures how wrong it is using a loss function.</p>
+            <p>Example</p>
+            <pre><code>
+Loss = 100
+            </code></pre>
+            <p>The goal is</p>
+            <pre><code>
+Loss = 0
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The AI has knobs</h2>
+            <p>Imagine thousands of knobs.</p>
+            <pre><code>
+Weight 1
+Weight 2
+Weight 3
+Weight 4
+...
+Weight 5,000,000
+            </code></pre>
+            <p>Each knob changes the prediction.</p>
+            <p>But...</p>
+            <p>Which knob should turn?</p>
+            <p>By how much?</p>
+            <p>This is where derivatives become essential.</p>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>Suppose one weight is</p>
+            <pre><code>
+w = 3
+            </code></pre>
+            <p>Loss</p>
+            <pre><code>
+100
+            </code></pre>
+            <p>Increase the weight a tiny amount</p>
+            <pre><code>
+w = 3.001
+            </code></pre>
+            <p>Loss becomes</p>
+            <pre><code>
+105
+            </code></pre>
+            <p>Oops!</p>
+            <p>Loss increased.</p>
+            <p>That means</p>
+            <p>Turning this knob upward makes the AI worse.</p>
+            <p>The derivative is positive.</p>
+            <pre><code>
+Derivative > 0
+
+Increase weight
+↓
+
+Loss increases
+            </code></pre>
+            <p>So we should move the weight down.</p>
+        </section>
+
+        <section>
+            <h2>Another case</h2>
+            <p>Increase</p>
+            <pre><code>
+w = 3 → 3.001
+            </code></pre>
+            <p>Loss becomes</p>
+            <pre><code>
+95
+            </code></pre>
+            <p>Now the derivative is negative.</p>
+            <pre><code>
+Increase weight
+
+↓
+
+Loss decreases
+            </code></pre>
+            <p>Good!</p>
+            <p>Move that weight upward.</p>
+        </section>
+
+        <section>
+            <h2>Think of derivatives as a GPS</h2>
+            <p>Imagine you're lost on a mountain.</p>
+            <p>You want to reach the bottom.</p>
+            <p>At every step you ask:</p>
+            <p>Which direction goes downhill the fastest?</p>
+            <p>The derivative answers:</p>
+            <pre><code>
+Go left
+
+or
+
+Go right
+            </code></pre>
+            <p>Every single step.</p>
+            <p>AI repeats this process millions of times.</p>
+            <pre><code>
+Guess
+
+↓
+
+Measure error
+
+↓
+
+Compute derivatives
+
+↓
+
+Adjust weights
+
+↓
+
+Guess again
+
+↓
+
+Smaller error
+
+↓
+
+Repeat
+            </code></pre>
+            <p>This learning process is called gradient descent.</p>
+        </section>
+
+        <section>
+            <h2>TensorFlow does this automatically</h2>
+            <p>When you write</p>
+            <pre><code>
+with tf.GradientTape() as tape:
+    loss = model(x)
+
+gradients = tape.gradient(loss, model.trainable_variables)
+            </code></pre>
+            <p>TensorFlow computes the derivative of the loss with respect to every weight.</p>
+            <p>If your neural network has</p>
+            <pre><code>
+5 million weights
+            </code></pre>
+            <p>TensorFlow computes</p>
+            <pre><code>
+∂Loss/∂Weight₁
+
+∂Loss/∂Weight₂
+
+∂Loss/∂Weight₃
+
+...
+
+∂Loss/∂Weight₅₀₀₀₀₀₀
+            </code></pre>
+            <p>You don't have to derive these by hand.</p>
+        </section>
+
+        <section>
+            <h2>Simple analogy</h2>
+            <p>Think of baking cookies.</p>
+            <p>You taste one.</p>
+            <p>Too sweet.</p>
+            <p>Which ingredient should you reduce?</p>
+            <ul>
+                <li>Sugar?</li>
+                <li>Butter?</li>
+                <li>Flour?</li>
+                <li>Salt?</li>
+            </ul>
+            <p>The derivative tells you:</p>
+            <p>"If I change this ingredient just a little, how much will the taste improve or worsen?"</p>
+            <p>AI does exactly the same thing with millions of parameters.</p>
+        </section>
+
+        <section>
+            <h2>The complete AI learning cycle</h2>
+            <pre><code>
+Training Data
+      │
+      ▼
+Neural Network
+      │
+      ▼
+Prediction
+      │
+      ▼
+Calculate Error (Loss)
+      │
+      ▼
+Take Derivatives
+      │
+      ▼
+Find which weights caused the error
+      │
+      ▼
+Adjust the weights slightly
+      │
+      ▼
+Make another prediction
+      │
+      ▼
+Repeat thousands or millions of times
+            </code></pre>
+            <p>The key idea</p>
+            <p>A derivative is simply a measure of how one quantity changes when another changes by a tiny amount. In AI, the quantity we care about is the loss. By computing the derivative of the loss with respect to every weight, the algorithm knows exactly which parameters to increase or decrease to make future predictions more accurate. This is the mathematical foundation of how modern neural networks learn.</p>
+        </section>
+
+        <section>
+            <p>Yes—but only if you are doing supervised learning.</p>
+            <p>TensorFlow itself doesn't know the expected result. You provide it as part of the training data.</p>
+            <p>For example:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Input</th>
+                        <th>Expected Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🐱 Cat image</td>
+                        <td>Cat</td>
+                    </tr>
+                    <tr>
+                        <td>🐶 Dog image</td>
+                        <td>Dog</td>
+                    </tr>
+                    <tr>
+                        <td>🐱 Cat image</td>
+                        <td>Cat</td>
+                    </tr>
+                    <tr>
+                        <td>🐶 Dog image</td>
+                        <td>Dog</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>When you train the model, you typically write something like:</p>
+            <pre><code>
+images = [...]
+labels = ["cat", "dog", "cat", "dog"]
+
+model.fit(images, labels)
+            </code></pre>
+            <p>Here:</p>
+            <ul>
+                <li>images = inputs</li>
+                <li>labels = expected outputs (the "correct answers")</li>
+            </ul>
+            <p>The model starts with random weights.</p>
+        </section>
+
+        <section>
+            <h2>First training step</h2>
+            <p>Suppose the first image is a cat.</p>
+            <p>The model predicts:</p>
+            <pre><code>
+Dog (85%)
+Cat (15%)
+            </code></pre>
+            <p>But the label says:</p>
+            <pre><code>
+Cat
+            </code></pre>
+            <p>TensorFlow compares:</p>
+            <pre><code>
+Prediction: Dog ❌
+Expected:   Cat ✅
+            </code></pre>
+            <p>The prediction is wrong, so it computes a loss and updates the weights.</p>
+            <p>After many examples, the predictions improve.</p>
+        </section>
+
+        <section>
+            <p>What if TensorFlow doesn't know the answer?</p>
+            <p>Then you're in a different type of machine learning.</p>
+            <h2>1. Supervised Learning ✅</h2>
+            <p>The expected result is provided.</p>
+            <p>Example:</p>
+            <pre><code>
+Email → Spam
+House → $250,000
+Photo → Cat
+            </code></pre>
+            <p>The model learns from correct answers.</p>
+        </section>
+
+        <section>
+            <h2>2. Unsupervised Learning</h2>
+            <p>No expected answers.</p>
+            <p>Example:</p>
+            <pre><code>
+Customer A
+Customer B
+Customer C
+            </code></pre>
+            <p>No labels like "VIP" or "Regular."</p>
+            <p>The algorithm tries to find groups or patterns on its own.</p>
+            <p>For example:</p>
+            <pre><code>
+Group 1
+- Young customers
+- Buy electronics
+
+Group 2
+- Older customers
+- Buy groceries
+            </code></pre>
+            <p>No one told it these groups existed.</p>
+        </section>
+
+        <section>
+            <h2>3. Reinforcement Learning</h2>
+            <p>There is no correct answer for each step.</p>
+            <p>Instead, the model receives rewards or penalties.</p>
+            <p>Example:</p>
+            <pre><code>
+Robot moves left → +10 points
+Robot hits wall → -5 points
+            </code></pre>
+            <p>It learns by maximizing rewards over time.</p>
+        </section>
+
+        <section>
+            <h2>A school analogy</h2>
+            <p>Think of a student taking a math quiz.</p>
+            <p>Supervised learning</p>
+            <p>Teacher:</p>
+            <pre><code>
+2 + 3 = ?
+            </code></pre>
+            <p>Student:</p>
+            <pre><code>
+6
+            </code></pre>
+            <p>Teacher:</p>
+            <pre><code>
+Wrong.
+Correct answer is 5.
+            </code></pre>
+            <p>The student learns from the correction.</p>
+        </section>
+
+        <section>
+            <h2>Unsupervised learning</h2>
+            <p>Teacher hands the student 1,000 objects and says:</p>
+            <pre><code>
+Sort these into groups.
+            </code></pre>
+            <p>No correct grouping is given.</p>
+            <p>The student looks for similarities.</p>
+        </section>
+
+        <section>
+            <h2>Reinforcement learning</h2>
+            <p>Teacher says:</p>
+            <pre><code>
+Escape this maze.
+            </code></pre>
+            <p>No instructions.</p>
+            <p>The student tries different paths:</p>
+            <pre><code>
+Wrong path → Lose points
+Correct path → Gain points
+            </code></pre>
+            <p>Over time, the student discovers a good strategy.</p>
+        </section>
+
+        <section>
+            <h2>So, does TensorFlow know the expected result?</h2>
+            <ul>
+                <li>Supervised learning: Yes, because you provide the expected outputs (labels) as part of the training data.</li>
+                <li>Unsupervised learning: No, there are no expected outputs.</li>
+                <li>Reinforcement learning: No, the model learns from rewards rather than correct answers.</li>
+            </ul>
+            <p>TensorFlow is just the framework that runs the training process. Whether there are expected results depends on the type of machine learning you're using.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

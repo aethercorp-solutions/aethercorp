@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Understanding TensorFlow Machine Learning Concepts</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Understanding TensorFlow Machine Learning Concepts</h1>
+                    <p class="subtitle">
+                        That's a very common question. The biggest misconception is thinking that the code itself learns. It doesn't.
+                        <p>The objects (Sequential, Dense, Adam, etc.) are just tools. The numbers inside the model (called weights) are what learn.</p>
+                        <p>Let's use an analogy.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Imagine You're Teaching a Child</h2>
+            <p>Suppose you're teaching a child to recognize apples.</p>
+            <p>You show pictures.</p>
+            <pre><code>
+🍎 Apple
+🍎 Apple
+🍎 Apple
+🍌 Banana
+🍎 Apple
+🍌 Banana
+            </code></pre>
+            <p>At first, the child guesses randomly.</p>
+            <pre><code>
+Picture: 🍎
+Child: Banana ❌
+
+Picture: 🍌
+Child: Apple ❌
+            </code></pre>
+            <p>You correct them every time.</p>
+            <p>Eventually the child notices</p>
+            <p>Apples are usually round and red.</p>
+            <p>The child's brain changes.</p>
+            <p>A TensorFlow model works exactly the same way.</p>
+        </section>
+
+        <section>
+            <h2>What is the "Brain"?</h2>
+            <p>This line</p>
+            <pre><code>
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(64),
+    tf.keras.layers.Dense(1)
+])
+            </code></pre>
+            <p>does NOT create intelligence.</p>
+            <p>It creates an empty brain.</p>
+            <p>Think of it as</p>
+            <pre><code>
+Brain
+
+???
+
+???
+
+???
+
+???
+            </code></pre>
+            <p>It knows absolutely nothing.</p>
+        </section>
+
+        <section>
+            <h2>What Does Dense(64) Mean?</h2>
+            <p>Imagine 64 tiny workers.</p>
+            <pre><code>
+Input
+
+↓
+
+○ ○ ○ ○ ○ ○ ○ ○
+○ ○ ○ ○ ○ ○ ○ ○
+○ ○ ○ ○ ○ ○ ○ ○
+○ ○ ○ ○ ○ ○ ○ ○
+○ ○ ○ ○ ○ ○ ○ ○
+○ ○ ○ ○ ○ ○ ○ ○
+○ ○ ○ ○ ○ ○ ○ ○
+○ ○ ○ ○ ○ ○ ○ ○
+
+64 neurons
+            </code></pre>
+            <p>Each worker has one job:</p>
+            <p>"I'll look for some pattern."</p>
+            <p>One might notice color.</p>
+            <p>Another notices size.</p>
+            <p>Another notices shape.</p>
+            <p>Another notices texture.</p>
+            <p>They don't know what to look for yet.</p>
+        </section>
+
+        <section>
+            <h2>So What Learns?</h2>
+            <p>Each worker has knobs.</p>
+            <p>Imagine this</p>
+            <pre><code>
+Input
+
+↓
+
+Neuron
+
+Weight = 0.52
+            </code></pre>
+            <p>Another</p>
+            <pre><code>
+Weight = -1.23
+            </code></pre>
+            <p>Another</p>
+            <pre><code>
+Weight = 3.81
+            </code></pre>
+            <p>Thousands...</p>
+            <p>Millions...</p>
+            <pre><code>
+
+Those weights are just numbers.
+
+Example
+
+            </code></pre>
+            <p>0.52</p>
+            <p>-1.23</p>
+            <p>4.18</p>
+            <p>9.31</p>
+            <p>-0.84</p>
+            <pre><code>
+
+Initially they're random.
+
+---
+
+# During Training
+
+Suppose we want to predict house prices.
+
+Data:
+
+            </code></pre>
+            <p>Size Price</p>
+            <p>1000 200,000</p>
+            <p>1200 240,000</p>
+            <p>1500 300,000</p>
+            <pre><code>
+
+Initially
+
+            </code></pre>
+            <p>House: 1000 sqft</p>
+            <p>Model says:</p>
+            <p>$920,000</p>
+            <pre><code>
+
+Oops.
+
+Very wrong.
+
+---
+
+TensorFlow computes the error.
+
+            </code></pre>
+            <p>Actual</p>
+            <p>200,000</p>
+            <p>Prediction</p>
+            <p>920,000</p>
+            <p>Difference</p>
+            <p>720,000</p>
+            <pre><code>
+
+Huge error.
+
+---
+
+# Now Comes the Learning
+
+TensorFlow asks
+
+> Which weights caused this huge mistake?
+
+Maybe
+
+            </code></pre>
+            <p>Weight 1</p>
+            <p>0.52</p>
+            <pre><code>
+
+should become
+
+            </code></pre>
+            <p>0.44</p>
+            <pre><code>
+
+Maybe
+
+            </code></pre>
+            <p>-1.23</p>
+            <pre><code>
+
+should become
+
+            </code></pre>
+            <p>-0.98</p>
+            <pre><code>
+
+Maybe
+
+            </code></pre>
+            <p>3.81</p>
+            <pre><code>
+
+should become
+
+            </code></pre>
+            <p>2.71</p>
+            <pre><code>
+
+Nothing magical happened.
+
+It simply adjusted numbers.
+
+---
+
+Next prediction
+
+            </code></pre>
+            <p>$450,000</p>
+            <pre><code>
+
+Still wrong.
+
+Adjust again.
+
+            </code></pre>
+            <pre><code>
+Weights
+
+↓
+
+0.42
+
+↓
+
+-0.81
+
+↓
+
+2.21
+            </code></pre>
+            <pre><code>
+
+Predict again.
+
+            </code></pre>
+
+            <p>$280,000</p>
+            <pre><code>
+
+Closer.
+
+Adjust again.
+
+Eventually
+
+            </code></pre>
+            <p>$201,300</p>
+            <pre><code>
+
+Very close.
+
+Now the model has "learned."
+
+---
+
+# So What is Learning?
+
+Learning simply means
+
+            </code></pre>
+            <pre><code>
+Random Numbers
+
+↓
+
+Small Adjustments
+
+↓
+
+Better Numbers
+
+↓
+
+Better Predictions
+            </code></pre>
+            <pre><code>
+
+That's all.
+
+No object suddenly becomes intelligent.
+
+The **weights become better numbers**.
+
+---
+
+# Where Does TensorFlow Help?
+
+Without TensorFlow, you'd have to write code like this:
+
+            </code></pre>
+            <ol>
+                <li>Predict</li>
+                <li>Compute error</li>
+                <li>Compute derivatives (calculus)</li>
+                <li>Update thousands or millions of weights</li>
+                <li>Repeat thousands of times</li>
+            </ol>
+            <pre><code>
+
+That's incredibly difficult.
+
+TensorFlow automates those steps.
+
+---
+
+# Imagine a Huge Control Panel
+
+Your neural network might have one million knobs.
+
+            </code></pre>
+
+            <pre><code>
+Weight 1
+
+0.52
+
+Weight 2
+
+-1.38
+
+Weight 3
+
+4.29
+
+...
+
+Weight 999,999
+
+2.84
+            </code></pre>
+            <pre><code>
+
+Every prediction adjusts many of these knobs by tiny amounts.
+
+Learning is simply tuning these knobs until the model makes accurate predictions.
+
+---
+
+# So What Does `fit()` Actually Do?
+
+When you write:
+
+```python
+model.fit(x_train, y_train, epochs=100)
+            </code></pre>
+            <p>TensorFlow is essentially doing this behind the scenes:</p>
+            <pre><code>
+Repeat 100 times:
+
+    Make a prediction
+
+    Measure how wrong it is
+
+    Figure out which weights caused the error
+
+    Adjust those weights a tiny bit
+
+Repeat
+            </code></pre>
+            <p>After thousands of repetitions, the weights represent patterns found in your data.</p>
+        </section>
+
+        <section>
+            <h2>The Entire Concept in One Picture</h2>
+            <pre><code>
+            Training Data
+                │
+                ▼
+       Random Weights (Brain)
+                │
+                ▼
+         Make Prediction
+                │
+                ▼
+     Compare with Correct Answer
+                │
+                ▼
+        Calculate the Error
+                │
+                ▼
+     Adjust the Weights Slightly
+                │
+                ▼
+         Repeat Thousands of Times
+                │
+                ▼
+      Trained Model (Better Weights)
+            </code></pre>
+            <p>The key idea to remember</p>
+            <p>A neural network doesn't store rules like:</p>
+            <p>"If house size > 1000 then price = ..."</p>
+            <p>Instead, it stores millions of carefully adjusted numbers (weights). Those numbers collectively capture patterns in the data. Training is nothing more than repeatedly adjusting those numbers until the predictions become accurate.</p>
+            <p>Once this idea clicks—that AI learns by changing numbers, not by writing new code—the rest of TensorFlow becomes much easier to understand.</p>
+        </section>
+
+        <section>
+            <p>Excellent question. No. The knobs are not algorithms. They are just numbers.</p>
+            <p>This distinction is one of the biggest "aha!" moments in understanding AI.</p>
+            <h2>Think of it this way</h2>
+            <p>A normal program is made of algorithms.</p>
+            <pre><code>
+if temperature > 30:
+    turn_on_aircon()
+else:
+    turn_off_aircon()
+            </code></pre>
+            <p>You, the programmer, wrote the rule.</p>
+        </section>
+
+        <section>
+            <h2>A neural network has no such rules.</h2>
+            <p>Instead, it starts with something like this:</p>
+            <pre><code>
+Weight 1 = 0.42
+Weight 2 = -1.73
+Weight 3 = 2.19
+Weight 4 = 0.08
+...
+            </code></pre>
+            <p>These are just floating-point numbers.</p>
+        </section>
+
+        <section>
+            <p>So where is the algorithm?</p>
+            <p>The algorithm is TensorFlow's training process, not the weights.</p>
+            <p>There are two separate things:</p>
+            <h2>1. The learning algorithm (written by TensorFlow)</h2>
+            <p>This algorithm never changes.</p>
+            <p>It always does something like:</p>
+            <pre><code>
+Predict
+
+↓
+
+Calculate error
+
+↓
+
+Calculate gradients
+
+↓
+
+Update weights
+
+↓
+
+Repeat
+            </code></pre>
+            <p>This is the algorithm.</p>
+        </section>
+
+        <section>
+            <h2>2. The weights (what the model learns)</h2>
+            <p>These change constantly.</p>
+            <pre><code>
+Before
+
+0.52
+-1.2
+3.8
+
+↓
+
+After training
+
+0.01
+5.4
+-0.8
+            </code></pre>
+            <p>TensorFlow changes these numbers millions of times.</p>
+        </section>
+
+        <section>
+            <h2>An analogy: A Sound Mixing Board</h2>
+            <p>Imagine a music studio.</p>
+            <p>There are many sliders.</p>
+            <pre><code>
+Bass      |====      |
+
+Treble    |========= |
+
+Vocals    |==        |
+
+Drums     |======    |
+            </code></pre>
+            <p>The sliders themselves don't know music.</p>
+            <p>They're just settings.</p>
+            <p>If the song sounds bad:</p>
+            <ul>
+                <li>Increase bass a little.</li>
+                <li>Lower treble a little.</li>
+                <li>Raise vocals.</li>
+            </ul>
+            <p>Eventually the song sounds great.</p>
+            <p>The sliders didn't become smart—they just ended up in better positions.</p>
+            <p>Neural network weights are exactly like those sliders.</p>
+        </section>
+
+        <section>
+            <h2>Another analogy: A Recipe</h2>
+            <p>Suppose you're baking cookies.</p>
+            <p>Recipe:</p>
+            <pre><code>
+Sugar = 100g
+Butter = 50g
+Flour = 200g
+            </code></pre>
+            <p>Taste the cookies.</p>
+            <p>Too sweet.</p>
+            <p>Adjust:</p>
+            <pre><code>
+Sugar = 80g
+Butter = 60g
+Flour = 210g
+            </code></pre>
+            <p>Bake again.</p>
+            <p>Taste again.</p>
+            <p>Repeat until they're delicious.</p>
+            <p>The recipe "learns" by changing quantities, not by inventing new cooking techniques.</p>
+            <p>The quantities are like the weights.</p>
+        </section>
+
+        <section>
+            <h2>Then what is a neuron?</h2>
+            <p>A neuron is just a small mathematical function.</p>
+            <p>For one input, it roughly does this:</p>
+            <pre><code>
+output = input × weight + bias
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+Input = 10
+
+Weight = 2
+
+Bias = 3
+
+Output = 10 × 2 + 3 = 23
+            </code></pre>
+            <p>That's it.</p>
+            <p>No intelligence.</p>
+            <p>Just multiplication and addition.</p>
+            <p>When you connect millions of these tiny calculations together, the network can represent very complex patterns.</p>
+        </section>
+
+        <section>
+            <h2>Why does this become "intelligent"?</h2>
+            <p>Imagine one neuron can't recognize a cat.</p>
+            <p>But millions of neurons can work together:</p>
+            <pre><code>
+Image
+
+↓
+
+Neuron A:
+Looks for edges
+
+↓
+
+Neuron B:
+Looks for curves
+
+↓
+
+Neuron C:
+Looks for eyes
+
+↓
+
+Neuron D:
+Looks for ears
+
+↓
+
+Neuron E:
+Looks for whiskers
+
+↓
+
+Final neuron:
+"If I see eyes + ears + whiskers...
+it's probably a cat."
+            </code></pre>
+            <p>No neuron knows what a cat is.</p>
+            <p>Each only performs a tiny mathematical operation.</p>
+            <p>The intelligence emerges from millions of simple operations working together.</p>
+        </section>
+
+        <section>
+            <h2>The complete picture</h2>
+            <pre><code>
+                TensorFlow
+        (training algorithm)
+                    │
+                    ▼
+        Changes millions of weights
+                    │
+                    ▼
+    Neural network computes outputs
+                    │
+                    ▼
+        Better and better predictions
+            </code></pre>
+            <p>So:</p>
+            <ul>
+                <li>✅ Algorithm = the procedure that updates the weights (e.g., gradient descent, Adam optimizer).</li>
+                <li>✅ Weights (knobs) = numbers that are adjusted during learning.</li>
+                <li>❌ Weights are not pre-programmed algorithms.</li>
+            </ul>
+            <p>A helpful way to think about it is: TensorFlow is like a mechanic with a wrench, and the weights are the bolts on the machine. The mechanic (the learning algorithm) knows how to tighten or loosen bolts, but the bolts themselves are just adjustable values. By adjusting millions of them, the machine (the neural network) gradually performs its task better.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

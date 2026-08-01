@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Difference between .ts, .tsx, .js, and .jsx</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Difference between .ts, .tsx, .js, and .jsx</h1>
+                    <p class="subtitle">The difference is mainly what the file contains and whether it uses TypeScript or JavaScript.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of it like this</h2>
+            <ul>
+                <li>JavaScript (JS) = Plain English</li>
+                <li>TypeScript (TS) = English with grammar checking</li>
+            </ul>
+            <p>And:</p>
+            <ul>
+                <li>X = JSX (HTML inside JavaScript)</li>
+            </ul>
+            <p>So:</p>
+            <ul>
+                <li>JS = JavaScript</li>
+                <li>JSX = JavaScript + HTML</li>
+                <li>TS = TypeScript</li>
+                <li>TSX = TypeScript + HTML</li>
+            </ul>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Language</th>
+                        <th>Can use HTML-like JSX?</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>.js</td>
+                        <td>JavaScript</td>
+                        <td>❌ Usually no</td>
+                        <td>Normal JavaScript files</td>
+                    </tr>
+                    <tr>
+                        <td>.jsx</td>
+                        <td>JavaScript</td>
+                        <td>✅ Yes</td>
+                        <td>React components</td>
+                    </tr>
+                    <tr>
+                        <td>.ts</td>
+                        <td>TypeScript</td>
+                        <td>❌ No</td>
+                        <td>TypeScript logic, utilities, APIs</td>
+                    </tr>
+                    <tr>
+                        <td>.tsx</td>
+                        <td>TypeScript</td>
+                        <td>✅ Yes</td>
+                        <td>React components with TypeScript</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>1. .js (JavaScript)</h2>
+            <p>Use this for normal JavaScript code.</p>
+            <pre><code>
+function add(a, b) {
+    return a + b;
+}
+    
+console.log(add(2, 3));
+            </code></pre>
+            <p>No HTML/React UI.</p>
+        </section>
+
+        <section>
+            <h2>2. .jsx (JavaScript + JSX)</h2>
+            <p>Use this when creating React components.</p>
+            <pre><code>
+function App() {
+    return (
+        &lt;h1&gt;Hello World&lt;/h1&gt;
+    );
+}
+    
+export default App;
+            </code></pre>
+            <p>Notice the HTML-like syntax:</p>
+            <pre><code>
+&lt;h1&gt;Hello World&lt;/h1&gt;
+            </code></pre>
+            <p>That is JSX.</p>
+        </section>
+
+        <section>
+            <h2>3. .ts (TypeScript)</h2>
+            <p>Same as JavaScript, but you can specify data types.</p>
+            <pre><code>
+function add(a: number, b: number): number {
+    return a + b;
+}
+            </code></pre>
+            <p>If you accidentally do:</p>
+            <pre><code>
+add("hello", 5);
+            </code></pre>
+            <p>TypeScript immediately reports an error before you run the program.</p>
+            <p>Great for:</p>
+            <ul>
+                <li>APIs</li>
+                <li>Utility functions</li>
+                <li>Database code</li>
+                <li>Backend (Node.js)</li>
+                <li>Services</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. .tsx (TypeScript + JSX)</h2>
+            <p>This is the most common file type in modern React projects.</p>
+            <pre><code>
+type Props = {
+    name: string;
+};
+
+function Greeting({ name }: Props) {
+    return &lt;h1&gt;Hello {name}&lt;/h1&gt;
+}
+
+export default Greeting;
+            </code></pre>
+            <p>You get:</p>
+            <ul>
+                <li>React UI</li>
+                <li>Type safety</li>
+                <li>Better autocomplete</li>
+                <li>Fewer bugs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why do we need JSX?</h2>
+            <p>Without JSX:</p>
+            <pre><code>
+React.createElement("h1", null, "Hello");
+            </code></pre>
+            <p>With JSX:</p>
+            <pre><code>
+&lt;h1&gt;Hello&lt;/h1&gt;
+            </code></pre>
+            <p>Much easier to read.</p>
+        </section>
+
+        <section>
+            <h2>Why do we need TypeScript?</h2>
+            <p>Imagine this function:</p>
+            <pre><code>
+function multiply(a, b) {
+    return a * b;
+}
+            </code></pre>
+            <p>Someone calls:</p>
+            <pre><code>
+multiply("hello", 5);
+            </code></pre>
+            <p>You may not notice the mistake until runtime.</p>
+            <p>With TypeScript:</p>
+            <pre><code>
+function multiply(a: number, b: number) {
+    return a * b;
+}
+            </code></pre>
+            <p>Calling:</p>
+            <pre><code>
+multiply("hello", 5);
+            </code></pre>
+            <p>shows an error immediately in your editor.</p>
+        </section>
+
+        <section>
+            <h2>Which file should I use?</h2>
+            <p>React component?</p>
+            <p>Use:</p>
+            <pre><code>
+Button.tsx
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+export default function Button() {
+    return &lt;button&gt;Click Me&lt;/button&gt;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>API or utility function?</h2>
+            <p>Use:</p>
+            <pre><code>
+api.ts
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+export async function login() {
+    // API call
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Simple JavaScript project?</h2>
+            <p>Use:</p>
+            <pre><code>
+JavaScript
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>React project without TypeScript?</h2>
+            <p>Use:</p>
+            <pre><code>
+JavaScript
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Modern Next.js projects</h2>
+            <p>Typical structure:</p>
+            <pre><code>
+app/
+    page.tsx
+    layout.tsx
+    loading.tsx
+
+components/
+    Navbar.tsx
+    Footer.tsx
+
+services/
+    auth.ts
+    api.ts
+
+types/
+    user.ts
+
+utils/
+    helpers.ts
+            </code></pre>
+            <p>Notice:</p>
+            <ul>
+                <li>UI components → .tsx</li>
+                <li>Business logic, API calls, helpers, types → .ts</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple rule to remember</h2>
+            <ul>
+                <li>.js → JavaScript only</li>
+                <li>.jsx → JavaScript + React UI (JSX)</li>
+                <li>.ts → TypeScript only</li>
+                <li>.tsx → TypeScript + React UI (JSX)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>In modern React and Next.js development, you'll most commonly use:</h2>
+            <ul>
+                <li>.tsx for pages and components</li>
+                <li>.ts for everything else (services, utilities, types, API logic)</li>
+            </ul>
+            <p>This combination provides better type checking, editor support, and maintainability than plain JavaScript.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

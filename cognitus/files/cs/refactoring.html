@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Refactoring</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Refactoring</h1>
+                    <p class="subtitle">
+                        Refactoring is the process of improving the internal structure of existing code without changing its external behavior. The goal is to make the code easier to read, maintain, test, and extend.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of it like renovating a house:</h2>
+            <ul>
+                <li>The rooms still serve the same purpose.</li>
+                <li>The plumbing, wiring, and layout are improved.</li>
+                <li>From the outside, it still works the same.</li>
+            </ul>
+            <p>Example</p>
+            <p>Before refactoring:</p>
+            <pre><code>
+def calc(a, b, c):
+    if c == "add":
+        return a + b
+    elif c == "sub":
+        return a - b
+            </code></pre>
+            <p>After refactoring:</p>
+            <pre><code>
+def calculate(first_number, second_number, operation):
+    if operation == "add":
+        return first_number + second_number
+    elif operation == "sub":
+        return first_number - second_number
+            </code></pre>
+            <p>The functionality is identical, but the second version is easier to understand because of the clearer names.</p>
+        </section>
+
+        <section>
+            <h2>Common refactoring techniques</h2>
+            <ul>
+                <li>Rename variables, functions, or classes to make their purpose clearer.</li>
+                <li>Extract a function to avoid repeating code.</li>
+                <li>Remove duplicate code by reusing existing logic.</li>
+                <li>Simplify complex conditions into readable expressions.</li>
+                <li>Break large functions into smaller, focused ones.</li>
+                <li>Reorganize files or classes for a cleaner project structure.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why refactor?</h2>
+            <p>Refactoring helps you:</p>
+            <ul>
+                <li>Improve code readability.</li>
+                <li>Make debugging easier.</li>
+                <li>Reduce technical debt.</li>
+                <li>Make it safer and faster to add new features.</li>
+                <li>Improve testability.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>When should you refactor?</h2>
+            <p>Good times to refactor include:</p>
+            <ul>
+                <li>Before adding a new feature.</li>
+                <li>After fixing a bug.</li>
+                <li>When you notice duplicated or confusing code.</li>
+                <li>During regular maintenance.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Refactoring vs. Rewriting</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Refactoring</th>
+                        <th>Rewriting</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Keeps the same behavior</td>
+                        <td>May change behavior</td>
+                    </tr>
+                    <tr>
+                        <td>Improves existing code</td>
+                        <td>Creates new code from scratch</td>
+                    </tr>
+                    <tr>
+                        <td>Lower risk</td>
+                        <td>Higher risk</td>
+                    </tr>
+                    <tr>
+                        <td>Usually done in small steps</td>
+                        <td>Often done as a larger project</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>A useful principle is: refactor in small, tested steps. After each change, run your tests (or otherwise verify the behavior) to ensure the software still works the same.</p>
+        </section>
+
+        <section>
+            <p>Refactoring means improving the internal structure of code without changing its behavior. The goal is to make the code easier to read, maintain, test, and extend.</p>
+            <p>A practical way to refactor is to follow these steps:</p>
+            <ol>
+                <li>
+                    Make sure the code works first
+                    <ul>
+                        <li>Fix existing bugs before refactoring.</li>
+                        <li>If possible, have tests in place.</li>
+                    </ul>
+                </li>
+                <li>
+                    Find code smells
+                    <p>Look for things like:</p>
+                    <ul>
+                        <li>Long methods</li>
+                        <li>Large classes</li>
+                        <li>Duplicate code</li>
+                        <li>Deeply nested if statements</li>
+                        <li>Long parameter lists</li>
+                        <li>Magic numbers and hardcoded strings</li>
+                        <li>Repeated switch/case or if/else chains</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Example 1: Remove Duplicate Code</h2>
+            <p>Before</p>
+            <pre><code>
+if (!self.selectedSalespersons)
+    self.selectedSalespersons = [NSMutableArray new];
+
+if (!self.selectedDivisions)
+    self.selectedDivisions = [NSMutableArray new];
+
+if (!self.selectedLabels)
+    self.selectedLabels = [NSMutableArray new];
+            </code></pre>
+            <p>After</p>
+            <p>Create one helper:</p>
+            <pre><code>
+- (NSMutableArray *)arrayOrCreate:(NSMutableArray *)array
+{
+    return array ?: [NSMutableArray array];
+}
+            </code></pre>
+            <p>Then</p>
+            <pre><code>
+self.selectedSalespersons = [self arrayOrCreate:self.selectedSalespersons];
+self.selectedDivisions    = [self arrayOrCreate:self.selectedDivisions];
+self.selectedLabels       = [self arrayOrCreate:self.selectedLabels];
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example 2: Extract a Method</h2>
+            <p>Before</p>
+            <pre><code>
+- (void)loadData
+{
+    // 50 lines loading models
+
+    // 30 lines parsing
+
+    // 40 lines filtering
+
+    // 20 lines updating UI
+}
+            </code></pre>
+            <p>After</p>
+            <pre><code>
+- (void)loadData
+{
+    [self loadModels];
+    [self parseModels];
+    [self applyFilters];
+    [self updateUI];
+}
+            </code></pre>
+            <p>Each helper becomes much easier to understand.</p>
+        </section>
+
+        <section>
+            <h2>Example 3: Replace Giant if-else</h2>
+            <p>Before</p>
+            <pre><code>
+if (context == Invoice) {
+
+}
+else if (context == SalesOrder) {
+
+}
+else if (context == Collection) {
+
+}
+            </code></pre>
+            <p>After</p>
+            <pre><code>
+switch (context) {
+    case Invoice:
+        [self setupInvoice];
+        break;
+
+    case SalesOrder:
+        [self setupSalesOrder];
+        break;
+
+    case Collection:
+        [self setupCollection];
+        break;
+}
+            </code></pre>
+            <p>Or even better, create separate classes if each context has significantly different behavior.</p>
+        </section>
+
+        <section>
+            <h2>Example 4: Move Related Data into an Object</h2>
+            <p>Instead of</p>
+            <pre><code>
+@property NSArray *divisions;
+@property NSArray *labels;
+@property NSArray *models;
+@property NSMutableArray *selectedDivisions;
+@property NSMutableArray *selectedLabels;
+@property NSMutableArray *selectedModels;
+            </code></pre>
+            <p>Create</p>
+            <pre><code>
+@interface FilterState : NSObject
+
+@property NSMutableArray *selectedDivisions;
+@property NSMutableArray *selectedLabels;
+@property NSMutableArray *selectedModels;
+
+@property NSArray *divisions;
+@property NSArray *labels;
+@property NSArray *models;
+
+@end
+            </code></pre>
+            <p>Then your controller simply has</p>
+            <pre><code>
+@property FilterState *filterState;
+            </code></pre>
+            <p>instead of dozens of properties.</p>
+            <p>This is exactly the direction you were moving with your recent filter refactoring.</p>
+        </section>
+
+        <section>
+            <h2>Example 5: Replace Magic Numbers</h2>
+            <p>Before</p>
+            <pre><code>
+if (status == 0)
+            </code></pre>
+            <p>After</p>
+            <pre><code>
+typedef NS_ENUM(NSInteger, FilterStatus) {
+    FilterStatusPending,
+    FilterStatusCompleted
+};
+
+if (status == FilterStatusPending)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example 6: Reduce Nested if Statements</h2>
+            <p>Before</p>
+            <pre><code>
+if (user) {
+    if (user.name) {
+        if (user.name.length > 0) {
+            ...
+        }
+    }
+}
+            </code></pre>
+            <p>After</p>
+            <pre><code>
+if (!user || user.name.length == 0) {
+    return;
+}
+
+// normal code
+            </code></pre>
+            <p>This is called a guard clause and makes the main logic much easier to follow.</p>
+        </section>
+
+        <section>
+            <h2>Example 7: Replace Repeated Dictionary Access</h2>
+            <p>Before</p>
+            <pre><code>
+NSString *division = dict[@"division"];
+NSString *label = dict[@"label"];
+NSString *model = dict[@"model"];
+            </code></pre>
+            <p>After</p>
+            <p>Create a model:</p>
+            <pre><code>
+@interface InvoiceFilter : NSObject
+
+@property NSString *division;
+@property NSString *label;
+@property NSString *model;
+
+@end
+            </code></pre>
+            <p>Instead of passing dictionaries around, pass an InvoiceFilter instance.</p>
+        </section>
+
+        <section>
+            <h2>Example 8: Encapsulate Business Logic</h2>
+            <p>Instead of putting everything in a view controller:</p>
+            <pre><code>
+InvoiceViewController
+    3000 lines
+            </code></pre>
+            <p>Split responsibilities:</p>
+            <pre><code>
+InvoiceViewController
+    ↓
+
+FilterState
+    ↓
+
+InvoiceFilterBuilder
+    ↓
+
+InvoiceService
+    ↓
+
+InvoiceRepository
+            </code></pre>
+            <p>Each class should have a single responsibility.</p>
+        </section>
+
+        <section>
+            <h2>Refactoring Principles</h2>
+            <p>A few principles consistently lead to cleaner code:</p>
+            <ul>
+                <li>DRY (Don't Repeat Yourself): Avoid duplicating logic.</li>
+                <li>KISS (Keep It Simple, Stupid): Prefer simple solutions over clever ones.</li>
+                <li>SOLID: Design classes with clear responsibilities and loose coupling.</li>
+                <li>Single Responsibility Principle: Each class or method should have one reason to change.</li>
+                <li>Composition over inheritance: Reuse behavior by composing objects when appropriate.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Refactoring Workflow</h2>
+            <p>When working on an existing codebase:</p>
+            <ol>
+                <li>Understand what the code does.</li>
+                <li>Ensure it works (or add tests).</li>
+                <li>Refactor one small piece at a time.</li>
+                <li>Build and run after every small change.</li>
+                <li>Commit frequently with focused changes.</li>
+            </ol>
+            <p>For example:</p>
+            <ul>
+                <li>Commit 1: Extract FilterState</li>
+                <li>Commit 2: Move parsing logic</li>
+                <li>Commit 3: Remove duplicated initialization</li>
+                <li>Commit 4: Simplify view controller</li>
+                <li>Commit 5: Rename methods and variables</li>
+            </ul>
+            <p>This incremental approach makes it much easier to review changes and isolate regressions.</p>
+            <p>Given the Objective-C code you've been working on, the biggest opportunities are:</p>
+            <ul>
+                <li>Extracting reusable filter logic into dedicated classes (as you've started with FilterState).</li>
+                <li>Splitting large view controllers into smaller components.</li>
+                <li>Replacing parallel arrays with model objects.</li>
+                <li>Centralizing filter initialization and update logic.</li>
+                <li>Eliminating duplicated code paths across different filter contexts.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

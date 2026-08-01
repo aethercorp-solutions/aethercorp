@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Decision Tree</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Decision Tree</h1>
+                    <p class="subtitle">
+                        A Decision Tree is a machine learning model that makes decisions by asking a series of yes/no questions, just like a flowchart.
+                        <p>Think of it as playing the game "20 Questions."</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple Example</h2>
+            <p>Suppose you want to predict whether someone will buy a laptop.</p>
+            <p>The decision tree might ask:</p>
+            <pre><code>
+                Income > $50,000?
+                /           \
+             Yes             No
+            /                 \
+     Age &lt; 30?          Don't Buy
+       /    \
+     Yes    No
+     /        \
+   Buy      Don't Buy
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How it works</h2>
+            <ol>
+                <li>It starts at the root (first question).</li>
+                <li>It asks a question about the data.</li>
+                <li>Depending on the answer (Yes/No), it follows a branch.</li>
+                <li>It keeps asking questions until it reaches a leaf (final prediction).</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Real-world Example</h2>
+            <p>Imagine a bank deciding whether to approve a loan.</p>
+            <pre><code>
+Has a job?
+    |
+   Yes
+    |
+Credit score > 700?
+    |
+  Yes -----&gt; Approve Loan
+    |
+   No
+    |
+Income > $40,000?
+    |
+ Yes -----&gt; Approve Loan
+ No ------&gt; Reject Loan
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why is it called a "Tree"?</h2>
+            <p>It looks like an upside-down tree:</p>
+            <ul>
+                <li>Root = first decision</li>
+                <li>Branches = possible answers</li>
+                <li>Leaves = final prediction</li>
+            </ul>
+            <p>Advantages</p>
+            <ul>
+                <li>✅ Easy to understand</li>
+                <li>✅ Easy to visualize</li>
+                <li>✅ Works with numbers and categories</li>
+                <li>✅ Doesn't require much data preparation</li>
+            </ul>
+            <p>Disadvantages</p>
+            <ul>
+                <li>❌ Can become very large and complicated</li>
+                <li>❌ Can memorize the training data (overfitting)</li>
+                <li>❌ Small changes in data can produce a different tree</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple Analogy</h2>
+            <p>Imagine deciding what to wear:</p>
+            <pre><code>
+Is it raining?
+    |
+  Yes
+    |
+Take an umbrella
+    |
+Is it cold?
+   |
+ Yes --&gt; Wear a jacket
+ No --&gt; Wear a T-shirt
+            </code></pre>
+            <p>You're making decisions step by step—this is exactly how a decision tree works.</p>
+        </section>
+
+        <section>
+            <h2>In Machine Learning</h2>
+            <ul>
+                <li>Input (Features): Age, income, education, credit score</li>
+                <li>Questions: "Is age > 30?", "Is income > $50,000?"</li>
+                <li>Output (Prediction): Buy/Don't Buy, Spam/Not Spam, Approve/Reject</li>
+            </ul>
+            <p>A decision tree learns these questions automatically from training data to make predictions on new, unseen data.</p>
+        </section>
+
+        <section>
+            <p>Yes. A Decision Tree is a predictive machine learning model.</p>
+            <p>Its main purpose is to predict an output for new data based on patterns it learned from training data.</p>
+            <h2>Example 1: Classification (Predicting a Category)</h2>
+            <p>Suppose you train a decision tree with past customer data.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Age</th>
+                        <th>Income</th>
+                        <th>Bought Laptop</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>25</td>
+                        <td>High</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>40</td>
+                        <td>Low</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>30</td>
+                        <td>High</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>After training, you give it a new customer:</p>
+            <ul>
+                <li>Age = 28</li>
+                <li>Income = High</li>
+            </ul>
+            <p>The model predicts:</p>
+            <p>➡️ Bought Laptop = Yes</p>
+            <p>Here, it's predicting a category ("Yes" or "No").</p>
+        </section>
+
+        <section>
+            <h2>Example 2: Regression (Predicting a Number)</h2>
+            <p>Decision trees can also predict numerical values.</p>
+            <p>Training data:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>House Size (sq ft)</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1000</td>
+                        <td>$150,000</td>
+                    </tr>
+                    <tr>
+                        <td>1500</td>
+                        <td>$220,000</td>
+                    </tr>
+                    <tr>
+                        <td>2000</td>
+                        <td>$300,000</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>For a new house:</p>
+            <ul>
+                <li>Size = 1800 sq ft</li>
+            </ul>
+            <p>The decision tree might predict:</p>
+            <p>➡️ Price = $270,000</p>
+            <p>Here, it's predicting a number.</p>
+        </section>
+
+        <section>
+            <h2>Why is it called predictive?</h2>
+            <p>The model learns from historical (training) data and then predicts outcomes for new, unseen data.</p>
+            <pre><code>
+Past Data
+    │
+    ▼
+Decision Tree learns patterns
+    │
+    ▼
+New Data
+    │
+    ▼
+Prediction
+            </code></pre>
+            <p>Is it always accurate?</p>
+            <p>No. Like all machine learning models, a decision tree makes its best prediction based on the patterns it learned. If the training data is incomplete, noisy, or not representative, its predictions may be wrong.</p>
+            <p>In short:</p>
+            <ul>
+                <li>✅ Yes, a decision tree is a predictive machine learning model.</li>
+                <li>✅ It can predict categories (classification), such as spam vs. not spam.</li>
+                <li>✅ It can also predict numbers (regression), such as house prices or sales forecasts.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

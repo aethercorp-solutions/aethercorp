@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TensorFlow</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">TensorFlow</h1>
+                    <p class="subtitle">
+                        TensorFlow is an open-source machine learning and deep learning framework developed by Google. It allows you to build, train, and deploy artificial intelligence (AI) models for tasks such as image recognition, natural language processing, recommendation systems, forecasting, and generative AI.
+                        <p>At its core, TensorFlow works with tensors, which are multidimensional arrays (similar to NumPy arrays). The framework automatically performs mathematical operations on these tensors and optimizes computations for CPUs, GPUs, and TPUs.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>TensorFlow Architecture</h2>
+            <pre><code>
+Data
+   │
+   ▼
+Preprocessing
+   │
+   ▼
+Model Definition
+   │
+   ▼
+Training
+   │
+   ▼
+Evaluation
+   │
+   ▼
+Inference (Predictions)
+   │
+   ▼
+Deployment
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Main Components</h2>
+            <p>1. Tensors</p>
+            <p>A tensor is simply data.</p>
+            <pre><code>
+import tensorflow as tf
+
+tensor = tf.constant([[1, 2],
+                      [3, 4]])
+
+print(tensor)
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+[[1 2]
+ [3 4]]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Variables</h2>
+            <p>Variables are tensors whose values change during training.</p>
+            <pre><code>
+weights = tf.Variable(tf.random.normal([3,3]))
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Operations</h2>
+            <p>TensorFlow provides optimized mathematical operations.</p>
+            <pre><code>
+a = tf.constant(10)
+b = tf.constant(5)
+
+print(a + b)
+print(a * b)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Automatic Differentiation</h2>
+            <p>TensorFlow automatically computes gradients.</p>
+            <pre><code>
+x = tf.Variable(3.0)
+
+with tf.GradientTape() as tape:
+    y = x ** 2
+
+gradient = tape.gradient(y, x)
+
+print(gradient)
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+6
+            </code></pre>
+            <p>This is how neural networks learn.</p>
+        </section>
+
+        <section>
+            <h2>TensorFlow vs NumPy</h2>
+            <p>NumPy</p>
+            <pre><code>
+Input
+↓
+
+Math
+↓
+
+Output
+            </code></pre>
+            <p>TensorFlow</p>
+            <pre><code>
+Input
+↓
+
+Neural Network
+↓
+
+Loss Function
+↓
+
+Gradient Calculation
+
+↓
+
+Optimizer
+
+↓
+
+Updated Model
+            </code></pre>
+            <p>TensorFlow is essentially NumPy plus automatic differentiation, neural network layers, GPU acceleration, and deployment tools.</p>
+        </section>
+
+        <section>
+            <h2>Keras</h2>
+            <p>The easiest way to use TensorFlow is through Keras, which is built into TensorFlow.</p>
+            <pre><code>
+from tensorflow import keras
+            </code></pre>
+            <p>Most developers never directly manipulate TensorFlow's low-level APIs.</p>
+        </section>
+
+        <section>
+            <h2>Example: Build Your First Neural Network</h2>
+            <p>Suppose you want to predict house prices.</p>
+            <pre><code>
+import tensorflow as tf
+
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dense(32, activation='relu'),
+    tf.keras.layers.Dense(1)
+])
+            </code></pre>
+            <p>This creates</p>
+            <pre><code>
+Input
+
+↓
+
+64 neurons
+
+↓
+
+32 neurons
+
+↓
+
+Output
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Compile the Model</h2>
+            <p>Choose how the model learns.</p>
+            <pre><code>
+model.compile(
+    optimizer='adam',
+    loss='mse',
+    metrics=['mae']
+)
+            </code></pre>
+            <p>Here:</p>
+            <ul>
+                <li>Adam adjusts the model's weights efficiently.</li>
+                <li>Mean Squared Error (MSE) measures prediction error.</li>
+                <li>Mean Absolute Error (MAE) is reported as an additional metric.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Train the Model</h2>
+            <pre><code>
+model.fit(
+    x_train,
+    y_train,
+    epochs=100,
+    batch_size=32
+)
+            </code></pre>
+            <p>Training loop</p>
+            <pre><code>
+Training Data
+
+↓
+
+Prediction
+
+↓
+
+Error
+
+↓
+
+Gradient
+
+↓
+
+Update Weights
+
+↓
+
+Repeat
+            </code></pre>
+            <p>Make Predictions</p>
+            <pre><code>
+prediction = model.predict(x_test)
+            </code></pre>
+            <p>Evaluate</p>
+            <pre><code>
+model.evaluate(x_test, y_test)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Save Model</h2>
+            <pre><code>
+model.save("house_model.keras")
+            </code></pre>
+            <p>Load it later</p>
+            <pre><code>
+model = tf.keras.models.load_model("house_model.keras")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real Example: Image Classification</h2>
+            <pre><code>
+model = tf.keras.Sequential([
+    tf.keras.layers.Flatten(input_shape=(28,28)),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(10, activation='softmax')
+])
+            </code></pre>
+            <pre><code>
+Image
+
+↓
+
+Flatten
+
+↓
+
+Hidden Layer
+
+↓
+
+Output Probabilities
+            </code></pre>
+            <p>Train</p>
+            <pre><code>
+model.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+model.fit(images, labels, epochs=5)
+            </code></pre>
+            <p>Predict</p>
+            <pre><code>
+prediction = model.predict(new_image)
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+Cat 98%
+Dog 1%
+Horse 1%
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>TensorFlow Ecosystem</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>tf.keras</td>
+                        <td>Build neural networks</td>
+                    </tr>
+                    <tr>
+                        <td>tf.data</td>
+                        <td>Efficient data pipelines</td>
+                    </tr>
+                    <tr>
+                        <td>TensorBoard</td>
+                        <td>Visualize training metrics</td>
+                    </tr>
+                    <tr>
+                        <td>TensorFlow Lite</td>
+                        <td>Deploy models on mobile and edge devices</td>
+                    </tr>
+                    <tr>
+                        <td>TensorFlow Serving</td>
+                        <td>Serve models in production</td>
+                    </tr>
+                    <tr>
+                        <td>TensorFlow Hub</td>
+                        <td>Reuse pre-trained models</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Typical Workflow</h2>
+            <pre><code>
+Collect Data
+       │
+       ▼
+Clean Data
+       │
+       ▼
+Split Train/Test
+       │
+       ▼
+Build Model
+       │
+       ▼
+Compile
+       │
+       ▼
+Train
+       │
+       ▼
+Evaluate
+       │
+       ▼
+Tune Hyperparameters
+       │
+       ▼
+Save Model
+       │
+       ▼
+Deploy
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common Applications</h2>
+            <ul>
+                <li>Computer Vision: Image classification, object detection, facial recognition.</li>
+                <li>Natural Language Processing (NLP): Sentiment analysis, translation, text generation, chatbots.</li>
+                <li>Speech Processing: Speech-to-text and voice recognition.</li>
+                <li>Recommendation Systems: Product, movie, or content recommendations.</li>
+                <li>Time Series Forecasting: Sales, weather, stock prices, and demand forecasting.</li>
+                <li>Healthcare: Medical image analysis and disease prediction.</li>
+                <li>Generative AI: Building or fine-tuning transformer models, diffusion models, and other neural networks.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Installation</h2>
+            <p>Install TensorFlow with pip:</p>
+            <pre><code>
+pip install tensorflow
+            </code></pre>
+            <p>Verify the installation:</p>
+            <pre><code>
+import tensorflow as tf
+
+print(tf.__version__)
+print("GPU Available:", len(tf.config.list_physical_devices('GPU')) > 0)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>When Should You Use TensorFlow?</h2>
+            <p>TensorFlow is a strong choice when you need:</p>
+            <ul>
+                <li>Production-ready deep learning with scalable deployment.</li>
+                <li>GPU or TPU acceleration for large models.</li>
+                <li>Mobile or edge deployment using TensorFlow Lite.</li>
+                <li>Integration with the broader TensorFlow ecosystem (e.g., TensorBoard, Serving).</li>
+            </ul>
+            <p>If you're focused primarily on AI research or experimenting with state-of-the-art neural networks, many researchers prefer PyTorch because of its more Pythonic and flexible programming model. For production systems, TensorFlow remains widely used, particularly in environments that benefit from its mature deployment and optimization tools.</p>
+            <p>For someone with your full-stack development background, a practical way to learn TensorFlow is to build a complete project—for example, an image classifier, a sentiment analysis API, or a recommendation engine—then expose the trained model through a Python API (such as FastAPI) and integrate it with a React frontend. This end-to-end approach teaches both machine learning concepts and how TensorFlow fits into real-world applications.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

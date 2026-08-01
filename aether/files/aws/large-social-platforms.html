@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Large social platforms</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Large social platforms</h1>
+                    <p class="subtitle">
+                        Large social platforms like LinkedIn, Facebook, X (Twitter), and Instagram don't rely on a single framework. They use a combination of architecture patterns, backend frameworks, frontend frameworks, databases, and cloud infrastructure.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Here's what is commonly used across the industry.</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Frontend</th>
+                        <th>React, Next.js, TypeScript</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mobile</td>
+                        <td>Swift (iOS), Kotlin (Android), React Native (some apps)</td>
+                    </tr>
+                    <tr>
+                        <td>Backend APIs</td>
+                        <td>Node.js (Express/NestJS), Java Spring Boot, Go, Python FastAPI, C# ASP.NET</td>
+                    </tr>
+                    <tr>
+                        <td>Authentication</td>
+                        <td>OAuth 2.0, OpenID Connect, JWT</td>
+                    </tr>
+                    <tr>
+                        <td>Databases</td>
+                        <td>PostgreSQL, MySQL, MongoDB, Cassandra</td>
+                    </tr>
+                    <tr>
+                        <td>Cache</td>
+                        <td>Redis</td>
+                    </tr>
+                    <tr>
+                        <td>Search</td>
+                        <td>Elasticsearch, OpenSearch</td>
+                    </tr>
+                    <tr>
+                        <td>Messaging</td>
+                        <td>Apache Kafka, RabbitMQ</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td>Amazon S3, Google Cloud Storage</td>
+                    </tr>
+                    <tr>
+                        <td>CDN</td>
+                        <td>CloudFront, Cloudflare</td>
+                    </tr>
+                    <tr>
+                        <td>Container</td>
+                        <td>Docker</td>
+                    </tr>
+                    <tr>
+                        <td>Orchestration</td>
+                        <td>Kubernetes</td>
+                    </tr>
+                    <tr>
+                        <td>CI/CD</td>
+                        <td>GitHub Actions, Jenkins, ArgoCD</td>
+                    </tr>
+                    <tr>
+                        <td>Monitoring</td>
+                        <td>Prometheus, Grafana, Datadog</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Typical Architecture</h2>
+            <pre><code>
+            Web (React)
+                │
+           Mobile Apps
+      (Swift / Kotlin)
+                │
+                ▼
+        API Gateway / Load Balancer
+                │
+ ┌──────────────┼──────────────┐
+ ▼              ▼              ▼
+Auth Service   User Service   Feed Service
+ │              │              │
+ └──────┬───────┴───────┬──────┘
+        ▼               ▼
+   Message Queue     Notification
+      (Kafka)          Service
+        │
+        ▼
+ Recommendation Engine
+        │
+        ▼
+PostgreSQL / MongoDB
+        │
+        ▼
+      Redis Cache
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common Backend Architecture</h2>
+            <p>Large companies almost always use Microservices.</p>
+            <pre><code>
+Authentication
+User Profile
+Connections
+Posts
+Comments
+Likes
+Messaging
+Notifications
+Search
+Analytics
+Recommendation
+Media Upload
+            </code></pre>
+            <p>Each service is independently deployed.</p>
+        </section>
+
+        <section>
+            <h2>Design Patterns</h2>
+            <p>Most social platforms use:</p>
+            <ul>
+                <li>MVC</li>
+                <li>Clean Architecture</li>
+                <li>Domain Driven Design (DDD)</li>
+                <li>Repository Pattern</li>
+                <li>Service Layer</li>
+                <li>CQRS (for high-scale reads/writes)</li>
+                <li>Event-Driven Architecture</li>
+                <li>Pub/Sub Messaging</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>API Standards</h2>
+            <p>Almost every modern platform uses:</p>
+            <ul>
+                <li>REST API</li>
+                <li>GraphQL (popular for mobile and web clients)</li>
+                <li>WebSockets (chat, notifications)</li>
+                <li>Server-Sent Events (real-time updates in some cases)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Authentication</h2>
+            <pre><code>
+Google Login
+Apple Login
+Microsoft Login
+LinkedIn Login
+            </code></pre>
+            <p>implemented using</p>
+            <ul>
+                <li>OAuth 2.0</li>
+                <li>OpenID Connect</li>
+                <li>JWT</li>
+                <li>Refresh Tokens</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Feed Generation</h2>
+            <p>The feed is one of the hardest parts of a social platform.</p>
+            <p>Typical pipeline:</p>
+            <pre><code>
+Create Post
+      │
+      ▼
+ Save Database
+      │
+      ▼
+ Publish Event (Kafka)
+      │
+      ▼
+ Feed Service
+      │
+      ▼
+ Ranking Algorithm
+      │
+      ▼
+ Redis Cache
+      │
+      ▼
+ User Feed
+            </code></pre>
+            <p>Many platforms also use machine learning models to rank posts based on relevance, engagement, and personalization.</p>
+        </section>
+
+        <section>
+            <h2>Real-time Features</h2>
+            <pre><code>
+Chat
+Online Status
+Typing Indicator
+Notifications
+            </code></pre>
+            <p>Typically use:</p>
+            <ul>
+                <li>WebSockets</li>
+                <li>Socket.IO</li>
+                <li>Kafka</li>
+                <li>Redis Pub/Sub</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Search</h2>
+            <p>Search systems often use:</p>
+            <ul>
+                <li>Elasticsearch</li>
+                <li>OpenSearch</li>
+            </ul>
+            <p>Features include:</p>
+            <ul>
+                <li>People search</li>
+                <li>Company search</li>
+                <li>Post search</li>
+                <li>Skill search</li>
+                <li>Full-text indexing</li>
+                <li>Autocomplete</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

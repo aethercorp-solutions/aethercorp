@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Long context in an LLM</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Long context in an LLM</h1>
+                    <p class="subtitle">
+                        Long context in an LLM (Large Language Model) refers to how much information the model can remember and use within a single conversation or prompt.
+                        The context is measured in tokens, not words.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of it like human working memory</h2>
+            <ul>
+                <li>Short context: You remember only the last few paragraphs of a conversation.</li>
+                <li>Long context: You can remember an entire book, multiple source files, or hours of conversation while answering questions.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>Suppose you provide:</p>
+            <ul>
+                <li>200-page PDF</li>
+                <li>50 JavaScript files</li>
+                <li>Your resume</li>
+                <li>API documentation</li>
+                <li>Your question</li>
+            </ul>
+            <p>If the model's context window is large enough, it can consider all of that simultaneously instead of forgetting earlier parts.</p>
+            <pre><code>
+[Document A]
+[Document B]
+[Codebase]
+[Conversation]
+[Your Question]
+        ↓
+      LLM
+        ↓
+Uses everything together
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What is a context window?</h2>
+            <p>A context window is the maximum number of tokens the model can process at once.</p>
+            <p>Approximate conversions:</p>
+            <ul>
+                <li>1 token ≈ 0.75 English words</li>
+                <li>100 tokens ≈ 75 words</li>
+                <li>1,000 tokens ≈ 750 words</li>
+            </ul>
+            <p>So:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Context Window</th>
+                        <th>Rough Equivalent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>8K tokens</td>
+                        <td>~6,000 words</td>
+                    </tr>
+                    <tr>
+                        <td>32K tokens</td>
+                        <td>~24,000 words</td>
+                    </tr>
+                    <tr>
+                        <td>128K tokens</td>
+                        <td>~96,000 words</td>
+                    </tr>
+                    <tr>
+                        <td>1M tokens</td>
+                        <td>~750,000 words (roughly several large books)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Why is long context useful?</h2>
+            <p>1. Large codebases</p>
+            <p>Instead of showing only one file:</p>
+            <pre><code>
+auth.js
+user.js
+payment.js
+routes.js
+database.js
+...
+            </code></pre>
+            <p>you can provide the entire project.</p>
+            <p>The LLM can answer questions like:</p>
+            <p>"Find every place where JWT tokens are created."</p>
+            <p>or</p>
+            <p>"Refactor authentication across the whole project."</p>
+        </section>
+
+        <section>
+            <h2>2. Long conversations</h2>
+            <p>Without long context:</p>
+            <pre><code>
+You: Remember my architecture?
+LLM: Sorry, I forgot.
+            </code></pre>
+            <p>With long context:</p>
+            <pre><code>
+You: Remember the MongoDB schema we discussed 2 hours ago?
+LLM: Yes, here's the schema...
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Multiple documents</h2>
+            <p>For example:</p>
+            <ul>
+                <li>Company handbook</li>
+                <li>Product requirements</li>
+                <li>Meeting transcript</li>
+                <li>Design document</li>
+            </ul>
+            <p>Then ask:</p>
+            <p>"Summarize all conflicting requirements."</p>
+        </section>
+
+        <section>
+            <h2>4. Legal or research work</h2>
+            <p>You can load:</p>
+            <ul>
+                <li>Contracts</li>
+                <li>Research papers</li>
+                <li>Financial reports</li>
+            </ul>
+            <p>and ask the model to compare or analyze them together.</p>
+        </section>
+
+        <section>
+            <h2>Does a larger context window make the model smarter?</h2>
+            <p>No.</p>
+            <p>A larger context window increases how much information the model can consider at once, not its reasoning ability.</p>
+            <p>Think of it this way:</p>
+            <ul>
+                <li>Small desk → You can only spread out a few papers.</li>
+                <li>Large desk → You can spread out hundreds of papers.</li>
+            </ul>
+            <p>Your ability to think hasn't changed—only how much information is immediately available.</p>
+        </section>
+
+        <section>
+            <h2>Are there trade-offs?</h2>
+            <p>Yes.</p>
+            <ul>
+                <li>More computation: Larger contexts generally require more processing.</li>
+                <li>Higher cost: API usage often costs more because more input tokens are processed.</li>
+                <li>Potential dilution: If you include a lot of irrelevant information, it can make it harder for the model to focus on what's important.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example in software development</h2>
+            <p>Imagine you're interviewing for a senior backend role.</p>
+            <p>With a short context window, you might provide:</p>
+            <pre><code>
+controllers/
+            </code></pre>
+            <p>and ask:</p>
+            <p>Explain this API.</p>
+            <p>With a long context window, you can provide:</p>
+            <pre><code>
+controllers/
+services/
+repositories/
+middleware/
+models/
+tests/
+README
+OpenAPI spec
+Docker files
+CI pipeline
+            </code></pre>
+            <p>Then ask:</p>
+            <p>"Review the architecture, identify performance bottlenecks, security issues, and suggest improvements."</p>
+            <p>The model can analyze the entire system together rather than one file at a time.</p>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <ul>
+                <li>Long context is the amount of text (measured in tokens) an LLM can process and remember within a single prompt or conversation.</li>
+                <li>It enables analysis of large codebases, lengthy documents, and extended conversations without losing earlier information.</li>
+                <li>A larger context window improves the amount of information the model can use at once, but it does not inherently make the model better at reasoning.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Long context and RAG (Retrieval-Augmented Generation) both help an LLM answer questions using large amounts of information, but they solve different problems.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Long Context</th>
+                        <th>RAG</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>How it works</td>
+                        <td>Put all information directly into the prompt</td>
+                        <td>Search for only the relevant information, then send it to the LLM</td>
+                    </tr>
+                    <tr>
+                        <td>Data size</td>
+                        <td>Limited by the model's context window</td>
+                        <td>Can scale to millions or billions of documents</td>
+                    </tr>
+                    <tr>
+                        <td>Speed</td>
+                        <td>Slower for very large inputs</td>
+                        <td>Usually faster because only relevant documents are retrieved</td>
+                    </tr>
+                    <tr>
+                        <td>Cost</td>
+                        <td>Higher if you send lots of tokens every time</td>
+                        <td>Lower because fewer tokens are sent</td>
+                    </tr>
+                    <tr>
+                        <td>Best for</td>
+                        <td>Documents that fit in the context window</td>
+                        <td>Large knowledge bases and frequently changing data</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Long Context</h2>
+            <p>With long context, you send everything to the model.</p>
+            <pre><code>
+Entire Project
+┌──────────────────────────┐
+│ File1                    │
+│ File2                    │
+│ File3                    │
+│ README                   │
+│ API Docs                 │
+│ ...                      │
+└────────────┬─────────────┘
+                │
+        Entire input
+                │
+            LLM
+                │
+            Answer
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+Prompt:
+
+- user.js
+- auth.js
+- payment.js
+- README
+- API documentation
+
+Question:
+How does authentication work?
+            </code></pre>
+            <p>The model reads everything, even if only two files are relevant.</p>
+            <p>Advantages</p>
+            <ul>
+                <li>Simple to implement.</li>
+                <li>The model can reason across all provided information.</li>
+                <li>Good when documents naturally fit in the available context.</li>
+            </ul>
+            <p>Disadvantages</p>
+            <ul>
+                <li>Expensive because every request includes all the data.</li>
+                <li>Slower as the amount of input grows.</li>
+                <li>Limited by the maximum context window.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>RAG</h2>
+            <p>RAG first retrieves the most relevant information, then gives only that subset to the model.</p>
+            <pre><code>
+Large Knowledge Base
+┌─────────────────────────────┐
+│ Millions of documents       │
+│ PDFs                        │
+│ Wiki                        │
+│ Database                    │
+└─────────────┬───────────────┘
+                │
+        Search / Retrieval
+                │
+    Top 5 relevant documents
+                │
+                LLM
+                │
+            Answer
+            </code></pre>
+            <p>Example:</p>
+            <p>You have:</p>
+            <ul>
+                <li>10,000 PDFs</li>
+                <li>50,000 code files</li>
+                <li>100 GB of documentation</li>
+            </ul>
+            <p>User asks:</p>
+            <p>"How do I reset my password?"</p>
+            <p>The retrieval system searches first and returns only:</p>
+            <ul>
+                <li>Authentication guide</li>
+                <li>Password reset API</li>
+                <li>User documentation</li>
+            </ul>
+            <p>Only those documents are sent to the LLM.</p>
+        </section>
+
+        <section>
+            <h2>How RAG works internally</h2>
+            <pre><code>
+User Question
+      │
+      ▼
+Convert question to embedding
+      │
+      ▼
+Vector Database
+      │
+Find similar documents
+      │
+Top K documents
+      │
+      ▼
+LLM
+      │
+Answer
+            </code></pre>
+            <p>The retrieval step often uses:</p>
+            <ul>
+                <li>Embeddings</li>
+                <li>Vector databases</li>
+                <li>Similarity search (such as cosine similarity)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example: 100,000 code files</h2>
+            <p>Example: 100,000 code files</p>
+            <pre><code>
+All 100,000 files
+      │
+      ▼
+LLM
+            </code></pre>
+            <p>This usually isn't practical because it exceeds the context window and is very expensive.</p>
+            <p>RAG</p>
+            <pre><code>
+100,000 files
+      │
+Vector Search
+      │
+Top 10 files
+      │
+LLM
+            </code></pre>
+            <p>Only the relevant files are processed.</p>
+        </section>
+
+        <section>
+            <h2>Which is better?</h2>
+            <p>It depends on the use case.</p>
+            <p>Use Long Context when:</p>
+            <ul>
+                <li>You have a book, report, or codebase that fits comfortably in the context window.</li>
+                <li>You need the model to reason across many related documents simultaneously.</li>
+                <li>The information doesn't change frequently.</li>
+            </ul>
+            <p>Use RAG when:</p>
+            <ul>
+                <li>You have millions of documents.</li>
+                <li>Your data changes regularly (e.g., company wikis, support articles, databases).</li>
+                <li>You want lower latency and lower cost.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Modern AI systems often use both</h2>
+            <p>Many production systems combine RAG with long-context models.</p>
+            <pre><code>
+    Millions of documents
+            │
+    Vector Search (RAG)
+            │
+Retrieve 20 relevant documents
+            │
+    Long-context LLM
+            │
+        Final Answer
+            </code></pre>
+            <p>The retrieval system narrows the search space, and the long-context model reasons over all of the retrieved information.</p>
+        </section>
+
+        <section>
+            <h2>Software development example</h2>
+            <p>Suppose you're building an AI assistant for your company's codebase.</p>
+            <p>Long context only:</p>
+            <ul>
+                <li>Send the entire repository (if it fits) with every request.</li>
+                <li>Good for small to medium projects.</li>
+            </ul>
+            <p>RAG only:</p>
+            <ul>
+                <li>Search for the most relevant files based on the question.</li>
+                <li>Send only those files to the model.</li>
+                <li>Good for very large repositories.</li>
+            </ul>
+            <p>Combined approach (common in production):</p>
+            <ul>
+                <li>Use RAG to retrieve the 20–100 most relevant files.</li>
+                <li>Feed those files into a long-context model.</li>
+                <li>The model can then reason across all the retrieved code, making it both scalable and efficient.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Prompt</h2>
+            <p>A prompt is the input you give an LLM (Large Language Model) to tell it what you want it to do.</p>
+            <p>Think of it as the instructions + context + question that the model uses to generate a response.</p>
+            <p>Simple example</p>
+            <p>Prompt:</p>
+            <pre><code>
+What is HTTP PATCH?
+            </code></pre>
+            <p>LLM Output:</p>
+            <pre><code>
+HTTP PATCH is an HTTP method used to partially update a resource.
+            </code></pre>
+            <p>Everything you typed is the prompt.</p>
+        </section>
+
+        <section>
+            <h2>A prompt can contain multiple parts</h2>
+            <p>A prompt is often more than just a question.</p>
+            <pre><code>
+Instruction
+Context
+Examples (optional)
+Question
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+You are a senior Node.js engineer.
+
+Explain this code to a junior developer.
+
+Code:
+function add(a, b) {
+    return a + b;
+}
+            </code></pre>
+            <p>The prompt contains:</p>
+            <ul>
+                <li>Instruction: "You are a senior Node.js engineer."</li>
+                <li>Task: "Explain this code."</li>
+                <li>Context: The code snippet.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Prompt structure</h2>
+            <p>A well-structured prompt often looks like this:</p>
+            <pre><code>
+Role
+
+Task
+
+Context
+
+Constraints
+
+Output format
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+Role:
+You are a backend architect.
+
+Task:
+Review this API.
+
+Context:
+Node.js
+Express
+MongoDB
+
+Constraints:
+Keep the answer under 300 words.
+
+Output:
+Bullet points.
+            </code></pre>
+            <p>Prompt vs Response</p>
+            <pre><code>
+Prompt
+    │
+    ▼
+┌────────────┐
+│    LLM     │
+└────────────┘
+    │
+    ▼
+Response
+            </code></pre>
+            <p>Example:</p>
+            <p>Prompt</p>
+            <pre><code>
+Write a function to reverse a string.
+            </code></pre>
+            <p>↓</p>
+            <p>Response</p>
+            <pre><code>
+function reverse(str) {
+    return str.split("").reverse().join("");
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Prompt engineering</h2>
+            <p>Prompt engineering is the practice of designing prompts that help the model produce better results.</p>
+            <p>Instead of:</p>
+            <pre><code>
+Explain caching.
+            </code></pre>
+            <p>You might write:</p>
+            <pre><code>
+Explain caching like you're teaching a junior Node.js developer.
+
+Include:
+- What caching is
+- Why it's useful
+- Redis example
+- Time complexity
+            </code></pre>
+            <p>The second prompt is more specific, so the response is more likely to match your needs.</p>
+        </section>
+
+        <section>
+            <h2>Types of prompts</h2>
+            <p>1. Question</p>
+            <pre><code>
+What is Docker?
+            </code></pre>
+
+            <p>2. Instruction</p>
+            <pre><code>
+Summarize this article.
+            </code></pre>
+
+            <p>3. Code generation</p>
+            <pre><code>
+Write an Express middleware for JWT authentication.
+            </code></pre>
+
+            <p>4. Code explanation</p>
+            <pre><code>
+Explain this React component line by line.
+            </code></pre>
+
+            <p>5. Transformation</p>
+            <pre><code>
+Rewrite this email professionally.
+            </code></pre>
+
+            <p>6. Reasoning</p>
+            <pre><code>
+Compare SQL and MongoDB for an e-commerce application.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How prompts fit into an LLM</h2>
+            <pre><code>
+        Prompt
+            │
+            ▼
+Tokenization (convert text into tokens)
+            │
+            ▼
+    Large Language Model
+            │
+            ▼
+    Generates output tokens
+            │
+            ▼
+        Response
+            </code></pre>
+            <p>The model doesn't understand text directly. It first breaks the prompt into tokens, processes those tokens using its neural network, and then predicts the next token repeatedly until it forms the complete response.</p>
+        </section>
+
+        <section>
+            <h2>Real-world example</h2>
+            <p>Suppose you're building an AI assistant for your application.</p>
+            <p>A user asks:</p>
+            <pre><code>
+Find all users created after January 1, 2026 and sort them by last name.
+            </code></pre>
+            <p>That entire request is the prompt. The application might also prepend hidden instructions, such as:</p>
+            <pre><code>
+You are a database assistant.
+Only generate SQL.
+Never modify data.
+            </code></pre>
+            <p>The combined text (system instructions + user request + any relevant context) is what the LLM actually receives as the prompt.</p>
+        </section>
+
+        <section>
+            <h2>In one sentence</h2>
+            <p>A prompt is all the information and instructions provided to an LLM so it can generate the desired response.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

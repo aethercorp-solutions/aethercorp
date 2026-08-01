@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Environment Files</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Environment Files</h1>
+                    <p class="subtitle">
+                        This lets you use different API endpoints, Google OAuth credentials, and AWS Amplify settings without changing code.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>A good setup is to have three separate environments:</h2>
+            <ul>
+                <li>Development → http://localhost:3000</li>
+                <li>Staging (optional) → https://staging.example.com</li>
+                <li>Production → https://app.example.com</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. Create Vite Environment Files</h2>
+            <pre><code>
+project/
+│
+├── .env
+├── .env.local
+├── .env.development
+├── .env.production
+├── vite.config.ts
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>.env.development</h2>
+            <pre><code>
+VITE_API_URL=https://dev-api.example.com/api/v1
+
+VITE_GOOGLE_CLIENT_ID=xxxxxxxxxxxxxxxx.apps.googleusercontent.com
+
+VITE_AWS_REGION=us-east-2
+VITE_USER_POOL_ID=us-east-2_xxxxxxxxx
+VITE_USER_POOL_CLIENT_ID=xxxxxxxxxxxxxxxxx
+VITE_IDENTITY_POOL_ID=us-east-2:xxxxxxxx-xxxx
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>.env.production</h2>
+            <pre><code>
+VITE_API_URL=https://api.example.com/api/v1
+
+VITE_GOOGLE_CLIENT_ID=yyyyyyyyyyyyyyyy.apps.googleusercontent.com
+
+VITE_AWS_REGION=us-east-2
+VITE_USER_POOL_ID=us-east-2_yyyyyyyy
+VITE_USER_POOL_CLIENT_ID=yyyyyyyyyyyy
+VITE_IDENTITY_POOL_ID=us-east-2:yyyyyyyy
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Access Environment Variables</h2>
+            <pre><code>
+export const config = {
+    apiUrl: import.meta.env.VITE_API_URL,
+
+    googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+
+    aws: {
+        region: import.meta.env.VITE_AWS_REGION,
+        userPoolId: import.meta.env.VITE_USER_POOL_ID,
+        userPoolClientId: import.meta.env.VITE_USER_POOL_CLIENT_ID,
+        identityPoolId: import.meta.env.VITE_IDENTITY_POOL_ID,
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Configure Axios</h2>
+            <pre><code>
+import axios from "axios";
+import { config } from "./config";
+
+const api = axios.create({
+    baseURL: config.apiUrl,
+});
+
+export default api;
+            </code></pre>
+            <p>Now switching between environments happens automatically.</p>
+        </section>
+
+        <section>
+            <h2>4. Configure Vite</h2>
+            <pre><code>
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+    plugins: [react()],
+    server: {
+        port: 3000
+    }
+})
+            </code></pre>
+            <p>Development:</p>
+            <pre><code>
+npm run dev
+            </code></pre>
+            <p>Production build:</p>
+            <pre><code>
+npm run build
+            </code></pre>
+            <p>Preview:</p>
+            <pre><code>
+npm run preview
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Configure Google OAuth</h2>
+            <p>Using @react-oauth/google:</p>
+            <pre><code>
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+&lt;GoogleOAuthProvider
+    clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+&gt;
+&lt;App /&gt;
+&lt;/GoogleOAuthProvider&gt;
+            </code></pre>
+            <p>import.meta is a JavaScript object provided by Vite.</p>
+            <p>import.meta.env contains the environment variables that Vite makes available to your app.</p>
+            <p>VITE_GOOGLE_CLIENT_ID is the specific environment variable you've defined.</p>
+        </section>
+
+        <section>
+            <h2>6. Google Cloud Console</h2>
+            <p>In the Google Cloud console, create an OAuth client.</p>
+            <p>Authorized JavaScript origins</p>
+            <p>Development</p>
+            <pre><code>
+http://localhost:3000
+            </code></pre>
+            <p>Production</p>
+            <pre><code>
+https://app.example.com
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Authorized redirect URIs</h2>
+            <p>If using the popup flow:</p>
+            <pre><code>
+Not needed
+            </code></pre>
+            <p>If using redirect flow:</p>
+            <p>Development</p>
+            <pre><code>
+http://localhost:3000
+            </code></pre>
+            <p>Production</p>
+            <pre><code>
+https://app.example.com
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Backend CORS</h2>
+            <p>Allow both origins.</p>
+            <p>Example:</p>
+            <pre><code>
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://app.example.com",
+];
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. AWS Amplify Hosting</h2>
+            <pre><code>
+version: 1
+
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+
+    build:
+      commands:
+        - npm run build
+
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+
+  cache:
+    paths:
+      - node_modules/**/*
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Environment Variables in AWS Amplify</h2>
+            <p>Instead of committing .env.production, define environment variables in your Amplify app.</p>
+            <p>Example:</p>
+            <pre><code>
+VITE_API_URL
+VITE_GOOGLE_CLIENT_ID
+VITE_AWS_REGION
+VITE_USER_POOL_ID
+VITE_USER_POOL_CLIENT_ID
+VITE_IDENTITY_POOL_ID
+            </code></pre>
+            <p>Amplify injects these values during the build.</p>
+        </section>
+
+        <section>
+            <h2>10. Git Ignore</h2>
+            <pre><code>
+.env.local
+.env.development.local
+.env.production.local
+            </code></pre>
+            <p>Do not ignore:</p>
+            <pre><code>
+.env.development
+.env.production
+            </code></pre>
+            <p>unless they contain secrets.</p>
+        </section>
+        
+        <section>
+            <h2>11. Package.json</h2>
+            <pre><code>
+{
+    "scripts": {
+        "dev": "vite --mode development",
+        "build": "vite build --mode production",
+        "preview": "vite preview --port 3000"
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>12. Production Deployment Flow</h2>
+            <pre><code>
+Developer
+    │
+    ├── npm run dev
+    │       │
+    │       ├── localhost:3000
+    │       ├── Dev API
+    │       └── Dev Google OAuth
+    │
+Git Push
+    │
+AWS Amplify
+    │
+    ├── npm ci
+    ├── npm run build
+    ├── inject production env variables
+    ├── generate dist/
+    └── deploy
+            │
+            ▼
+https://app.example.com
+        │
+        ├── Production API
+        ├── Production Google OAuth
+        └── Production Cognito
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. Google Authentication Flow</h2>
+            <pre><code>
+Local Development
+
+Browser
+      │
+      ▼
+Google Login Popup
+      │
+      ▼
+Google Access Token
+      │
+      ▼
+AWS Lambda API
+      │
+      ▼
+Verify Google Token
+      │
+      ▼
+Issue JWT
+      │
+      ▼
+React stores JWT
+            </code></pre>
+        </section>
+
+        <section>
+            <p>The same flow applies in production, except the application runs on your production domain and uses the production Google OAuth client and API endpoints.</p>
+            <h2>Recommended setup</h2>
+            <p>Since you're already using React + Vite, AWS Amplify Hosting, AWS Lambda, API Gateway, and Google Authentication, a clean approach is:</p>
+            <ul>
+                <li>Keep separate .env.development and .env.production files (or use Amplify environment variables for production).</li>
+                <li>Use one Google OAuth client if both http://localhost:3000 and your production domain can be added as authorized origins. Otherwise, use separate clients for development and production.</li>
+                <li>Store only the Google client ID in the frontend; keep secrets (if any) on the backend.</li>
+                <li>Configure your backend CORS to allow your development and production origins.</li>
+                <li>Let AWS Amplify manage production environment variables so you don't need to commit production-specific configuration.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

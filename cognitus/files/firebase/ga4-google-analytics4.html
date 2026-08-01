@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GA4 (Google Analytics 4)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">GA4 (Google Analytics 4)</h1>
+                    <p class="subtitle">GA4 (Google Analytics 4) is Google's latest analytics platform. It helps you understand how people use your website or mobile app by collecting and analyzing user interactions.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of it like this:</h2>
+            <ul>
+                <li>Firebase Analytics is what your app uses to send events.</li>
+                <li>GA4 is where those events are stored, analyzed, and reported.</li>
+            </ul>
+            <p>For mobile apps, Firebase Analytics and GA4 are tightly integrated. When you enable Analytics in Firebase, your data is available in GA4.</p>
+        </section>
+
+        <section>
+            <h2>Simple analogy</h2>
+            <p>Imagine you own a supermarket.</p>
+            <ul>
+                <li>Your cashier records every purchase → Firebase Analytics</li>
+                <li>The accounting office organizes all the receipts → GA4</li>
+                <li>The manager reviews sales reports to make decisions → You</li>
+            </ul>
+            <p>Your app records events such as:</p>
+            <pre><code>
+User opened app
+User logged in
+User searched
+User viewed product
+User purchased
+            </code></pre>
+            <p>Firebase sends those events to GA4, which turns them into reports and insights.</p>
+        </section>
+
+        <section>
+            <h2>How it works</h2>
+            <pre><code>
+React Native App
+        │
+        ▼
+Firebase Analytics SDK
+        │
+        ▼
+Google Analytics 4 (GA4)
+        │
+        ├── Reports
+        ├── Dashboards
+        ├── Audiences
+        ├── Funnels
+        └── BigQuery Export
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What GA4 records</h2>
+            <p>Everything is based on events.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User action</th>
+                        <th>Event</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Opens the app</td>
+                        <td>app_open</td>
+                    </tr>
+                    <tr>
+                        <td>Logs in</td>
+                        <td>login</td>
+                    </tr>
+                    <tr>
+                        <td>Views a product</td>
+                        <td>view_item</td>
+                    </tr>
+                    <tr>
+                        <td>Searches</td>
+                        <td>search</td>
+                    </tr>
+                    <tr>
+                        <td>Makes a purchase</td>
+                        <td>purchase</td>
+                    </tr>
+                    <tr>
+                        <td>Shares content</td>
+                        <td>share</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>You can also create your own custom events:</p>
+            <pre><code>
+analytics().logEvent('favorite_contact', {
+    contact_id: '123',
+});
+            </code></pre>
+            <p>That event appears in GA4 after it's processed.</p>
+        </section>
+
+        <section>
+            <h2>What you can learn from GA4</h2>
+            <p>GA4 answers questions like:</p>
+            <p>How many users use my app?</p>
+            <pre><code>
+Active users today: 2,435
+New users: 367
+Returning users: 1,012
+            </code></pre>
+            <p>Which screens are most popular?</p>
+            <pre><code>
+Home
+Contacts
+Settings
+Subscription
+Profile
+            </code></pre>
+            <p>Which buttons are clicked most?</p>
+            <pre><code>
+Import Contacts      5,200 clicks
+Schedule Reminder    2,400 clicks
+Upgrade Premium        610 clicks
+            </code></pre>
+
+            <p>How long do users stay?</p>
+            <pre><code>
+Average engagement time
+
+8 minutes 23 seconds
+            </code></pre>
+
+            <p>Where do users leave?</p>
+            <p>Example funnel:</p>
+            <pre><code>
+Open App
+   │
+   ▼
+Login
+   │
+   ▼
+Import Contacts
+   │
+   ▼
+Schedule Reminder
+   │
+   ▼
+Upgrade Premium
+            </code></pre>
+            <p>GA4 can show where users drop off so you can improve that part of the experience.</p>
+        </section>
+
+        <section>
+            <h2>Real example for a React Native app</h2>
+            <p>Suppose you have a contact management app.</p>
+            <p>You log events like:</p>
+            <pre><code>
+analytics().logEvent('contact_created');
+            </code></pre>
+            <pre><code>
+analytics().logEvent('contact_deleted');
+            </code></pre>
+            <pre><code>
+analytics().logEvent('contact_scheduled');
+            </code></pre>
+            <pre><code>
+analytics().logEvent('premium_purchase');
+            </code></pre>
+            <p>After a week, GA4 might show:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>contact_created</td>
+                        <td>12,430</td>
+                    </tr>
+                    <tr>
+                        <td>contact_scheduled</td>
+                        <td>8,102</td>
+                    </tr>
+                    <tr>
+                        <td>premium_purchase</td>
+                        <td>126</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>This helps you understand how people are actually using your app.</p>
+        </section>
+
+        <section>
+            <h2>Can you access GA4 data programmatically?</h2>
+            <p>Yes. Google provides the Google Analytics Data API, which lets your backend request reports from GA4.</p>
+            <p>Example flow:</p>
+            <pre><code>
+React Native App
+      │
+      ▼
+Firebase Analytics
+      │
+      ▼
+GA4
+      │
+      ▼
+Google Analytics Data API
+      │
+      ▼
+Node.js Backend
+      │
+      ▼
+Your Dashboard
+            </code></pre>
+            <p>For example, your backend could request:</p>
+            <ul>
+                <li>Total active users</li>
+                <li>Most popular events</li>
+                <li>Purchases this month</li>
+                <li>Average session duration</li>
+                <li>Top countries</li>
+                <li>Device types</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why BigQuery matters</h2>
+            <p>GA4 dashboards are excellent for reporting, but if you want to perform advanced analysis or train AI models, you can export all analytics events to BigQuery.</p>
+            <p>That lets you answer questions like:</p>
+            <ul>
+                <li>Which users are likely to subscribe?</li>
+                <li>Which onboarding path leads to the highest retention?</li>
+                <li>What features do long-term users use most?</li>
+                <li>Which users are at risk of becoming inactive?</li>
+            </ul>
+            <p>These analyses are difficult to do in standard GA4 reports but become straightforward with SQL and machine learning tools.</p>
+        </section>
+
+        <section>
+            <h2>Firebase Analytics vs. GA4</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Firebase Analytics</th>
+                        <th>GA4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Collect events from app</td>
+                        <td>✅</td>
+                        <td>Receives the events</td>
+                    </tr>
+                    <tr>
+                        <td>Log custom events</td>
+                        <td>✅</td>
+                        <td>Displays and analyzes them</td>
+                    </tr>
+                    <tr>
+                        <td>User properties</td>
+                        <td>✅</td>
+                        <td>Uses them for segmentation</td>
+                    </tr>
+                    <tr>
+                        <td>Reports and dashboards</td>
+                        <td>Limited</td>
+                        <td>✅ Comprehensive</td>
+                    </tr>
+                    <tr>
+                        <td>Funnels</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Audience creation</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Data API</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>BigQuery export</td>
+                        <td>Configured through Firebase/GA4</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>AI and advanced analytics</td>
+                        <td>Via exported data</td>
+                        <td>Via BigQuery export</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>In short</h2>
+            <ul>
+                <li>Firebase Analytics is the SDK in your React Native app that records user actions.</li>
+                <li>GA4 (Google Analytics 4) is the analytics platform that receives those events and provides reports, dashboards, audience segmentation, funnels, and APIs.</li>
+                <li>For most mobile apps, you'll use Firebase Analytics to send data and GA4 to analyze it. If you need custom dashboards or AI-powered insights, you can access the data through the Google Analytics Data API or export it to BigQuery.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

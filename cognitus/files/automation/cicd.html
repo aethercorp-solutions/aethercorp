@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CI/CD</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">CI/CD</h1>
+                    <p class="subtitle">The easiest way to understand CI/CD is to think of it as an automatic factory for your app.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Before CI/CD:</h2>
+            <pre><code>
+Write code
+    ↓
+Build manually
+    ↓
+Run tests manually
+    ↓
+Upload manually
+    ↓
+Hope nothing breaks 😅
+            </code></pre>
+            <p>With CI/CD:</p>
+            <pre><code>
+Write code
+    ↓
+Push to Git/Bitbucket
+    ↓
+🤖 CI/CD does everything automatically
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What does CI/CD mean?</h2>
+            <ul>
+                <li>
+                    CI = Continuous Integration
+                    <ul>
+                        <li>Automatically checks that your code builds and passes tests whenever you push code.</li>
+                    </ul>
+                </li>
+                <li>
+                    CD = Continuous Delivery / Continuous Deployment
+                    <ul>
+                        <li>Automatically prepares or deploys your app after CI succeeds.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple Example</h2>
+            <p>Imagine you're building an iPhone app.</p>
+            <p>Normally you do this:</p>
+            <pre><code>
+1. Open Xcode
+2. Build
+3. Run tests
+4. Archive
+5. Upload to TestFlight
+6. Wait
+7. Tell testers
+            </code></pre>
+            <p>Every single release.</p>
+        </section>
+
+        <section>
+            <h2>With CI/CD:</h2>
+            <p>You only do:</p>
+            <pre><code>
+git push origin main
+            </code></pre>
+            <p>Everything else happens automatically.</p>
+            <pre><code>
+You
+ │
+ │ git push
+ ▼
+Bitbucket
+ │
+ ▼
+Runner starts
+ │
+ ├── Install dependencies
+ ├── Run SwiftLint
+ ├── Run Unit Tests
+ ├── Build App
+ ├── Archive
+ ├── Upload to TestFlight
+ ├── Add TestFlight notes
+ └── Notify Slack/Email
+            </code></pre>
+            <p>That's CI/CD.</p>
+        </section>
+
+        <section>
+            <h2>What is a Runner?</h2>
+            <p>A Runner is simply a computer that executes the pipeline.</p>
+            <p>For iOS:</p>
+            <pre><code>
+Bitbucket
+     │
+     ▼
+macOS Runner
+     │
+     ├── xcodebuild
+     ├── swiftlint
+     ├── fastlane
+     └── App Store Connect
+            </code></pre>
+            <p>Since Xcode only runs on macOS, iOS projects require a macOS runner.</p>
+        </section>
+
+        <section>
+            <h2>Real iOS CI/CD Flow</h2>
+            <pre><code>
+Developer
+    │
+    │
+    ▼
+Write Code
+    │
+    ▼
+git commit
+    │
+    ▼
+git push
+    │
+    ▼
+Bitbucket Pipeline
+    │
+    ▼
+macOS Runner
+    │
+    ├───────────────┐
+    │               │
+    ▼               ▼
+SwiftLint       Unit Tests
+    │               │
+    └──────┬────────┘
+           ▼
+      Build App
+           ▼
+      Archive IPA
+           ▼
+Upload to TestFlight
+           ▼
+Update Release Notes
+           ▼
+Notify Testers
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example Bitbucket Pipeline</h2>
+            <p>Create:</p>
+            <pre><code>
+bitbucket-pipelines.yml
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Build iOS
+          runs-on:
+            - self.hosted
+            - macos
+          script:
+            - bundle install
+            - pod install
+            - swiftlint
+            - xcodebuild test
+            - xcodebuild archive
+            - fastlane beta
+            </code></pre>
+            <p>When you push:</p>
+            <pre><code>
+git push origin main
+            </code></pre>
+            <p>Bitbucket automatically starts the runner.</p>
+        </section>
+
+        <section>
+            <h2>What Fastlane Does</h2>
+            <p>Fastlane automates Xcode tasks.</p>
+            <p>Instead of:</p>
+            <pre><code>
+Open Xcode
+
+Product
+↓
+
+Archive
+
+↓
+
+Upload
+            </code></pre>
+            <p>You simply run:</p>
+            <pre><code>
+fastlane beta
+            </code></pre>
+            <p>Example lane:</p>
+            <pre><code>
+lane :beta do
+  build_app
+  upload_to_testflight
+end
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Complete CI/CD Example</h2>
+            <pre><code>
+Step 1
+Write feature
+
+↓
+
+Step 2
+git commit
+
+↓
+
+Step 3
+git push
+
+↓
+
+Bitbucket detects change
+
+↓
+
+macOS Runner starts
+
+↓
+
+Install CocoaPods
+
+↓
+
+SwiftLint
+
+↓
+
+Unit Tests
+
+↓
+
+Build
+
+↓
+
+Archive
+
+↓
+
+Upload to TestFlight
+
+↓
+
+Add release notes
+
+↓
+
+Email testers
+
+↓
+
+Done ✅
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common Tools</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Job</th>
+                        <th>Tool</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Source Control</td>
+                        <td>Git, Bitbucket, GitHub</td>
+                    </tr>
+                    <tr>
+                        <td>CI/CD</td>
+                        <td>Bitbucket Pipelines, GitHub Actions, Jenkins</td>
+                    </tr>
+                    <tr>
+                        <td>macOS Build Machine</td>
+                        <td>Xcode</td>
+                    </tr>
+                    <tr>
+                        <td>Lint</td>
+                        <td>SwiftLint</td>
+                    </tr>
+                    <tr>
+                        <td>Tests</td>
+                        <td>XCTest</td>
+                    </tr>
+                    <tr>
+                        <td>Automation</td>
+                        <td>Fastlane</td>
+                    </tr>
+                    <tr>
+                        <td>Distribution</td>
+                        <td>TestFlight</td>
+                    </tr>
+                    <tr>
+                        <td>Notifications</td>
+                        <td>Slack, Microsoft Teams, Email</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Why Companies Use CI/CD</h2>
+            <p>Without CI/CD:</p>
+            <ul>
+                <li>Developers build manually.</li>
+                <li>People forget steps.</li>
+                <li>Releases take longer.</li>
+                <li>More deployment mistakes happen.</li>
+            </ul>
+            <p>With CI/CD:</p>
+            <ul>
+                <li>Every build follows the same process.</li>
+                <li>Problems are caught earlier with automated builds and tests.</li>
+                <li>Releases become faster and more reliable because repetitive tasks are automated.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Since you're working on an iOS project with Bitbucket and TestFlight, a practical setup would look like this:</h2>
+            <pre><code>
+Mac mini (Runner)
+        │
+        ▼
+Bitbucket Repository
+        │
+        ▼
+Bitbucket Pipelines
+        │
+        ▼
+SwiftLint
+        ▼
+Unit Tests
+        ▼
+Build IPA
+        ▼
+Fastlane
+        ▼
+Upload to TestFlight
+        ▼
+App Store Connect API
+        ▼
+Automatically add "What's New" / TestFlight release notes
+            </code></pre>
+            <p>This is a production-style workflow used by many iOS teams to automate builds, testing, TestFlight uploads, and release notes.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

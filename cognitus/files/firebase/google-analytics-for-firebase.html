@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Google Analytics for Firebase</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Google Analytics for Firebase</h1>
+                    <p class="subtitle">
+                        Firebase Analytics (now officially called Google Analytics for Firebase) is a free analytics platform from Google that helps you understand how users interact with your mobile app or website. Instead of just counting downloads, it tells you what users actually do after opening your app.
+                        <p>Think of it like a security camera for your app—not recording video, but recording user actions.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple Example</h2>
+            <p>Imagine you have a shopping app.</p>
+            <p>Firebase Analytics can answer questions like:</p>
+            <ul>
+                <li>How many users opened the app today?</li>
+                <li>Which screen is visited the most?</li>
+                <li>Which button is clicked the most?</li>
+                <li>How many users added products to the cart?</li>
+                <li>How many completed a purchase?</li>
+                <li>Which country has the most users?</li>
+                <li>Which marketing campaign brought the most users?</li>
+                <li>Where do users quit using the app?</li>
+            </ul>
+            <p>Without analytics:</p>
+            <pre><code>
+10,000 downloads
+            </code></pre>
+            <p>That's all you know.</p>
+            <p>With Firebase Analytics:</p>
+            <pre><code>
+10,000 installs
+
+8,000 users opened app
+6,500 viewed products
+4,100 added to cart
+2,900 purchased
+
+Purchase rate = 29%
+            </code></pre>
+            <p>Now you understand user behavior.</p>
+        </section>
+
+        <section>
+            <h2>How Firebase Analytics Works</h2>
+            <pre><code>
+User
+   │
+   │ Opens App
+   ▼
+Your App
+   │
+   │ Logs Event
+   ▼
+Firebase SDK
+   │
+   ▼
+Google Servers
+   │
+   ▼
+Analytics Dashboard
+            </code></pre>
+            <p>Every important action becomes an event.</p>
+            <p>Example:</p>
+            <pre><code>
+App opened
+↓
+
+Screen viewed
+↓
+
+Search
+
+↓
+
+Product viewed
+
+↓
+
+Added to cart
+
+↓
+
+Checkout
+
+↓
+
+Purchase
+            </code></pre>
+            <p>These events are stored and shown in reports.</p>
+        </section>
+
+        <section>
+            <h2>What is an Event?</h2>
+            <p>Everything in Firebase Analytics revolves around events.</p>
+            <p>An event is simply:</p>
+            <p>Something the user did.</p>
+            <p>Examples:</p>
+            <pre><code>
+App Open
+
+Login
+
+Logout
+
+View Product
+
+Search
+
+Play Video
+
+Add Friend
+
+Purchase
+
+Complete Registration
+
+Share
+
+Click Button
+
+Upload File
+            </code></pre>
+            <p>Every action becomes data.</p>
+        </section>
+
+        <section>
+            <h2>Example Events</h2>
+            <p>Imagine a social networking app.</p>
+            <p>User opens app</p>
+            <pre><code>
+app_open
+            </code></pre>
+            <p>User logs in</p>
+            <pre><code>
+login
+            </code></pre>
+            <p>User uploads picture</p>
+            <pre><code>
+upload_photo
+            </code></pre>
+            <p>User follows someone</p>
+            <pre><code>
+follow_user
+            </code></pre>
+            <p>User sends message</p>
+            <pre><code>
+send_message
+            </code></pre>
+            <p>Firebase stores all of them.</p>
+        </section>
+
+        <section>
+            <h2>Event Parameters</h2>
+            <p>Events can contain extra information.</p>
+            <p>Example:</p>
+            <pre><code>
+purchase
+            </code></pre>
+            <p>Parameters</p>
+            <pre><code>
+Price = $25
+
+Currency = USD
+
+Product = Shoes
+
+Category = Fashion
+            </code></pre>
+            <p>Firebase stores</p>
+            <pre><code>
+Event:
+purchase
+
+Parameters
+
+price = 25
+
+currency = USD
+
+product = Shoes
+            </code></pre>
+            <p>Now you can analyze:</p>
+            <ul>
+                <li>Most purchased product</li>
+                <li>Average purchase</li>
+                <li>Total revenue</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Automatic Events</h2>
+            <p>Firebase records many events automatically.</p>
+            <p>Examples:</p>
+            <pre><code>
+first_open
+
+app_open
+
+screen_view
+
+session_start
+
+user_engagement
+
+app_remove
+
+notification_open
+            </code></pre>
+            <p>No coding required.</p>
+        </section>
+
+        <section>
+            <h2>Custom Events</h2>
+            <p>You can create your own.</p>
+            <p>Example:</p>
+            <p>A fitness app.</p>
+            <pre><code>
+Workout Started
+
+Workout Completed
+
+Calories Burned
+
+Goal Achieved
+            </code></pre>
+            <p>Objective-C example:</p>
+            <pre><code>
+[FIRAnalytics logEventWithName:@"workout_completed"
+                    parameters:@{
+    @"minutes": @45,
+    @"calories": @500
+}];
+            </code></pre>
+            <p>Now Firebase knows every completed workout.</p>
+        </section>
+
+        <section>
+            <h2>User Properties</h2>
+            <p>User properties describe the user.</p>
+            <p>Examples</p>
+            <pre><code>
+Premium User
+
+Country
+
+Subscription Plan
+
+Age Group
+
+Language
+
+Membership Type
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+Premium = Yes
+            </code></pre>
+            <p>Then Firebase can answer:</p>
+            <p>How do premium users behave differently?</p>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>Users</p>
+            <pre><code>
+John
+Premium
+
+Mary
+Free
+
+Paul
+Premium
+
+Mike
+Free
+            </code></pre>
+            <p>Firebase compares</p>
+            <pre><code>
+Premium Users
+
+Average session
+
+Purchases
+
+Retention
+
+Screens visited
+            </code></pre>
+            <p>versus</p>
+            <pre><code>
+Free Users
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Funnels</h2>
+            <p>A funnel shows where users drop off.</p>
+            <p>Example</p>
+            <p>Shopping app</p>
+            <pre><code>
+Open App
+
+↓
+
+View Product
+
+↓
+
+Add Cart
+
+↓
+
+Checkout
+
+↓
+
+Purchase
+            </code></pre>
+            <p>Analytics report</p>
+            <pre><code>
+Open App
+10,000
+
+↓
+
+View Product
+8,000
+
+↓
+
+Add Cart
+5,000
+
+↓
+
+Checkout
+3,000
+
+↓
+
+Purchase
+2,100
+            </code></pre>
+            <p>You immediately see where users abandon the process.</p>
+        </section>
+
+        <section>
+            <h2>Screen Tracking</h2>
+            <p>Firebase tracks which screens users visit.</p>
+            <p>Example</p>
+            <pre><code>
+Home
+80%
+
+Profile
+40%
+
+Settings
+10%
+
+Checkout
+18%
+            </code></pre>
+            <p>If users rarely visit Checkout, you might make it more accessible.</p>
+        </section>
+
+        <section>
+            <h2>User Journey</h2>
+            <p>Firebase can show common paths.</p>
+            <p>Example</p>
+            <pre><code>
+Open App
+
+↓
+
+Home
+
+↓
+
+Search
+
+↓
+
+Product
+
+↓
+
+Purchase
+            </code></pre>
+            <p>Or</p>
+            <pre><code>
+Open App
+
+↓
+
+Home
+
+↓
+
+Settings
+
+↓
+
+Exit
+            </code></pre>
+            <p>This helps identify confusing navigation.</p>
+        </section>
+
+        <section>
+            <h2>Retention</h2>
+            <p>Retention answers:</p>
+            <p>Do users come back?</p>
+            <p>Example</p>
+            <pre><code>
+1000 installs
+
+Day 1
+1000
+
+Day 2
+700
+
+Day 7
+420
+
+Day 30
+160
+            </code></pre>
+            <p>This reveals how engaging your app is.</p>
+        </section>
+
+        <section>
+            <h2>Audience Segmentation</h2>
+            <p>Create groups like:</p>
+            <pre><code>
+Premium Users
+
+Free Users
+
+USA
+
+Philippines
+
+Android
+
+iPhone
+
+High Spenders
+
+Inactive Users
+            </code></pre>
+            <p>Then compare their behavior.</p>
+        </section>
+
+        <section>
+            <h2>Real-Time Analytics</h2>
+            <p>You can watch activity as it happens.</p>
+            <pre><code>
+Users online
+
+Current events
+
+Current screens
+
+Current country
+            </code></pre>
+            <p>This is useful for testing new features or monitoring launches.</p>
+        </section>
+
+        <section>
+            <h2>Crash Correlation</h2>
+            <p>Firebase Analytics works well with Firebase Crashlytics.</p>
+            <p>You can answer questions like:</p>
+            <pre><code>
+Users who crashed
+
+↓
+
+Did they stop purchasing?
+
+↓
+
+Which screen crashed?
+
+↓
+
+Which device crashed?
+            </code></pre>
+            <p>This helps prioritize bug fixes.</p>
+        </section>
+
+        <section>
+            <h2>Integration with AI and TensorFlow</h2>
+            <p>Since you asked earlier about TensorFlow and user behavior, here's how they complement each other:</p>
+            <p>Firebase Analytics collects behavioral data, while TensorFlow learns patterns from that data.</p>
+            <p>Example:</p>
+            <p>Firebase collects:</p>
+            <pre><code>
+Session length
+
+Number of purchases
+
+Searches
+
+Buttons clicked
+
+Time spent
+
+Country
+
+Device
+            </code></pre>
+            <p>TensorFlow can use those features to predict:</p>
+            <ul>
+                <li>Which users are likely to unsubscribe.</li>
+                <li>Which users are likely to make a purchase.</li>
+                <li>Which users might become inactive.</li>
+                <li>Which products to recommend.</li>
+            </ul>
+            <p>Conceptually:</p>
+            <pre><code>
+User Actions
+        │
+        ▼
+Firebase Analytics
+        │
+        ▼
+Analytics Data
+        │
+        ▼
+TensorFlow Model
+        │
+        ▼
+Predictions
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real-World Use Cases</h2>
+            <p>1. E-commerce</p>
+            <p>Track:</p>
+            <pre><code>
+View Item
+
+Add Cart
+
+Checkout
+
+Purchase
+            </code></pre>
+            <p>Measure:</p>
+            <ul>
+                <li>Conversion rate</li>
+                <li>Revenue</li>
+                <li>Cart abandonment</li>
+            </ul>
+
+            <p>2. Social Media</p>
+            <p>Track:</p>
+            <pre><code>
+Posts created
+
+Likes
+
+Comments
+
+Shares
+
+Messages
+            </code></pre>
+            <p>Understand what drives engagement.</p>
+
+            <p>3. Banking App</p>
+            <p>Track:</p>
+            <pre><code>
+Login
+
+Transfer Money
+
+Pay Bills
+
+Open Account
+
+Apply Loan
+            </code></pre>
+            <p>Identify where users abandon important flows.</p>
+
+            <p>4. Healthcare App</p>
+            <p>Track:</p>
+            <pre><code>
+Medicine Reminder
+
+Exercise Logged
+
+Blood Pressure Recorded
+
+Appointment Booked
+            </code></pre>
+            <p>Measure feature adoption and retention.</p>
+
+            <p>5. Learning App</p>
+            <p>Track:</p>
+            <pre><code>
+Course Started
+
+Lesson Completed
+
+Quiz Passed
+
+Certificate Earned
+            </code></pre>
+            <p>See where learners stop progressing.</p>
+
+            <p>6. Your TryCastanet App</p>
+            <p>For your contact management application, useful custom events could include:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>contact_imported</td>
+                        <td>Measure contact imports from Google or device</td>
+                    </tr>
+                    <tr>
+                        <td>contact_scheduled</td>
+                        <td>Count scheduled follow-ups</td>
+                    </tr>
+                    <tr>
+                        <td>contact_archived</td>
+                        <td>Track archiving behavior</td>
+                    </tr>
+                    <tr>
+                        <td>premium_upgrade</td>
+                        <td>Measure subscription conversions</td>
+                    </tr>
+                    <tr>
+                        <td>notification_opened</td>
+                        <td>Evaluate reminder effectiveness</td>
+                    </tr>
+                    <tr>
+                        <td>contact_called</td>
+                        <td>Track calls initiated from the app</td>
+                    </tr>
+                    <tr>
+                        <td>contact_message_sent</td>
+                        <td>Measure messaging activity</td>
+                    </tr>
+                    <tr>
+                        <td>search_contact</td>
+                        <td>Understand search usage</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>From these events you could answer questions such as:</p>
+            <ul>
+                <li>What percentage of free users upgrade to Premium?</li>
+                <li>Which reminder schedules generate the most follow-ups?</li>
+                <li>Do imported contacts lead to more interactions than manually added contacts?</li>
+                <li>Which features are used most frequently by active users?</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Benefits of Firebase Analytics</h2>
+            <ul>
+                <li>Free for most app analytics needs.</li>
+                <li>Easy SDK integration for Android, iOS, web, Flutter, and React Native.</li>
+                <li>Automatic event collection reduces development effort.</li>
+                <li>Custom events provide detailed business insights.</li>
+                <li>Real-time and historical reporting.</li>
+                <li>Audience segmentation for targeted analysis.</li>
+                <li>Integrates with other Firebase services like Crashlytics, Remote Config, A/B Testing, Cloud Messaging, and BigQuery for advanced analysis.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>In summary</h2>
+            <p>Firebase Analytics is a platform for collecting, organizing, and analyzing user behavior. It tells you who your users are, what they do, where they stop, and how they engage with your app. Combined with machine learning tools such as TensorFlow, the collected data can also be used to build predictive features like churn prediction, personalized recommendations, and intelligent user segmentation.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -3,41 +3,56 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Odin</title>
+  <title>Aether</title>
   <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
-  <link rel="stylesheet" href="odin.css" />
+  <link rel="stylesheet" href="aether.css" />
 </head>
 
 <body>
-  <div class="container">
-    <div class="header">
-      <img src="../assets/aether-logo.png" alt="Aether Logo" />
-      <h1>Odin</h1>
-    </div>
+  <div class="app">
 
-    <input type="text" id="search" placeholder="Search..." />
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="brand">
+        <img src="../assets/aether-logo.png" />
+        <div>
+          <h1>Aether</h1>
+          <p>Explore. Learn. Build.</p>
+        </div>
+      </div>
 
-    <label>
-      <input type="checkbox" id="groupToggle" />
-      Group by category
-    </label>
+      <div class="actions">
+        <input type="text" id="search" placeholder="Search knowledge..." />
+        <label class="toggle">
+          <input type="checkbox" id="groupToggle" />
+          <span>Group</span>
+        </label>
+      </div>
+    </header>
 
-    <main>
-      <ul id="page-list"></ul>
+    <!-- HERO STRIP -->
+    <section class="hero">
+      <div class="hero-card">
+        <h2>Engineering Knowledge, Structured for Discovery</h2>
+        <p>Browse architecture, AI, AWS, systems, and modern engineering concepts.</p>
+      </div>
+    </section>
+
+    <!-- CONTENT -->
+    <main class="content">
+      <ul id="page-list" class="grid"></ul>
       <div id="pagination" class="pagination"></div>
     </main>
+
   </div>
+
+  <script src="files-list.js"></script>
 
   <script>
     const pathParts = window.location.pathname.split('/');
     const repoName = pathParts[1] || '';
     const isGitHubPages = window.location.hostname.includes('github.io');
-    const basePath = isGitHubPages ? `/${repoName}/odin/` : './';
-
-    // --- List of all HTML files ---
-    const htmlFiles = [
-    ];
-
+    const basePath = isGitHubPages ? `/${repoName}/cognitus/` : './';
     const htmlFilesWithBase = htmlFiles.map(file => basePath + file);
 
     // --- Sort all files alphabetically by filename ---

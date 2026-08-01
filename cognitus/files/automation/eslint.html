@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ESLint</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">ESLint</h1>
+                    <p class="subtitle">ESLint is a static code analysis tool (a linter) for JavaScript and TypeScript. It analyzes your code without running it and reports problems such as errors, bad practices, and style issues.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What ESLint helps with</h2>
+            <ul>
+                <li>
+                    Finds bugs
+                    <pre><code>
+const name = "Alice";
+console.log(nam); // ❌ ESLint: 'nam' is not defined
+                    </code></pre>
+                </li>
+                <li>
+                    Enforces coding standards
+                    <pre><code>
+if (x == 5) {
+    // ESLint can require === instead of ==
+}
+                    </code></pre>
+                </li>
+                <li>
+                    Keeps code consistent
+                    <ul>
+                        <li>Semicolons or no semicolons</li>
+                        <li>Single quotes vs. double quotes</li>
+                        <li>Indentation</li>
+                        <li>Spacing</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Example</p>
+            <p>Suppose you write:</p>
+            <pre><code>
+function greet(name) {
+    console.log("Hello " + user);
+}
+            </code></pre>
+            <p>ESLint would report:</p>
+            <pre><code>
+'user' is not defined. (no-undef)
+            </code></pre>
+            <p>because user doesn't exist—it should probably be name.</p>
+        </section>
+
+        <section>
+            <h2>How it works</h2>
+            <ol>
+                <li>You install ESLint in your project.</li>
+                <li>You configure rules in an ESLint configuration file (such as eslint.config.js).</li>
+                <li>ESLint scans your source files.</li>
+                <li>It reports issues and can automatically fix many of them.</li>
+            </ol>
+
+            <p>Installing ESLint</p>
+            <p>Using npm:</p>
+            <pre><code>
+npm install --save-dev eslint
+            </code></pre>
+
+            <p>Initialize a configuration:</p>
+            <pre><code>
+npx eslint --init
+            </code></pre>
+
+            <p>Run ESLint:</p>
+            <pre><code>
+npx eslint .
+            </code></pre>
+            <p>Automatically fix issues when possible:</p>
+
+            <p>Common rules</p>
+            <ul>
+                <li>no-unused-vars – Warn about variables you never use.</li>
+                <li>no-undef – Prevent using undefined variables.</li>
+                <li>eqeqeq – Require === instead of ==.</li>
+                <li>semi – Enforce or disallow semicolons.</li>
+                <li>quotes – Enforce single or double quotes.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why developers use ESLint</h2>
+            <ul>
+                <li>Catches mistakes before running the code.</li>
+                <li>Makes code easier to read and maintain.</li>
+                <li>Ensures everyone on a team follows the same coding standards.</li>
+                <li>Integrates with editors like VS Code to show problems as you type.</li>
+                <li>Can run automatically in CI/CD pipelines to prevent problematic code from being merged.</li>
+            </ul>
+            <p>In short, ESLint is like a spell checker for JavaScript and TypeScript code—it catches mistakes, enforces best practices, and helps keep your codebase clean and consistent.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

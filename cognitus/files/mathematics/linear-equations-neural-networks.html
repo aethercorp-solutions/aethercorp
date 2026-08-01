@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Linear Equations</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Linear Equations</h1>
+                    <p class="subtitle">Neural networks use linear equations to combine information, then use a nonlinear activation function to make intelligent decisions.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Here's the idea in simple terms.</p>
+            <h2>Step 1: Linear equation combines the inputs</h2>
+            <p>Imagine you want a neural network to recognize whether a fruit is an apple.</p>
+            <p>The inputs are:</p>
+            <ul>
+                <li>Weight = 150 g</li>
+                <li>Color = 8 (redness score)</li>
+                <li>Roundness = 9</li>
+            </ul>
+            <p>The neuron first calculates:</p>
+            <pre><code>
+y = w1 * x1 + w2 * x2 + w3 * x3 + b
+            </code></pre>
+            <p>where:</p>
+            <ul>
+                <li>x = inputs</li>
+                <li>w = weights (how important each input is)</li>
+                <li>b = bias (an adjustment)</li>
+            </ul>
+            <p>This is just a linear equation.</p>
+            <p>For example:</p>
+            <pre><code>
+y=(0.01)(150)+(0.5)(8)+(0.4)(9)−2
+y=1.5+4+3.6−2=7.1
+            </code></pre>
+            <p>The neuron has combined all the information into one number.</p>
+        </section>
+
+        <section>
+            <h2>Step 2: Activation function decides what to do</h2>
+            <p>The neuron then passes 7.1 into an activation function.</p>
+            <p>For example:</p>
+            <ul>
+                <li>If the value is high → "Looks like an apple."</li>
+                <li>If the value is low → "Not an apple."</li>
+            </ul>
+            <p>Without this step, every layer would only perform linear equations, and the network couldn't learn complex patterns.</p>
+        </section>
+
+        <section>
+            <h2>Step 3: Thousands or millions of neurons repeat this</h2>
+            <p>A neural network is simply many neurons connected together.</p>
+            <p>Each neuron performs:</p>
+            <pre><code>
+Output = w1x1 + w2x2 + ... + b
+            </code></pre>
+            <p>followed by an activation function.</p>
+            <pre><code>
+Inputs
+  ↓
+Linear Equation
+  ↓
+Activation Function
+  ↓
+Next Layer
+  ↓
+Linear Equation
+  ↓
+Activation Function
+  ↓
+Prediction
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real-world example: Handwritten digit recognition</h2>
+            <p>Suppose you draw the number 5.</p>
+            <p>Each pixel becomes an input.</p>
+            <pre><code>
+Pixel 1 = 0
+Pixel 2 = 255
+Pixel 3 = 120
+...
+Pixel 784 = 40
+            </code></pre>
+            <p>One neuron computes something like:</p>
+            <pre><code>
+y = w1x1 + w2x2 + ... + w784*x784 + b
+            </code></pre>
+            <p>This linear equation summarizes all 784 pixel values into a single score.</p>
+            <p>Many neurons perform similar calculations, each looking for different features such as:</p>
+            <ul>
+                <li>vertical lines,</li>
+                <li>curves,</li>
+                <li>loops,</li>
+                <li>corners.</li>
+            </ul>
+            <p>Why linear equations are important</p>
+            <p>Linear equations are used because they:</p>
+            <ul>
+                <li>Combine many input values into one result.</li>
+                <li>Let the network assign different importance (weights) to each input.</li>
+                <li>Are fast to compute, even millions of times.</li>
+            </ul>
+            <p>However, linear equations alone are not enough. Neural networks also need activation functions to learn complex patterns like faces, speech, and language.</p>
+            <p>Simple analogy</p>
+            <p>Think of a teacher grading a student:</p>
+            <ul>
+                <li>Homework × 20%</li>
+                <li>Quiz × 30%</li>
+                <li>Exam × 50%</li>
+            </ul>
+            <p>The teacher computes:</p>
+            <pre><code>
+Final Score=0.2(Homework)+0.3(Quiz)+0.5(Exam)
+            </code></pre>
+            <p>This is also a linear equation.</p>
+            <p>A neuron works in the same way:</p>
+            <ul>
+                <li>Inputs = homework, quiz, exam</li>
+                <li>Weights = importance of each input</li>
+                <li>Output = weighted score</li>
+            </ul>
+            <p>The only difference is that after computing the weighted score, the neuron applies an activation function to decide how strongly to pass that information to the next layer.</p>
+        </section>
+
+        <section>
+            <p>A nonlinear activation function is a function that changes the output in a way that is not a straight-line relationship. It gives neural networks the ability to learn complex patterns instead of only simple linear relationships.</p>
+            <p>Think of it like a light switch</p>
+            <p>A neuron first computes a linear equation:</p>
+            <pre><code>
+y = w1 * x1 + w2 * x2 + b
+            </code></pre>
+            <p>Suppose the result is:</p>
+            <ul>
+                <li>-3</li>
+                <li>0</li>
+                <li>5</li>
+            </ul>
+            <p>Instead of sending these values directly to the next neuron, it passes them through an activation function.</p>
+            <p>For example, the ReLU (Rectified Linear Unit) activation function works like this:</p>
+            <ul>
+                <li>If the value is negative → output 0</li>
+                <li>If the value is positive → keep it</li>
+            </ul>
+            <pre><code>
+Input    Output
+ -3   →    0
+  0   →    0
+  5   →    5
+            </code></pre>
+            <p>This is nonlinear because the rule suddenly changes at 0—it isn't just one straight-line equation.</p>
+        </section>
+
+        <section>
+            <h2>Why not use only linear equations?</h2>
+            <p>Imagine two neural network layers.</p>
+            <p>Layer 1:</p>
+            <pre><code>
+y=2x+1
+            </code></pre>
+            <p>Layer 2:</p>
+            <pre><code>
+z=3y+4
+            </code></pre>
+            <p>Substitute the first equation into the second:</p>
+            <pre><code>
+z=3(2x+1)+4
+z=6x+7
+            </code></pre>
+            <p>Notice that two linear equations are still just one linear equation.</p>
+            <p>No matter how many linear layers you stack, they are equivalent to a single linear transformation. The network cannot learn complicated patterns.</p>
+        </section>
+
+        <section>
+            <h2>What happens with a nonlinear activation?</h2>
+            <p>Suppose the first layer computes:</p>
+            <pre><code>
+y=2x+1
+            </code></pre>
+            <p>Then apply ReLU:</p>
+            <pre><code>
+If y &lt; 0 → 0
+If y ≥ 0 → y
+            </code></pre>
+            <p>Now the second layer receives a value that has been changed by a nonlinear rule.</p>
+            <p>Example:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>x</th>
+                        <th>Linear Output</th>
+                        <th>After ReLU</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>-2</td>
+                        <td>-3</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>-1</td>
+                        <td>-1</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>3</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>5</td>
+                        <td>5</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>The output no longer follows one straight line. It becomes a piecewise function, allowing the network to represent much more complex relationships.</p>
+        </section>
+
+        <section>
+            <h2>Real-world analogy</h2>
+            <p>Imagine you're deciding whether to bring an umbrella.</p>
+            <p>A linear equation might calculate a score:</p>
+            <pre><code>
+Score = (Chance of Rain × 0.7)
+    + (Cloudiness × 0.3)
+            </code></pre>
+            <p>Suppose the score is 0.8.</p>
+            <p>Now apply a nonlinear rule:</p>
+            <pre><code>
+If score > 0.5
+    Bring an umbrella
+Else
+    Don't bring one
+            </code></pre>
+            <p>The decision changes suddenly at 0.5. That threshold is a nonlinear behavior.</p>
+        </section>
+
+        <section>
+            <h2>Why is this important for AI?</h2>
+            <p>Without nonlinear activation functions, a neural network could only learn simple patterns like:</p>
+            <ul>
+                <li>House price increases with size.</li>
+                <li>Salary increases with years of experience.</li>
+            </ul>
+            <p>With nonlinear activations, it can learn much more complex relationships, such as:</p>
+            <ul>
+                <li>Recognizing faces from millions of pixels.</li>
+                <li>Understanding speech despite different accents.</li>
+                <li>Translating languages.</li>
+                <li>Detecting tumors in medical images.</li>
+                <li>Driving autonomous vehicles.</li>
+            </ul>
+            <p>The key idea</p>
+            <p>A neural network works in two steps:</p>
+            <ol>
+                <li>Linear equation: Combine the inputs into a weighted sum.</li>
+                <li>Nonlinear activation: Transform that result so the network can learn complex patterns.</li>
+            </ol>
+            <p>Think of it this way:</p>
+            <ul>
+                <li>Linear equation = "Calculate a score."</li>
+                <li>Nonlinear activation = "Decide how that score should influence the next step."</li>
+            </ul>
+            <p>Both are essential. The linear equation gathers information, while the nonlinear activation gives the network the flexibility to solve real-world problems that aren't just straight-line relationships.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TensorFlow for app user behavior analytics</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">TensorFlow for app user behavior analytics</h1>
+                    <p class="subtitle">
+                        Since you're learning TensorFlow for app user behavior analytics, the best way to learn is by building a real machine learning model instead of only reading theory.
+                        <p>We'll create a complete hands-on TensorFlow project that predicts whether a user will purchase a premium subscription based on their app behavior. This is similar to what companies like Spotify, Netflix, Duolingo, and TryCastanet might do.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Hands-on Project</h2>
+            <p>Predict Premium Subscription using TensorFlow</p>
+            <p>Goal:</p>
+            <p>Given a user's app activity, predict whether the user will buy Premium.</p>
+        </section>
+
+        <section>
+            <h2>Step 1 Install TensorFlow</h2>
+            <p>Create a project folder.</p>
+            <pre><code>
+tensorflow-user-behavior
+            </code></pre>
+            <p>Create virtual environment</p>
+            <p>Mac/Linux</p>
+            <pre><code>
+python3 -m venv venv
+            </code></pre>
+            <p>Activate</p>
+            <pre><code>
+source venv/bin/activate
+            </code></pre>
+            <p>Install packages</p>
+            <pre><code>
+pip install tensorflow pandas matplotlib scikit-learn
+            </code></pre>
+            <p>Verify</p>
+            <pre><code>
+import tensorflow as tf
+
+print(tf.__version__)
+            </code></pre>
+            <p>Example output</p>
+            <pre><code>
+2.20.0
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2 Create Dataset</h2>
+            <p>Create</p>
+            <pre><code>
+users.csv
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+login_count,session_minutes,messages_sent,contacts_added,premium
+4,15,2,1,0
+8,45,10,4,1
+2,8,0,0,0
+15,90,30,10,1
+12,65,18,8,1
+1,5,0,0,0
+7,40,9,3,1
+5,20,3,1,0
+14,85,25,9,1
+3,10,1,0,0
+            </code></pre>
+            <p>Columns</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>login_count</td>
+                        <td>Times user opened app</td>
+                    </tr>
+                    <tr>
+                        <td>session_minutes</td>
+                        <td>Minutes spent</td>
+                    </tr>
+                    <tr>
+                        <td>messages_sent</td>
+                        <td>Messages sent</td>
+                    </tr>
+                    <tr>
+                        <td>contacts_added</td>
+                        <td>Contacts added</td>
+                    </tr>
+                    <tr>
+                        <td>premium</td>
+                        <td>Bought premium</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Premium</p>
+            <pre><code>
+0 = No
+
+1 = Yes
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 3 Load Dataset</h2>
+            <p>Create</p>
+            <pre><code>
+main.py
+            </code></pre>
+            <pre><code>
+import pandas as pd
+
+df = pd.read_csv("users.csv")
+
+print(df.head())
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+login_count
+session_minutes
+messages_sent
+contacts_added
+premium
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4 Separate Features</h2>
+            <pre><code>
+X = df.drop("premium", axis=1)
+
+y = df["premium"]
+            </code></pre>
+            <p>Print</p>
+            <pre><code>
+print(X)
+
+print(y)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 5 Split Training Data</h2>
+            <pre><code>
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42
+)
+            </code></pre>
+            <p>80%</p>
+            <p>Training</p>
+            <p>20%</p>
+            <p>Testing</p>
+        </section>
+
+        <section>
+            <h2>Step 6 Normalize Data</h2>
+            <p>Machine learning works better when values are similar.</p>
+            <pre><code>
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+
+X_test = scaler.transform(X_test)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 7 Build Neural Network</h2>
+            <pre><code>
+import tensorflow as tf
+
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(16, activation="relu"),
+    tf.keras.layers.Dense(8, activation="relu"),
+    tf.keras.layers.Dense(1, activation="sigmoid")
+])
+            </code></pre>
+            <p>Architecture</p>
+            <pre><code>
+Input
+
+↓
+
+16 neurons
+
+↓
+
+8 neurons
+
+↓
+
+Output
+
+Premium?
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 8 Compile</h2>
+            <pre><code>
+model.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+            </code></pre>
+            <p>Explanation</p>
+            <p>Optimizer</p>
+            <pre><code>
+Adam
+            </code></pre>
+            <p>updates weights.</p>
+            <p>Loss</p>
+            <pre><code>
+Binary Crossentropy
+            </code></pre>
+            <p>because</p>
+            <pre><code>
+Yes/No
+            </code></pre>
+            <p>prediction.</p>
+            <p>Accuracy</p>
+            <p>Measures correctness.</p>
+        </section>
+
+        <section>
+            <h2>Step 9 Train</h2>
+            <pre><code>
+history = model.fit(
+    X_train,
+    y_train,
+    epochs=50,
+    validation_split=0.2
+)
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+Epoch 1
+
+accuracy: 0.50
+
+loss:0.72
+
+Epoch 20
+
+accuracy:0.90
+
+loss:0.21
+            </code></pre>
+            <p>TensorFlow is learning patterns.</p>
+        </section>
+
+        <section>
+            <h2>Step 10 Evaluate</h2>
+            <pre><code>
+loss, accuracy = model.evaluate(
+    X_test,
+    y_test
+)
+
+print("Accuracy:", accuracy)
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+Accuracy
+
+0.95
+            </code></pre>
+            <p>95% accurate.</p>
+        </section>
+
+        <section>
+            <h2>Step 11 Predict New User</h2>
+            <p>Suppose a new user has</p>
+            <pre><code>
+login_count = 10
+
+session_minutes = 60
+
+messages_sent = 12
+
+contacts_added = 5
+            </code></pre>
+            <p>Prepare data</p>
+            <pre><code>
+new_user = scaler.transform([
+    [10,60,12,5]
+])
+
+prediction = model.predict(new_user)
+
+print(prediction)
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+[[0.91]]
+            </code></pre>
+            <p>Meaning</p>
+            <pre><code>
+91%
+
+chance user buys Premium
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 12 Decision</h2>
+            <pre><code>
+if prediction[0][0] > 0.5:
+    print("Likely Premium User")
+else:
+    print("Not Likely")
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+Likely Premium User
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 13 Plot Learning</h2>
+            <pre><code>
+import matplotlib.pyplot as plt
+
+plt.plot(history.history["accuracy"])
+
+plt.plot(history.history["val_accuracy"])
+
+plt.legend(["Training","Validation"])
+
+plt.xlabel("Epoch")
+
+plt.ylabel("Accuracy")
+
+plt.show()
+            </code></pre>
+            <p>Graph</p>
+            <pre><code>
+                Accuracy
+
+1.0
+│                  *
+│               *
+│            *
+│         *
+│      *
+│   *
+└────────────────────
+
+Epoch
+            </code></pre>
+            <p>You should see the training accuracy increase over epochs.</p>
+        </section>
+
+        <section>
+            <h2>Step 14 Save Model</h2>
+            <pre><code>
+model.save("premium_model.keras")
+            </code></pre>
+            <p>Later</p>
+            <pre><code>
+model = tf.keras.models.load_model("premium_model.keras")
+            </code></pre>
+            <p>No retraining required.</p>
+        </section>
+
+        <section>
+            <h2>Step 15 Real App Flow</h2>
+            <p>Imagine your app collects analytics like:</p>
+            <pre><code>
+Firebase Analytics
+
+↓
+
+BigQuery
+
+↓
+
+Export CSV
+
+↓
+
+TensorFlow Training
+
+↓
+
+Premium Prediction Model
+
+↓
+
+Backend API
+
+↓
+
+Mobile App
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example features from Firebase Analytics:</h2>
+            <ul>
+                <li>Number of app launches</li>
+                <li>Session duration</li>
+                <li>Screen views</li>
+                <li>Feature usage</li>
+                <li>Messages sent</li>
+                <li>Contacts imported</li>
+                <li>Push notification opens</li>
+                <li>Days active</li>
+                <li>Last active date</li>
+                <li>Subscription status</li>
+            </ul>
+            <p>These become the inputs to your TensorFlow model.</p>
+        </section>
+
+        <section>
+            <h2>What You Learned</h2>
+            <p>By completing this tutorial, you've practiced:</p>
+            <ul>
+                <li>Loading data with Pandas</li>
+                <li>Splitting training and test datasets</li>
+                <li>Normalizing numerical features</li>
+                <li>Building a neural network with tf.keras.Sequential</li>
+                <li>Training a binary classification model</li>
+                <li>Evaluating model accuracy</li>
+                <li>Making predictions for new users</li>
+                <li>Visualizing training progress</li>
+                <li>Saving and reusing a trained model</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Next Hands-on Projects</h2>
+            <p>Once you're comfortable with this example, the next logical TensorFlow projects are:</p>
+            <ol>
+                <li>Churn Prediction – Predict whether a user will stop using the app.</li>
+                <li>User Segmentation – Group similar users with clustering techniques.</li>
+                <li>Lifetime Value (LTV) Prediction – Estimate how much revenue a user is likely to generate.</li>
+                <li>Recommendation System – Suggest contacts, content, or features based on user behavior.</li>
+                <li>Fraud or Spam Detection – Identify suspicious user activity.</li>
+                <li>Real-time TensorFlow + Firebase Analytics + BigQuery Pipeline – Train models using exported analytics data and deploy them to your backend for live predictions.</li>
+            </ol>
+            <p>This progression closely mirrors how machine learning is applied in production mobile and web applications.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

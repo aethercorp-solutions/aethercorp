@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Log Analytics Events</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Log Analytics Events</h1>
+                    <p class="subtitle">
+                        Yes. In React Native, you can use Firebase Analytics to log events, but you cannot retrieve raw analytics data directly from the Firebase Analytics SDK.
+                        <p>There are three common ways to work with Firebase Analytics:</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Log Analytics Events (React Native SDK)</h2>
+            <p>This is what most apps do.</p>
+            <p>Install</p>
+            <pre><code>
+npm install @react-native-firebase/app
+npm install @react-native-firebase/analytics
+            </code></pre>
+            <p>Initialize</p>
+            <pre><code>
+import analytics from '@react-native-firebase/analytics';
+            </code></pre>
+            <p>Log a custom event</p>
+            <pre><code>
+await analytics().logEvent('button_click', {
+    screen: 'Home',
+    button_name: 'Login'
+});
+            </code></pre>
+            <p>Log screen views</p>
+            <pre><code>
+await analytics().logScreenView({
+    screen_name: 'Home',
+    screen_class: 'HomeScreen',
+});
+            </code></pre>
+            <p>Log user login</p>
+            <pre><code>
+await analytics().logLogin({
+    method: 'email'
+});
+            </code></pre>
+            <p>Set User ID</p>
+            <pre><code>
+await analytics().setUserId('user123');
+            </code></pre>
+            <p>Set User Properties</p>
+            <pre><code>
+await analytics().setUserProperties({
+    subscription: 'premium',
+    country: 'PH'
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Retrieve Analytics Data (No SDK API)</h2>
+            <p>The Firebase SDK cannot do this:</p>
+            <pre><code>
+const data = analytics().getEvents(); // ❌ Doesn't exist
+            </code></pre>
+            <p>Firebase Analytics is designed to send events, not read them.</p>
+            <p>Instead, analytics data is viewed in:</p>
+            <ul>
+                <li>Firebase Console</li>
+                <li>Google Analytics (GA4)</li>
+                <li>BigQuery export</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Retrieve Analytics Programmatically (Google Analytics Data API)</h2>
+            <p>If you need analytics inside your own dashboard or backend, use the Google Analytics Data API.</p>
+            <p>Architecture:</p>
+            <pre><code>
+React Native App
+      │
+      ▼
+Firebase Analytics
+      │
+      ▼
+Google Analytics 4
+      │
+      ▼
+Google Analytics Data API
+      │
+      ▼
+Your Backend
+      │
+      ▼
+React Native App
+            </code></pre>
+            <p>Example (Node.js):</p>
+            <pre><code>
+const {BetaAnalyticsDataClient} =
+require('@google-analytics/data');
+
+const client = new BetaAnalyticsDataClient();
+
+const [response] = await client.runReport({
+  property: 'properties/123456789',
+  dimensions: [
+    { name: 'eventName' }
+  ],
+  metrics: [
+    { name: 'eventCount' }
+  ],
+    dateRanges: [
+    {
+      startDate: '7daysAgo',
+      endDate: 'today'
+    }
+  ]
+});
+
+console.log(response);
+            </code></pre>
+            <p>Example response:</p>
+            <pre><code>
+{
+    "rows": [
+        {
+        "dimensionValues": [
+            { "value": "button_click" }
+        ],
+        "metricValues": [
+            { "value": "2345" }
+        ]
+        }
+    ]
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Export to BigQuery (Best for AI and Advanced Analytics)</h2>
+            <p>Firebase can automatically export Analytics events to BigQuery.</p>
+            <p>Then you can run SQL queries like:</p>
+            <pre><code>
+SELECT
+  event_name,
+  COUNT(*) AS total
+FROM
+  `project.analytics_123456.events_*`
+GROUP BY
+  event_name
+ORDER BY
+  total DESC;
+            </code></pre>
+            <p>This is ideal for:</p>
+            <ul>
+                <li>User behavior analysis</li>
+                <li>Funnel analysis</li>
+                <li>Cohort analysis</li>
+                <li>Retention</li>
+                <li>AI/ML models</li>
+                <li>Recommendation systems</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>React Native Use Cases</h2>
+            <p>You can track nearly any user interaction.</p>
+            <pre><code>
+analytics().logEvent('view_product', {
+    product_id: '123',
+    category: 'Shoes'
+});
+            </code></pre>
+            <pre><code>
+analytics().logEvent('purchase', {
+    value: 499,
+    currency: 'USD'
+});
+            </code></pre>
+            <pre><code>
+analytics().logEvent('search', {
+    search_term: 'Nike'
+});
+            </code></pre>
+            <pre><code>
+analytics().logEvent('video_play', {
+    video: 'intro.mp4'
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Can AI Use Firebase Analytics?</h2>
+            <p>Yes. A common architecture is:</p>
+            <pre><code>
+User
+   │
+   ▼
+React Native App
+   │
+   ▼
+Firebase Analytics
+   │
+   ▼
+BigQuery
+   │
+   ▼
+Python / TensorFlow / AI Models
+   │
+   ▼
+Insights
+            </code></pre>
+            <p>AI models can analyze data such as:</p>
+            <ul>
+                <li>Most-used app features</li>
+                <li>User churn prediction</li>
+                <li>Session duration</li>
+                <li>Popular navigation paths</li>
+                <li>Purchase likelihood</li>
+                <li>Notification effectiveness</li>
+                <li>User segmentation</li>
+            </ul>
+            <p>For example, if analytics shows that users who complete onboarding and view three products are much more likely to subscribe, an AI model can identify similar users and trigger personalized recommendations or reminders.</p>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Supported?</th>
+                        <th>How</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Log analytics events</td>
+                        <td>✅</td>
+                        <td>@react-native-firebase/analytics</td>
+                    </tr>
+                    <tr>
+                        <td>View dashboards</td>
+                        <td>✅</td>
+                        <td>Firebase Console / Google Analytics 4</td>
+                    </tr>
+                    <tr>
+                        <td>Retrieve analytics in code</td>
+                        <td>✅</td>
+                        <td>Google Analytics Data API (typically from your backend)</td>
+                    </tr>
+                    <tr>
+                        <td>Export raw events</td>
+                        <td>✅</td>
+                        <td>BigQuery export</td>
+                    </tr>
+                    <tr>
+                        <td>Build AI on analytics data</td>
+                        <td>✅</td>
+                        <td>BigQuery + Python/TensorFlow or other ML frameworks</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>If you're building a React Native app with an AI assistant or recommendation engine, the most scalable approach is:</p>
+            <p>React Native → Firebase Analytics → GA4 → BigQuery → Backend (Node.js/Python) → AI/ML → React Native</p>
+            <p>This keeps event collection lightweight on the device while enabling powerful analytics and AI processing on the backend.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

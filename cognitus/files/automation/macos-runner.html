@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>macOS Runner</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">macOS Runner</h1>
+                    <p class="subtitle">
+                        A macOS Runner is a macOS machine (physical or virtual) that executes automated tasks in a CI/CD pipeline. It's commonly used to build, test, sign, and deploy Apple applications such as iOS, macOS, watchOS, and tvOS apps.
+                        <p>Because Apple's build tools (Xcode, Simulator, code signing) only run on macOS, you need a macOS runner whenever your pipeline builds Apple apps.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>How it works</h2>
+            <p>When you push code to your repository:</p>
+            <pre><code>
+Developer
+    │
+    ▼
+Git Repository (GitHub/Bitbucket/GitLab)
+    │
+    ▼
+CI/CD Pipeline
+    │
+    ▼
+macOS Runner
+    ├── Checks out code
+    ├── Installs dependencies
+    ├── Runs tests
+    ├── Builds app
+    ├── Signs app
+    ├── Uploads to TestFlight/App Store
+    └── Reports success/failure
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What does a macOS runner do?</h2>
+            <p>A typical iOS pipeline might execute commands like:</p>
+            <pre><code>
+xcodebuild clean
+xcodebuild test
+xcodebuild archive
+xcodebuild -exportArchive
+            </code></pre>
+            <p>Or with Fastlane:</p>
+            <pre><code>
+bundle exec fastlane beta
+            </code></pre>
+            <p>The runner performs these commands automatically.</p>
+        </section>
+
+        <section>
+            <h2>Why macOS?</h2>
+            <p>Apple requires Xcode to build Apple apps.</p>
+            <p>Only macOS supports:</p>
+            <ul>
+                <li>Xcode</li>
+                <li>iOS Simulator</li>
+                <li>Code Signing</li>
+                <li>Notarization</li>
+                <li>App Store Connect uploads</li>
+            </ul>
+            <p>Linux and Windows runners cannot build native iOS/macOS apps.</p>
+        </section>
+
+        <section>
+            <h2>Types of macOS runners</h2>
+            <p>1. Hosted macOS Runner (Cloud)</p>
+            <p>Provided by CI/CD platforms.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>GitHub Actions</li>
+                <li>Bitbucket Pipelines</li>
+                <li>Azure DevOps</li>
+                <li>CircleCI</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+runs-on: macos-latest
+            </code></pre>
+            <p>GitHub automatically starts a temporary macOS VM, runs your workflow, and then discards it.</p>
+            <p>Pros</p>
+            <ul>
+                <li>No maintenance</li>
+                <li>Always up to date</li>
+                <li>Easy to set up</li>
+            </ul>
+            <p>Cons</p>
+            <ul>
+                <li>Usage limits or higher cost</li>
+                <li>Build time limits</li>
+                <li>Less control over the environment</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Self-hosted macOS Runner</h2>
+            <p>A Mac you own (Mac mini, Mac Studio, MacBook, etc.) runs jobs from your CI/CD platform.</p>
+            <p>Example:</p>
+            <pre><code>
+Mac mini in your office
+        ▲
+        │
+GitHub Runner Service
+        ▲
+        │
+GitHub Actions
+            </code></pre>
+            <p>Pros</p>
+            <ul>
+                <li>Full control</li>
+                <li>Can install custom tools</li>
+                <li>No per-minute hosted build charges</li>
+                <li>Faster if dedicated</li>
+            </ul>
+            <p>Cons</p>
+            <ul>
+                <li>You maintain the machine</li>
+                <li>Must keep Xcode updated</li>
+                <li>Hardware failures are your responsibility</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example in Bitbucket Pipelines</h2>
+            <p>A pipeline can target a macOS runner:</p>
+            <pre><code>
+pipelines:
+  default:
+    - step:
+        runs-on:
+          - self.hosted
+          - macos
+        script:
+          - xcodebuild -version
+          - bundle install
+          - bundle exec fastlane beta
+            </code></pre>
+            <p>Here, Bitbucket sends the build to a registered macOS runner.</p>
+        </section>
+
+        <section>
+            <h2>Typical tools installed on a macOS runner</h2>
+            <ul>
+                <li>Xcode</li>
+                <li>Command Line Tools</li>
+                <li>Ruby</li>
+                <li>Fastlane</li>
+                <li>CocoaPods</li>
+                <li>Swift Package Manager</li>
+                <li>Homebrew</li>
+                <li>Git</li>
+                <li>Node.js (if needed)</li>
+                <li>Java (for Android builds, if applicable)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Common use cases</h2>
+            <p>For iOS apps, a macOS runner is often used to:</p>
+            <ul>
+                <li>Build the app</li>
+                <li>Run unit tests</li>
+                <li>Run UI tests</li>
+                <li>Create an .ipa</li>
+                <li>Sign the app</li>
+                <li>Upload to TestFlight</li>
+                <li>Upload to the App Store</li>
+                <li>Automatically update TestFlight release notes using the App Store Connect API</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>In your workflow</h2>
+            <p>Since you've been working on Bitbucket CI/CD and automating TestFlight uploads and release notes, a macOS runner is the machine that executes steps such as:</p>
+            <pre><code>
+bundle exec fastlane beta
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+xcodebuild archive
+            </code></pre>
+            <p>followed by uploading the build to App Store Connect and, if desired, updating the TestFlight metadata via the App Store Connect API.</p>
+            <p>Without a macOS runner, the iOS-specific parts of your CI/CD pipeline (building, signing, and uploading the app) cannot be performed.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

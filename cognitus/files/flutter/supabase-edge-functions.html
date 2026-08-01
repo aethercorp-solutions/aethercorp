@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Supabase Edge Functions</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Supabase Edge Functions</h1>
+                    <p class="subtitle">
+                        Supabase Edge Functions let you run backend code without managing servers. They are similar to AWS Lambda, Google Cloud Functions, or Vercel Functions, but are designed to work closely with your Supabase project.
+                        <p>If you've worked with AWS Lambda + API Gateway, you'll find Edge Functions very familiar.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What are Edge Functions?</h2>
+            <p>Instead of putting sensitive logic in your frontend:</p>
+            <pre><code>
+React App
+    │
+    ├── Database
+    └── Stripe API ❌ (secret key exposed)
+            </code></pre>
+            <p>You put it in an Edge Function:</p>
+            <pre><code>
+React App
+      │
+      ▼
+Supabase Edge Function
+      │
+      ├── PostgreSQL
+      ├── Stripe
+      ├── OpenAI
+      ├── SendGrid
+      └── Any REST API
+            </code></pre>
+            <p>The browser never sees your secret keys.</p>
+        </section>
+
+        <section>
+            <h2>Step 1. Install the Supabase CLI</h2>
+            <p>macOS</p>
+            <pre><code>
+brew install supabase/tap/supabase
+            </code></pre>
+            <p>Windows</p>
+            <pre><code>
+scoop install supabase
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+npm install -g supabase
+            </code></pre>
+            <p>Verify</p>
+            <pre><code>
+supabase --version
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2. Login</h2>
+            <pre><code>
+supabase login
+            </code></pre>
+            <p>A browser opens.</p>
+            <p>Sign in.</p>
+        </section>
+
+        <section>
+            <h2>Step 3. Initialize your project</h2>
+            <pre><code>
+supabase init
+            </code></pre>
+            <p>You'll get</p>
+            <pre><code>
+supabase/
+
+functions/
+
+config.toml
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 4. Link to your project</h2>
+            <p>Find your Project ID</p>
+            <p>Dashboard</p>
+            <pre><code>
+Settings
+
+General
+
+Project ID
+            </code></pre>
+            <p>Run</p>
+            <pre><code>
+supabase link --project-ref your-project-id
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 6. Write your function</h2>
+            <p>Replace</p>
+            <pre><code>
+import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+
+Deno.serve(async (req) => {
+
+  return new Response(
+    JSON.stringify({
+      message: "Hello World"
+    }),
+    {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  )
+
+})
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 7. Run locally</h2>
+            <pre><code>
+supabase start
+            </code></pre>
+            <p>Then</p>
+            <pre><code>
+supabase functions serve hello
+            </code></pre>
+            <p>You'll see</p>
+            <pre><code>
+Listening on
+
+http://localhost:54321/functions/v1/hello
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 8. Test it</h2>
+            <p>Using curl</p>
+            <pre><code>
+curl http://localhost:54321/functions/v1/hello
+            </code></pre>
+            <p>Response</p>
+            <pre><code>
+{
+    "message":"Hello World"
+}
+            </code></pre>
+            <p>Or JavaScript</p>
+            <pre><code>
+const response = await fetch(
+    "http://localhost:54321/functions/v1/hello"
+)
+
+const data = await response.json()
+
+console.log(data)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 9. Deploy</h2>
+            <pre><code>
+supabase functions deploy hello
+            </code></pre>
+            <p>Now it's available at</p>
+            <pre><code>
+https://YOUR_PROJECT.supabase.co/functions/v1/hello
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Calling from React</h2>
+            <pre><code>
+const response = await fetch(
+    "https://YOUR_PROJECT.supabase.co/functions/v1/hello",
+    {
+        method: "POST"
+    }
+)
+
+const data = await response.json()
+
+console.log(data)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Using the Supabase JavaScript SDK</h2>
+            <pre><code>
+const { data, error } =
+await supabase.functions.invoke("hello", {
+    body: {
+        name: "Paul"
+    }
+})
+            </code></pre>
+            <p>Inside the function</p>
+            <pre><code>
+const body = await req.json()
+
+return Response.json({
+    hello: body.name
+})
+            </code></pre>
+            <p>Result</p>
+            <pre><code>
+{
+    "hello":"Paul"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Reading URL Parameters</h2>
+            <p>Request</p>
+            <pre><code>
+GET /functions/v1/user?id=10
+            </code></pre>
+            <p>Function</p>
+            <pre><code>
+Deno.serve(async (req) => {
+
+    const url = new URL(req.url)
+
+    const id = url.searchParams.get("id")
+
+    return Response.json({
+        id
+    })
+
+})  
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Reading Headers</h2>
+            <pre><code>
+const token = req.headers.get("Authorization")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Environment Variables</h2>
+            <p>Never hardcode API keys.</p>
+            <p>Set a secret:</p>
+            <pre><code>
+supabase secrets set OPENAI_API_KEY=sk-xxxx
+            </code></pre>
+            <p>Read it in your function:</p>
+            <pre><code>
+const apiKey = Deno.env.get("OPENAI_API_KEY")
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Calling OpenAI</h2>
+            <pre><code>
+const response = await fetch(
+    "https://api.openai.com/v1/responses",
+    {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "gpt-5",
+            input: "Hello"
+        })
+    }
+)
+
+const data = await response.json()
+
+return Response.json(data)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Accessing Supabase Database</h2>
+            <p>Install the client:</p>
+            <pre><code>
+import { createClient } from "jsr:@supabase/supabase-js@2"
+
+const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+)
+
+const { data } = await supabase
+    .from("users")
+    .select("*")
+
+return Response.json(data)
+            </code></pre>
+            <p>Important: The SUPABASE_SERVICE_ROLE_KEY bypasses Row Level Security (RLS). Only use it in trusted server-side code like Edge Functions. Never expose it to your frontend.</p>
+        </section>
+
+        <section>
+            <h2>Example: Send Email</h2>
+            <pre><code>
+await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+        Authorization: `Bearer ${RESEND_KEY}`,
+        "Content-Type":"application/json"
+    },
+    body: JSON.stringify({
+        from:"noreply@test.com",
+        to:["user@test.com"],
+        subject:"Hello",
+        html:"Welcome!"
+    })
+})
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common Use Cases</h2>
+            <ul>
+                <li>Process payments with Stripe.</li>
+                <li>Send transactional emails.</li>
+                <li>Generate AI responses with OpenAI.</li>
+                <li>Verify JWTs or perform custom authorization.</li>
+                <li>Execute scheduled jobs (with cron).</li>
+                <li>Resize images or process uploaded files.</li>
+                <li>Integrate with third-party APIs.</li>
+                <li>Perform database operations that require elevated privileges.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Keep functions focused on one responsibility.</li>
+                <li>Store secrets using supabase secrets, not in source code.</li>
+                <li>Validate all request inputs before processing.</li>
+                <li>Return appropriate HTTP status codes and helpful error messages.</li>
+                <li>Prefer the anonymous key (anon) plus RLS when possible; use the service role key only when you truly need elevated access.</li>
+                <li>Log errors and avoid exposing sensitive details in responses.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>A Complete Example: Contact Form</h2>
+            <p>Suppose you have a React app where users submit a contact form.</p>
+            <p>Frontend</p>
+            <pre><code>
+const { data, error } = await supabase.functions.invoke("contact", {
+    body: {
+        name: "Paul",
+        email: "paul@example.com",
+        message: "Hello!"
+    }
+})
+    
+if (error) {
+    console.error(error)
+} else {
+    console.log(data)
+}
+            </code></pre>
+
+            <p>Edge Function (functions/contact/index.ts)</p>
+            <pre><code>
+import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+
+Deno.serve(async (req) => {
+  try {
+    const { name, email, message } = await req.json()
+
+    if (!name || !email || !message) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
+      )
+    }
+
+    // Save to the database or call another API here.
+
+    return Response.json({
+      success: true,
+      message: "Contact form submitted successfully"
+    })
+  } catch {
+    return new Response(
+      JSON.stringify({ error: "Invalid request body" }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" }
+      }
+    )
+  }
+})
+            </code></pre>
+            <p>This pattern scales well for tasks like sending emails, integrating AI, or processing payments because all sensitive logic stays on the server.</p>
+            <p>Once you're comfortable with the basics, the next topics to learn are authentication inside Edge Functions, Row Level Security (RLS), and using the SUPABASE_SERVICE_ROLE_KEY safely. Those are the key building blocks for production-ready Supabase applications.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

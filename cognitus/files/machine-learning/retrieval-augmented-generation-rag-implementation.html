@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Retrieval-Augmented Generation (RAG)</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Retrieval-Augmented Generation (RAG)</h1>
+                    <p class="subtitle">A complete Retrieval-Augmented Generation (RAG) implementation has five main parts:</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>A complete Retrieval-Augmented Generation (RAG) implementation has five main parts:</h2>
+            <ol>
+                <li>Document ingestion</li>
+                <li>Chunking and embedding generation</li>
+                <li>Vector database</li>
+                <li>Retriever</li>
+                <li>LLM generation</li>
+            </ol>
+            <p>Below is a production-style architecture using Node.js, AWS Lambda, OpenAI embeddings, and MongoDB Atlas Vector Search (fits well with your existing AWS serverless + Node.js stack).</p>
+        </section>
+
+        <section>
+            <h2>Architecture</h2>
+            <pre><code>
+        Upload Documents    
+                │
+                ▼
+      Extract Text (PDF, DOCX)
+                │
+                ▼
+        Split into Chunks
+                │
+                ▼
+     Generate Embeddings
+                │
+                ▼
+     Store in Vector Database
+                │
+       ─────────┼──────────
+                │
+            User Question
+                │
+                ▼
+     Generate Question Embedding
+                │
+                ▼
+        Vector Similarity Search
+                │
+                ▼
+      Top K Relevant Chunks
+                │
+                ▼
+          Build Prompt
+                │
+                ▼
+            GPT-5.5
+                │
+                ▼
+             Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Project Structure</h2>
+            <pre><code>
+rag/
+
+    ingest/
+        loader.js
+        splitter.js
+        embedder.js
+        ingest.js
+
+    search/
+        retrieve.js
+
+    llm/
+        prompt.js
+        answer.js
+
+    db/
+        mongo.js
+
+    utils/
+
+    app.js
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Install</h2>
+            <pre><code>
+npm install openai mongodb pdf-parse mammoth dotenv
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Mongo Schema</h2>
+            <pre><code>
+import mongoose from "mongoose";
+
+const ChunkSchema = new mongoose.Schema({
+
+    documentId: String,
+
+    chunkId: Number,
+
+    text: String,
+
+    embedding: [Number],
+
+    metadata: {
+        filename: String,
+        page: Number
+    }
+
+});
+
+export default mongoose.model("Chunk", ChunkSchema);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Load PDF</h2>
+            <pre><code>
+import fs from "fs";
+import pdf from "pdf-parse";
+
+export async function loadPDF(file) {
+
+    const data = await pdf(fs.readFileSync(file));
+
+    return data.text;
+
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Split into Chunks</h2>
+            <p>Simple recursive splitter</p>
+            <pre><code>
+export function splitText(text, chunkSize = 800, overlap = 200) {
+
+    const chunks = [];
+
+    let start = 0;
+
+    while (start &lt; text.length) {
+
+        chunks.push(
+            text.substring(start, start + chunkSize)
+        );
+
+        start += chunkSize - overlap;
+    }
+
+    return chunks;
+
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Generate Embeddings</h2>
+            <pre><code>
+import OpenAI from "openai";
+
+const client = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+});
+
+export async function createEmbedding(text) {
+
+    const result = await client.embeddings.create({
+
+        model: "text-embedding-3-small",
+
+        input: text
+
+    });
+
+    return result.data[0].embedding;
+
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Ingest Documents</h2>
+            <pre><code>
+import Chunk from "../db/chunk.js";
+
+import {loadPDF} from "./loader.js";
+
+import {splitText} from "./splitter.js";
+
+import {createEmbedding} from "./embedder.js";
+
+export async function ingest(file) {
+
+    const text = await loadPDF(file);
+
+    const chunks = splitText(text);
+
+    let index = 0;
+
+    for (const chunk of chunks) {
+
+        const embedding = await createEmbedding(chunk);
+
+        await Chunk.create({
+
+            documentId: file,
+
+            chunkId: index++,
+
+            text: chunk,
+
+            embedding
+
+        });
+
+    }
+
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>MongoDB Atlas Vector Index</h2>
+            <pre><code>
+{
+    "fields": [
+        {
+        "type": "vector",
+        "path": "embedding",
+        "numDimensions": 1536,
+        "similarity": "cosine"
+        }
+    ]
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Retrieve Similar Chunks</h2>
+            <pre><code>
+import Chunk from "../db/chunk.js";
+
+import {createEmbedding} from "../ingest/embedder.js";
+
+export async function retrieve(question) {
+
+    const embedding = await createEmbedding(question);
+
+    const result = await Chunk.aggregate([
+
+        {
+            $vectorSearch: {
+
+                index: "vector_index",
+
+                path: "embedding",
+
+                queryVector: embedding,
+
+                numCandidates: 100,
+
+                limit: 5
+
+            }
+        }
+
+    ]);
+
+    return result;
+
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Build Prompt</h2>
+            <pre><code>
+export function buildPrompt(question, docs) {
+
+    const context = docs
+
+        .map(d => d.text)
+
+        .join("\n\n");
+
+    return `
+
+You are a helpful assistant.
+
+Only answer using the supplied context.
+
+If the answer does not exist,
+
+say you don't know.
+
+Context:
+
+${context}
+
+Question:
+
+${question}
+
+`;
+
+}
+            </code></pre>
+
+            <p>In short:</p>
+            <ul>
+                <li>map(d => d.text) extracts the text field from each document.</li>
+                <li>join("\n\n") combines all those text strings into one large string with blank lines between them.</li>
+                <li>The resulting context string is typically inserted into an LLM prompt so the model can answer using the retrieved documents.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Ask GPT</h2>
+            <pre><code>
+import OpenAI from "openai";
+
+const client = new OpenAI();
+
+export async function answer(prompt) {
+
+    const response = await client.responses.create({
+
+        model: "gpt-5.5",
+
+        input: prompt
+
+    });
+
+    return response.output_text;
+
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Complete Flow</h2>
+            <pre><code>
+import {retrieve} from "./search/retrieve.js";
+
+import {buildPrompt} from "./llm/prompt.js";
+
+import {answer} from "./llm/answer.js";
+
+export async function ask(question) {
+
+    const docs = await retrieve(question);
+
+    const prompt = buildPrompt(question, docs);
+
+    return await answer(prompt);
+
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>Document:</p>
+            <pre><code>
+Amazon S3 is an object storage service.
+
+CloudFront is a CDN.
+            </code></pre>
+            <p>User asks</p>
+            <pre><code>
+What is CloudFront?
+            </code></pre>
+            <p>Embedding search returns</p>
+            <pre><code>
+CloudFront is a CDN.
+            </code></pre>
+            <p>Prompt becomes</p>
+            <pre><code>
+Context:
+
+CloudFront is a CDN.
+
+Question:
+
+What is CloudFront?
+            </code></pre>
+            <p>GPT replies</p>
+            <pre><code>
+CloudFront is Amazon's Content Delivery Network
+that caches content in edge locations to reduce
+latency and improve performance.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Improving Retrieval</h2>
+            <p>Basic cosine similarity can be enhanced with:</p>
+            <ul>
+                <li>Metadata filtering (e.g., document type, author, date)</li>
+                <li>Hybrid search (keyword + vector search)</li>
+                <li>Query rewriting for ambiguous questions</li>
+                <li>Re-ranking using a cross-encoder model</li>
+                <li>Dynamic top-K retrieval based on similarity scores</li>
+                <li>Context compression to reduce token usage</li>
+                <li>Deduplication of overlapping chunks</li>
+                <li>Parent-child retrieval (retrieve small chunks, expand to larger context)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Production Pipeline</h2>
+            <pre><code>
+            PDF Upload
+                │
+                ▼
+       Text Extraction
+                │
+                ▼
+        Smart Chunking
+                │
+                ▼
+     Generate Embeddings
+                │
+                ▼
+   MongoDB Atlas Vector Search
+                │
+─────────────────────┼─────────────────────
+                │
+         User Question
+                │
+                ▼
+    Question Embedding
+                │
+                ▼
+     Vector Similarity Search
+                │
+                ▼
+      Top 5 Matching Chunks
+                │
+                ▼
+         Prompt Builder
+                │
+                ▼
+            GPT-5.5
+                │
+                ▼
+        Grounded Response
+            </code></pre>
+            <p>This implementation is suitable for production and aligns well with your existing AWS Lambda + Node.js + MongoDB architecture. For larger deployments, you can extend it with asynchronous ingestion (using queues like Amazon SQS), incremental indexing, document versioning, access control filters, caching of embeddings and retrieval results, and observability (latency, retrieval quality, and hallucination metrics).</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

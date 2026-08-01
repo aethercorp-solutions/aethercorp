@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Predicting user behavior from Analytics events</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Predicting user behavior from Analytics events</h1>
+                    <p class="subtitle">
+                        One of the most common uses of TensorFlow in mobile and web apps is predicting user behavior from analytics events.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Instead of just showing charts, AI helps answer questions like:</h2>
+            <ul>
+                <li>Will this user subscribe?</li>
+                <li>Will this user stop using the app?</li>
+                <li>What feature should we recommend next?</li>
+                <li>When should we send a notification?</li>
+            </ul>
+            <p>Here are several hands-on examples.</p>
+        </section>
+
+        <section>
+            <h2>Example 1: Will the User Open the App Tomorrow?</h2>
+            <p>Analytics Data</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Sessions Today</th>
+                        <th>Minutes Used</th>
+                        <th>Notifications Clicked</th>
+                        <th>Opened Tomorrow</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>5</td>
+                        <td>0</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>40</td>
+                        <td>2</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>5</td>
+                        <td>80</td>
+                        <td>3</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>1</td>
+                        <td>3</td>
+                        <td>0</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>4</td>
+                        <td>50</td>
+                        <td>1</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Features:</p>
+            <pre><code>
+Sessions
+Minutes Used
+Notification Clicks
+            </code></pre>
+            <p>Target:</p>
+            <pre><code>
+Opened Tomorrow?
+            </code></pre>
+            <p>TensorFlow learns:</p>
+            <pre><code>
+Input
+
+Sessions = 4
+
+Minutes = 45
+
+Notifications = 2
+
+↓
+
+AI
+
+↓
+
+95% chance user opens tomorrow
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example 2: Subscription Prediction</h2>
+            <p>Imagine a premium app.</p>
+            <p>Analytics</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Days Active</th>
+                        <th>Features Used</th>
+                        <th>Ads Clicked</th>
+                        <th>Trial Completed</th>
+                        <th>Purchased</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A</td>
+                        <td>30</td>
+                        <td>12</td>
+                        <td>0</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>5</td>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>C</td>
+                        <td>20</td>
+                        <td>9</td>
+                        <td>1</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>TensorFlow predicts:</p>
+            <pre><code>
+Purchase Probability
+
+User X
+
+↓
+
+87%
+            </code></pre>
+            <p>Marketing can show a special discount only to users with a high likelihood of subscribing.</p>
+        </section>
+
+        <section>
+            <h2>Example 3: Churn Prediction</h2>
+            <p>This is one of the most valuable analytics models.</p>
+            <p>Collected data</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Days Since Last Login</th>
+                        <th>Sessions</th>
+                        <th>Minutes</th>
+                        <th>Churn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>30</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>0</td>
+                        <td>8</td>
+                        <td>90</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>3</td>
+                        <td>25</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>45</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Prediction</p>
+            <pre><code>
+User
+
+↓
+
+AI
+
+↓
+
+98% chance of leaving
+            </code></pre>
+            <p>Actions:</p>
+            <ul>
+                <li>Send a coupon</li>
+                <li>Send a reminder</li>
+                <li>Offer premium features</li>
+                <li>Email re-engagement campaigns</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example 4: Which Notification Should Be Sent?</h2>
+            <p>Analytics</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Sports</th>
+                        <th>Music</th>
+                        <th>Movies</th>
+                        <th>Clicked</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>10</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>Sports</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>0</td>
+                        <td>8</td>
+                        <td>7</td>
+                        <td>Music</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>2</td>
+                        <td>0</td>
+                        <td>9</td>
+                        <td>Movie</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>TensorFlow predicts</p>
+            <pre><code>
+User Interests
+
+↓
+
+Movies
+
+↓
+
+Send Movie Notification
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example 5: Predict Session Length</h2>
+            <p>Historical data</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Login Time</th>
+                        <th>Day</th>
+                        <th>Previous Sessions</th>
+                        <th>Minutes Used</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Morning</td>
+                        <td>Monday</td>
+                        <td>10</td>
+                        <td>40</td>
+                    </tr>
+                    <tr>
+                        <td>Evening</td>
+                        <td>Friday</td>
+                        <td>5</td>
+                        <td>75</td>
+                    </tr>
+                    <tr>
+                        <td>Afternoon</td>
+                        <td>Sunday</td>
+                        <td>2</td>
+                        <td>20</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Prediction</p>
+            <pre><code>
+User logs in
+
+↓
+
+AI predicts
+
+↓
+
+Expected Session = 58 minutes
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example 6: Personalized Product Recommendation</h2>
+            <p>An e-commerce app collects</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Viewed Shoes</th>
+                        <th>Viewed Shirts</th>
+                        <th>Purchased Shoes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>12</td>
+                        <td>1</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>10</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td>0</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Prediction</p>
+            <pre><code>
+User
+
+↓
+
+Interested in Shoes
+
+↓
+
+Recommend Running Shoes
+            </code></pre>
+            <p>This is similar to recommendation systems used by online retailers.</p>
+        </section>
+
+        <section>
+            <h2>Example 7: Video Recommendation</h2>
+            <p>Video analytics</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Comedy</th>
+                        <th>Sports</th>
+                        <th>Documentary</th>
+                        <th>Recommended</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>12</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>Comedy</td>
+                    </tr>
+                    <tr>
+                        <td>0</td>
+                        <td>15</td>
+                        <td>2</td>
+                        <td>Sports</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>20</td>
+                        <td>Documentary</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>AI predicts</p>
+            <pre><code>
+User watched
+
+Comedy
+
+Comedy
+
+Comedy
+
+↓
+
+Recommend another Comedy
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example 8: Fraud Detection</h2>
+            <p>Banking app</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Login Country</th>
+                        <th>Device Changed</th>
+                        <th>Large Transfer</th>
+                        <th>Fraud</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Same</td>
+                        <td>No</td>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Different</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Same</td>
+                        <td>No</td>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Prediction</p>
+            <pre><code>
+Transaction
+
+↓
+
+AI
+
+↓
+
+99% Fraud Probability
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example 9: Predict Customer Support Requests</h2>
+            <p>Analytics</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Crashes</th>
+                        <th>Errors</th>
+                        <th>Failed Payments</th>
+                        <th>Contacted Support</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>15</td>
+                        <td>4</td>
+                        <td>2</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>No</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Prediction</p>
+            <pre><code>
+Current User
+
+↓
+
+Many crashes
+
+↓
+
+Likely to contact support
+            </code></pre>
+            <p>The app can proactively offer troubleshooting or an in-app help article.</p>
+        </section>
+
+        <section>
+            <h2>Example 10: Predict User Rating</h2>
+            <p>Analytics</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Crashes</th>
+                        <th>Session Length</th>
+                        <th>Purchases</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>60</td>
+                        <td>5</td>
+                        <td>5⭐</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>2</td>
+                        <td>0</td>
+                        <td>1⭐</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>30</td>
+                        <td>2</td>
+                        <td>4⭐</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Prediction</p>
+            <pre><code>
+Current User
+
+↓
+
+Expected Rating
+
+4.8 stars
+            </code></pre>
+            <p>This helps identify users who may need assistance before they leave a negative review.</p>
+        </section>
+
+        <section>
+            <h2>Example 11: Predict Feature Adoption</h2>
+            <p>Suppose your app has a new AI assistant feature.</p>
+            <p>Analytics</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Days Active</th>
+                        <th>Used Search</th>
+                        <th>Used Dashboard</th>
+                        <th>Tried AI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>20</td>
+                        <td>15</td>
+                        <td>12</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>30</td>
+                        <td>20</td>
+                        <td>15</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>TensorFlow predicts</p>
+            <pre><code>
+Current User
+
+↓
+
+92% likely to try AI Assistant
+            </code></pre>
+            <p>You could highlight the feature only for users who are likely to engage with it.</p>
+        </section>
+
+        <section>
+            <h2>Real Example Using Firebase Analytics</h2>
+            <p>Suppose your app logs these events:</p>
+            <pre><code>
+login
+view_home
+search_contact
+add_contact
+schedule_contact
+view_profile
+upgrade_clicked
+purchase
+logout
+            </code></pre>
+            <p>Each user generates an event history like:</p>
+            <pre><code>
+login
+
+↓
+
+view_home
+
+↓
+
+search_contact
+
+↓
+
+schedule_contact
+
+↓
+
+logout
+            </code></pre>
+            <p>From thousands of users, you can build a dataset like:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Logins</th>
+                        <th>Searches</th>
+                        <th>Contacts Added</th>
+                        <th>Notifications Opened</th>
+                        <th>Purchased Premium</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>20</td>
+                        <td>35</td>
+                        <td>10</td>
+                        <td>5</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>2</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>30</td>
+                        <td>50</td>
+                        <td>15</td>
+                        <td>8</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>TensorFlow learns patterns from these features and predicts whether a new user is likely to purchase Premium, churn, or respond to a campaign.</p>
+            <p>Where this fits into your app architecture</p>
+            <pre><code>
+Mobile App
+    │
+    ▼
+Firebase Analytics
+    │
+    ▼
+Analytics Events Stored
+    │
+    ▼
+Export to BigQuery
+    │
+    ▼
+Prepare Training Dataset
+    │
+    ▼
+Train TensorFlow Model
+    │
+    ▼
+Predictions
+    │
+    ├── Churn risk
+    ├── Purchase probability
+    ├── Recommended feature
+    ├── Notification timing
+    └── Personalized offers
+            </code></pre>
+            <p>This workflow is widely used in subscription apps, e-commerce platforms, streaming services, fintech, and SaaS products because it turns raw analytics data into predictions that drive personalized user experiences and business decisions.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cloudflare Turnstile</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Cloudflare Turnstile</h1>
+                    <p class="subtitle">Cloudflare Turnstile is like a smart security guard at the entrance.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>How it works</h2>
+            <p>Imagine you own a store.</p>
+            <ul>
+                <li>Real customers walk in and buy things.</li>
+                <li>Robots (bots) try to flood your store with fake orders.</li>
+            </ul>
+            <p>Cloudflare Turnstile is like a smart security guard at the entrance.</p>
+            <p>Instead of asking everyone to solve annoying puzzles ("Click all the traffic lights"), it quietly watches for signs that you're a real person.</p>
+        
+            <pre><code>
+User visits your website
+         │
+         ▼
+Cloudflare Turnstile checks:
+- Browser behavior
+- Device signals
+- Mouse/keyboard interaction
+- Other security signals
+         │
+         ▼
+If user looks legitimate:
+    ✓ Pass automatically
+Else:
+    Show a small challenge
+         │
+         ▼
+Browser receives a token
+         │
+         ▼
+Your server verifies the token with Cloudflare
+         │
+         ▼
+If valid:
+    Process the form
+Else:
+    Reject the request
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Simple analogy</h2>
+            <p>Without Turnstile:</p>
+            <pre><code>
+Person
+   │
+   ▼
+Submit Form
+   │
+   ▼
+Your Server
+            </code></pre>
+            <p>A bot can also do this.</p>
+            <pre><code>
+Bot
+  │
+  ▼
+Submit Form
+  │
+  ▼
+Your Server
+            </code></pre>
+            <p>With Turnstile:</p>
+            <pre><code>
+Person
+   │
+   ▼
+Turnstile
+   │
+Gets verified
+   │
+Receives token
+   │
+   ▼
+Submit Form + Token
+   │
+   ▼
+Your Server
+   │
+Verify token with Cloudflare
+   │
+   ▼
+Accept
+            </code></pre>
+            <p>A bot usually cannot get a valid token.</p>
+        </section>
+
+        <section>
+            <h2>What is the token?</h2>
+            <p>The token is like a visitor pass.</p>
+            <p>Example:</p>
+            <pre><code>
+eyJ0eXAiOiJKV1QiLCJh...
+            </code></pre>
+            <p>Your website sends this to your backend.</p>
+            <p>Your backend asks Cloudflare:</p>
+            <p>"Did you really issue this token?"</p>
+            <p>Cloudflare replies:</p>
+            <pre><code>
+{
+    "success": true
+}
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+{
+    "success": false
+}
+            </code></pre>
+            <p>If false, reject the request.</p>
+        </section>
+
+        <section>
+            <h2>Why can't a bot just fake the token?</h2>
+            <p>Because only Cloudflare can generate valid tokens.</p>
+            <p>Your server verifies every token using your Secret Key.</p>
+            <p>Think of it like a concert ticket.</p>
+            <p>A scammer can print:</p>
+            <pre><code>
+VIP PASS
+            </code></pre>
+            <p>But the security scanner checks the official database.</p>
+            <p>If the ticket isn't real:</p>
+            <p>❌ Entry denied.</p>
+        </section>
+
+        <section>
+            <h2>In a Next.js application</h2>
+            <p>Frontend</p>
+            <pre><code>
+                <User fills form>
+
+↓
+Turnstile widget
+
+↓
+Gets token
+
+↓
+POST
+{
+    name,
+    email,
+    cfTurnstileToken
+}
+            </code></pre>
+            <p>Backend</p>
+            <pre><code>
+POST /api/quote
+            </code></pre>
+            <p>Your API receives:</p>
+            <pre><code>
+{
+    "name":"John",
+    "email":"john@email.com",
+    "cfTurnstileToken":"0.xxxxxx"
+}
+            </code></pre>
+
+            <p>Before sending an email or saving to a database:</p>
+            <pre><code>
+Verify token with Cloudflare
+            </code></pre>
+            <p>If valid:</p>
+            <pre><code>
+Save to database
+Send email
+            </code></pre>
+            <p>If invalid:</p>
+            <pre><code>
+Return 400 Bad Request
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why not just check on the frontend?</h2>
+            <p>Because attackers can skip your website entirely.</p>
+            <p>They can send requests directly to your API:</p>
+            <pre><code>
+Bot
+   │
+   ▼
+POST /api/quote
+            </code></pre>
+            <p>So your backend must always verify the token before processing the request.</p>
+        </section>
+
+        <section>
+            <h2>Why developers like Turnstile</h2>
+            <ul>
+                <li>✅ Free for most use cases</li>
+                <li>✅ Better user experience than traditional CAPTCHAs</li>
+                <li>✅ Many users never see a challenge</li>
+                <li>✅ Protects forms, login pages, registration, contact forms, and APIs</li>
+                <li>✅ Easy to integrate with frameworks like Next.js, React, and Node.js</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Typical flow for an RFQ (Request for Quote) form</h2>
+            <pre><code>
+Customer opens RFQ page
+          │
+          ▼
+Fill out form
+          │
+          ▼
+Turnstile runs automatically
+          │
+          ▼
+Token generated
+          │
+          ▼
+Submit form
+          │
+          ▼
+Next.js API
+          │
+          ▼
+Verify token with Cloudflare
+          │
+     ┌────┴─────┐
+     │          │
+ Valid      Invalid
+     │          │
+Send email   Reject request
+Save RFQ
+            </code></pre>
+            <p>This is the industry-standard pattern and is the approach you should use for your Next.js RFQ form. It helps prevent automated spam submissions while keeping the experience smooth for legitimate users.</p>
+        </section>
+
+        <section>
+            <h2>Test your own RFQ endpoint</h2>
+            <p>Here's a simple Node.js script that repeatedly submits an RFQ form to your own Next.js API for testing.</p>
+            <p>Install</p>
+            <pre><code>
+npm install axios
+            </code></pre>
+            <p>bot.js</p>
+            <pre><code>
+const axios = require("axios");
+
+const URL = "http://localhost:3000/api/quote"; // Your API endpoint
+
+async function sendRFQ(i) {
+  try {
+    const response = await axios.post(URL, {
+      companyName: `Test Company ${i}`,
+      contactName: "John Doe",
+      email: `john${i}@example.com`,
+      phone: "09171234567",
+      serviceType: "AI Development",
+      projectDescription: "Automated test submission",
+      budget: "$5,000",
+      targetDate: "2026-08-01",
+
+      // Normally generated by Turnstile in the browser.
+      // Here we're intentionally sending a fake token.
+      turnstileToken: "fake-token"
+    });
+
+    console.log(`#${i} Success`, response.status);
+  } catch (err) {
+    if (err.response) {
+      console.log(
+        `#${i} Rejected`,
+        err.response.status,
+        err.response.data
+      );
+    } else {
+      console.log(err.message);
+    }
+  }
+}
+
+async function main() {
+  for (let i = 1; i <= 100; i++) {
+    await sendRFQ(i);
+  }
+}
+
+main();
+            </code></pre>
+            <p>If your backend verifies Cloudflare Turnstile correctly, every request should be rejected with something like:</p>
+            <pre><code>
+400 Invalid Turnstile token
+            </code></pre>
+            <p>That confirms your protection is working.</p>
+        </section>
+
+        <section>
+            <h2>Better load test</h2>
+            <p>For performance testing your own API, use a tool such as:</p>
+            <ul>
+                <li>k6</li>
+                <li>Apache JMeter</li>
+                <li>Artillery</li>
+            </ul>
+            <p>These tools let you simulate hundreds or thousands of legitimate concurrent clients in a controlled way and are the standard approach for stress-testing your own services.</p>
+            <p>For example, with k6:</p>
+            <pre><code>
+import http from "k6/http";
+
+export default function () {
+  http.post("http://localhost:3000/api/quote", JSON.stringify({
+    companyName: "Test",
+    contactName: "John",
+    email: "john@example.com",
+    turnstileToken: "fake-token"
+  }), {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+}
+            </code></pre>
+            <p>Running this against your own API is a good way to verify that:</p>
+            <ul>
+                <li>your rate limiting works,</li>
+                <li>Turnstile verification rejects invalid tokens,</li>
+                <li>your server remains stable under load,</li>
+                <li>and legitimate requests continue to succeed.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

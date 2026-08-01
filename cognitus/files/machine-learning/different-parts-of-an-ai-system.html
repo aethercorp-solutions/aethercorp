@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Different parts of an AI system</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Different parts of an AI system</h1>
+                    <p class="subtitle">These three terms are related but describe different parts of an AI system.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of them like a person using a library.</h2>
+            <ul>
+                <li>LLM = the person's brain</li>
+                <li>RAG = the library they can look up information in</li>
+                <li>Agent = the person who can decide what tasks to do and use tools</li>
+            </ul>
+            <p>Here's how they differ:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>LLM</th>
+                        <th>RAG</th>
+                        <th>Agent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Main purpose</td>
+                        <td>Generate text</td>
+                        <td>Retrieve information before generating</td>
+                        <td>Perform tasks and make decisions</td>
+                    </tr>
+                    <tr>
+                        <td>Has memory?</td>
+                        <td>Only what was trained and current context</td>
+                        <td>Yes, by searching external documents</td>
+                        <td>Can use memory plus tools</td>
+                    </tr>
+                    <tr>
+                        <td>Uses external data?</td>
+                        <td>No</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Can call APIs?</td>
+                        <td>No (by itself)</td>
+                        <td>Usually no</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Can make plans?</td>
+                        <td>Very limited</td>
+                        <td>No</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Can use tools?</td>
+                        <td>No</td>
+                        <td>No</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>1. LLM (Large Language Model)</h2>
+            <p>An LLM is just the AI model.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>GPT</li>
+                <li>Llama</li>
+                <li>Gemini</li>
+                <li>Claude</li>
+            </ul>
+            <p>It has learned patterns from huge amounts of text during training.</p>
+            <p>Example:</p>
+            <p>You ask:</p>
+            <p>"What is React?"</p>
+            <p>LLM answers from what it already learned.</p>
+            <pre><code>
+Question
+      ↓
++-------------+
+|     LLM     |
++-------------+
+      ↓
+Answer
+            </code></pre>
+            <p>The LLM cannot automatically search your company's documents or call an API on its own.</p>
+        </section>
+
+        <section>
+            <h2>2. RAG (Retrieval-Augmented Generation)</h2>
+            <p>RAG gives the LLM access to external knowledge.</p>
+            <p>Instead of relying only on training data:</p>
+            <pre><code>
+Question
+      ↓
+Search documents
+      ↓
+Relevant documents
+      ↓
+LLM
+      ↓
+Answer
+            </code></pre>
+            <p>Example:</p>
+            <p>Imagine your company has:</p>
+            <pre><code>
+Employee Handbook.pdf
+Vacation Policy.docx
+Salary Guide.pdf
+            </code></pre>
+            <p>You ask:</p>
+            <p>"How many vacation days do employees receive?"</p>
+            <p>The system:</p>
+            <ol>
+                <li>Searches the documents.</li>
+                <li>Finds the vacation policy.</li>
+                <li>Sends the relevant text to the LLM.</li>
+                <li>The LLM answers using that information.</li>
+            </ol>
+            <p>Without RAG:</p>
+            <pre><code>
+LLM
+↓
+
+"I don't know your company's vacation policy."
+            </code></pre>
+            <p>With RAG:</p>
+            <pre><code>
+Search handbook
+↓
+
+Vacation policy found
+↓
+
+LLM answers correctly.
+            </code></pre>
+            <p>RAG does not decide what to do next. It simply retrieves relevant information.</p>
+        </section>
+
+        <section>
+            <h2>3. Agent</h2>
+            <p>An agent is much more capable.</p>
+            <p>Instead of only answering questions, it can:</p>
+            <ul>
+                <li>Plan</li>
+                <li>Reason</li>
+                <li>Use tools</li>
+                <li>Call APIs</li>
+                <li>Search the web</li>
+                <li>Execute code</li>
+                <li>Repeat steps until the task is complete</li>
+            </ul>
+            <p>Example:</p>
+            <p>You ask:</p>
+            <p>"Book my meeting for Friday."</p>
+            <p>The agent might:</p>
+            <pre><code>
+Understand request
+      ↓
+Check calendar
+      ↓
+Find available time
+      ↓
+Create calendar event
+      ↓
+Send invitations
+      ↓
+Confirm success
+            </code></pre>
+            <p>This involves multiple decisions and actions, not just text generation.</p>
+        </section>
+
+        <section>
+            <h2>A simple analogy</h2>
+            <p>Suppose you ask:</p>
+            <p>"How many customers bought Product A this month?"</p>
+            <p>LLM</p>
+            <pre><code>
+You
+ ↓
+LLM
+
+"I'm not sure."
+            </code></pre>
+            <p>It doesn't have your company's sales data.</p>
+        </section>
+
+        <section>
+            <h2>RAG</h2>
+            <pre><code>
+You
+ ↓
+Search sales report
+ ↓
+LLM
+ ↓
+"1,254 customers bought Product A."
+            </code></pre>
+            <p>It retrieves existing information and summarizes it.</p>
+        </section>
+
+        <section>
+            <h2>Agent</h2>
+            <pre><code>
+You
+ ↓
+Agent
+ ↓
+Login to database
+ ↓
+Run SQL query
+ ↓
+Generate chart
+ ↓
+Email report
+ ↓
+Done
+            </code></pre>
+            <p>The agent takes actions to accomplish the task.</p>
+        </section>
+
+        <section>
+            <h2>How they work together</h2>
+            <p>Modern AI applications often combine all three.</p>
+            <pre><code>
+              User
+                │
+                ▼
+           AI Agent
+         ┌──────┴──────┐
+         │             │
+         ▼             ▼
+       Search       Call APIs
+       (RAG)         (Tools)
+         │             │
+         └──────┬──────┘
+                ▼
+               LLM
+                │
+                ▼
+            Final Answer
+            </code></pre>
+            <p>For example, if you ask:</p>
+            <p>"Summarize yesterday's sales and email the report to my manager."</p>
+            <p>The system might:</p>
+            <ol>
+                <li>Agent decides the steps.</li>
+                <li>RAG retrieves yesterday's sales data or reports.</li>
+                <li>LLM writes a clear summary.</li>
+                <li>Agent sends the email using your email service.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>In AI development</h2>
+            <ul>
+                <li>Use an LLM when you need text generation, coding assistance, translation, or brainstorming.</li>
+                <li>Add RAG when the AI needs to answer questions using your own documents, databases, or knowledge base.</li>
+                <li>Use an Agent when the AI needs to perform multi-step tasks, make decisions, interact with software, or orchestrate tools.</li>
+            </ul>
+            <p>In practice, many production AI systems are LLM + RAG + Agent: the LLM provides reasoning and language, RAG supplies up-to-date or private knowledge, and the agent coordinates the work and interacts with external systems.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

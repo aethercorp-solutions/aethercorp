@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>RefObject</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">RefObject</h1>
+                    <p class="subtitle">
+                        import { RefObject } from "react";
+                        <p>imports the RefObject type from React.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Let's break it down</h2>
+            <pre><code>
+import
+            </code></pre>
+            <p>This tells TypeScript to bring something from another module so you can use it in your file.</p>
+            <pre><code>
+import { RefObject } from "react";
+            </code></pre>
+            <p>means:</p>
+            <p>"Import the RefObject type from the React library."</p>
+        </section>
+
+        <section>
+            <h2>RefObject</h2>
+            <p>RefObject is a TypeScript type that describes a React ref.</p>
+            <p>A ref is an object that lets you access a DOM element (or a React component instance) directly.</p>
+            <p>For example:</p>
+            <pre><code>
+const inputRef = useRef&lt;HTMLInputElement&gt;(null);
+            </code></pre>
+            <p>It looks like this:</p>
+            <pre><code>
+{
+    current: HTMLInputElement | null
+}
+            </code></pre>
+            <p>The current property points to the actual HTML element after it is rendered.</p>
+        </section>
+
+        <section>
+            <h2>Why use RefObject?</h2>
+            <p>Suppose you have a component that receives a ref as a prop.</p>
+            <pre><code>
+interface UploadCardProps {
+    fileInputRef: RefObject<HTMLInputElement | null>;
+}
+            </code></pre>
+            <p>This tells TypeScript:</p>
+            <p>"fileInputRef must be a reference to an HTML &lt;input&gt; element."</p>
+            <p>Now inside the component you can safely write:</p>
+            <pre><code>
+&lt;input ref={fileInputRef} type="file" /&gt;
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+fileInputRef.current?.click();
+            </code></pre>
+            <p>The ?. means "only call click() if current isn't null."</p>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>Parent component</p>
+            <pre><code>
+import { useRef } from "react";
+import UploadCard from "./UploadCard";
+
+function App() {
+  const fileInputRef = useRef&lt;HTMLInputElement&gt;(null);
+
+  return (
+    &lt;UploadCard fileInputRef={fileInputRef} /&gt;
+  );
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Child component</h2>
+            <pre><code>
+import { RefObject } from "react";
+
+interface Props {
+  fileInputRef: RefObject&lt;HTMLInputElement | null&gt;
+}
+
+function UploadCard({ fileInputRef }: Props) {
+  return (
+    &lt;&gt;
+      &lt;input
+        ref={fileInputRef}
+        type="file"
+        style={{ display: "none" }}
+      /&gt;
+
+      &lt;button onClick={() => fileInputRef.current?.click()}&gt;
+        Browse Files
+      &lt;/button&gt;
+    &lt;/&gt;
+  );
+}
+            </code></pre>
+            <p>When the user clicks Browse Files, this happens:</p>
+            <pre><code>
+Button Click
+      │
+      ▼
+fileInputRef.current
+      │
+      ▼
+Hidden &lt;input type="file"&gt;
+      │
+      ▼
+.click()
+      │
+      ▼
+File picker opens
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why is it imported with {}?</h2>
+            <p>Notice the braces:</p>
+            <pre><code>
+import { RefObject } from "react";
+            </code></pre>
+            <p>The braces mean you're importing a named export from the React package.</p>
+            <p>For comparison:</p>
+            <pre><code>
+import React from "react";      // Default export
+import { useState } from "react"; // Named export
+import { useRef } from "react";   // Named export
+import { RefObject } from "react"; // Named export (type)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <pre><code>
+import { RefObject } from "react";
+            </code></pre>
+            <ul>
+                <li>Imports the RefObject type from React.</li>
+                <li>RefObject describes an object that holds a reference to a DOM element or component.</li>
+                <li>
+                    It is commonly used for props like:
+                    <pre><code>
+fileInputRef: RefObject&lt;HTMLInputElement | null&gt;
+                    </code></pre>
+                </li>
+                <li>It provides type safety, ensuring the ref points to the correct element type.</li>
+                <li>You typically use it together with useRef() to access DOM elements such as inputs, buttons, or divs.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>RefObject and useRef() are closely related, but they are not the same thing.</p>
+            <p>useRef()</p>
+            <p>useRef() is a React Hook that creates a reference.</p>
+            <pre><code>
+const inputRef = useRef&lt;HTMLInputElement&gt;(null);
+            </code></pre>
+            <p>Think of it as creating a small box:</p>
+            <pre><code>
+inputRef
+   │
+   ▼
+{
+  current: null
+}
+            </code></pre>
+            <p>Later, when React renders the &lt;input&gt;, it puts the actual DOM element into current.</p>
+            <pre><code>
+&lt;input ref={inputRef} /&gt;
+            </code></pre>
+            <p>Now:</p>
+            <pre><code>
+inputRef.current
+      │
+      ▼
+&lt;input&gt;
+            </code></pre>
+            <p>You can use it like this:</p>
+            <pre><code>
+inputRef.current?.focus();
+            </code></pre>
+            <p>This focuses the input.</p>
+        </section>
+
+        <section>
+            <h2>RefObject</h2>
+            <p>RefObject is just the TypeScript type of the object returned by useRef() (when used for refs to elements).</p>
+            <p>Example:</p>
+            <pre><code>
+import { RefObject } from "react";
+
+interface Props {
+  inputRef: RefObject&lt;HTMLInputElement | null&gt;
+}
+            </code></pre>
+            <p>Here you're saying:</p>
+            <p>"inputRef is a reference object that points to an HTML input."</p>
+            <p>You're not creating the ref here—you're only describing its type.</p>
+        </section>
+
+        <section>
+            <h2>Simple Example</h2>
+            <p>Parent component:</p>
+            <pre><code>
+const inputRef = useRef&lt;HTMLInputElement&gt;(null);
+
+&lt;MyInput inputRef={inputRef} /&gt;
+            </code></pre>
+
+            <p>Child component:</p>
+            <pre><code>
+import { RefObject } from "react";
+
+interface Props {
+  inputRef: RefObject&lt;HTMLInputElement | null&gt;
+}
+
+function MyInput({ inputRef }: Props) {
+  return &lt;input ref={inputRef} /&gt;
+}
+            </code></pre>
+
+            <p>Flow:</p>
+            <pre><code>
+useRef()
+   │
+   ▼
+Creates RefObject
+   │
+   ▼
+Pass to child component
+   │
+   ▼
+&lt;input ref={inputRef}&gt;
+   │
+   ▼
+React stores the input element in inputRef.current
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Easy way to remember</h2>
+            <ul>
+                <li>useRef() = creates the ref.</li>
+                <li>RefObject = describes the type of the ref.</li>
+                <li>.current = the thing the ref is pointing to.</li>
+            </ul>
+            <p>Think of it like this:</p>
+            <ul>
+                <li>useRef() = buying a remote control.</li>
+                <li>RefObject = the manual that says it's a remote control.</li>
+                <li>.current = the TV that the remote is currently connected to.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

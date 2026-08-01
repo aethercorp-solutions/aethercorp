@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>App Store Connect API</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">App Store Connect API</h1>
+                    <p class="subtitle">
+                        The App Store Connect API is Apple's official REST API that allows you to automate many tasks that you would normally perform manually in App Store Connect.
+                        <p>It is primarily used in CI/CD pipelines (GitHub Actions, Bitrise, Jenkins, Azure DevOps, etc.) to automate app releases, TestFlight management, and App Store operations.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>What can it do?</h2>
+            <p>Some common automation tasks include:</p>
+            <p>TestFlight</p>
+            <ul>
+                <li>Update TestFlight "What's New" release notes</li>
+                <li>Add or remove beta testers</li>
+                <li>Create beta tester groups</li>
+                <li>Assign builds to beta groups</li>
+                <li>Update beta review information</li>
+                <li>Submit builds for beta review</li>
+            </ul>
+            <p>Example:</p>
+            <p>Instead of manually typing:</p>
+            <pre><code>
+What's New
+
+- Fixed login issue
+- Improved performance
+- Added dark mode
+            </code></pre>
+            <p>your CI/CD pipeline can automatically upload it after every build.</p>
+        </section>
+
+        <section>
+            <h2>App Store Releases</h2>
+            <p>You can automate:</p>
+            <ul>
+                <li>Create a new app version</li>
+                <li>Update App Store descriptions</li>
+                <li>Keywords</li>
+                <li>Screenshots</li>
+                <li>Promotional text</li>
+                <li>Copyright</li>
+                <li>Release notes</li>
+                <li>Submit for review</li>
+                <li>Schedule release</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Build Management</h2>
+            <p>Manage builds by:</p>
+            <ul>
+                <li>Listing builds</li>
+                <li>Retrieving build information</li>
+                <li>Assigning builds to versions</li>
+                <li>Expiring TestFlight builds</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Testers</h2>
+            <p>Manage:</p>
+            <ul>
+                <li>Internal testers</li>
+                <li>External testers</li>
+                <li>Beta groups</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Analytics</h2>
+            <p>Access:</p>
+            <ul>
+                <li>Downloads</li>
+                <li>Sales reports</li>
+                <li>Subscription reports</li>
+                <li>Financial reports</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Authentication</h2>
+            <p>Unlike older Apple APIs that relied on Apple ID credentials, the App Store Connect API uses JWT (JSON Web Tokens).</p>
+            <p>You create an API key in App Store Connect, which provides:</p>
+            <ul>
+                <li>Key ID</li>
+                <li>Issuer ID</li>
+                <li>Private key (.p8)</li>
+            </ul>
+            <p>Your automation generates a signed JWT and uses it to authenticate API requests.</p>
+        </section>
+
+        <section>
+            <h2>Example Workflow</h2>
+            <p>A typical automated release pipeline looks like this:</p>
+            <pre><code>
+    GitHub Actions
+
+        │
+        ▼
+
+Build iOS App
+
+        │
+        ▼
+
+Archive
+
+        │
+        ▼
+
+Upload IPA
+
+        │
+        ▼
+
+Wait until Apple processes build
+
+        │
+        ▼
+
+App Store Connect API
+      │
+      ├── Update TestFlight Notes
+      ├── Add Build to Beta Group
+      ├── Submit for Beta Review
+      └── Notify Slack
+            </code></pre>
+            <p>No one needs to log into App Store Connect to perform these repetitive tasks.</p>
+        </section>
+
+        <section>
+            <h2>Example API Request</h2>
+            <p>To update TestFlight release notes, you send a request like:</p>
+            <pre><code>
+PATCH https://api.appstoreconnect.apple.com/v1/betaBuildLocalizations/{id}
+
+Authorization: Bearer <JWT>
+
+{
+  "data": {
+    "type": "betaBuildLocalizations",
+    "id": "...",
+    "attributes": {
+      "whatsNew": "Fixed offline sync.\nImproved performance."
+    }
+  }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Typical CI/CD Example</h2>
+            <p>1. Build the app:</p>
+            <pre><code>
+xcodebuild archive
+            </code></pre>
+
+            <p>2. Upload to App Store Connect:</p>
+            <pre><code>
+xcrun altool --upload-app ...
+            </code></pre>
+
+            <p>or</p>
+            <pre><code>
+xcrun iTMSTransporter
+            </code></pre>
+
+            <p>3. Wait for the build to finish processing.</p>
+            <p>
+                4. Use the App Store Connect API to:
+                <ul>
+                    <li>find the uploaded build</li>
+                    <li>locate its beta localization</li>
+                    <li>update the What's New field</li>
+                    <li>optionally assign it to a TestFlight group</li>
+                </ul>
+            </p>
+            <p>This entire process can run automatically after every successful build.</p>
+        </section>
+
+        <section>
+            <h2>Benefits</h2>
+            <ul>
+                <li>No manual edits in App Store Connect</li>
+                <li>Consistent release notes</li>
+                <li>Fully automated TestFlight deployments</li>
+                <li>Easy integration with GitHub Actions, Bitrise, Jenkins, Azure DevOps, and Fastlane</li>
+                <li>Secure authentication using API keys instead of Apple ID credentials</li>
+            </ul>
+            <p>If your goal is to automatically populate TestFlight release notes from Xcode or your CI/CD pipeline, the App Store Connect API is Apple's recommended solution. You typically upload the build first, wait until Apple finishes processing it, then use the API to update the TestFlight "What's New" text before distributing the build to testers.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

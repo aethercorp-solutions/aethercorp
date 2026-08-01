@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MongoDB Query Explained Simply</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">MongoDB Query Explained Simply</h1>
+                    <p class="subtitle">Think of MongoDB as a collection of JSON documents.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Example document:</h2>
+            <pre><code>
+{
+    "_id": "123",
+    "name": "Paul",
+    "email": "paul@example.com",
+    "age": 30,
+    "role": "developer"
+}
+            </code></pre>
+            <p>A collection is similar to a SQL table.</p>
+        </section>
+
+        <section>
+            <h2>Find One Document</h2>
+            <p>MongoDB:</p>
+            <pre><code>
+db.users.findOne({ email: "paul@example.com" })
+            </code></pre>
+            <p>Mongoose:</p>
+            <pre><code>
+const user = await User.findOne({
+    email: "paul@example.com",
+});
+            </code></pre>
+            <p>Meaning:</p>
+            <p>Find the first user whose email is paul@example.com</p>
+        </section>
+
+        <section>
+            <h2>Find Multiple Documents</h2>
+            <p>MongoDB:</p>
+            <pre><code>
+db.users.find({ role: "developer" })
+            </code></pre>
+            <p>Mongoose:</p>
+            <pre><code>
+const users = await User.find({
+    role: "developer",
+});
+            </code></pre>
+            <p>Meaning:</p>
+            <p>Get all developers.</p>
+        </section>
+
+        <section>
+            <h2>Find by ID</h2>
+            <p>MongoDB:</p>
+            <pre><code>
+db.users.findOne({
+    _id: ObjectId("123"),
+});
+            </code></pre>
+            <p>Mongoose:</p>
+            <pre><code>
+const user = await User.findById(id);
+            </code></pre>
+            <p>Meaning:</p>
+            <p>Find a user using MongoDB's unique ID.</p>
+        </section>
+
+        <section>
+            <h2>Insert Document</h2>
+            <p>MongoDB:</p>
+            <pre><code>
+db.users.insertOne({
+    name: "Paul",
+    email: "paul@example.com",
+});
+            </code></pre>
+            <p>Mongoose:</p>
+            <pre><code>
+const user = await User.create({
+    name: "Paul",
+    email: "paul@example.com",
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Update Document</h2>
+            <p>MongoDB:</p>
+            <pre><code>
+db.users.updateOne(
+  { email: "paul@example.com" },
+  { $set: { age: 31 } }
+);
+            </code></pre>
+            <p>Mongoose:</p>
+            <pre><code>
+await User.updateOne(
+  { email: "paul@example.com" },
+  { $set: { age: 31 } }
+);
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+await User.findByIdAndUpdate(
+  id,
+  { age: 31 },
+  { new: true }
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Delete Document</h2>
+            <p>MongoDB:</p>
+            <pre><code>
+db.users.deleteOne({
+    email: "paul@example.com",
+});
+            </code></pre>
+            <p>Mongoose:</p>
+            <pre><code>
+await User.deleteOne({
+    email: "paul@example.com",
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Common Query Operators</h2>
+            <p>Greater Than</p>
+            <pre><code>
+const users = await User.find({
+    age: { $gt: 18 },
+});
+            </code></pre>
+            <p>Meaning:</p>
+            <p>age > 18</p>
+
+            <p>Less Than</p>
+            <pre><code>
+const users = await User.find({
+    age: { $lt: 65 },
+});
+            </code></pre>
+            <p>Meaning:</p>
+            <p>age &lt; 65</p>
+
+            <p>Between</p>
+            <pre><code>
+const users = await User.find({
+    age: {
+        $gte: 18,
+        $lte: 65,
+    },
+});
+            </code></pre>
+            <p>Meaning:</p>
+            <p>age between 18 and 65</p>
+        </section>
+
+        <section>
+            <h2>Contains Text</h2>
+            <pre><code>
+const users = await User.find({
+    name: /paul/i,
+});
+            </code></pre>
+            <p>Meaning:</p>
+            <p>Search for "paul" regardless of uppercase/lowercase.</p>
+        </section>
+
+        <section>
+            <h2>OR Condition</h2>
+            <pre><code>
+const users = await User.find({
+    $or: [
+        { role: "admin" },
+        { role: "developer" },
+    ],
+});
+            </code></pre>
+            <p>Meaning:</p>
+            <p>Get admins or developers.</p>
+        </section>
+
+        <section>
+            <h2>AND Condition</h2>
+            <pre><code>
+const users = await User.find({
+    age: { $gte: 18 },
+    role: "developer",
+});
+            </code></pre>
+            <p>Meaning:</p>
+            <p>Get developers older than 18.</p>
+        </section>
+
+        <section>
+            <h2>Industry Standard Mongoose Query Pattern</h2>
+            <p>For production APIs, avoid this:</p>
+            <pre><code>
+const users = await User.find();
+            </code></pre>
+            <p>Use filtering, sorting, pagination, and projection.</p>
+            <p>Example</p>
+            <pre><code>
+const page = Number(req.query.page || 1);
+const limit = Number(req.query.limit || 20);
+
+const users = await User.find({
+  status: "active",
+})
+  .select("name email role")
+  .sort({ createdAt: -1 })
+  .skip((page - 1) * limit)
+  .limit(limit)
+  .lean();
+            </code></pre>
+            <p>Why?</p>
+            <p>select()</p>
+            <p>Returns only needed fields.</p>
+            <pre><code>
+.select("name email role")
+            </code></pre>
+            <p>Reduces network payload.</p>
+        </section>
+
+        <section>
+            <h2>sort()</h2>
+            <pre><code>
+.sort({ createdAt: -1 })
+            </code></pre>
+            <p>Newest first.</p>
+        </section>
+
+        <section>
+            <h2>skip() + limit()</h2>
+            <pre><code>
+.skip(20)
+.limit(20)
+            </code></pre>
+            <p>Pagination.</p>
+        </section>
+
+        <section>
+            <h2>lean()</h2>
+            <pre><code>
+.lean()
+            </code></pre>
+            <p>Returns plain JavaScript objects.</p>
+            <p>Benefits:</p>
+            <ul>
+                <li>Faster</li>
+                <li>Lower memory usage</li>
+                <li>Recommended for read-only APIs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Industry Standard Service Layer Example</h2>
+            <pre><code>
+class UserService {
+    static async getUsers({
+        page = 1,
+        limit = 20,
+    }) {
+        const skip = (page - 1) * limit;
+    
+        const users = await User.find({
+            status: "active",
+        })
+        .select("name email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+    
+        const total = await User.countDocuments({
+            status: "active",
+        });
+    
+        return {
+            users,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+        };
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>SQL vs MongoDB Mental Model</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>SQL</th>
+                        <th>MongoDB</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Table</td>
+                        <td>Collection</td>
+                    </tr>
+                    <tr>
+                        <td>Row</td>
+                        <td>Document</td>
+                    </tr>
+                    <tr>
+                        <td>Column</td>
+                        <td>Field</td>
+                    </tr>
+                    <tr>
+                        <td>SELECT</td>
+                        <td>find()</td>
+                    </tr>
+                    <tr>
+                        <td>INSERT</td>
+                        <td>create()</td>
+                    </tr>
+                    <tr>
+                        <td>UPDATE</td>
+                        <td>updateOne()</td>
+                    </tr>
+                    <tr>
+                        <td>DELETE</td>
+                        <td>deleteOne()</td>
+                    </tr>
+                    <tr>
+                        <td>JOIN</td>
+                        <td>populate()</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Example JOIN:</p>
+            <pre><code>
+const order = await Order.findById(id)
+  .populate("user")
+  .lean();
+            </code></pre>
+            <p>This loads the referenced user document automatically.</p>
+        </section>
+
+        <section>
+            <h2>Typical Production Query (AWS Lambda + Express + Mongoose)</h2>
+            <pre><code>
+const users = await User.find({
+    status: "active",
+})
+.select("_id name email")
+.sort({ createdAt: -1 })
+.limit(50)
+.lean();
+            </code></pre>
+            <p>This pattern is commonly used because it:</p>
+            <ul>
+                <li>Filters data</li>
+                <li>Returns only required fields</li>
+                <li>Uses indexes efficiently</li>
+                <li>Minimizes memory usage</li>
+                <li>Works well in serverless environments such as AWS Lambda</li>
+                <li>Improves API response times and reduces MongoDB costs</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Yes, you can set _id programmatically instead of letting MongoDB generate an ObjectId.</p>
+            <h2>Example 1: Custom String ID</h2>
+            <pre><code>
+const user = await User.create({
+    _id: "user_123",
+    name: "Paul",
+    email: "paul@example.com"
+});
+            </code></pre>
+            <p>Document:</p>
+            <pre><code>
+{
+    "_id": "user_123",
+    "name": "Paul",
+    "email": "paul@example.com"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example 2: Generate Your Own ObjectId</h2>
+            <pre><code>
+const mongoose = require("mongoose");
+
+const user = await User.create({
+  _id: new mongoose.Types.ObjectId(),
+  name: "Paul"
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example 3: Use UUID (Industry Standard for Some Systems)</h2>
+            <p>Install:</p>
+            <pre><code>
+npm install uuid
+            </code></pre>
+            <p>Create:</p>
+            <pre><code>
+const { v4: uuidv4 } = require("uuid");
+
+const user = await User.create({
+  _id: uuidv4(),
+  name: "Paul"
+});
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+{
+    "_id": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "Paul"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Mongoose Schema for UUID/String IDs</h2>
+            <pre><code>
+const userSchema = new mongoose.Schema({
+    _id: String,
+    name: String,
+    email: String
+});
+            </code></pre>
+            <p>Things to Watch Out For</p>
+            <p>❌ Duplicate IDs are not allowed:</p>
+            <pre><code>
+await User.create({ _id: "user_123" });
+await User.create({ _id: "user_123" }); // Error
+            </code></pre>
+            <p>MongoDB will throw:</p>
+            <pre><code>
+E11000 duplicate key error
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Industry Practice</h2>
+            <p>Most MongoDB applications simply use the default ObjectId:</p>
+            <pre><code>
+{
+    _id: ObjectId("685bff8a4d9f4c9a1d123456")
+}
+            </code></pre>
+            <p>Reasons:</p>
+            <ul>
+                <li>Automatically generated</li>
+                <li>Globally unique</li>
+                <li>Indexed by default</li>
+                <li>Smaller and faster than UUID strings</li>
+                <li>Works well with Mongoose population and references</li>
+            </ul>
+            <p>A common pattern is:</p>
+            <pre><code>
+{
+    _id: ObjectId(...),
+    publicId: "USR-10001"
+}
+            </code></pre>
+            <p>Where:</p>
+            <ul>
+                <li>_id → internal database identifier</li>
+                <li>publicId → user-facing ID shown in APIs, URLs, invoices, etc.</li>
+            </ul>
+            <p>This keeps MongoDB efficient while allowing friendly IDs for business use.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
