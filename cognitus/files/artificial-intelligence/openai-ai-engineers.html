@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> OpenAI </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> OpenAI </h1>
+                    <p class="subtitle"> 
+                        At OpenAI, AI engineers are not simply “people who use ChatGPT or build chatbots.” Their work is much closer to building, training, evaluating, scaling, and deploying the AI itself. 
+                        <p>OpenAI's current engineering roles show several major categories.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. They train models </h2>
+            <p>A major part of the work is improving the model's behavior and capabilities.</p>
+            <p>For example, engineers may:</p>
+            <ul>
+                <li>design training experiments</li>
+                <li>prepare training data</li>
+                <li>modify training algorithms</li>
+                <li>run reinforcement-learning training</li>
+                <li>tune reward signals</li>
+                <li>build synthetic data pipelines</li>
+                <li>analyze why a model improved or got worse</li>
+                <li>run huge experiments across GPU clusters</li>
+            </ul>
+            <p>OpenAI describes its research engineers as building AI systems capable of previously impossible tasks and working with massive-scale distributed machine-learning systems.</p>
+            <p>A simplified workflow looks like:</p>
+            <pre><code>
+Problem
+   ↓
+Hypothesis
+   ↓
+Training data / reward / algorithm
+   ↓
+Run experiment on GPUs
+   ↓
+Evaluate model
+   ↓
+Analyze failures
+   ↓
+Modify training
+   ↓
+Run again
+            </code></pre>
+            <p>So there's a lot of experimentation and debugging.</p>
+        </section>
+
+        <section>
+            <h2>2. They build the infrastructure that trains AI</h2>
+            <p>This is where AI engineering starts looking much more like traditional software engineering.</p>
+            <p>Imagine training a giant model across thousands of GPUs.</p>
+            <p>Someone has to build systems that:</p>
+            <pre><code>
+Dataset
+   ↓
+Data pipeline
+   ↓
+Thousands of GPUs
+   ↓
+Distributed training
+   ↓
+Checkpoint storage
+   ↓
+Evaluation
+   ↓
+Model serving
+            </code></pre>
+            <p>OpenAI has engineers specifically responsible for training and inference infrastructure, including dataset infrastructure and systems operating across large GPU fleets.</p>
+            <p>They deal with things like:</p>
+            <ul>
+                <li>distributed systems</li>
+                <li>GPU utilization</li>
+                <li>networking</li>
+                <li>memory</li>
+                <li>parallelism</li>
+                <li>storage</li>
+                <li>orchestration</li>
+                <li>fault tolerance</li>
+                <li>performance</li>
+                <li>latency</li>
+                <li>cost</li>
+            </ul>
+            <p>This is very serious systems engineering, not just Python scripting.</p>
+        </section>
+
+        <section>
+            <h2>3. They teach models new capabilities</h2>
+            <p>This is particularly interesting with modern agents.</p>
+            <p>For example:</p>
+            <p>"Make the model better at writing software."</p>
+            <p>An AI engineer might build:</p>
+            <pre><code>
+Coding problem
+      ↓
+AI writes code
+      ↓
+Code executes
+      ↓
+Tests run
+      ↓
+Grader evaluates result
+      ↓
+Reward / feedback
+      ↓
+Model learns
+            </code></pre>
+            <p>OpenAI's agent post-training teams work on coding, tool use, computer use, multi-agent coordination, long-horizon execution, factuality, instruction following, and reasoning.</p>
+            <p>So they're effectively building training environments where the AI can practice.</p>
+        </section>
+
+        <section>
+            <h2>4. They build AI agents</h2>
+            <p>This is increasingly a major engineering discipline.</p>
+            <p>For example, Codex isn't just:</p>
+            <pre><code>
+Prompt → LLM → Answer
+            </code></pre>
+            <p>It's more like:</p>
+            <pre><code>
+                ┌── terminal
+                ├── filesystem
+User → Model ────┼── compiler
+                ├── Git
+                ├── browser
+                └── other tools
+                      ↓
+                  Result
+            </code></pre>
+            <p>Engineers build the agent harness around the model.</p>
+            <p>That includes:</p>
+            <ul>
+                <li>tool calling</li>
+                <li>sandboxing</li>
+                <li>permissions</li>
+                <li>execution environments</li>
+                <li>state management</li>
+                <li>orchestration</li>
+                <li>retries</li>
+                <li>context management</li>
+                <li>monitoring</li>
+                <li>evaluation</li>
+                <li>security</li>
+            </ul>
+            <p>OpenAI describes its Codex AI systems engineers as working across the harness, model interaction, inference, sandboxed execution, orchestration, evals, reliability, latency, cost and performance.</p>
+        </section>
+
+        <section>
+            <h2>5. They build evaluations</h2>
+            <p>This is one of the most important parts that people outside AI often don't see.</p>
+            <p>Suppose someone says:</p>
+            <p>"We made GPT better."</p>
+            <p>An engineer needs to answer:</p>
+            <p>Better at what?</p>
+            <p>So they build automated tests such as:</p>
+            <pre><code>
+100,000 coding problems
+        ↓
+       Model
+        ↓
+ ┌───────────────┐
+ │ Correct?      │
+ │ Safe?         │
+ │ Fast?         │
+ │ Hallucinated? │
+ │ Followed rule?│
+ └───────────────┘
+        ↓
+   Score
+            </code></pre>
+            <p>Then they compare:</p>
+            <pre><code>
+Model A: 82.3%
+Model B: 86.7%
+            </code></pre>
+            <p>But they also investigate why.</p>
+            <p>OpenAI's current roles explicitly involve building evaluations, graders, measurement systems and continuous evaluation infrastructure.</p>
+        </section>
+
+        <section>
+            <h2>6. They deliberately try to break the AI</h2>
+            <p>This is the red-teaming / safety engineering side.</p>
+            <p>Engineers might ask:</p>
+            <p>"Can we trick the agent into doing something it shouldn't?"</p>
+            <p>For example:</p>
+            <pre><code>
+Normal request
+     ↓
+Agent → Safe behavior
+            </code></pre>
+            <p>Then try:</p>
+            <pre><code>
+Malicious instruction
+     ↓
+Tool manipulation
+     ↓
+Prompt injection
+     ↓
+Unauthorized action
+            </code></pre>
+            <p>They measure whether the system stops it.</p>
+            <p>OpenAI's agent safety work includes red-teaming agentic systems, measuring unsafe tool use and data-exfiltration risks, and designing system-level controls.</p>
+        </section>
+
+        <section>
+            <h2>7. They optimize the AI for production</h2>
+            <p>Even if a model is extremely intelligent, it's not useful if:</p>
+            <pre><code>
+Response time = 30 seconds
+Cost = $20/request
+Reliability = 95%
+            </code></pre>
+            <p>Engineers therefore work on:</p>
+            <ul>
+                <li>inference optimization</li>
+                <li>latency</li>
+                <li>GPU utilization</li>
+                <li>caching</li>
+                <li>model serving</li>
+                <li>scaling</li>
+                <li>reliability</li>
+                <li>observability</li>
+                <li>cost</li>
+                <li>capacity</li>
+            </ul>
+            <p>The goal becomes:</p>
+            <pre><code>
+Intelligent
+   +
+Reliable
+   +
+Fast
+   +
+Cheap enough
+   +
+Safe
+   =
+Production AI
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>And here's the interesting part</h2>
+            <p>A lot of OpenAI AI engineering is actually software engineering.</p>
+            <p>A typical AI engineer might spend their day doing something like:</p>
+            <pre><code>
+9:00   Analyze model failure
+
+10:00  Write Python experiment
+
+11:00  Modify training pipeline
+
+12:00  Analyze evaluation results
+
+1:00   Debug distributed training failure
+
+2:00   Run experiment on GPU cluster
+
+4:00   Investigate why model behavior changed
+
+5:00   Build new evaluation
+
+6:00   Push improvement into training pipeline
+            </code></pre>
+            <p>And increasingly, they use AI coding agents themselves.</p>
+            <p>OpenAI reported in September 2026 that coding agents are now heavily integrated into researchers' daily workflows, with researchers using agents to write more code and run more experiments.</p>
+        </section>
+
+        <section>
+            <h2>The important distinction</h2>
+            <p>There are roughly three layers:</p>
+            <p>Traditional software engineer</p>
+            <pre><code>
+Build application
+        ↓
+React / Swift / Java / Node
+        ↓
+Database / API
+        ↓
+Users
+            </code></pre>
+            <p>AI application engineer</p>
+            <pre><code>
+Build application
+        ↓
+LLM / API
+        ↓
+RAG / tools / agents
+        ↓
+Users
+            </code></pre>
+            <p>Frontier AI engineer</p>
+            <pre><code>
+                ┌── Data
+                ├── Training
+                ├── RL
+                ├── Model architecture
+                ├── Evals
+                ├── Agents
+                ├── GPU infrastructure
+                ├── Safety
+                └── Inference
+                         ↓
+                    AI model
+                         ↓
+                      Users
+            </code></pre>
+            <p>OpenAI has all three kinds of work, but the frontier AI engineering roles go much deeper into the model-training and infrastructure layers.</p>
+            <p>And given your background in React, Node.js, Python, Swift/Objective-C, Firebase/AWS and full-stack development, the most natural transition would not necessarily be "become a mathematician and invent a transformer." A particularly realistic path is AI systems / agent engineering → ML engineering → deeper model training, because those roles explicitly value strong software engineering and distributed-systems skills alongside ML knowledge.</p>
+            <p>In other words: AI engineering at OpenAI is essentially software engineering + machine learning + distributed systems + experimentation, pushed to an extreme scale.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

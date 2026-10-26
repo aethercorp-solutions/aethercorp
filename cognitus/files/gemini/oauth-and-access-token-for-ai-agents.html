@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> OAuth and Access Token for AI Agents </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> OAuth and Access Token for AI Agents </h1>
+                    <p class="subtitle"> Think of OAuth as the process, and an access token as the key you get from that process. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Simple example: Login with Google </h2>
+            <p>You have an app that wants to access your Google contacts.</p>
+            <p>1. OAuth = the authorization process</p>
+            <p>Your app says:</p>
+            <p>"Google, can this user allow me to access their contacts?"</p>
+            <p>The user logs into Google and clicks Allow.</p>
+            <p>That's OAuth.</p>
+
+            <p>2. Access token = the permission/key</p>
+            <p>After authorization, Google gives your app an access token:</p>
+            <pre><code>
+access_token = "eyJhbGciOi..."
+            </code></pre>
+            <p>Your app then sends it when calling Google's API:</p>
+            <pre><code>
+GET /contacts
+Authorization: Bearer eyJhbGciOi...
+            </code></pre>
+            <p>Google checks the token and says:</p>
+            <p>"This token is valid and has permission to access contacts."</p>
+        </section>
+
+        <section>
+            <h2>The difference</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>OAuth</th>
+                        <th>Access Token</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Authorization protocol/process</td>
+                        <td>Credential/token</td>
+                    </tr>
+                    <tr>
+                        <td>Handles how permission is granted</td>
+                        <td>Proves that permission</td>
+                    </tr>
+                    <tr>
+                        <td>Involves login, consent, redirects, etc.</td>
+                        <td>Sent with API requests</td>
+                    </tr>
+                    <tr>
+                        <td>Example: "Allow this app to access your contacts"</td>
+                        <td>Authorization: Bearer &lt;token&gt;</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Easy analogy</h2>
+            <p>Imagine entering a building:</p>
+            <p>OAuth = the process of getting permission from security.</p>
+            <p>Access token = the temporary badge security gives you.</p>
+            <p>You don't use "OAuth" to call the API. You use the access token.</p>
+            <p>Where refresh tokens fit</p>
+            <p>Usually the flow looks like:</p>
+            <pre><code>
+User
+  ↓
+OAuth authorization
+  ↓
+Authorization Server
+  ↓
+Access Token + Refresh Token
+  ↓
+Your App
+  ↓
+API request using Access Token
+            </code></pre>
+            <p>Access token: short-lived → used to access APIs.</p>
+            <p>Refresh token: longer-lived → used to get a new access token when the old one expires.</p>
+            <p>So in your Swift/API work, when you see:</p>
+            <pre><code>
+Authorization: Bearer \(accessToken)
+            </code></pre>
+            <p>you're looking at the result of an OAuth authorization flow, not OAuth itself.</p>
+        </section>
+
+        <section>
+            <p>The same OAuth + access token concept is very important when building AI agents and MCP servers.</p>
+            <p>Think of an AI agent as a user-controlled application that needs permission to use external services.</p>
+            <h2>1. The basic architecture</h2>
+            <pre><code>
+User
+ ↓
+AI Agent / LLM
+ ↓
+MCP Client
+ ↓
+MCP Server
+ ↓
+OAuth
+ ↓
+Access Token
+ ↓
+External API
+            </code></pre>
+            <p>For example, imagine you build an AI agent that can manage a user's Google Contacts.</p>
+            <p>The user asks:</p>
+            <p>"Find John in my contacts."</p>
+            <p>The LLM decides it needs a tool:</p>
+            <pre><code>
+LLM
+ ↓
+search_contacts()
+ ↓
+MCP Server
+ ↓
+Google People API
+            </code></pre>
+            <p>But the MCP server needs permission to access Google's API.</p>
+            <p>That's where OAuth comes in.</p>
+        </section>
+
+        <section>
+            <h2>2. OAuth handles authorization</h2>
+            <p>The first time the user connects Google:</p>
+            <pre><code>
+AI Agent
+   ↓
+"Connect Google"
+   ↓
+Google OAuth
+   ↓
+User clicks "Allow"
+   ↓
+Access Token
+   ↓
+Your application
+            </code></pre>
+            <p>Your application might receive:</p>
+            <pre><code>
+{
+    "access_token": "abc123...",
+    "refresh_token": "xyz789..."
+}
+            </code></pre>
+            <p>The important thing is that the LLM itself should generally not be responsible for storing or managing these credentials.</p>
+            <p>Your application/MCP infrastructure handles them.</p>
+        </section>
+
+        <section>
+            <h2>3. MCP uses the authenticated identity</h2>
+            <p>Your MCP server might expose:</p>
+            <pre><code>
+search_contacts
+get_contact
+create_contact
+update_contact
+            </code></pre>
+            <p>The LLM sees something like:</p>
+            <pre><code>
+Tool: search_contacts
+
+Input:
+{
+  "name": "John"
+}
+            </code></pre>
+            <p>The MCP server receives the request and uses the user's authenticated access token:</p>
+            <pre><code>
+MCP Server
+    ↓
+Access Token
+    ↓
+Google People API
+    ↓
+Contacts
+            </code></pre>
+            <p>Then it returns the result to the LLM:</p>
+            <pre><code>
+{
+    "name": "John Smith",
+    "email": "john@example.com"
+}
+            </code></pre>
+            <p>The LLM can then respond:</p>
+            <p>"I found John Smith. His email is john@example.com."</p>
+        </section>
+
+        <section>
+            <h2>4. Where the LLM fits</h2>
+            <p>The LLM is primarily the reasoning layer.</p>
+            <p>For example:</p>
+            <pre><code>
+                User:
+"Find John and send him an email saying I'll call tomorrow."
+
+              ↓
+
+             LLM
+              ↓
+       ┌──────┴──────┐
+       ↓             ↓
+search_contacts    send_email
+       ↓             ↓
+    MCP tool       MCP tool
+       ↓             ↓
+   Google API    Gmail API
+            </code></pre>
+            <p>The LLM decides:</p>
+            <p>"I need to search contacts first."</p>
+            <p>Then:</p>
+            <p>"I found John. Now I need to send an email."</p>
+            <p>The LLM doesn't need to know Google's API implementation details.</p>
+        </section>
+
+        <section>
+            <h2>5. OAuth protects each user's data</h2>
+            <p>This becomes especially important if you have a SaaS AI agent.</p>
+            <p>Suppose you have:</p>
+            <pre><code>
+Paul → AI Agent → MCP → Google
+John → AI Agent → MCP → Google
+Mary → AI Agent → MCP → Google
+            </code></pre>
+            <p>Each user has their own OAuth authorization:</p>
+            <pre><code>
+Paul → Paul Access Token
+John → John Access Token
+Mary → Mary Access Token
+            </code></pre>
+            <p>So when Paul asks:</p>
+            <p>"Show me my contacts."</p>
+            <p>Your backend must use Paul's token, not somebody else's.</p>
+        </section>
+
+        <section>
+            <h2>6. A practical architecture for your stack</h2>
+            <p>Given a modern full-stack setup, you could build:</p>
+            <pre><code>
+                ┌───────────────┐
+                │     User      │
+                └───────┬───────┘
+                        ↓
+                ┌───────────────┐
+                │ React /       │
+                │ React Native  │
+                └───────┬───────┘
+                        ↓
+                ┌───────────────┐
+                │ AI Agent      │
+                │ LLM           │
+                └───────┬───────┘
+                        ↓
+                ┌───────────────┐
+                │ MCP Client    │
+                └───────┬───────┘
+                        ↓
+                ┌───────────────┐
+                │ MCP Server    │
+                └───────┬───────┘
+                        ↓
+               ┌─────────────────┐
+               │ OAuth / Token   │
+               │ Management      │
+               └────────┬────────┘
+                        ↓
+             ┌─────────────────────┐
+             │ Google / Gmail /    │
+             │ Calendar / CRM API  │
+             └─────────────────────┘
+            </code></pre>
+            <p>Your backend could store token metadata in MongoDB:</p>
+            <pre><code>
+User
+ ├── userId
+ ├── email
+ └── integrations
+      └── google
+           ├── accessToken
+           ├── refreshToken
+           └── expiresAt
+            </code></pre>
+            <p>Although in production, don't store raw access/refresh tokens casually in MongoDB. Encrypt sensitive tokens and restrict access to them.</p>
+        </section>
+
+        <section>
+            <h2>7. The key idea</h2>
+            <p>Remember these four roles:</p>
+            <pre><code>
+OAuth
+  ↓
+Gets permission
+
+Access Token
+  ↓
+Proves permission
+
+MCP
+  ↓
+Provides standardized tools
+
+LLM
+  ↓
+Decides which tools to use
+            </code></pre>
+            <p>So an AI agent doesn't replace OAuth.</p>
+            <p>Instead:</p>
+            <p>OAuth gives the agent authorized access → MCP exposes that access as tools → LLM decides when to use those tools.</p>
+            <p>That's the foundation of many modern AI agent + MCP + SaaS integrations.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

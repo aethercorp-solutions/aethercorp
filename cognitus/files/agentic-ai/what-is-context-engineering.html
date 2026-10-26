@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> What is Context Engineering? </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> What is Context Engineering? </h1>
+                    <p class="subtitle"> 
+                        Context engineering is the practice of designing, organizing, and managing the information provided to an AI system so it can produce accurate, relevant, and useful responses.
+                        <p>Instead of focusing only on writing a good prompt, context engineering focuses on giving the AI the right information, instructions, tools, memory, and data at the right time.</p>
+                        <p>It is becoming an important concept in AI-assisted software development, AI agents, and large language model (LLM) applications.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Prompt Engineering vs. Context Engineering </h2>
+            <p>Prompt engineering</p>
+            <pre><code>
+Writing instructions that tell the AI what to do.
+Example: "Write a Node.js function that retrieves contacts from MongoDB."
+            </code></pre>
+            
+
+            <p>Context engineering</p>
+            <pre><code>
+Providing all the relevant information the AI needs to do the task correctly.
+Example: Provide the database schema, existing repository methods, API conventions, authentication requirements, error-handling rules, and the requested function.
+            </code></pre>
+            
+            <p>The difference is that a prompt tells the AI what you want, while context engineering determines what information the AI has available to fulfill that request.</p>
+        </section>
+
+        <section>
+            <h2>2. The Main Components of Context Engineering</h2>
+            <p>1. Instructions and rules</p>
+            <pre><code>
+System instructions, coding standards, architecture rules, and task requirements that guide the AI's behavior.
+            </code></pre>
+
+            <p>2. Relevant project information</p>
+            <pre><code>
+Source code, documentation, database schemas, API contracts, configuration files, and dependencies.
+            </code></pre>
+
+            <p>3. Retrieval and external data</p>
+            <pre><code>
+Searching documentation, databases, knowledge bases, and files to retrieve information relevant to the current task. This can include Retrieval-Augmented Generation (RAG).
+            </code></pre>
+
+            <p>4. Tools and environment</p>
+            <pre><code>
+Giving an AI agent access to appropriate tools, such as a terminal, code search, APIs, test runners, or a database interface.
+            </code></pre>
+
+            <p>5. Memory and task state</p>
+            <pre><code>
+Maintaining important decisions, previous progress, user preferences, known constraints, and the current state of a multi-step task.
+            </code></pre>
+
+            <p>These components work together. Context engineering also involves deciding what to include, what to leave out, and how to update context as a task progresses.</p>
+        </section>
+
+        <section>
+            <h2>3. Example: Context Engineering in Software Development</h2>
+            <p>Suppose you're developing the Castanet Contact Management Platform, which uses React Native, Node.js, AWS Lambda with Serverless Framework, MongoDB, and Firebase Authentication.</p>
+            <p>You want AI to implement a new contact-search feature.</p>
+
+            <p>Without context engineering</p>
+            <p>You give the AI this prompt:</p>
+            <pre><code>
+Create a contact search API using Node.js and MongoDB.
+            </code></pre>
+
+            <p>The AI may generate code that doesn't match your existing architecture. It might use the wrong collection name, ignore Firebase authentication, or introduce a new coding pattern.</p>
+            <p>With context engineering</p>
+            <p>You supply the following context:</p>
+            <ul>
+                <li>Project architecture: React Native mobile app, Node.js backend, AWS Lambda functions.</li>
+                <li>Database structure: MongoDB contact documents and relevant field names.</li>
+                <li>Authentication: How the backend validates Firebase Authentication tokens.</li>
+                <li>Existing implementation: Current API handlers, services, and repository methods.</li>
+                <li>Coding conventions: Naming, validation, error handling, and response formats.</li>
+                <li>Task requirements: Search contacts by name, email, and phone number.</li>
+                <li>Testing requirements: Unit tests, authorization checks, and search edge cases.</li>
+            </ul>
+            <p>The AI can now generate an implementation that is more consistent with the existing application.</p>
+            <p>The important point is that the AI's output improves not just because the prompt is better, but because the AI has the information needed to make appropriate decisions.</p>
+        </section>
+
+        <section>
+            <h2>4. How Context Engineering Works</h2>
+            <p>A typical context-engineering workflow looks like this:</p>
+            <pre><code>
+1. Define the task
+
+What does the AI need to accomplish?
+            </code></pre>
+
+            <pre><code>
+2. Retrieve relevant context
+
+Instructions, files, code, schemas, and prior decisions
+            </code></pre>
+
+            <pre><code>
+3. Assemble the AI's context
+
+Prioritize relevant information and remove unnecessary details
+            </code></pre>
+
+            <pre><code>
+4. Execute using the model and tools
+
+Generate code, analyze data, or perform actions
+            </code></pre>
+
+            <pre><code>
+5. Validate and update context
+
+Run tests, inspect results, record decisions, and continue
+            </code></pre>
+            <p>This process is especially useful for AI agents that work on complex tasks across multiple files or applications.</p>
+        </section>
+
+        <section>
+            <h2>5. Context Engineering Techniques</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technique</th>
+                        <th>Purpose</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Context selection</td>
+                        <td>Include only useful information</td>
+                        <td>Load relevant services instead of the entire repository</td>
+                    </tr>
+                    <tr>
+                        <td>RAG</td>
+                        <td>Retrieve information from external knowledge sources</td>
+                        <td>Search technical documentation before generating code</td>
+                    </tr>
+                    <tr>
+                        <td>Summarization</td>
+                        <td>Preserve important details while reducing context size</td>
+                        <td>Summarize completed implementation steps</td>
+                    </tr>
+                    <tr>
+                        <td>Structured context</td>
+                        <td>Organize information predictably</td>
+                        <td>Provide JSON schemas, API contracts, or structured instructions</td>
+                    </tr>
+                    <tr>
+                        <td>Persistent memory</td>
+                        <td>Retain useful decisions between tasks</td>
+                        <td>Remember the project's established architecture</td>
+                    </tr>
+                    <tr>
+                        <td>Tool integration</td>
+                        <td>Let the AI obtain or verify information</td>
+                        <td>Run tests or inspect database schemas</td>
+                    </tr>
+                    <tr>
+                        <td>Context updates</td>
+                        <td>Keep information current</td>
+                        <td>Replace outdated implementation notes after a refactor</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>One important constraint is the context window: the amount of information a model can process in a single interaction. Providing more context is not always better. Irrelevant or outdated information can distract the model, consume available capacity, and lead to incorrect results.</p>
+        </section>
+
+        <section>
+            <h2>6. Context Engineering in an AI Development Workflow</h2>
+            <p>For an AI-assisted development workflow, you can organize your project like this:</p>
+            <pre><code>
+castanet/
+├── docs/
+│   ├── architecture.md
+│   ├── database-schema.md
+│   ├── api-reference.md
+│   └── coding-standards.md
+├── src/
+│   ├── handlers/
+│   ├── services/
+│   └── repositories/
+├── tests/
+└── serverless.yml
+            </code></pre>
+            <p>The documentation files provide stable context, while the actual source code provides the implementation details.</p>
+            <p>When starting a task, the AI should:</p>
+            <ol>
+                <li>Read the architecture documentation.    </li>
+                <li>Inspect the relevant source files.</li>
+                <li>Identify existing conventions and dependencies.</li>
+                <li>Understand the acceptance criteria.</li>
+                <li>Implement the requested change.</li>
+                <li>Run relevant tests and review the result.</li>
+                <li>Update documentation if the architecture or behavior changes.</li>
+            </ol>
+
+            <p>You can also maintain project instructions in an AGENTS.md file or an equivalent instruction file supported by your AI development environment. The specific file and discovery rules depend on the tool being used.</p>
+            <p>This reduces repeated explanations and helps keep AI-generated changes consistent with your application.</p>
+        </section>
+
+        <section>
+            <h2>7. Why Context Engineering Matters</h2>
+            <p>Context engineering helps you:</p>
+            <ul>
+                <li>Improve accuracy: The AI has the relevant facts instead of guessing.</li>
+                <li>Reduce hallucinations: Existing code and verified documentation constrain its answers.</li>
+                <li>Maintain consistency: Generated code follows established architecture and conventions.</li>
+                <li>Handle complex tasks: The AI can work across multiple files and multiple steps.</li>
+                <li>Reduce repeated prompting: Stable project context does not need to be re-explained every time.</li>
+                <li>Improve reliability: Tests, tool results, and explicit requirements help verify the output.</li>
+            </ul>
+            <p>It does not guarantee correctness. The context itself can be incomplete, outdated, or misleading, so validation remains necessary.</p>
+        </section>
+
+        <section>
+            <h2>The key takeaway</h2>
+            <p>Prompt engineering is about designing the instruction. Context engineering is about designing the information environment in which the AI operates.</p>
+            <p>For software developers, context engineering is particularly valuable when using AI to understand an existing codebase, implement features, debug production issues, write tests, and maintain technical documentation.</p>
+            <p>A useful next step is to learn how to build a context-engineering workflow for your actual codebase, including project instruction files, code retrieval, documentation, and automated testing.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

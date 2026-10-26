@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Google OAuth and JWT </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Google OAuth and JWT </h1>
+                    <p class="subtitle"> Think of Google OAuth and JWT as two different parts of authentication. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Simple flow </h2>
+            <pre><code>
+User
+  ↓
+"Sign in with Google"
+  ↓
+Google OAuth
+  ↓
+Google verifies user
+  ↓
+Your backend receives Google's authorization/code/token
+  ↓
+Your backend creates YOUR access token
+  ↓
+Client stores access token
+  ↓
+Client sends token on every API request
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>1. Google OAuth = "Who are you?"</h2>
+            <p>Google OAuth is mainly used to let Google authenticate the user.</p>
+            <p>For example:</p>
+            <pre><code>
+User → Google
+    "I am Paul and I successfully logged in."
+            </code></pre>
+            <p>Google can provide information such as:</p>
+            <pre><code>
+email
+name
+Google user ID
+            </code></pre>
+            <p>Your backend then knows:</p>
+            <p>"Google has authenticated this person."</p>
+        </section>
+
+        <section>
+            <h2>2. JWT = "Here is your API pass"</h2>
+            <p>After Google authentication, your backend can create a JWT access token.</p>
+            <p>For example:</p>
+            <pre><code>
+JWT
+↓
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            </code></pre>
+            <p>The JWT might contain:</p>
+            <pre><code>
+{
+    "userId": "12345",
+    "email": "paul@example.com",
+    "exp": 1787040000
+}
+            </code></pre>
+            <p>Your backend signs it with a secret/private key.</p>
+        </section>
+
+        <section>
+            <h2>3. Client uses the JWT</h2>
+            <p>The mobile app/web app stores the access token:</p>
+            <pre><code>
+accessToken = "eyJhbGciOi..."
+            </code></pre>
+            <p>Then when calling your API:</p>
+            <pre><code>
+GET /api/contacts
+Authorization: Bearer eyJhbGciOi...
+            </code></pre>
+            <p>Your backend checks:</p>
+            <pre><code>
+Is the JWT valid?
+       ↓
+Is the signature valid?
+       ↓
+Has it expired?
+       ↓
+Who is this user?
+       ↓
+Allow request
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The important distinction</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Main purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Google OAuth</td>
+                        <td>Authenticate user through Google</td>
+                    </tr>
+                    <tr>
+                        <td>JWT</td>
+                        <td>Represent authenticated user/session</td>
+                    </tr>
+                    <tr>
+                        <td>Access Token</td>
+                        <td>Credential used to access your API</td>
+                    </tr>
+                    <tr>
+                        <td>Refresh Token</td>
+                        <td>Get a new access token when it expires</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>So they are not the same thing.</p>
+            <p>A common architecture is:</p>
+            <pre><code>
+                Google
+                │
+                │ OAuth
+                ↓
+         ┌───────────────┐
+         │ Your Backend  │
+         └───────┬───────┘
+                 │
+           creates JWT
+                 │
+                 ↓
+         Access Token (JWT)
+                 │
+                 ↓
+           Mobile / Web App
+                 │
+                 │ Authorization: Bearer JWT
+                 ↓
+            Your API
+            </code></pre>
+            <p>In one sentence:</p>
+            <p>Google OAuth proves who the user is; your JWT access token lets that authenticated user access your backend API.</p>
+        </section>
+
+        <section>
+            <p>In your implementation, the cleanest approach is:</p>
+            <p>Google OAuth → verify Google user → find/create your user → create YOUR JWT → return YOUR JWT to the app.</p>
+            <p>Right now, this line:</p>
+            <pre><code>
+req.headers.token = token;
+    return await signInWithGoogleToken(req, res, next);
+            </code></pre>
+            <p>is passing Google's OAuth token into your existing login flow. Instead, you can generate your own JWT after Google authentication.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

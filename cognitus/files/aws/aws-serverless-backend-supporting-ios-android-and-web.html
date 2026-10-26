@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> AWS Serverless backend supporting iOS, Android, and Web </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> AWS Serverless backend supporting iOS, Android, and Web </h1>
+                    <p class="subtitle"> For an AWS Serverless backend supporting iOS, Android, and Web, the cleanest approach is to separate platform authentication from your application authentication. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Recommended architecture </h2>
+            <pre><code>
+                ┌──────────────────┐
+                │  iOS / Android   │
+                │      / Web       │
+                └────────┬─────────┘
+                         │
+                Platform Login
+              Google / Apple / etc.
+                         │
+                         ▼
+                ┌─────────────────┐
+                │ API Gateway     │
+                └────────┬────────┘
+                         │
+                         ▼
+                ┌─────────────────┐
+                │ AWS Lambda      │
+                │ Auth Service    │
+                └────────┬────────┘
+                         │
+         ┌───────────────┼────────────────┐
+         ▼               ▼                ▼
+    Google OAuth     Apple OAuth      Other IdP
+         │               │                │
+         └───────────────┼────────────────┘
+                         ▼
+                ┌─────────────────┐
+                │ User Database   │
+                │ MongoDB/DynamoDB│
+                └─────────────────┘
+                         │
+                         ▼
+                Issue Application JWT
+            </code></pre>
+            <p>The important idea is:</p>
+            <p>Google/Apple tokens authenticate the user initially. Your own JWT authenticates the user to your API afterward.</p>
+        </section>
+
+        <section>
+            <h2>1. Use one application JWT</h2>
+            <p>Don't create completely different authentication systems for iOS, Android, and Web.</p>
+            <p>Have your backend issue one application access token:</p>
+            <pre><code>
+POST /auth/login
+POST /auth/refresh
+POST /auth/logout
+            </code></pre>
+            <p>The JWT can contain:</p>
+            <pre><code>
+{
+    "sub": "user-id",
+    "email": "user@example.com",
+    "platform": "ios",
+    "sessionId": "abc123",
+    "iat": 1755910000,
+    "exp": 1755913600
+}
+            </code></pre>
+            <p>The platform is useful for logging and platform-specific behavior, but don't use it as the primary security mechanism.</p>
+        </section>
+
+        <section>
+            <h2>2. Platform-specific login</h2>
+            <p>Your clients can have different authentication mechanisms.</p>
+            <p>iOS</p>
+            <p>For example:</p>
+            <pre><code>
+iOS
+ ↓
+Google Sign-In / Apple Sign-In
+ ↓
+authorization code / identity token
+ ↓
+POST /auth/login
+ ↓
+AWS Lambda
+ ↓
+verify with Google/Apple
+ ↓
+find/create user
+ ↓
+issue your JWT
+            </code></pre>
+            <p>Android</p>
+            <pre><code>
+Android
+ ↓
+Google Sign-In
+ ↓
+authorization code / ID token
+ ↓
+POST /auth/login
+ ↓
+AWS Lambda
+ ↓
+verify Google
+ ↓
+issue your JWT
+            </code></pre>
+            <p>Web</p>
+            <pre><code>
+Browser
+ ↓
+Google OAuth
+ ↓
+authorization code
+ ↓
+POST /auth/login
+ ↓
+AWS Lambda
+ ↓
+exchange + verify code
+ ↓
+issue your JWT
+            </code></pre>
+            <p>The backend should ultimately decide whether the authentication is valid.</p>
+        </section>
+
+        <section>
+            <h2>3. Don't trust the client-provided platform</h2>
+            <p>Avoid doing this:</p>
+            <pre><code>
+const platform = req.body.platform;
+
+if (platform === "ios") {
+    // trust request
+}
+            </code></pre>
+            <p>A client can simply send:</p>
+            <pre><code>
+{
+    "platform": "ios"
+}
+            </code></pre>
+            <p>Instead, use platform as metadata.</p>
+            <p>For example:</p>
+            <pre><code>
+const platform = req.headers["x-platform"];
+            </code></pre>
+            <p>and validate it:</p>
+            <pre><code>
+const allowedPlatforms = ["ios", "android", "web"];
+
+if (!allowedPlatforms.includes(platform)) {
+    throw new Error("Invalid platform");
+}
+            </code></pre>
+            <p>But even then, don't use it as proof of identity.</p>
+        </section>
+
+        <section>
+            <h2>4. Separate identity from session</h2>
+            <p>This is probably the most important design decision for your system.</p>
+            <p>Your database should have something conceptually like:</p>
+            <pre><code>
+User
+ ├── _id
+ ├── email
+ ├── name
+ └── providers
+      ├── google
+      │    └── providerUserId
+      └── apple
+           └── providerUserId
+            </code></pre>
+            <p>And separately:</p>
+            <pre><code>
+Session
+ ├── sessionId
+ ├── userId
+ ├── platform
+ ├── refreshTokenHash
+ ├── deviceId
+ ├── createdAt
+ ├── expiresAt
+ └── revokedAt
+            </code></pre>
+            <p>This lets the same person log in from:</p>
+            <pre><code>
+iPhone
+Android
+Mac
+Windows
+            </code></pre>
+            <p>without creating four different users.</p>
+        </section>
+
+        <section>
+            <h2>5. Use refresh tokens for long-lived sessions</h2>
+            <p>A good flow is:</p>
+            <pre><code>
+ACCESS TOKEN
+short lifetime
+     │
+     │ expires
+     ▼
+REFRESH TOKEN
+longer lifetime
+     │
+     ▼
+POST /auth/refresh
+     │
+     ▼
+new ACCESS TOKEN
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+Access JWT:   15 minutes
+Refresh token: 30–90 days
+            </code></pre>
+            <p>You can adjust these according to your security requirements.</p>
+            <p>Your client stores:</p>
+            <pre><code>
+interface TokenStorage {
+    accessToken: string;
+    refreshToken: string;
+    expirationDate: number;
+    userId: string;
+    platform: "ios" | "android" | "web";
+    sessionId: string;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Your API should have two types of middleware</h2>
+            <p>Normal API</p>
+            <pre><code>
+Authorization: Bearer &lt;access_token&gt;
+            </code></pre>
+            <p>Lambda middleware:</p>
+            <pre><code>
+verifyApplicationJWT()
+            </code></pre>
+            <p>If valid:</p>
+            <pre><code>
+request.user
+   ↓
+Lambda handler
+            </code></pre>
+            <p>If expired:</p>
+            <pre><code>
+401
+            </code></pre>
+            <p>Refresh endpoint</p>
+            <p>This is different.</p>
+            <pre><code>
+POST /auth/refresh
+            </code></pre>
+            <p>The refresh endpoint should not require a non-expired access JWT.</p>
+            <p>Instead:</p>
+            <pre><code>
+refresh token
+     ↓
+find session
+     ↓
+verify refresh token
+     ↓
+verify session isn't revoked
+     ↓
+issue new access JWT
+            </code></pre>
+            <p>This directly addresses the issue you've been working on where your expired JWT was being rejected before /refresh-token could execute.</p>
+        </section>
+
+        <section>
+            <h2>7. Don't use an expired access JWT as the refresh credential</h2>
+            <p>This is a common mistake.</p>
+            <p>Bad:</p>
+            <pre><code>
+expired JWT
+    +
+refresh endpoint
+    ↓
+decode JWT
+    ↓
+trust user
+            </code></pre>
+            <p>Better:</p>
+            <pre><code>
+refreshToken
+     ↓
+hash
+     ↓
+find session
+     ↓
+verify
+     ↓
+userId
+     ↓
+new JWT
+            </code></pre>
+            <p>The refresh token should be the credential that authorizes the refresh.</p>
+        </section>
+
+        <section>
+            <h2>8. Axios / React Native flow</h2>
+            <p>Your client can automatically refresh:</p>
+            <pre><code>
+API request
+    │
+    ▼
+access JWT
+    │
+    ├── valid ───────────────► API
+    │
+    └── expired / 401
+             │
+             ▼
+       /auth/refresh
+             │
+             ▼
+       new access JWT
+             │
+             ▼
+       retry original request
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+try {
+    return await api.request(config);
+} catch (error) {
+
+    if (error.response?.status === 401) {
+
+        const newToken = await refreshAccessToken();
+
+        if (newToken) {
+            config.headers.Authorization =
+                `Bearer ${newToken}`;
+
+            return api.request(config);
+        }
+    }
+
+    throw error;
+}
+            </code></pre>
+            <p>However, you should also prevent multiple simultaneous refresh calls.</p>
+            <p>For example, if five API requests return 401 simultaneously:</p>
+            <pre><code>
+                Request A ─┐
+Request B ─┤
+Request C ─┼──► ONE refresh request
+Request D ─┤
+Request E ─┘
+                 │
+                 ▼
+             new token
+                 │
+        ┌────────┼────────┐
+        ▼        ▼        ▼
+        A        B        C...
+            </code></pre>
+            <p>This is especially important in React Native.</p>
+        </section>
+
+        <section>
+            <h2>9. AWS Serverless structure</h2>
+            <p>I'd structure your Lambda functions approximately like this:</p>
+            <pre><code>
+src/
+├── auth/
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   ├── auth.middleware.ts
+│   ├── token.service.ts
+│   ├── session.service.ts
+│   │
+│   ├── providers/
+│   │   ├── google.provider.ts
+│   │   ├── apple.provider.ts
+│   │   └── provider.interface.ts
+│   │
+│   └── handlers/
+│       ├── login.ts
+│       ├── refresh.ts
+│       ├── logout.ts
+│       └── me.ts
+│
+├── users/
+│   ├── user.service.ts
+│   └── user.model.ts
+│
+└── middleware/
+    └── requireAuth.ts
+            </code></pre>
+            <p>Then your provider interface can be consistent:</p>
+            <pre><code>
+interface AuthProvider {
+    verifyToken(token: string): Promise&lt;{
+        providerUserId: string;
+        email?: string;
+        name?: string;
+    }&gt;;
+}
+            </code></pre>
+            <p>Google:</p>
+            <pre><code>
+class GoogleProvider implements AuthProvider {
+    async verifyToken(token: string) {
+        // Google verification
+    }
+}
+            </code></pre>
+            <p>Apple:</p>
+            <pre><code>
+class AppleProvider implements AuthProvider {
+    async verifyToken(token: string) {
+        // Apple verification
+    }
+}
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+const provider = getProvider(providerName);
+
+const identity = await provider.verifyToken(token);
+            </code></pre>
+            <p>Your application authentication doesn't need to care whether the user came from Google or Apple.</p>
+        </section>
+
+        <section>
+            <h2>10. Recommended endpoints</h2>
+            <p>I'd use:</p>
+            <pre><code>
+POST /auth/login
+POST /auth/refresh
+POST /auth/logout
+
+GET  /auth/me
+            </code></pre>
+            <p>Login:</p>
+            <pre><code>
+{
+    "provider": "google",
+    "code": "...",
+    "platform": "ios"
+}
+            </code></pre>
+            <p>or:</p>
+            <pre><code>
+{
+    "provider": "apple",
+    "code": "...",
+    "platform": "ios"
+}
+            </code></pre>
+            <p>Refresh:</p>
+            <pre><code>
+{
+    "refreshToken": "..."
+}
+            </code></pre>
+            <p>Logout:</p>
+            <pre><code>
+{
+    "sessionId": "..."
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>11. Environment variables</h2>
+            <p>Keep provider secrets in AWS Secrets Manager or Parameter Store rather than hard-coding them.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+JWT_SECRET
+JWT_ACCESS_EXPIRATION
+REFRESH_TOKEN_EXPIRATION
+
+GOOGLE_WEB_CLIENT_ID
+GOOGLE_WEB_CLIENT_SECRET
+
+GOOGLE_IOS_CLIENT_ID
+GOOGLE_ANDROID_CLIENT_ID
+
+APPLE_CLIENT_ID
+APPLE_TEAM_ID
+APPLE_KEY_ID
+APPLE_PRIVATE_KEY
+            </code></pre>
+            <p>For Serverless Framework, expose only the values Lambda actually needs.</p>
+        </section>
+
+        <section>
+            <h2>12. The architecture I recommend for your project</h2>
+            <p>Given your current React/React Native + Node.js Lambda + API Gateway + MongoDB + Google OAuth setup, I'd use:</p>
+            <pre><code>
+                        CLIENTS
+                ┌────────────┼─────────────┐
+                │            │             │
+               iOS        Android         Web
+                │            │             │
+                └────────────┼─────────────┘
+                             │
+                      Google / Apple
+                             │
+                             ▼
+                       API Gateway
+                             │
+                             ▼
+                      Auth Lambda
+                             │
+                ┌────────────┼────────────┐
+                ▼            ▼            ▼
+             Google        Apple       Other IdP
+                │            │
+                └────────────┼────────────┘
+                             ▼
+                          User
+                        MongoDB
+                             │
+                             ▼
+                       Session record
+                             │
+                             ▼
+                   ┌───────────────────┐
+                   │ Access JWT        │
+                   │ Refresh Token     │
+                   └───────────────────┘
+                             │
+                             ▼
+                       API Gateway
+                             │
+                       JWT Middleware
+                             │
+                             ▼
+                      Protected APIs
+            </code></pre>
+            <p>The key rule</p>
+            <p>Platform authentication ≠ application authentication.</p>
+            <p>Google/Apple authenticate the identity. Your AWS backend establishes the application's session. Your application JWT protects your API. The refresh token maintains the session.</p>
+            <p>For your existing implementation, I would specifically refactor your current verifyApplicationJWT, userTokenMustExist, userMustExistForRefresh, and refreshToken flow so that expired access JWTs are allowed only through /auth/refresh, while every normal API remains protected by a non-expired JWT.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

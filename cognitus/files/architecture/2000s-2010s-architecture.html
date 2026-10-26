@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> 2000s/2010s architecture </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> 2000s/2010s architecture </h1>
+                    <p class="subtitle"> Yes. In that 2000s/2010s architecture, “services” usually meant backend components that the web/application server called to perform specific functions. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> A typical system looked like: </h2>
+            <pre><code>
+Browser
+   │
+   │ HTTP
+   ▼
+Web Server / Application Server
+   │
+   ├── Business Logic
+   │
+   ├── Authentication Service
+   ├── Email Service
+   ├── Payment Service
+   ├── File Storage Service
+   ├── Search Service
+   └── Reporting Service
+   │
+   ▼
+Database
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Examples of services</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>What it did</th>
+                        <th>Typical technology</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Authentication Service</td>
+                        <td>Login, sessions, passwords, permissions</td>
+                        <td>LDAP, Active Directory, custom DB</td>
+                    </tr>
+                    <tr>
+                        <td>Email Service</td>
+                        <td>Send registration, password-reset, notification emails</td>
+                        <td>SMTP, Exchange</td>
+                    </tr>
+                    <tr>
+                        <td>Payment Service</td>
+                        <td>Credit-card/payment processing</td>
+                        <td>PayPal, Authorize.Net, bank APIs</td>
+                    </tr>
+                    <tr>
+                        <td>File Service</td>
+                        <td>Upload/download documents and images</td>
+                        <td>File server, FTP, NAS</td>
+                    </tr>
+                    <tr>
+                        <td>Search Service</td>
+                        <td>Search products, customers, documents</td>
+                        <td>SQL queries, Lucene/Solr</td>
+                    </tr>
+                    <tr>
+                        <td>Reporting Service</td>
+                        <td>Generate PDF/Excel/business reports</td>
+                        <td>Crystal Reports, SSRS, JasperReports</td>
+                    </tr>
+                    <tr>
+                        <td>Logging Service</td>
+                        <td>Centralize application logs</td>
+                        <td>Syslog, Log4j, Splunk</td>
+                    </tr>
+                    <tr>
+                        <td>Messaging Service</td>
+                        <td>Asynchronous communication between applications</td>
+                        <td>RabbitMQ, ActiveMQ, IBM MQ</td>
+                    </tr>
+                    <tr>
+                        <td>Caching Service</td>
+                        <td>Store frequently accessed data</td>
+                        <td>Memcached, Redis</td>
+                    </tr>
+                    <tr>
+                        <td>External API Service</td>
+                        <td>Communicate with third-party systems</td>
+                        <td>REST/SOAP</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>A concrete example: 2010 e-commerce site</h2>
+            <p>Suppose you were building an online store around 2010:</p>
+            <pre><code>
+                ┌───────────────┐
+                │    Browser    │
+                └───────┬───────┘
+                        │ HTTP
+                        ▼
+             ┌─────────────────────┐
+             │ Apache / IIS / Tomcat│
+             │   Web Application    │
+             └─────────┬───────────┘
+                       │
+       ┌───────────────┼────────────────┐
+       ▼               ▼                ▼
+ ┌──────────┐   ┌─────────────┐  ┌─────────────┐
+ │Customer  │   │Order Service│  │Product      │
+ │Service   │   │             │  │Service      │
+ └────┬─────┘   └──────┬──────┘  └──────┬──────┘
+      │                │                │
+      └────────────────┼────────────────┘
+                       ▼
+                ┌─────────────┐
+                │   MySQL /   │
+                │ SQL Server  │
+                └─────────────┘
+            </code></pre>
+            <p>The Order Service, for example, might:</p>
+            <ol>
+                <li>Receive an order.</li>
+                <li>Validate the customer.</li>
+                <li>Check inventory.</li>
+                <li>Calculate the price.</li>
+                <li>Call a payment provider.</li>
+                <li>Save the order to SQL Server.</li>
+                <li>Call the email service.</li>
+                <li>Return the result to the web application.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>SOAP was particularly important</h2>
+            <p>In enterprise systems of the 2000s and early 2010s, “service” very often meant a SOAP Web Service.</p>
+            <p>For example:</p>
+            <pre><code>
+Web Application
+      │
+      │ SOAP/XML
+      ▼
+CustomerService
+      │
+      ▼
+SQL Server
+            </code></pre>
+            <p>The request might look conceptually like:</p>
+            <pre><code>
+&lt;GetCustomer&gt;
+    &lt;CustomerId&gt;12345&lt;/CustomerId&gt;
+&lt;/GetCustomer&gt;
+            </code></pre>
+            <p>and the service would return XML:</p>
+            
+            <pre><code>
+&lt;Customer&gt;
+    &lt;Id&gt;12345&lt;/Id&gt;
+    &lt;Name&gt;John Smith&lt;/Name&gt;
+    &lt;Email&gt;john@example.com&lt;/Email&gt;
+&lt;/Customer&gt;
+            </code></pre>
+
+            <p>Technologies such as .NET ASMX/WCF, Java JAX-WS, Apache Axis, and enterprise ESBs were common.</p>
+        </section>
+
+        <section>
+            <h2>The important distinction from today's architecture</h2>
+            <p>When we say:</p>
+            <p>2000s/2010s</p>
+            <pre><code>
+Browser
+   ↓
+Web/App Server
+   ↓
+Services
+   ↓
+Database
+            </code></pre>
+            <p>the services might actually be separate enterprise applications, often communicating through SOAP, REST, or messaging.</p>
+            <p>Modern systems tend to make the boundaries much more explicit:</p>
+            <pre><code>
+Browser / Mobile App
+        │
+        ▼
+   API Gateway / CDN
+        │
+        ├── Auth Service
+        ├── User Service
+        ├── Order Service
+        ├── Payment Service
+        ├── Notification Service
+        └── Search Service
+                │
+                ▼
+       Databases / Caches / Queues
+            </code></pre>
+            <p>So the big evolution isn't that services didn't exist before. They absolutely did. The major change is that modern cloud development makes APIs, independently deployable services, containers/serverless functions, queues, managed databases, observability, and distributed systems much more central to the architecture.</p>
+            <p>And a lot of what you might recognize from your current Node.js/Lambda/MongoDB/AWS work is essentially a much more cloud-native evolution of those older concepts.</p>
+        </section>
+
+        <section>
+            <p>The simplest distinction is:</p>
+            <p>Web server = delivers HTTP content.</p>
+            <p>Application server = runs application/business logic.</p>
+            <h2>1. Web server</h2>
+            <p>A web server primarily handles HTTP requests and responses.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>Apache HTTP Server</li>
+                <li>Nginx</li>
+                <li>Microsoft IIS</li>
+            </ul>
+            <p>For example:</p>
+            <pre><code>
+Browser
+   │
+   │ GET /logo.png
+   ▼
+Nginx
+   │
+   └── returns logo.png
+            </code></pre>
+            <p>It is very good at:</p>
+            <ul>
+                <li>Serving HTML, CSS, JavaScript</li>
+                <li>Serving images/files</li>
+                <li>Handling HTTP/HTTPS</li>
+                <li>SSL/TLS termination</li>
+                <li>Reverse proxying</li>
+                <li>Load balancing</li>
+                <li>Caching</li>
+                <li>Routing requests</li>
+            </ul>
+            <p>For a static website, you might only need a web server:</p>
+            <pre><code>
+Browser → Nginx → HTML/CSS/JS
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Application server</h2>
+            <p>An application server executes your application's code and handles business rules.</p>
+            <p>For example:</p>
+            <pre><code>
+Browser
+   │
+   │ POST /orders
+   ▼
+Web Server
+   │
+   ▼
+Application Server
+   │
+   ├── Validate customer
+   ├── Calculate price
+   ├── Check inventory
+   ├── Create order
+   └── Save to database
+   │
+   ▼
+Database
+            </code></pre>
+            <p>Examples historically included:</p>
+            <ul>
+                <li>Tomcat / JBoss / WebLogic for Java</li>
+                <li>ASP.NET / IIS for Microsoft environments</li>
+                <li>WebSphere for enterprise Java</li>
+                <li>Node.js applications</li>
+                <li>PHP application runtimes</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why were they separated?</h2>
+            <p>In the 2000s, a common enterprise architecture was:</p>
+            <pre><code>
+                    ┌──────────────┐
+Browser ────────►   │ Web Server   │
+                    │ Apache/IIS   │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │ Application  │
+                    │ Server       │
+                    │ Java/.NET    │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │  Database    │
+                    │ Oracle/SQL   │
+                    └──────────────┘
+            </code></pre>
+            <p>The web server could handle the HTTP-facing work, while the application server handled the heavy business processing.</p>
+        </section>
+
+        <section>
+            <h2>A modern example</h2>
+            <p>Today, the distinction can become blurry.</p>
+            <p>For example, with Node.js:</p>
+            <pre><code>
+Browser
+   ↓
+Nginx
+   ↓
+Node.js / Express
+   ↓
+MongoDB
+            </code></pre>
+            <p>Nginx is the web server/reverse proxy, while Express/Node.js is effectively the application server.</p>
+            <p>With AWS:</p>
+            <pre><code>
+Browser
+   ↓
+CloudFront
+   ↓
+API Gateway
+   ↓
+Lambda
+   ↓
+MongoDB
+            </code></pre>
+            <p>You don't necessarily have a traditional "application server" running 24/7. Lambda executes the application logic on demand.</p>
+        </section>
+
+        <section>
+            <h2>Easy way to remember</h2>
+            <p>Think of a restaurant:</p>
+            <p>Web server = waiter</p>
+            <p>"Here's the menu. I'll receive your request and deliver the response."</p>
+            <p>Application server = kitchen</p>
+            <p>"I'll actually process your order, apply the rules, prepare the result, and interact with the ingredients/database."</p>
+            <p>Database = storage room</p>
+            <p>"Here's the information you need."</p>
+            <p>So when you see:</p>
+            <p>Browser → Web/App Server → Database + Services</p>
+            <p>the Web/App Server is often where the application's backend code actually runs, while the services are additional systems it calls for specialized functionality.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

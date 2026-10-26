@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Difference Between React Web and React Native</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Difference Between React Web and React Native</h1>
+                    <p class="subtitle">
+                        The biggest difference is that React Web builds for the browser, while React Native builds for iOS/Android. The React concepts are similar, but the project structure and UI components differ.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Typical React Web structure</h2>
+            <pre><code>
+my-react-web/
+├── public/
+│   └── index.html
+│
+├── src/
+│   ├── components/
+│   │   ├── Header.tsx
+│   │   ├── Button.tsx
+│   │   └── Card.tsx
+│   │
+│   ├── pages/
+│   │   ├── Home.tsx
+│   │   ├── Analytics.tsx
+│   │   └── Settings.tsx
+│   │
+│   ├── services/
+│   │   ├── ApiService.ts
+│   │   └── AnalyticsService.ts
+│   │
+│   ├── hooks/
+│   ├── utils/
+│   ├── assets/
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── App.css
+│
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+function Home() {
+    return (
+        &lt;div className="container"&gt;
+            &lt;h1&gt;Hello&lt;/h1&gt;
+            &lt;button&gt;Click Me&lt;/button&gt;
+        &lt;/div&gt;
+    );
+}
+            </code></pre>
+            <p>Web React uses HTML elements:</p>
+            <pre><code>
+&lt;div&gt;
+&lt;button&gt;
+&lt;input&gt;
+&lt;h1&gt;
+&lt;p&gt;
+&lt;img&gt;
+            </code></pre>
+            <p>and CSS:</p>
+            <pre><code>
+.container {
+    display: flex;
+    padding: 20px;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Typical React Native structure</h2>
+            <pre><code>
+my-react-native/
+├── android/
+│   └── ...
+│
+├── ios/
+│   └── ...
+│
+├── src/
+│   ├── components/
+│   │   ├── Header.tsx
+│   │   ├── Button.tsx
+│   │   └── Card.tsx
+│   │
+│   ├── screens/
+│   │   ├── HomeScreen.tsx
+│   │   ├── AnalyticsScreen.tsx
+│   │   └── SettingsScreen.tsx
+│   │
+│   ├── services/
+│   │   ├── ApiService.ts
+│   │   └── AnalyticsService.ts
+│   │
+│   ├── navigation/
+│   │   └── AppNavigator.tsx
+│   │
+│   ├── hooks/
+│   ├── utils/
+│   └── assets/
+│
+├── App.tsx
+├── package.json
+├── tsconfig.json
+└── metro.config.js
+            </code></pre>
+            <p>Instead of HTML, React Native uses native components:</p>
+            <pre><code>
+import {
+    View,
+    Text,
+    TouchableOpacity,
+} from "react-native";
+    
+function HomeScreen() {
+    return (
+        &lt;View&gt;
+            &lt;Text&gt;Hello&lt;/Text&gt;
+        
+            &lt;TouchableOpacity&gt;
+                &lt;Text&gt;Click Me&lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+        &lt;/View&gt;
+    );
+}
+            </code></pre>
+            <p>There is no:</p>
+            <pre><code>
+&lt;div&gt;
+&lt;h1&gt;
+&lt;button&gt;
+            </code></pre>
+            <p>Instead:</p>
+            <pre><code>
+&lt;div&gt;       → View
+&lt;h1&gt;/&lt;p&gt;    → Text
+&lt;button&gt;    → TouchableOpacity / Pressable
+&lt;img&gt;       → Image
+&lt;input&gt;     → TextInput
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. The important structural difference</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>React Web</th>
+                        <th>React Native</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>components/</td>
+                        <td>components/</td>
+                    </tr>
+                    <tr>
+                        <td>pages/</td>
+                        <td>screens/</td>
+                    </tr>
+                    <tr>
+                        <td>div</td>
+                        <td>View</td>
+                    </tr>
+                    <tr>
+                        <td>p, h1</td>
+                        <td>Text</td>
+                    </tr>
+                    <tr>
+                        <td>button</td>
+                        <td>Pressable / TouchableOpacity</td>
+                    </tr>
+                    <tr>
+                        <td>input</td>
+                        <td>TextInput</td>
+                    </tr>
+                    <tr>
+                        <td>&lt;img&gt;</td>
+                        <td>Image</td>
+                    </tr>
+                    <tr>
+                        <td>CSS files</td>
+                        <td>StyleSheet</td>
+                    </tr>
+                    <tr>
+                        <td>Browser</td>
+                        <td>iOS / Android</td>
+                    </tr>
+                    <tr>
+                        <td>react-router</td>
+                        <td>React Navigation</td>
+                    </tr>
+                    <tr>
+                        <td>Vite/Webpack</td>
+                        <td>Metro</td>
+                    </tr>
+                    <tr>
+                        <td>public/</td>
+                        <td>Native asset handling</td>
+                    </tr>
+                    <tr>
+                        <td>index.html</td>
+                        <td>android/ + ios/ native projects</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. Navigation is also different</h2>
+            <p>You might have:</p>
+            <pre><code>
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+&lt;Routes&gt;
+    &lt;Route path="/" element={<Home />} /&gt;
+    &lt;Route path="/analytics" element={<Analytics />} /&gt;
+    &lt;Route path="/settings" element={<Settings />} /&gt;
+&lt;/Routes&gt;
+            </code></pre>
+            <p>The URL changes:</p>
+            <pre><code>
+/
+/analytics
+/settings
+            </code></pre>
+            <p>React Native</p>
+            <p>Usually:</p>
+            <pre><code>
+&lt;Stack.Navigator&gt;
+    &lt;Stack.Screen name="Home" component={HomeScreen} /&gt;
+    &lt;Stack.Screen name="Analytics" component={AnalyticsScreen} /&gt;
+    &lt;Stack.Screen name="Settings" component={SettingsScreen} /&gt;
+&lt;/Stack.Navigator&gt;
+            </code></pre>
+            <p>There isn't normally a browser URL.</p>
+        </section>
+
+        <section>
+            <h2>5. Styling difference</h2>
+            <p>Web</p>
+            <pre><code>
+&lt;div className="card"&gt;
+    &lt;/h2&gt;&lt;Hello&gt;&lt;/h2&gt;
+&lt;/div&gt;
+            </code></pre>
+            <pre><code>
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+            </code></pre>
+            <p>React Native</p>
+            <pre><code>
+&lt;View style={styles.card}&gt;
+    &lt;Text&gt;Hello&lt;/Text&gt;
+&lt;/View&gt;
+            </code></pre>
+            <pre><code>
+const styles = StyleSheet.create({
+    card: {
+        backgroundColor: "white",
+        padding: 20,
+        borderRadius: 10,
+    },
+});
+            </code></pre>
+            <p>Notice the differences:</p>
+            <pre><code>
+background       → backgroundColor
+border-radius    → borderRadius
+font-size        → fontSize
+            </code></pre>
+            <p>And React Native generally doesn't use CSS files.</p>
+        </section>
+
+        <section>
+            <h2>6. But the business logic can be almost identical</h2>
+            <p>This is the important part for your current project.</p>
+            <p>For example, your AnalyticsService can conceptually be the same:</p>
+            <pre><code>
+React Web
+    ↓
+AnalyticsService
+    ↓
+API
+    ↓
+Node.js
+    ↓
+MongoDB
+            </code></pre>
+            <p>and:</p>
+            <pre><code>
+React Native
+    ↓
+AnalyticsService
+    ↓
+API
+    ↓
+Node.js
+    ↓
+MongoDB
+            </code></pre>
+            <p>You can often share:</p>
+            <pre><code>
+services/
+hooks/
+types/
+utils/
+API models
+business logic
+authentication logic
+            </code></pre>
+            <p>while keeping the UI separate:</p>
+            <pre><code>
+Web
+ └── components/
+     └── Home.tsx
+
+Mobile
+ └── components/
+     └── HomeScreen.tsx
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Simple way to remember it</h2>
+            <p>Think of it like this:</p>
+            <pre><code>
+            React
+             │
+    ┌────────┴────────┐
+    │                 │
+React Web        React Native
+    │                 │
+Browser          iOS / Android
+    │                 │
+HTML/CSS       Native Components
+    │                 │
+div/button       View/Text/Button
+            </code></pre>
+            <p>React is the programming model.</p>
+            <p>React Web and React Native are different platforms/renderers.</p>
+            <p>So if you're working on your current TryCastanet project, your React web Home.tsx, Analytics.tsx, Settings.tsx, and services structure will look familiar to your React Native project, but the UI layer, navigation, styling, and platform-specific code are where the major differences appear.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

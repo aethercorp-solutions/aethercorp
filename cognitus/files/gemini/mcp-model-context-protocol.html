@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> MCP (Model Context Protocol) </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> MCP (Model Context Protocol) </h1>
+                    <p class="subtitle"> MCP (Model Context Protocol) is basically a standard way for an AI model to use external tools and data. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>Think of it like a USB standard for AI.</p>
+            <h2> Without MCP </h2>
+            <p>An AI agent might need custom code for every tool:</p>
+            <pre><code>
+LLM
+ ↓
+Custom code
+ ├── Gmail API
+ ├── Google Calendar API
+ ├── Database
+ ├── GitHub API
+ └── Slack API
+            </code></pre>
+            <p>Every integration is different.</p>
+        </section>
+
+        <section>
+            <h2>With MCP</h2>
+            <p>MCP provides a common interface:</p>
+            <pre><code>
+                ┌── Gmail
+                ├── Database
+LLM → AI Agent → MCP → GitHub
+                ├── Calendar
+                └── Slack
+            </code></pre>
+            <p>The AI doesn't need to understand every API's implementation. It can interact with MCP tools using a standardized protocol.</p>
+        </section>
+
+        <section>
+            <h2>The 3 important concepts</h2>
+            <p>1. MCP Client</p>
+            <p>Usually your AI application/agent.</p>
+            <pre><code>
+Claude / AI Agent / Your App
+        ↓
+    MCP Client
+            </code></pre>
+
+            <p>2. MCP Server</p>
+            <p>A program that exposes capabilities to the AI.</p>
+            <p>For example:</p>
+            <pre><code>
+MCP Server
+ ├── get_contacts()
+ ├── create_contact()
+ ├── search_contacts()
+ └── delete_contact()
+            </code></pre>
+
+            <p>3. Tools / Resources</p>
+            <p>The MCP server can expose:</p>
+
+            <ul>
+                <li>Tools → things the AI can do</li>
+                <li>Resources → information the AI can read</li>
+                <li>Prompts → reusable prompt templates</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple example</h2>
+            <p>Suppose you're building your Castanet AI agent.</p>
+            <p>User says:</p>
+            <p>"Who should I follow up with today?"</p>
+            <p>The flow could be:</p>
+            <pre><code>
+User
+ ↓
+LLM
+ ↓
+AI Agent
+ ↓
+MCP Client
+ ↓
+Castanet MCP Server
+ ↓
+MongoDB
+ ↓
+Contacts
+            </code></pre>
+            <p>The MCP server could expose:</p>
+            <pre><code>
+get_due_contacts()
+            </code></pre>
+            <p>The LLM decides:</p>
+            <p>"I need to call get_due_contacts."</p>
+            <p>MCP handles the standardized communication between the agent and your server.</p>
+        </section>
+
+        <section>
+            <h2>MCP vs API</h2>
+            <p>This is an important distinction:</p>
+            <p>API</p>
+            <pre><code>
+Your app → REST API → Server
+            </code></pre>
+            <p>MCP</p>
+            <pre><code>
+LLM/Agent → MCP → Tools/APIs/Database
+            </code></pre>
+            <p>MCP doesn't replace APIs.</p>
+            <p>You can actually build an MCP server on top of your existing APIs:</p>
+            <pre><code>
+                LLM
+                ↓
+            AI Agent
+                ↓
+            MCP Client
+                ↓
+         Castanet MCP Server
+                ↓
+         Existing REST API
+                ↓
+             MongoDB
+            </code></pre>
+            <p>So if you already know React + Node.js + APIs + MongoDB, MCP is not a completely new backend paradigm. It's primarily a standardized interface for giving AI access to capabilities and context.</p>
+        </section>
+
+        <section>
+            <h2>MCP + LLM + AI Agent</h2>
+            <p>The easiest mental model is:</p>
+            <pre><code>
+LLM = Brain
+AI Agent = Brain + decision/action loop
+MCP = Standard connector to tools/data
+MCP Server = Provides those tools/data
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+                  ┌─ Search contacts
+                  ├─ Get overdue contacts
+LLM → Agent → MCP ├─ Create follow-up
+                  ├─ Read analytics
+                  └─ Update contact
+            </code></pre>
+            <p>That's why MCP is particularly useful when you're building AI agents that need to interact with real applications, rather than just generate text.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AWS CloudFront</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">AWS CloudFront</h1>
+                    <p class="subtitle">
+                        Absolutely. The best way to understand AWS CloudFront is to build a tiny real application and put CloudFront in front of it.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. First, understand the concept</h2>
+            <p>Think of CloudFront as a delivery layer between your users and your server.</p>
+            <p>Without CloudFront:</p>
+            <pre><code>
+User
+  |
+  | HTTPS request
+  v
+AWS Server
+  |
+  v
+Your application
+            </code></pre>
+            <p>With CloudFront:</p>
+            <pre><code>
+                AWS CloudFront
+                /       |       \
+               /        |        \
+          User A      User B    User C
+             |           |          |
+             +-----------+----------+
+                         |
+                         v
+                   Your Server
+            </code></pre>
+            <p>CloudFront has servers called edge locations around the world.</p>
+            <p>For example:</p>
+            <pre><code>
+User in Philippines
+       |
+       v
+CloudFront Manila/nearby edge
+       |
+       | cache miss
+       v
+AWS Origin
+            </code></pre>
+            <p>If CloudFront already has the requested file:</p>
+            <pre><code>
+User
+ |
+ v
+CloudFront
+ |
+ | CACHE HIT
+ v
+file returned immediately
+            </code></pre>
+            <p>The origin doesn't need to be contacted.</p>
+        </section>
+
+        <section>
+            <h2>2. Our practical project</h2>
+            <p>Let's make a very simple website:</p>
+            <pre><code>
+my website
+│
+├── index.html
+├── style.css
+└── logo.png
+            </code></pre>
+            <p>We'll put these files in:</p>
+            <p>Amazon S3</p>
+            <p>Then:</p>
+            <pre><code>
+Browser
+   ↓
+CloudFront
+   ↓
+S3
+            </code></pre>
+            <p>This is one of the easiest ways to learn CloudFront.</p>
+        </section>
+
+        <section>
+            <h2>3. Step 1 — Create an S3 bucket</h2>
+            <p>Go to:</p>
+            <p>AWS Console → S3 → Create bucket</p>
+            <p>Create something like:</p>
+            <pre><code>
+my-cloudfront-demo-2026
+            </code></pre>
+            <p>The bucket name must be globally unique.</p>
+            <p>For this tutorial, you can keep the bucket private.</p>
+            <p>That's actually a good way to understand CloudFront because CloudFront can retrieve the files on behalf of users.</p>
+        </section>
+
+        <section>
+            <h2>4. Step 2 — Create your website</h2>
+            <p>Create index.html:</p>
+            <pre><code>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;CloudFront Demo&lt;/title&gt;
+    &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+    &lt;h1&gt;Hello CloudFront!&lt;/h1&gt;
+
+    &lt;p&gt;This website is being delivered through AWS CloudFront.&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+            <p>Create style.css:</p>
+            <pre><code>
+body {
+    font-family: Arial;
+    text-align: center;
+    margin-top: 100px;
+}
+
+h1 {
+    font-size: 50px;
+}
+            </code></pre>
+            <p>Upload both files to your S3 bucket.</p>
+            <p>Your S3 structure becomes:</p>
+            <pre><code>
+my-cloudfront-demo-2026
+│
+├── index.html
+└── style.css
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Step 3 — Create CloudFront distribution</h2>
+            <p>Go to:</p>
+            <p>AWS Console → CloudFront → Create distribution</p>
+            <p>The important concept here is:</p>
+            <p>Origin</p>
+            <p>CloudFront asks:</p>
+            <p>"Where should I get the files from?"</p>
+            <p>Choose your S3 bucket.</p>
+            <p>So:</p>
+            <pre><code>
+CloudFront
+     |
+     v
+S3 bucket
+            </code></pre>
+            <p>For the origin, select your S3 bucket.</p>
+        </section>
+
+        <section>
+            <h2>6. Step 4 — Understand the Origin</h2>
+            <p>This is one of the most important CloudFront concepts.</p>
+            <p>Origin = the original source of your content.</p>
+            <p>For example:</p>
+            <pre><code>
+CloudFront
+    |
+    +---- S3
+            </code></pre>
+            <p>S3 is your origin.</p>
+            <p>But CloudFront can also use:</p>
+            <pre><code>
+CloudFront
+    |
+    +---- EC2
+            </code></pre>
+            <p>or:</p>
+            <pre><code>
+CloudFront
+    |
+    +---- Application Load Balancer
+            </code></pre>
+            <p>or:</p>
+            <pre><code>
+CloudFront
+    |
+    +---- API Gateway
+            </code></pre>
+            <p>or even:</p>
+            <pre><code>
+CloudFront
+    |
+    +---- Your Node.js server
+            </code></pre>
+            <p>So don't think:</p>
+            <p>CloudFront = S3</p>
+            <p>Instead think:</p>
+            <p>CloudFront = delivery layer in front of an origin.</p>
+        </section>
+
+        <section>
+            <h2>7. Step 5 — Configure the S3 origin securely</h2>
+            <p>For a real application, don't simply make everything publicly accessible.</p>
+            <p>CloudFront supports Origin Access Control (OAC).</p>
+            <p>Conceptually:</p>
+            <pre><code>
+User
+  |
+  v
+CloudFront
+  |
+  | authenticated request
+  v
+Private S3 bucket
+            </code></pre>
+            <p>The user cannot directly access the S3 objects.</p>
+            <p>This is much better:</p>
+            <pre><code>
+                ┌──────────────┐
+                │ CloudFront   │
+                └──────┬───────┘
+                       |
+                       v
+                 Private S3
+            </code></pre>
+            <p>Instead of:</p>
+            <pre><code>
+User ───────────────→ Public S3
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Step 6 — Default root object</h2>
+            <p>In CloudFront settings, set:</p>
+            <pre><code>
+Default root object:
+
+index.html
+            </code></pre>
+            <p>This means when someone visits:</p>
+            <pre><code>
+https://xxxxx.cloudfront.net/
+            </code></pre>
+            <p>CloudFront knows to request:</p>
+            <pre><code>
+/index.html
+            </code></pre>
+            <p>from S3.</p>
+        </section>
+
+        <section>
+            <h2>9. Step 7 — Deploy</h2>
+            <p>Create the distribution.</p>
+            <p>AWS will give you something like:</p>
+            <pre><code>
+d123456abcdef.cloudfront.net
+            </code></pre>
+            <p>Visit:</p>
+            <pre><code>
+https://d123456abcdef.cloudfront.net
+            </code></pre>
+            <p>You should see:</p>
+            <pre><code>
+Hello CloudFront!
+
+This website is being delivered through AWS CloudFront.
+            </code></pre>
+            <p>Congratulations — you've just used CloudFront. 🎉</p>
+        </section>
+
+        <section>
+            <h2>10. Now understand what actually happened</h2>
+            <p>Suppose you visit:</p>
+            <pre><code>
+https://d123456abcdef.cloudfront.net/index.html
+            </code></pre>
+            <p>First request</p>
+            <p>CloudFront doesn't have the file yet.</p>
+            <pre><code>
+Browser
+   |
+   v
+CloudFront
+   |
+   | MISS
+   v
+S3
+   |
+   | index.html
+   v
+CloudFront
+   |
+   v
+Browser
+            </code></pre>
+            <p>This is called a:</p>
+            <p>Cache Miss</p>
+        </section>
+
+        <section>
+            <h2>11. Second request</h2>
+            <p>You refresh the page.</p>
+            <p>CloudFront may already have:</p>
+            <pre><code>
+index.html
+            </code></pre>
+            <p>cached.</p>
+            <p>So:</p>
+            <pre><code>
+Browser
+   |
+   v
+CloudFront
+   |
+   | HIT
+   v
+Browser
+            </code></pre>
+            <p>S3 isn't contacted.</p>
+            <p>This is a:</p>
+            <p>Cache Hit</p>
+            <p>That's the fundamental idea of CloudFront.</p>
+        </section>
+
+        <section>
+            <h2>12. Try the most useful experiment</h2>
+            <p>Change your index.html.</p>
+            <p>For example:</p>
+            <pre><code>
+&lt;h1&gt;Hello CloudFront V2!&lt;/h1&gt;
+            </code></pre>
+            <p>Upload the new file to S3.</p>
+            <p>Then immediately visit CloudFront again.</p>
+            <p>You may still see:</p>
+            <pre><code>
+Hello CloudFront!
+            </code></pre>
+            <p>Why?</p>
+            <p>Because CloudFront has the old cached version.</p>
+            <p>This is where an important CloudFront concept appears:</p>
+            <p>Cache invalidation</p>
+            <p>You can tell CloudFront:</p>
+            <p>"Forget the cached version."</p>
+            <p>Go to:</p>
+            <p>CloudFront → Your Distribution → Invalidations</p>
+            <p>Create an invalidation:</p>
+            <pre><code>
+/*
+            </code></pre>
+            <p>This means:</p>
+            <p>invalidate all cached files.</p>
+            <p>Then reload the CloudFront URL.</p>
+            <p>Now you should see:</p>
+            <pre><code>
+Hello CloudFront V2!
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. This is why CloudFront is useful</h2>
+            <p>Imagine your website has:</p>
+            <pre><code>
+index.html
+style.css
+app.js
+logo.png
+video.mp4
+            </code></pre>
+            <p>And you have users in:</p>
+            <pre><code>
+Philippines
+Japan
+Singapore
+USA
+Europe
+            </code></pre>
+            <p>Without CloudFront:</p>
+            <pre><code>
+Philippines ───────┐
+Japan ─────────────┤
+Singapore ─────────┤
+USA ───────────────┤──→ Origin
+Europe ────────────┘
+            </code></pre>
+            <p>Lots of requests go to the origin.</p>
+            <p>With CloudFront:</p>
+            <pre><code>
+                CloudFront
+                /      |      \
+               /       |       \
+        Philippines   Japan    USA
+               \       |       /
+                \      |      /
+                     Origin
+            </code></pre>
+            <p>CloudFront caches frequently requested content closer to users.</p>
+        </section>
+
+        <section>
+            <h2>14. Now connect this to your Node.js experience</h2>
+            <p>This is where CloudFront becomes especially useful for you.</p>
+            <p>Suppose you have:</p>
+            <pre><code>
+React frontend
+       |
+       v
+CloudFront
+       |
+       v
+S3
+            </code></pre>
+            <p>and:</p>
+            <pre><code>
+React frontend
+       |
+       v
+API
+       |
+       v
+API Gateway
+       |
+       v
+AWS Lambda
+       |
+       v
+MongoDB
+            </code></pre>
+            <p>A typical architecture could be:</p>
+            <pre><code>
+                USERS
+                |
+                v
+          CloudFront
+           /       \
+          /         \
+         v           v
+       S3         API Gateway
+    React app          |
+                       v
+                    Lambda
+                       |
+                       v
+                    MongoDB
+            </code></pre>
+            <p>CloudFront handles the frontend/static content.</p>
+            <p>API Gateway/Lambda handles the dynamic API requests.</p>
+        </section>
+
+        <section>
+            <h2>15. CloudFront can also sit in front of your API</h2>
+            <p>For example:</p>
+            <pre><code>
+Mobile App
+     |
+     v
+CloudFront
+     |
+     v
+API Gateway
+     |
+     v
+Lambda
+            </code></pre>
+            <p>Or:</p>
+            <pre><code>
+Browser
+   |
+   v
+CloudFront
+   |
+   v
+Application Load Balancer
+   |
+   v
+EC2 / ECS
+   |
+   v
+Node.js
+            </code></pre>
+            <p>So CloudFront isn't just for websites.</p>
+        </section>
+
+        <section>
+            <h2>16. The 5 CloudFront concepts you should learn</h2>
+            <p>Don't try to memorize every AWS setting initially.</p>
+            <p>Focus on these five:</p>
+            <p>1. Distribution</p>
+            <p>Your CloudFront configuration.</p>
+            <pre><code>
+        CloudFront Distribution
+        |
+        +---- Origin
+        +---- Cache behavior
+        +---- SSL
+        +---- Domains
+            </code></pre>
+            <p>Think:</p>
+            <p>"My CloudFront setup."</p>
+        </section>
+
+        <section>
+            <h2>2. Origin</h2>
+            <p>Where CloudFront gets the content.</p>
+            <p>Examples:</p>
+            <pre><code>
+S3
+EC2
+ALB
+API Gateway
+external HTTP server
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Edge location</h2>
+            <p>Where CloudFront delivers/caches content close to users.</p>
+            <p>Think:</p>
+            <p>"Nearby CloudFront server."</p>
+        </section>
+
+        <section>
+            <h2>4. Cache</h2>
+            <p>CloudFront stores frequently requested content.</p>
+            <pre><code>
+Request
+   ↓
+CloudFront
+   ↓
+Is it cached?
+   ├── YES → return immediately
+   │
+   └── NO → ask origin
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Invalidation</h2>
+            <p>Delete cached content so CloudFront gets a fresh version.</p>
+            <pre><code>
+S3:
+V2
+
+CloudFront:
+V1
+
+       ↓
+Invalidation
+
+CloudFront:
+V2
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>17. A second practical exercise: CloudFront + Node.js</h2>
+            <p>Once you understand S3, try this.</p>
+            <p>Imagine your existing Node.js API:</p>
+            <pre><code>
+https://api.example.com/users
+            </code></pre>
+            <p>Your server is:</p>
+            <pre><code>
+Node.js
+   |
+   v
+EC2
+            </code></pre>
+            <p>Put CloudFront in front:</p>
+            <pre><code>
+Client
+  |
+  v
+CloudFront
+  |
+  v
+EC2
+  |
+  v
+Node.js
+            </code></pre>
+            <p>Now you can experiment with:</p>
+            <ul>
+                <li>HTTPS</li>
+                <li>caching</li>
+                <li>custom domain</li>
+                <li>cache policies</li>
+                <li>headers</li>
+                <li>query strings</li>
+                <li>cookies</li>
+                <li>compression</li>
+                <li>security</li>
+                <li>origin configuration</li>
+            </ul>
+            <p>This is much closer to what you'll encounter in production.</p>
+        </section>
+
+        <section>
+            <h2>18. The most important mental model</h2>
+            <p>Remember this:</p>
+            <pre><code>
+        CLOUD FRONT
+        ┌────────────────────┐
+User →  │ Cache / Edge Layer │
+        └─────────┬──────────┘
+                    |
+                    | cache miss
+                    v
+                ORIGIN
+        ┌────────────────────┐
+        │ S3 / EC2 / ALB /   │
+        │ API Gateway / etc. │
+        └────────────────────┘
+            </code></pre>
+            <p>CloudFront does not replace your application server.</p>
+            <p>It sits in front of it.</p>
+            <p>Think of it like a smart delivery warehouse:</p>
+            <pre><code>
+Origin = main warehouse
+
+CloudFront = regional warehouses
+
+User = customer
+            </code></pre>
+            <p>If the regional warehouse already has the product:</p>
+            <pre><code>
+Customer → Regional warehouse
+            </code></pre>
+            <p>No need to go all the way to the main warehouse.</p>
+        </section>
+
+        <section>
+            <h2>Your recommended hands-on learning path</h2>
+            <p>Since you're already working with Node.js, React, AWS Lambda, S3 and MongoDB, I'd learn CloudFront in this order:</p>
+            <pre><code>
+1. S3 static website
+       ↓
+2. CloudFront + S3
+       ↓
+3. Cache HIT / MISS
+       ↓
+4. Cache invalidation
+       ↓
+5. Custom domain + HTTPS
+       ↓
+6. CloudFront + API Gateway
+       ↓
+7. CloudFront + Lambda
+       ↓
+8. CloudFront cache policies
+       ↓
+9. CloudFront + your React/Node.js application
+            </code></pre>
+            <p>You do need some hands-on practice, but you don't need to learn every CloudFront setting. If you can build the S3 → CloudFront → browser example above and understand origin, edge, cache hit/miss, and invalidation, you've already learned the core concept.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> CPU vs GPU </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> CPU vs GPU </h1>
+                    <p class="subtitle"> 
+                        The simplest way to think about it:
+                        <p>CPU = a few very smart workers</p>
+                        <p>GPU = thousands of simpler workers</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 🧠 CPU — Central Processing Unit </h2>
+            <p>The CPU is the general-purpose brain of the computer.</p>
+            <p>It is very good at doing different kinds of tasks, one after another, and making decisions.</p>
+            <p>For example:</p>
+            <pre><code>
+CPU
+ ├── Run your operating system
+ ├── Open applications
+ ├── Run JavaScript
+ ├── Handle files
+ ├── Make decisions
+ └── Run complex program logic
+            </code></pre>
+            <p>A CPU might have 4, 8, 16, 24+ powerful cores.</p>
+            <p>Each core is relatively sophisticated.</p>
+        </section>
+
+        <section>
+            <h2>🎮 GPU — Graphics Processing Unit</h2>
+            <p>A GPU is designed to perform many similar calculations at the same time.</p>
+            <p>For example, imagine you need to calculate the color of 1 million pixels:</p>
+            <pre><code>
+CPU:
+
+Worker 1 → Pixel 1
+Worker 1 → Pixel 2
+Worker 1 → Pixel 3
+Worker 1 → Pixel 4
+...
+            </code></pre>
+            <p>A GPU can do something more like:</p>
+            <pre><code>
+GPU:
+
+Worker 1    → Pixel 1
+Worker 2    → Pixel 2
+Worker 3    → Pixel 3
+Worker 4    → Pixel 4
+Worker 5    → Pixel 5
+...
+Worker 1000 → Pixel 1000
+            </code></pre>
+            <p>That's why GPUs are extremely good at parallel computation.</p>
+        </section>
+
+        <section>
+            <h2>The important difference</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>CPU</th>
+                        <th>GPU</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Main idea</td>
+                        <td>General-purpose</td>
+                        <td>Massive parallel processing</td>
+                    </tr>
+                    <tr>
+                        <td>Cores</td>
+                        <td>Relatively few</td>
+                        <td>Thousands of smaller processing units</td>
+                    </tr>
+                    <tr>
+                        <td>Good at</td>
+                        <td>Logic, decisions, operating systems</td>
+                        <td>Repeated mathematical calculations</td>
+                    </tr>
+                    <tr>
+                        <td>Graphics</td>
+                        <td>Can do it</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>AI/ML</td>
+                        <td>Can do it</td>
+                        <td>Very fast</td>
+                    </tr>
+                    <tr>
+                        <td>Sequential tasks</td>
+                        <td>Excellent</td>
+                        <td>Less suited</td>
+                    </tr>
+                    <tr>
+                        <td>Parallel tasks</td>
+                        <td>Good</td>
+                        <td>Excellent</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🤖 Why GPUs are important for A</h2>
+            <p>AI involves doing huge numbers of mathematical operations, particularly matrix/vector calculations.</p>
+            <p>For example:</p>
+            <pre><code>
+[0.2, 0.7, 0.1]
+        ×
+[0.4, 0.8, 0.3]
+        ↓
+many mathematical operations
+            </code></pre>
+            <p>A neural network may perform billions or trillions of these operations.</p>
+            <p>That's where the GPU shines:</p>
+            <pre><code>
+                CPU
+                │
+           Give instructions
+                ↓
+      ┌─────────────────────┐
+      │        GPU          │
+      │                     │
+      │  ● ● ● ● ● ● ● ●    │
+      │  ● ● ● ● ● ● ● ●    │
+      │  ● ● ● ● ● ● ● ●    │
+      │  ● ● ● ● ● ● ● ●    │
+      │  thousands of       │
+      │  parallel workers   │
+      └─────────────────────┘
+                ↓
+        massive calculation
+            </code></pre>
+            <p>So, CPU and GPU aren't really competitors.</p>
+            <p>They work together:</p>
+            <p>CPU decides what needs to be done; GPU does huge amounts of parallel math very quickly.</p>
+            <p>This is also why GPUs became extremely important for AI, vectors, embeddings, neural networks, and LLMs.</p>
+        </section>
+
+        <section>
+            <p>Technically, the key difference is how the processor allocates hardware resources to computation.</p>
+            <h2>1. CPU: optimized for general-purpose, low-latency computation</h2>
+            <p>A CPU has a relatively small number of powerful cores. Each core contains sophisticated control logic, large caches, branch prediction, out-of-order execution, etc.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+                CPU
+┌─────────────────────────────────────────┐
+│ Core 0 │ Core 1 │ Core 2 │ Core 3 │ ... │
+│        │        │        │        │     │
+│ ALU    │ ALU    │ ALU    │ ALU    │     │
+│ FPU    │ FPU    │ FPU    │ FPU    │     │
+│ Cache  │ Cache  │ Cache  │ Cache  │     │
+└─────────────────────────────────────────┘
+            </code></pre>
+            <p>A CPU is particularly good at:</p>
+            <pre><code>
+if (user.isAuthenticated) {
+    loadUserData();
+} else {
+    showLogin();
+}
+            </code></pre>
+            <p>There are branches, decisions, dependencies, and irregular operations.</p>
+        </section>
+
+        <section>
+            <h2>2. GPU: optimized for massive parallelism</h2>
+            <p>A GPU has a much larger number of arithmetic processing resources.</p>
+            <p>Modern GPUs organize these into groups such as SMs (NVIDIA Streaming Multiprocessors) or CUs (AMD Compute Units).</p>
+            <p>Simplified:</p>
+            <pre><code>
+                GPU
+┌───────────────────────────────────────────┐
+│ SM/CU │ SM/CU │ SM/CU │ SM/CU │ ...       │
+│       │       │       │       │           │
+│ ALUs  │ ALUs  │ ALUs  │ ALUs  │           │
+│ ALUs  │ ALUs  │ ALUs  │ ALUs  │           │
+│ ALUs  │ ALUs  │ ALUs  │ ALUs  │           │
+└───────────────────────────────────────────┘
+            </code></pre>
+            <p>The GPU is designed to execute many operations concurrently.</p>
+            <p>For example, suppose we have:</p>
+            <pre><code>
+C[i] = A[i] + B[i]
+            </code></pre>
+            <p>for 1,000,000 elements.</p>
+            <p>A CPU might process chunks using its relatively small number of cores.</p>
+            <p>A GPU can distribute the work across a huge number of threads:</p>
+            <pre><code>
+Thread 0       → C[0] = A[0] + B[0]
+Thread 1       → C[1] = A[1] + B[1]
+Thread 2       → C[2] = A[2] + B[2]
+...
+Thread 999999  → C[999999] = A[999999] + B[999999]
+            </code></pre>
+            <p>The important concept is parallel throughput.</p>
+        </section>
+
+        <section>
+            <h2>3. CPU vs GPU at the architectural level</h2>
+            <p>Think about two different goals:</p>
+            <p>CPU:</p>
+            <pre><code>
+                ┌── Complex instruction
+                │
+                ├── Branch
+                │
+                ├── Load data
+                │
+                ├── Make decision
+                │
+                └── Execute next instruction
+                        ↓
+                   LOW LATENCY
+            </code></pre>
+            <p>GPU:</p>
+            <pre><code>
+Input data
+    │
+    ├── Operation 1 ─┐
+    ├── Operation 2 ─┤
+    ├── Operation 3 ─┤
+    ├── Operation 4 ─┤
+    ├── Operation 5 ─┤
+    ├── ...          ├──> MASSIVE PARALLELISM
+    └── Operation N ─┘
+            </code></pre>
+            <p>So:</p>
+            <p>CPU → optimize for latency and general-purpose execution</p>
+            <p>GPU → optimize for throughput and parallel execution</p>
+        </section>
+
+        <section>
+            <h2>4. Why this matters for vectors and AI</h2>
+            <p>This connects directly to what you were asking about vectors and embeddings.</p>
+            <p>Suppose an embedding is:</p>
+            <pre><code>
+A = [0.2, 0.7, 0.1, 0.9]
+            </code></pre>
+            <p>and another vector is:</p>
+            <pre><code>
+B = [0.4, 0.3, 0.8, 0.2]
+            </code></pre>
+            <p>A common operation is a dot product:</p>
+            <pre><code>
+A⋅B=(0.2)(0.4)+(0.7)(0.3)+(0.1)(0.8)+(0.9)(0.2)
+            </code></pre>
+            <p>A GPU is very good at this type of workload because neural networks perform enormous numbers of multiply-add operations.</p>
+            <p>For a neural network, you might have a matrix:</p>
+            <pre><code>
+                W
+            </code></pre>
+            <p>and an input vector:</p>
+            <pre><code>
+                x
+            </code></pre>
+            <p>and calculate:</p>
+            <pre><code>
+                y=Wx
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+                Matrix W
+                ┌───────────────┐
+                │ 0.2  0.7  0.1 │
+                │ 0.4  0.3  0.8 │
+                │ 0.9  0.2  0.5 │
+                └───────────────┘
+                       ×
+                ┌─────────┐
+                │   0.6   │
+                │   0.1   │
+                │   0.8   │
+                └─────────┘
+                       ↓
+                       y
+            </code></pre>
+            <p>This produces many independent arithmetic operations that can be executed in parallel.</p>
+            <p>That's exactly the kind of workload GPUs are designed for.</p>
+        </section>
+
+        <section>
+            <h2>5. Memory is also a major difference</h2>
+            <p>CPU:</p>
+            <pre><code>
+CPU
+ ↓
+Large cache hierarchy
+ ↓
+System RAM
+            </code></pre>
+            <p>GPU:</p>
+            <pre><code>
+GPU
+ ↓
+GPU cache/shared memory
+ ↓
+Very high-bandwidth VRAM
+            </code></pre>
+            <p>GPUs typically emphasize memory bandwidth because thousands of computation threads need data simultaneously.</p>
+            <p>This is one reason AI accelerators use very high-bandwidth memory such as HBM in data-center systems.</p>
+        </section>
+
+        <section>
+            <h2>6. SIMD/SIMT</h2>
+            <p>A more technical distinction is the execution model.</p>
+            <p>CPUs use techniques such as SIMD (Single Instruction, Multiple Data):</p>
+            <pre><code>
+ONE instruction
+      ↓
+┌─────┬─────┬─────┬─────┐
+│ A+B │ A+B │ A+B │ A+B │
+└─────┴─────┴─────┴─────┘
+            </code></pre>
+            <p>GPUs take this idea much further through SIMT (Single Instruction, Multiple Threads).</p>
+            <p>Conceptually:</p>
+            <pre><code>
+            Instruction
+                ↓
+     ┌──────────┼──────────┐
+     ↓          ↓          ↓
+  Thread 0   Thread 1   Thread 2 ...
+     ↓          ↓          ↓
+  Data[0]    Data[1]    Data[2]
+            </code></pre>
+            <p>Threads are grouped together and execute efficiently when they follow similar instructions.</p>
+            <p>If GPU threads diverge heavily:</p>
+            <pre><code>
+Thread 0 → IF
+Thread 1 → ELSE
+Thread 2 → IF
+Thread 3 → ELSE
+            </code></pre>
+            <p>the GPU can become less efficient because the hardware is optimized for threads doing similar work.</p>
+        </section>
+
+        <section>
+            <h2>The most technical simple summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Characteristic</th>
+                        <th>CPU</th>
+                        <th>GPU</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Primary optimization</td>
+                        <td>Low latency</td>
+                        <td>High throughput</td>
+                    </tr>
+                    <tr>
+                        <td>Cores</td>
+                        <td>Few, sophisticated</td>
+                        <td>Many, simpler arithmetic resources</td>
+                    </tr>
+                    <tr>
+                        <td>Control logic</td>
+                        <td>Very sophisticated</td>
+                        <td>More throughput-oriented</td>
+                    </tr>
+                    <tr>
+                        <td>Branch-heavy code</td>
+                        <td>Excellent</td>
+                        <td>Often inefficient</td>
+                    </tr>
+                    <tr>
+                        <td>Parallel arithmetic</td>
+                        <td>Good</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>SIMD/SIMT</td>
+                        <td>SIMD</td>
+                        <td>SIMT</td>
+                    </tr>
+                    <tr>
+                        <td>Cache</td>
+                        <td>Large/latency optimized</td>
+                        <td>Throughput-oriented</td>
+                    </tr>
+                    <tr>
+                        <td>Memory bandwidth</td>
+                        <td>Lower</td>
+                        <td>Very high</td>
+                    </tr>
+                    <tr>
+                        <td>Matrix multiplication</td>
+                        <td>Good</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>Neural networks</td>
+                        <td>Can run them</td>
+                        <td>Highly optimized for them</td>
+                    </tr>
+                    <tr>
+                        <td>Operating system</td>
+                        <td>Excellent</td>
+                        <td>Not its primary role</td>
+                    </tr>
+                    <tr>
+                        <td>JavaScript/backend logic</td>
+                        <td>Excellent</td>
+                        <td>Generally inappropriate</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>One sentence to remember</p>
+            <p>A CPU is designed to execute a relatively small number of complicated instruction streams extremely flexibly, while a GPU is designed to execute enormous numbers of similar arithmetic operations concurrently.</p>
+            <p>And this is the fundamental reason GPU → matrix multiplication → neural networks → LLMs is such an important chain in modern AI.</p>
+        </section>
+
+        <section>
+            <p>In this CPU/GPU context, latency means the amount of time it takes for a computation to start and produce its result.</p>
+            <h2>Simple example</h2>
+            <p>Suppose your program asks:</p>
+            <pre><code>
+CPU: "Calculate 5 + 3."
+            </code></pre>
+            <p>If the CPU produces the answer in 1 microsecond, that's its latency:</p>
+            <pre><code>
+                Request ────────────────> Result
+          1 μs
+            </code></pre>
+            <p>So:</p>
+            <p>Latency = how quickly you get an individual result.</p>
+            <p>CPU vs GPU</p>
+            <p>This is why we say:</p>
+            <p>CPU → optimized for low latency</p>
+            <p>A CPU is designed to quickly handle an individual task:</p>
+            <pre><code>
+Task → CPU → Result
+       ↓
+    very fast
+            </code></pre>
+            <p>A GPU is optimized more for throughput—doing a huge amount of work overall:</p>
+            <pre><code>
+Task 1 ─┐
+Task 2 ─┤
+Task 3 ─┤
+Task 4 ─┤ → GPU → thousands of results
+Task 5 ─┤
+  ...   │
+Task N ─┘
+            </code></pre>
+            <p>The GPU may have some overhead before it gets all those operations running, but once running, it can process massive numbers of operations simultaneously.</p>
+            <p>Latency vs throughput</p>
+            <p>This distinction is extremely important:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Meaning</th>
+                        <th>Think of it as</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Latency</td>
+                        <td>Time to complete one operation/request</td>
+                        <td>🚗 How fast one car reaches the destination</td>
+                    </tr>
+                    <tr>
+                        <td>Throughput</td>
+                        <td>Amount of work completed per unit of time</td>
+                        <td>🚦 How many cars reach the destination per minute</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>For example:</p>
+            <pre><code>
+CPU:
+Request → Result
+         ↓
+      1 ms
+
+GPU:
+100,000 requests → many results
+         ↓
+      enormous throughput
+            </code></pre>
+            <p>So when we say "CPU is optimized for low latency, GPU for high throughput," we're saying:</p>
+            <p>CPU is excellent when you need an individual operation to finish quickly and flexibly. GPU is excellent when you have huge amounts of similar work that can be processed simultaneously.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

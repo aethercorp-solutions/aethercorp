@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> String.fromEnvironment() </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> String.fromEnvironment() </h1>
+                    <p class="subtitle"> 
+                        In Flutter, String.fromEnvironment() is used to read compile-time environment variables when building your application. It's commonly used to configure different environments, such as Development, QA, UAT, and Production, without changing your Dart source code.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Basic example </h2>
+            <pre><code>
+const String environment =
+    String.fromEnvironment('ENV');
+
+void main() {
+  print(environment);
+}
+            </code></pre>
+
+            <p>You can pass the environment value when running Flutter:</p>
+
+            <pre><code>
+flutter run --dart-define=ENV=development
+            </code></pre>
+
+            <p>Output:</p>
+            <pre><code>
+development
+            </code></pre>
+
+            <p>If you build your app for production:</p>
+            <pre><code>
+flutter build appbundle --dart-define=ENV=production
+            </code></pre>
+
+            <p>The same Dart code can read production instead.</p>
+        </section>
+
+        <section>
+            <h2>2. How it works</h2>
+            <pre><code>
+1. CI/CD Pipeline
+Bitbucket Pipelines, for example
+            </code></pre>
+
+            <pre><code>
+2. Pass environment variables
+--dart-define=ENV=qa
+            </code></pre>
+
+            <pre><code>
+3. Flutter build process
+Embeds compile-time values into the app
+            </code></pre>
+
+            <pre><code>
+4. Dart application
+Reads the value using String.fromEnvironment()
+            </code></pre>
+
+            <p>The important point is that the value is supplied during compilation or app startup in the Flutter tool's compile-time configuration, not fetched automatically from your server.</p>
+        </section>
+
+        <section>
+            <h2>3. Practical example: API base URLs</h2>
+            <p>Suppose your application has three environments.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Environment</th>
+                        <th>API base URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Development</td>
+                        <td>https://dev-api.example.com</td>
+                    </tr>
+                    <tr>
+                        <td>QA</td>
+                        <td>https://qa-api.example.com</td>
+                    </tr>
+                    <tr>
+                        <td>Production</td>
+                        <td>https://api.example.com</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>You can create an environment configuration class:</p>
+
+            <pre><code>
+class AppConfig {
+    static const String environment =
+        String.fromEnvironment(
+        'ENV',
+        defaultValue: 'development',
+    );
+    
+    static const String apiUrl =
+        String.fromEnvironment(
+        'API_URL',
+        defaultValue: 'https://dev-api.example.com',
+    );
+}
+            </code></pre>
+
+            <p>Use the configuration in your API service:</p>
+            <pre><code>
+final String baseUrl = AppConfig.apiUrl;
+
+print('Environment: ${AppConfig.environment}');
+print('API URL: $baseUrl');
+            </code></pre>
+
+            <p>Build for QA:</p>
+            <pre><code>
+flutter build appbundle \
+  --dart-define=ENV=qa \
+  --dart-define=API_URL=https://qa-api.example.com
+            </code></pre>
+
+            <p>Build for Production:</p>
+            <pre><code>
+flutter build appbundle \
+  --dart-define=ENV=production \
+  --dart-define=API_URL=https://api.example.com
+            </code></pre>
+
+            <p>Both builds use the same source code but have different configurations.</p>
+        </section>
+
+        <section>
+            <h2>4. What does defaultValue mean?</h2>
+            <p>Consider this code:</p>
+            <pre><code>
+const String apiUrl = String.fromEnvironment(
+  'API_URL',
+  defaultValue: 'http://localhost:3000',
+);
+            </code></pre>
+
+            <ul>
+                <li>If API_URL is provided through --dart-define, Flutter uses that value.</li>
+                <li>If it isn't provided, the code uses http://localhost:3000.</li>
+            </ul>
+
+            <p>This makes local development easier. However, be careful: localhost on an Android device refers to the device itself, not necessarily your computer.</p>
+        </section>
+
+        <section>
+            <h2>5. Difference between String.fromEnvironment() and Platform.environment</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>String.fromEnvironment()</th>
+                        <th>Platform.environment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Purpose</td>
+                        <td>Read compile-time declarations</td>
+                        <td>Read operating-system environment variables</td>
+                    </tr>
+                    <tr>
+                        <td>Flutter web</td>
+                        <td>Supported for compile-time declarations</td>
+                        <td>Not supported</td>
+                    </tr>
+                    <tr>
+                        <td>Typical use</td>
+                        <td>API URLs, feature flags, app configuration</td>
+                        <td>Server-side process configuration</td>
+                    </tr>
+                    <tr>
+                        <td>Set using</td>
+                        <td>--dart-define</td>
+                        <td>OS or process environment</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>For Flutter application configuration, String.fromEnvironment() is often the appropriate choice.</p>
+        </section>
+
+        <section>
+            <h2>6. How this fits into your CI/CD pipeline</h2>
+            <p>For example, in Bitbucket Pipelines, you can define a QA build step:</p>
+            <pre><code>
+- step:
+    name: Build QA Android App
+    script:
+      - flutter pub get
+      - flutter build appbundle
+          --release
+          --dart-define=ENV=qa
+          --dart-define=API_URL=https://qa-api.example.com
+            </code></pre>
+
+            <p>Your pipeline can supply different values for Development, QA, UAT, and Production.</p>
+            <p>One security warning: --dart-define is not a secure secrets manager. Values embedded in a mobile application can potentially be extracted. Never use it to store database passwords, private API keys, or other confidential credentials.</p>
+            <p>In short: String.fromEnvironment() lets you configure your Flutter app at build time, so your CI/CD pipeline can produce different environment-specific builds without modifying your Dart code.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

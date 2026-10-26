@@ -14,12 +14,7 @@
                 <div class="title-header">
                     <h1 class="title">Axios</h1>
                     <p class="subtitle">
-                        Axios is a popular JavaScript library used to make HTTP requests from:
-                        <ul>
-                            <li>Browsers (client-side)</li>
-                            <li>Node.js (server-side)</li>
-                        </ul>
-                        <p>It’s often used with frontend frameworks like React, Vue, or Angular, but it works in any JavaScript environment.</p>
+                        Since you already know the basics of Axios, let's go deeper into how it's used in production applications, especially with authentication and automatic refresh tokens.
                     </p>
                 </div>        
             </div>
@@ -28,82 +23,681 @@
 
     <main>
         <section>
-            <h2>🔧 Why Use Axios?</h2>
+            <h2>Axios Architecture</h2>
+            <p>A common production structure looks like this:</p>
+            <pre><code>
+src/
+ ├── api/
+ │    ├── axios.ts          // axios instance
+ │    ├── auth.ts           // login/logout APIs
+ │    ├── users.ts          // user APIs
+ │    └── products.ts
+ │
+ ├── services/
+ │    └── TokenStorage.ts
+ │
+ ├── hooks/
+ │    └── useAuth.ts
+ │
+ └── middleware/
+      └── authMiddleware.ts
+            </code></pre>
+            <p>Never call axios.get() directly throughout your app.</p>
+            <p>Instead:</p>
+            <pre><code>
+UI
+   ↓
+API Service
+   ↓
+Axios Instance
+   ↓
+Server
+            </code></pre>
+            <p>This keeps authentication logic centralized.</p>
+        </section>
+
+        <section>
+            <h2>1. Create an Axios Instance</h2>
+            <pre><code>
+import axios from "axios";
+
+const api = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
+    timeout: 10000,
+    headers: {
+        "Content-Type": "application/json"
+    }
+});
+
+export default api;
+            </code></pre>
+            <p>Every request now shares the same configuration.</p>
+        </section>
+
+        <section>
+            <h2>2. Request Interceptors</h2>
+            <p>Request interceptors run before sending the request.</p>
+            <p>Typical uses:</p>
             <ul>
-                <li>Simpler syntax than fetch</li>
-                <li>Automatically transforms JSON data</li>
-                <li>Supports request & response interceptors</li>
-                <li>Supports async/await</li>
-                <li>Handles timeouts, headers, and more out of the box</li>
+                <li>Attach access token</li>
+                <li>Attach language</li>
+                <li>Logging</li>
+                <li>Add request ID</li>
+                <li>Modify headers</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+api.interceptors.request.use(async (config) => {
+
+    const token = await TokenStorage.getToken();
+
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+});
+            </code></pre>
+            <p>Flow</p>
+            <pre><code>
+axios.get()
+
+↓
+
+Interceptor
+
+↓
+
+Header Added
+
+↓
+
+Server
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Response Interceptors</h2>
+            <p>Runs after every response.</p>
+            <p>Good for</p>
+            <ul>
+                <li>Global error handling</li>
+                <li>Token expiration</li>
+                <li>Logging</li>
+                <li>Retry logic</li>
+            </ul>
+            <p>Example</p>
+            <pre><code>
+api.interceptors.response.use(
+
+    response => response,
+
+    error => {
+
+        if (error.response?.status === 401) {
+
+        }
+
+        return Promise.reject(error);
+    }
+
+);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Refresh Token Flow</h2>
+            <p>Suppose</p>
+            <pre><code>
+Access Token
+
+expires every
+
+15 minutes
+            </code></pre>
+            <p>Refresh Token</p>
+            <pre><code>
+expires after
+
+30 days
+            </code></pre>
+            <p>When Access Token expires:</p>
+            <pre><code>
+User Request
+
+↓
+
+401 Unauthorized
+
+↓
+
+Use Refresh Token
+
+↓
+
+Receive New Access Token
+
+↓
+
+Retry Original Request
+
+↓
+
+User never notices
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Access Token vs Refresh Token</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Access Token</th>
+                        <th>Refresh Token</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Short-lived</td>
+                        <td>Long-lived</td>
+                    </tr>
+                    <tr>
+                        <td>Used for every API call</td>
+                        <td>Used only when access token expires</td>
+                    </tr>
+                    <tr>
+                        <td>Expires often</td>
+                        <td>Expires rarely</td>
+                    </tr>
+                    <tr>
+                        <td>Stored securely</td>
+                        <td>Stored more securely</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Example Login Response</h2>
+            <pre><code>
+POST /login
+            </code></pre>
+            <p>Server returns</p>
+            <pre><code>
+{
+    "accessToken":"abc123",
+    "refreshToken":"xyz999"
+}
+            </code></pre>
+            <p>Save both</p>
+            <pre><code>
+await TokenStorage.setToken(accessToken);
+await TokenStorage.setRefreshToken(refreshToken);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Detect Expired Token</h2>
+            <p>Server</p>
+            <pre><code>
+GET /profile
+
+↓
+
+401 Unauthorized
+            </code></pre>
+            <p>Interceptor catches it.</p>
+            <pre><code>
+if (error.response.status === 401)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Call Refresh Endpoint</h2>
+            <p>Example</p>
+            <pre><code>
+POST /refresh
+            </code></pre>
+            <p>Body</p>
+            <pre><code>
+{
+    "refreshToken":"xyz999"
+}
+            </code></pre>
+            <p>Returns</p>
+            <pre><code>
+{
+    "accessToken":"newAccessToken"
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Save New Token</h2>
+            <pre><code>
+await TokenStorage.setToken(newAccessToken);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Retry Original Request</h2>
+            <p>Axios gives access to the original request.</p>
+            <pre><code>
+const originalRequest = error.config;
+            </code></pre>
+            <p>Update it</p>
+            <pre><code>
+originalRequest.headers.Authorization =
+    `Bearer ${newToken}`;
+            </code></pre>
+            <p>Retry</p>
+            <pre><code>
+return api(originalRequest);
+            </code></pre>
+            <p>The user receives the response as if nothing happened.</p>
+        </section>
+
+        <section>
+            <h2>Full Refresh Flow</h2>
+            <pre><code>
+Request
+
+↓
+
+Server
+
+↓
+
+401
+
+↓
+
+Refresh Endpoint
+
+↓
+
+New Token
+
+↓
+
+Save Token
+
+↓
+
+Retry Original Request
+
+↓
+
+Success
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Prevent Infinite Loops</h2>
+            <p>Imagine</p>
+            <pre><code>
+Refresh endpoint
+
+↓
+
+also returns
+
+401
+            </code></pre>
+            <p>If you retry forever:</p>
+            <pre><code>
+401
+
+↓
+
+Refresh
+
+↓
+
+401
+
+↓
+
+Refresh
+
+↓
+
+401
+
+↓
+
+Forever
+            </code></pre>
+            <p>Prevent it using a flag.</p>
+            <pre><code>
+if (originalRequest._retry) {
+
+    return Promise.reject(error);
+
+}
+
+originalRequest._retry = true;
+            </code></pre>
+            <p>Only retry once.</p>
+        </section>
+
+        <section>
+            <h2>10. Handling Multiple Requests During Refresh</h2>
+            <p>This is one of the trickiest parts.</p>
+            <p>Imagine:</p>
+            <pre><code>
+Request A
+
+↓
+
+401
+            </code></pre>
+            <p>At the same moment:</p>
+            <pre><code>
+Request B
+
+↓
+
+401
+            </code></pre>
+            <p>Without coordination:</p>
+            <pre><code>
+Refresh #1
+
+Refresh #2
+
+Refresh #3
+
+Refresh #4
+            </code></pre>
+            <p>This creates unnecessary load and race conditions.</p>
+            <p>Instead:</p>
+            <pre><code>
+First request
+
+↓
+
+Refresh Token
+
+↓
+
+Other requests WAIT
+
+↓
+
+New Token
+
+↓
+
+All waiting requests continue
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Implementation</h2>
+            <pre><code>
+let isRefreshing = false;
+
+let failedQueue = [];
+            </code></pre>
+            <p>If already refreshing:</p>
+            <pre><code>
+if (isRefreshing) {
+
+    return new Promise((resolve,reject)=>{
+
+        failedQueue.push({
+            resolve,
+            reject
+        });
+
+    });
+
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>After Refresh Completes</h2>
+            <pre><code>
+failedQueue.forEach(p=>{
+
+    p.resolve(newToken);
+
+});
+
+failedQueue = [];
+            </code></pre>
+            <p>Waiting requests automatically continue.</p>
+        </section>
+
+        <section>
+            <h2>11. Complete Timeline</h2>
+            <pre><code>
+5 API Requests
+
+↓
+
+Token Expired
+
+↓
+
+Request #1 starts Refresh
+
+↓
+
+Request #2 waits
+
+↓
+
+Request #3 waits
+
+↓
+
+Request #4 waits
+
+↓
+
+Request #5 waits
+
+↓
+
+Refresh Success
+
+↓
+
+New Token Saved
+
+↓
+
+Retry All Requests
+
+↓
+
+Done
+            </code></pre>
+            <p>Only one refresh request is made.</p>
+        </section>
+
+        <section>
+            <h2>12. Logout When Refresh Fails</h2>
+            <p>If refresh also expires:</p>
+            <pre><code>
+401
+
+↓
+
+Refresh
+
+↓
+
+401
+
+↓
+
+Logout
+
+↓
+
+Navigate Login
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+catch(error){
+
+    TokenStorage.clear();
+
+    window.location.href="/login";
+
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. Production-Level Axios Instance</h2>
+            <p>A complete flow typically includes:</p>
+            <pre><code>
+Request
+
+↓
+
+Request Interceptor
+
+↓
+
+Attach Access Token
+
+↓
+
+API Call
+
+↓
+
+200
+        ↓
+      Return
+
+401
+
+↓
+
+Already Retried?
+       ↓
+      Yes
+        ↓
+ Reject
+
+No
+
+↓
+
+Refreshing?
+      ↓
+     Yes
+      ↓
+ Queue Request
+
+No
+
+↓
+
+Call Refresh API
+
+↓
+
+Save New Token
+
+↓
+
+Retry Original Request
+
+↓
+
+Resolve Waiting Requests
+
+↓
+
+Return Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Use one Axios instance for authenticated requests.</li>
+                <li>Store access tokens in memory or secure storage (depending on your platform), and keep refresh tokens in the most secure storage available.</li>
+                <li>Add the access token only in a request interceptor.</li>
+                <li>Handle 401 Unauthorized only in a response interceptor.</li>
+                <li>Mark retried requests (for example, with an _retry flag) to avoid infinite refresh loops.</li>
+                <li>Ensure only one refresh request is in flight at a time by queueing failed requests.</li>
+                <li>Retry the original request automatically after obtaining a new access token.</li>
+                <li>If the refresh token is invalid or expired, clear authentication state and redirect the user to sign in again.</li>
+                <li>Consider rotating refresh tokens if your backend supports it, replacing the stored refresh token whenever the server issues a new one.</li>
+            </ul>
+            <p>This pattern is widely used in React, Next.js, React Native, Vue, Angular, and Node.js applications because it provides a seamless authentication experience while keeping token management centralized.</p>
+        </section>
+
+        <section>
+            <p> is a popular, open-source JavaScript library used to make HTTP requests from both web browsers and Node.js environments. It acts as a lightweight client wrapper that simplifies how developers send asynchronous network requests to REST endpoints and manage the responses.</p>
+            <h2>Core Features</h2>
+            <p>Axios is heavily preferred over JavaScript's built-in fetch API because it drastically reduces boilerplate code:</p>
+            <ul>
+                <li>Promise-Based: Built entirely on the modern ES6 Promise API, enabling clean async/await syntax.</li>
+                <li>Automatic JSON Transformation: Automatically serializes outgoing data and parses incoming JSON responses into JavaScript objects.</li>
+                <li>Interceptors: Global hooks that let you intercept, alter, or log requests and responses before they hit .then() or .catch() blocks.</li>
+                <li>Isomorphic Nature: Runs seamlessly across both frontend browsers (via XMLHttpRequests) and backend environments (via Node.js network modules).</li>
+                <li>Request Management: Features built-in configurations for setting client-side timeouts, canceling active requests, and protecting against Cross-Site Request Forgery (XSRF).</li>
             </ul>
         </section>
 
         <section>
+            <h2>Basic Code Examples</h2>
+            <p>official Axios API requires very minimal configuration:</p>
+            <p>Making a GET Request:</p>
             <pre><code>
-import axios from 'axios';
+const axios = require('axios');
 
-// GET request
-axios.get('https://api.example.com/data')
-  .then(response => {
+async function getUser() {
+  try {
+    // Automatically parses response into a usable JSON object
+    const response = await axios.get('https://example.com');
     console.log(response.data);
-  })
-  .catch(error => {
-    console.error(error);
-  });
+  } catch (error) {
+    console.error('Request failed:', error.message);
+  }
+}
 
-// POST request
-axios.post('https://api.example.com/data', {
-  name: 'John',
-  age: 30
-})
-.then(response => {
-  console.log(response.data);
-})
-.catch(error => {
-  console.error(error);
-});
             </code></pre>
         </section>
-        
+
         <section>
-            <h2>✅ With async/await</h2>
+            <h2>Making a POST Request:</h2>
             <pre><code>
-async function fetchData() {
+async function createUser() {
     try {
-        const response = await axios.get('https://api.example.com/data');
-        console.log(response.data);
+        const response = await axios.post('https://example.com', {
+        firstName: 'Jane',
+        lastName: 'Doe'
+        });
+        console.log('User created:', response.status); // e.g., 201 Created
     } catch (error) {
         console.error(error);
     }
-}                  
+}
             </code></pre>
         </section>
 
         <section>
-            <h2>📦 Install Axios</h2>
-            <p>Using npm:</p>
-            <pre><code>
-npm install axios
-            </code></pre>
-
-            <p>Using yarn:</p>
-            <pre><code>
-yarn add axios
-            </code></pre>
-        </section>
-
-        <section>
-            <h2>⚙️ Axios Configuration Example</h2>
-            <pre><code>
-const instance = axios.create({
-    baseURL: 'https://api.example.com/',
-    timeout: 5000,
-    headers: { 'Authorization': 'Bearer YOUR_TOKEN' }
-});
-    
-instance.get('/user')
-    .then(res => console.log(res.data));                  
-            </code></pre>
+            <h2>Security Alert (Spring 2026)</h2>
+            <p>If you are integrating Axios into a production app, verify your dependencies immediately.</p>
+            <p>“In March 2026, the same operation appeared to compromise axios, one of the world's most widely used JavaScript libraries...” as reported by The Record.</p>
+            <p>Attackers briefly hijacked a maintainer's account to inject a post-install script that dropped a sophisticated Remote Access Trojan (RAT) called Waveshaper. Always ensure your project uses the thoroughly patched, safe versions of the library vetted by npm audit.</p>
+            <p>If you are looking to integrate this into a specific project, let me know:</p>
+            <ul>
+                <li>What framework you are using (e.g., React, Vue, Vanilla Node.js)</li>
+                <li>If you need to set up advanced features like global authentication interceptors</li>
+                <li>If you want to configure error handling middleware</li>
+            </ul>
         </section>
     </main>
 

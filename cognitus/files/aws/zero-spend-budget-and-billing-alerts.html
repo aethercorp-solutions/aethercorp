@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Zero-Spend / Zero Plan Billing setup </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Zero-Spend / Zero Plan Billing setup </h1>
+                    <p class="subtitle"> In AWS, managing a Zero-Spend / Zero Plan Billing setup means ensuring you stay strictly within free resource limits and taking proactive measures to prevent unexpected charges. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Set Up a Zero-Spend Budget & Billing Alerts </h2>
+            <p>AWS doesn't automatically stop resources when your spend exceeds $\$0$, but you can set up real-time alerts to notify you immediately when charges occur.</p>
+            <ol>
+                <li>Log into the AWS Management Console and navigate to Billing and Cost Management.</li>
+                <li>In the left navigation pane, select Budgets.</li>
+                <li>Click Create budget.</li>
+                <li>Choose Use a template (simplified) and select Zero spend budget.</li>
+                <li>
+                    Enter your email address to receive notifications.
+                    <ul>
+                        <li>AWS will alert you via email as soon as forecast or actual charges exceed $\$0.01$.  </li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>2. Leverage the AWS Free Plan Features</h2>
+            <p>If you registered for a Free Plan account, monitor your limits closely:</p>
+            <ul>
+                <li>Go to Billing Dashboard $\rightarrow$ Free Tier to check your monthly percentage usage (e.g., EC2 750 hours/month, S3 5 GB storage). </li>
+                <li>Set up Free Tier API usage alerts in billing preferences to get emails when you reach 85% of any Free Tier threshold.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Avoid Common Hidden Costs</h2>
+            <p>Many unexpected costs come from orphaned resources or default background services:</p>
+            <ul>
+                <li>Unattached Elastic IP Addresses: AWS charges for public IPv4 addresses and allocated Elastic IPs that are not attached to a running EC2 instance.   </li>
+                <li>Unattached EBS Volumes & Snapshots: Deleting an EC2 instance does not automatically delete its EBS storage volume or snapshots. Delete unused volumes manually under EC2 $\rightarrow$ Elastic Block Store.</li>
+                <li>NAT Gateways & Custom VPCs: NAT Gateways incur hourly charges regardless of traffic volume. Use default VPC settings or delete custom NAT Gateways when done testing.</li>
+                <li>Dormant RDS Databases: Paused Amazon RDS instances automatically restart after 7 days, which will start incurring charges if outside Free Tier limits.</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>If you mean “Zero-Spend / Zero Plan Billing setup” in a cloud/CI-CD context, it generally means configuring the project so that no paid resources are accidentally consumed and the billing account cannot generate unexpected charges.</p>
+            <p>For a typical AWS / Google Cloud / Firebase / Bitbucket CI/CD setup, the approach is:</p>
+            <p>Zero-Spend setup</p>
+            <ol>
+                <li>
+                    Use free-tier resources only
+                    <ul>
+                        <li>AWS Lambda within free-tier limits</li>
+                        <li>S3 within free-tier limits</li>
+                        <li>DynamoDB/Firebase free quotas where applicable</li>
+                        <li>Bitbucket Pipelines free build minutes, if available on your plan</li>
+                    </ul>
+                </li>
+                <li>
+                    Set hard billing alerts
+                    <ul>
+                        <li>Alert at $0</li>
+                        <li>Alert again at $1, $5, etc.</li>
+                        <li>Configure email notifications.</li>
+                    </ul>
+                </li>
+                <li>
+                    Avoid always-on resources
+                    <ul>
+                        <li>No EC2 instances</li>
+                        <li>No RDS instances</li>
+                        <li>No NAT Gateway</li>
+                        <li>No load balancers unless absolutely necessary</li>
+                        <li>No continuously running containers</li>
+                    </ul>
+                </li>
+                <li>
+                    Set CI/CD limits
+                    <ul>
+                        <li>Avoid infinite/repeated pipeline executions.</li>
+                        <li>Use manual triggers for expensive deployment stages.</li>
+                        <li>Cache dependencies where possible.</li>
+                        <li>Cancel redundant builds.</li>
+                    </ul>
+                </li>
+                <li>
+                    Set Firebase/GCP budget controls
+                    <ul>
+                        <li>Configure a budget with a very low threshold.</li>
+                        <li>Enable quota limits where supported.</li>
+                        <li>Restrict APIs that aren't needed.</li>
+                    </ul>
+                </li>
+                <li>
+                    AWS example architecture
+                    <pre><code>
+Git Push
+   │
+   ▼
+Bitbucket Pipeline
+   │
+   ├── Flutter build
+   ├── Tests
+   └── Fastlane
+          │
+          ├── TestFlight
+          └── Google Play
+               
+AWS
+   │
+   ├── Lambda       ← pay-per-use / free-tier eligible
+   ├── API Gateway  ← pay-per-use / free-tier eligible
+   ├── S3           ← minimal storage
+   └── DynamoDB     ← on-demand / free-tier eligible
+                    </code></pre>
+                </li>
+            </ol>
+            <p>The key distinction is that “zero plan” doesn't necessarily mean the provider guarantees $0. It means you architect and configure the environment so that paid usage is prevented or tightly controlled.</p>
+            <p>If you're referring specifically to AWS, Google Cloud/Firebase, Bitbucket, or your Castanet backend, tell me which one and I can give you the exact Zero-Spend billing configuration and settings for it.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

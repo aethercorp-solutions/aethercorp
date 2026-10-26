@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Container and Kubernetes </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Container and Kubernetes </h1>
+                    <p class="subtitle"> A container and Kubernetes are related, but they solve different problems. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Container </h2>
+            <p>A container is a lightweight package that includes:</p>
+            <ul>
+                <li>Your application code</li>
+                <li>Runtime (e.g., Python, Java, Node.js)</li>
+                <li>Libraries and dependencies</li>
+                <li>Configuration files</li>
+            </ul>
+            <p>Think of a container as a shipping box that holds everything your application needs to run consistently anywhere.</p>
+            <p>Popular container technologies:</p>
+            <ul>
+                <li>Docker</li>
+                <li>containerd</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+docker run nginx
+            </code></pre>
+            <p>This starts a single Nginx web server container.</p>
+        </section>
+
+        <section>
+            <h2>Kubernetes</h2>
+            <p>Kubernetes is a container orchestration platform. It manages many containers across one or more servers.</p>
+            <p>Think of Kubernetes as a warehouse manager that:</p>
+            <ul>
+                <li>Deploys containers</li>
+                <li>Scales them up or down</li>
+                <li>Restarts failed containers</li>
+                <li>Distributes traffic</li>
+                <li>Performs rolling updates</li>
+                <li>Manages networking and storage</li>
+            </ul>
+            <p>Example:</p>
+            <ul>
+                <li>You have 100 containers running a web application.</li>
+                <li>If one container crashes, Kubernetes automatically replaces it.</li>
+                <li>If traffic increases, Kubernetes can create more container instances.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Simple Analogy</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Container</th>
+                        <th>Kubernetes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A single car</td>
+                        <td>A traffic control system managing thousands of cars</td>
+                    </tr>
+                    <tr>
+                        <td>A shipping box</td>
+                        <td>A warehouse management system</td>
+                    </tr>
+                    <tr>
+                        <td>Runs one application</td>
+                        <td>Manages many application containers</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>How They Work Together</h2>
+            <pre><code>
+Application
+    ↓
+Container (Docker)
+    ↓
+Kubernetes
+    ↓
+Servers / Cloud Infrastructure
+            </code></pre>
+            <p>For example:</p>
+            <ol>
+                <li>Package a web app into a Docker container.</li>
+                <li>Store the image in a registry.</li>
+                <li>Deploy the container to a Kubernetes cluster.</li>
+                <li>Kubernetes keeps the application running and scalable.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>When to Use Which?</h2>
+            <p>Use containers only when:</p>
+            <ul>
+                <li>Learning containerization</li>
+                <li>Running a few applications</li>
+                <li>Development/testing environments</li>
+            </ul>
+            <p>Use Kubernetes when:</p>
+            <ul>
+                <li>Running many containers</li>
+                <li>Needing high availability</li>
+                <li>Requiring automatic scaling</li>
+                <li>Managing production workloads</li>
+            </ul>
+            <p>In short:</p>
+            <p>A container is the unit that runs an application. Kubernetes is the system that manages containers at scale.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

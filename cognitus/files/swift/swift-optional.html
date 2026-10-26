@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Swift Optional </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Swift Optional </h1>
+                    <p class="subtitle"> 
+                        In Swift, an Optional is a type that represents a value that might exist or might be nil (no value).
+                        <p>In iOS development, optionals are important because data from APIs, databases, forms, and user input may be missing.</p>    
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Basic example </h2>
+            <pre><code>
+var name: String = "Paul"
+var middleName: String? = nil
+            </code></pre>
+
+            <ul>
+                <li>name is a regular String and must contain a value.</li>
+                <li>middleName is an optional String and can contain a string or nil.</li>
+            </ul>
+            <p>You can assign a value later:</p>
+            <pre><code>
+middleName = "Michael"
+middleName = nil
+            </code></pre>
+            <p>The ? after String means that the variable is optional.</p>
+        </section>
+
+        <section>
+            <h2>2. How to unwrap an optional</h2>
+            <p>Suppose you receive a user's name from an API:</p>
+            <pre><code>
+var username: String? = "Paul"
+            </code></pre>
+            <p>You cannot safely use username as a regular String without handling the possibility that it is nil.</p>
+            <p>Swift provides several ways to unwrap it.</p>
+            <p>Method 1: if let — safe unwrapping</p>
+            <pre><code>
+if let name = username {
+    print("Hello, \(name)")
+} else {
+    print("Username is missing")
+}
+            </code></pre>
+            <p>If username contains "Paul", the code prints Hello, Paul.</p>
+            <p>If it is nil, the else block executes.</p>
+            <p>This is one of the most common patterns in modern Swift.</p>
+            <p>Method 2: guard let — early exit</p>
+            <p>Commonly used in functions when a required value must exist.</p>
+            <pre><code>
+func greetUser(name: String?) {
+    guard let name = name else {
+        print("Name is missing")
+        return
+    }
+
+    print("Hello, \(name)")
+}
+            </code></pre>
+            <p>If name is nil, the function exits early. Otherwise, the unwrapped name is available for the rest of the function.</p>
+
+            <p>Method 3: Nil-coalescing operator (??)</p>
+            <p>Provide a default value when the optional is nil.</p>
+            <pre><code>
+let username: String? = nil
+
+let displayName = username ?? "Guest"
+
+print(displayName) // Guest
+            </code></pre>
+            <p>This is useful when displaying optional data in a UI.</p>
+
+            <p>Method 4: Force unwrapping (!)</p>
+            <pre><code>
+let username: String? = "Paul"
+
+print(username!)
+            </code></pre>
+            <p>The ! forces Swift to extract the value.</p>
+            <p>Warning: If username is nil, your application crashes at runtime. Avoid force unwrapping unless you can guarantee the value exists.</p>
+        </section>
+
+        <section>
+            <h2>3. Understanding the difference</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Syntax</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>String</td>
+                        <td>Must contain a string value</td>
+                    </tr>
+                    <tr>
+                        <td>String?</td>
+                        <td>Can contain a string or nil</td>
+                    </tr>
+                    <tr>
+                        <td>if let</td>
+                        <td>Safely unwraps if a value exists</td>
+                    </tr>
+                    <tr>
+                        <td>guard let</td>
+                        <td>Safely unwraps or exits the current scope</td>
+                    </tr>
+                    <tr>
+                        <td>??</td>
+                        <td>Provides a fallback value</td>
+                    </tr>
+                    <tr>
+                        <td>!</td>
+                        <td>Force unwraps; may crash if nil</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. Real-world iOS example: API response</h2>
+            <p>Imagine your inventory management app receives an item from a backend API. The item's barcode may be missing.</p>
+            <pre><code>
+struct InventoryItem: Decodable {
+    let id: Int
+    let name: String
+    let barcode: String?
+}
+            </code></pre>
+            <p>Here, barcode is optional because the server might return an item without a barcode.</p>
+            <p>You can handle it safely:</p>
+            <pre><code>
+func displayBarcode(for item: InventoryItem) {
+    let barcodeText = item.barcode ?? "No barcode available"
+    print(barcodeText)
+}
+            </code></pre>
+            <p>If the barcode exists, the app displays it. Otherwise, it displays a fallback message.</p>
+            <p>This prevents missing API data from causing unnecessary crashes.</p>
+        </section>
+
+        <section>
+            <h2>5. Optional chaining with ?.</h2>
+            <p>Optional chaining lets you access a property or method only when the optional contains a value.</p>
+            <pre><code>
+let username: String? = "Paul"
+
+let characterCount = username?.count
+
+print(characterCount as Any) // Optional(4)
+            </code></pre>
+            <p>If username is nil, characterCount will also be nil instead of crashing.</p>
+            <p>Interview tip for a Senior iOS Developer: If asked why Swift uses optionals, explain that they make the possibility of missing data explicit in the type system. This helps developers handle nil safely at compile time rather than relying on assumptions that can cause runtime crashes.</p>
+            <p>The most important patterns to master are if let, guard let, ??, and optional chaining (?.).</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

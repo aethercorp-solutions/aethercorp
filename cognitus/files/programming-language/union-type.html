@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> union type </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> union type </h1>
+                    <p class="subtitle"> A union type in programming means: 
+                        <p>A variable can hold one of several specified types or values.</p>
+                        <p>It is basically an “OR” type.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> TypeScript example </h2>
+            <p>This is a union type:</p>
+            <pre><code>
+type ContactFilter =
+  "" |
+  "all" |
+  "due" |
+  "overdue" |
+  "unscheduled" |
+  "upcoming" |
+  "archived";
+            </code></pre>
+            <p>It means ContactFilter can be one of those exact values.</p>
+
+            <pre><code>
+let filter: ContactFilter;
+
+filter = "all";       // ✅
+filter = "overdue";   // ✅
+filter = "upcoming";  // ✅
+
+filter = "random";    // ❌ Error
+            </code></pre>
+            <p>You can think of it as:</p>
+            <pre><code>
+ContactFilter =
+    "" OR
+    "all" OR
+    "due" OR
+    "overdue" OR
+    "unscheduled" OR
+    "upcoming" OR
+    "archived"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Union of different types</h2>
+            <p>It doesn't have to be strings.</p>
+            <pre><code>
+let id: string | number;
+
+id = "ABC123";  // ✅
+id = 123;       // ✅
+
+id = true;      // ❌
+            </code></pre>
+            <p>Here:</p>
+            <pre><code>
+string | number
+            </code></pre>
+            <p>means:</p>
+            <p>id can be a string OR a number.</p>
+        </section>
+
+        <section>
+            <h2>Why use union types?</h2>
+            <p>They make your code safer by restricting what values are allowed.</p>
+            <p>Without a union:</p>
+            <pre><code>
+let filter: string;
+
+filter = "overdue";
+filter = "something-wrong";
+filter = "banana";
+            </code></pre>
+            <p>With a union:</p>
+            <pre><code>
+let filter: ContactFilter;
+
+filter = "overdue"; // ✅
+filter = "banana";  // ❌
+            </code></pre>
+            <p>So your ContactFilter from your Castanet code is actually a good example of a string literal union type.</p>
+            <p>Simple definition:</p>
+            <p>Union type = a type that allows a value to be one of multiple possible types/values.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

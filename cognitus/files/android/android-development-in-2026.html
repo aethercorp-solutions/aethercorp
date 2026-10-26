@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Android development in 2026 </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Android development in 2026 </h1>
+                    <p class="subtitle"> Yes. Android development in 2026 has shifted significantly from the older Java/XML/View-based paradigm. The modern paradigm is much closer to SwiftUI + Swift Concurrency + modern architecture, especially if you already know iOS/Swift. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> The modern Android stack </h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Old Android</th>
+                        <th>Modern Android</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Java</td>
+                        <td>Kotlin</td>
+                    </tr>
+                    <tr>
+                        <td>XML layouts</td>
+                        <td>Jetpack Compose</td>
+                    </tr>
+                    <tr>
+                        <td>Activities/Fragments doing everything</td>
+                        <td>Composable UI + ViewModel</td>
+                    </tr>
+                    <tr>
+                        <td>findViewById()</td>
+                        <td>Compose state</td>
+                    </tr>
+                    <tr>
+                        <td>AsyncTask / callbacks</td>
+                        <td>Kotlin Coroutines + Flow</td>
+                    </tr>
+                    <tr>
+                        <td>Manual lifecycle handling</td>
+                        <td>Lifecycle-aware APIs</td>
+                    </tr>
+                    <tr>
+                        <td>Retrofit/OkHttp</td>
+                        <td>Still widely used</td>
+                    </tr>
+                    <tr>
+                        <td>LiveData</td>
+                        <td>StateFlow / Flow</td>
+                    </tr>
+                    <tr>
+                        <td>SQLite directly</td>
+                        <td>Room</td>
+                    </tr>
+                    <tr>
+                        <td>Dagger</td>
+                        <td>Hilt / modern DI</td>
+                    </tr>
+                    <tr>
+                        <td>XML Navigation</td>
+                        <td>Navigation Compose / Navigation 3</td>
+                    </tr>
+                    <tr>
+                        <td>Android-only shared code</td>
+                        <td>Kotlin Multiplatform</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud-only AI</td>
+                        <td>On-device + cloud/hybrid AI</td>
+                    </tr>
+                    <tr>
+                        <td>App is passive</td>
+                        <td>Apps can expose capabilities to AI agents</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Google now explicitly describes Android as Compose-first. The traditional Views toolkit is considered maintenance mode, although it remains supported for existing applications and interoperability.</p>
+        </section>
+
+        <section>
+            <h2>1. Jetpack Compose is the biggest paradigm change</h2>
+            <p>This is probably the #1 thing you should learn.</p>
+            <p>Instead of:</p>
+            <pre><code>
+&lt;TextView
+    android:text="Hello"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" /&gt;
+            </code></pre>
+            <p>you write:</p>
+            <pre><code>
+@Composable
+fun Greeting() {
+    Text("Hello")
+}
+            </code></pre>
+            <p>And state drives the UI:</p>
+            <pre><code>
+@Composable
+fun Counter() {
+    var count by remember { mutableStateOf(0) }
+
+    Button(onClick = { count++ }) {
+        Text("Count: $count")
+    }
+}
+            </code></pre>
+            <p>Conceptually, this is very similar to:</p>
+            <pre><code>
+struct CounterView: View {
+    @State var count = 0
+
+    var body: some View {
+        Button("Count: \(count)") {
+            count += 1
+        }
+    }
+}
+            </code></pre>
+            <p>So if you're coming from SwiftUI, Compose should feel very familiar.</p>
+            <p>As of July 2026, Compose 1.11.4 is the current stable release, with 1.12 progressing toward release.</p>
+        </section>
+
+        <section>
+            <h2>2. Kotlin is the default language</h2>
+            <p>Modern Android development is essentially:</p>
+            <p>Kotlin first.</p>
+            <p>You should be comfortable with:</p>
+            <pre><code>
+Kotlin
+ ↓
+Coroutines
+ ↓
+Flow / StateFlow
+ ↓
+Compose
+ ↓
+Jetpack
+            </code></pre>
+            <p>Java is still supported, but for new development, Kotlin is the language you want.</p>
+        </section>
+
+        <section>
+            <h2>3. Coroutines + Flow replace callback-heavy programming</h2>
+            <p>Old style:</p>
+            <pre><code>
+api.getUser(new Callback&lt;User&gt;() {
+    @Override
+    public void onSuccess(User user) {
+        ...
+    }
+});
+            </code></pre>
+            <p>Modern Kotlin:</p>
+            <pre><code>
+val user = api.getUser()
+            </code></pre>
+            <p>inside:</p>
+            <pre><code>
+viewModelScope.launch {
+    val user = repository.getUser()
+}
+            </code></pre>
+            <p>For streams of data:</p>
+            <pre><code>
+val contacts: StateFlow&lt;List&lt;Contact&gt;&gt;
+            </code></pre>
+            <p>This is conceptually very close to Swift:</p>
+            <pre><code>
+Task {
+    let user = try await api.getUser()
+}
+            </code></pre>
+            <p>and:</p>
+            <pre><code>
+@Published var contacts: [Contact]
+            </code></pre>
+            <p>So your recent Swift learning around:</p>
+            <pre><code>
+try await
+            </code></pre>
+            <p>maps nicely to Kotlin:</p>
+            <pre><code>
+val data = repository.getData()
+            </code></pre>
+            <p>inside a coroutine.</p>
+        </section>
+
+        <section>
+            <h2>4. ViewModel + StateFlow + Repository is the common architecture</h2>
+            <p>A modern Android app often looks roughly like:</p>
+            <pre><code>
+Compose UI
+     ↓
+ViewModel
+     ↓
+Use Case
+     ↓
+Repository
+     ↓
+API / Database
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+class ContactsViewModel(
+    private val repository: ContactRepository
+) : ViewModel() {
+
+    val contacts = repository.contacts
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            emptyList()
+        )
+}
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+@Composable
+fun ContactsScreen(
+    viewModel: ContactsViewModel
+) {
+    val contacts by viewModel.contacts.collectAsState()
+
+    LazyColumn {
+        items(contacts) {
+            Text(it.name)
+        }
+    }
+}
+            </code></pre>
+            <p>This is the modern equivalent of the architecture you might recognize from:</p>
+            <pre><code>
+SwiftUI
+   ↓
+Observable/ViewModel
+   ↓
+Service
+   ↓
+URLSession
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Kotlin Multiplatform is becoming much more important</h2>
+            <p>This is particularly interesting for you as an iOS + Android developer.</p>
+            <p>You can now share Kotlin code between:</p>
+            <pre><code>
+            Kotlin
+                │
+         ┌──────┴──────┐
+         ↓             ↓
+      Android          iOS
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+shared/
+ ├── networking
+ ├── authentication
+ ├── business logic
+ ├── models
+ ├── repositories
+ └── database
+            </code></pre>
+            <p>while keeping platform-specific UI where appropriate.</p>
+            <p>Google's Android documentation now lists a growing set of Jetpack libraries with Kotlin Multiplatform support, including Compose, Lifecycle, ViewModel, Navigation, DataStore and others.</p>
+            <p>This means the modern mobile developer can increasingly think:</p>
+            <p>"One Kotlin codebase + native platform experiences."</p>
+            <p>rather than:</p>
+            <p>"Completely separate Android and iOS applications."</p>
+        </section>
+
+        <section>
+            <h2>6. Navigation is evolving too</h2>
+            <p>Instead of relying heavily on:</p>
+            <pre><code>
+Activity
+Fragment
+FragmentManager
+XML navigation
+            </code></pre>
+            <p>modern Compose applications can use:</p>
+            <pre><code>
+Navigation Compose
+            </code></pre>
+            <p>and the newer:</p>
+            <pre><code>
+Navigation 3
+            </code></pre>
+            <p>The Android Jetpack ecosystem currently lists Navigation 2.9.8 as stable and Navigation 3.1.4 as stable, with newer alpha development continuing.</p>
+            <p>The direction is much more state-driven navigation.</p>
+        </section>
+
+        <section>
+            <h2>7. Adaptive UI is becoming essential</h2>
+            <p>Android isn't just:</p>
+            <pre><code>
+phone
+            </code></pre>
+            <p>anymore.</p>
+            <p>You need to think about:</p>
+            <pre><code>
+Phone
+Tablet
+Foldable
+Desktop
+ChromeOS
+Wear OS
+Android XR
+            </code></pre>
+            <p>Compose is designed around adaptive UI, and newer Compose work includes APIs such as experimental FlexBox, Grid and MediaQuery-style capabilities.</p>
+            <p>So instead of designing:</p>
+            <pre><code>
+375 x 812
+            </code></pre>
+            <p>you design:</p>
+            <pre><code>
+available space
+       ↓
+adaptive layout
+       ↓
+appropriate UI
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. AI is becoming part of the Android SDK paradigm</h2>
+            <p>This is probably the biggest new development beyond Compose.</p>
+            <p>Android is moving toward what Google calls an "intelligence system", with Gemini deeply integrated into Android.</p>
+            <p>There are now APIs for:</p>
+            <pre><code>
+Gemini Nano
+ML Kit
+Firebase AI Logic
+on-device inference
+hybrid inference
+AppFunctions
+AI agents
+            </code></pre>
+            <p>For example, Gemini Nano can run directly on supported devices through ML Kit's Prompt API.</p>
+            <p>That means an application can potentially do:</p>
+            <pre><code>
+User
+ ↓
+Android App
+ ↓
+Gemini Nano
+ ↓
+Local inference
+            </code></pre>
+            <p>instead of:</p>
+            <pre><code>
+User
+ ↓
+App
+ ↓
+Internet
+ ↓
+Your backend
+ ↓
+LLM API
+ ↓
+Response
+            </code></pre>
+            <p>The advantage is lower latency, offline capability and better privacy for suitable workloads.</p>
+        </section>
+
+        <section>
+            <h2>9. Hybrid AI is another major direction</h2>
+            <p>You don't necessarily have to choose:</p>
+            <pre><code>
+local AI
+            </code></pre>
+            <p>or:</p>
+            <pre><code>
+cloud AI
+            </code></pre>
+            <p>Modern Android AI tooling can combine them.</p>
+            <p>For example:</p>
+            <pre><code>
+            AI request
+                │
+         ┌──────┴──────┐
+         ↓             ↓
+    Gemini Nano      Cloud Gemini
+     on device        Firebase AI
+         │             │
+         └──────┬──────┘
+                ↓
+             Result
+            </code></pre>
+            <p>Firebase AI Logic now supports hybrid inference scenarios where requests can be routed between on-device Gemini Nano and cloud-hosted models.</p>
+        </section>
+
+        <section>
+            <h2>10. Apps are starting to become "tools" for AI agents</h2>
+            <p>This is one of the most interesting changes.</p>
+            <p>Android introduced AppFunctions, currently experimental, which lets applications expose functions that can be used by Android's AI/agent ecosystem. Google describes it as a way for apps to behave like on-device MCP servers.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+        Gemini / AI Agent
+                │
+                ↓
+          AppFunctions
+                │
+      ┌─────────┼─────────┐
+      ↓         ↓         ↓
+   Contacts   Calendar   Payments
+            </code></pre>
+            <p>So instead of the user manually opening your app and navigating:</p>
+            <p>Contacts → John → Create follow-up</p>
+            <p>an AI agent could potentially invoke an exposed application capability.</p>
+            <p>This is a major paradigm shift.</p>
+        </section>
+
+        <section>
+            <h2>11. Android Studio itself is becoming AI-native</h2>
+            <p>Modern Android development isn't just about new SDK APIs.</p>
+            <p>The IDE is changing too.</p>
+            <p>Android Studio now has Gemini Agent Mode, which can help with things like:</p>
+            <pre><code>
+Generate Compose UI
+↓
+Analyze Gradle errors
+↓
+Understand crashes
+↓
+Modify code
+↓
+Run/build/test
+            </code></pre>
+            <p>Android Studio also supports local models such as Gemma for AI-assisted coding.</p>
+            <p>So the development workflow is moving toward:</p>
+            <pre><code>
+Developer
+   ↓
+AI coding agent
+   ↓
+Android Studio
+   ↓
+Kotlin / Compose
+   ↓
+Build / Test / Analyze
+            </code></pre>
+            <p>rather than simply autocomplete.</p>
+        </section>
+
+        <section>
+            <h2>12. The architecture I would learn today</h2>
+            <p>If you're starting modern Android development in 2026, I'd learn this stack:</p>
+            <pre><code>
+            Android App
+                │
+         Jetpack Compose
+                │
+         Navigation 3
+                │
+           ViewModel
+                │
+        StateFlow / Flow
+                │
+           Use Cases
+                │
+           Repository
+           /         \
+          /           \
+     Room            API
+      │               │
+ Local DB        Retrofit/OkHttp
+            </code></pre>
+            <p>with:</p>
+            <pre><code>
+Kotlin
+Kotlin Coroutines
+Kotlin Flow
+Jetpack Compose
+Material 3
+ViewModel
+Lifecycle
+Navigation
+Room
+DataStore
+Hilt
+Retrofit / OkHttp
+WorkManager
+            </code></pre>
+            <p>Then add:</p>
+            <pre><code>
+Kotlin Multiplatform
+        +
+Firebase AI Logic
+        +
+ML Kit / Gemini Nano
+        +
+AppFunctions / MCP
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The biggest paradigm shift</h2>
+            <p>If I simplify Android development over the last ~15 years:</p>
+            <pre><code>
+2010
+Java + XML + Activity
+        ↓
+2015
+Java/Kotlin + XML + Fragment
+        ↓
+2020
+Kotlin + Jetpack + MVVM
+        ↓
+2023
+Kotlin + Compose + Coroutines + Flow
+        ↓
+2026
+Kotlin + Compose-first
+       + KMP
+       + adaptive UI
+       + on-device AI
+       + cloud/hybrid AI
+       + AI agents/AppFunctions
+            </code></pre>
+            <p>And Google's current position is unusually clear: Compose is now the primary direction for Android UI, while Views are in maintenance mode.</p>
+        </section>
+
+        <section>
+            <h2>For you specifically</h2>
+            <p>Since you already have Swift + UIKit + SwiftUI + full-stack experience, I would not spend much time learning old Android patterns.</p>
+            <p>Your highest-value path would be:</p>
+            <p>Kotlin → Coroutines/Flow → Jetpack Compose → ViewModel → Room → Retrofit → Hilt → Navigation → KMP → Android AI/Gemini</p>
+            <p>That combination puts you much closer to the 2026 Android developer paradigm than learning XML layouts, Fragments, Java, and old Android architecture first.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

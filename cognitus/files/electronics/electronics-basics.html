@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Electronics Basics </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Electronics Basics </h1>
+                    <p class="subtitle"> If you want to learn electronics basics, I’d start with these concepts in this order: </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Electricity fundamentals </h2>
+            <ul>
+                <li>Voltage (V) — electrical potential / “push”</li>
+                <li>Current (I) — flow of electric charge</li>
+                <li>Resistance (R) — opposition to current</li>
+                <li>Power (P) — rate of electrical energy use</li>
+            </ul>
+            <p>The most important relationship is Ohm’s Law:</p>
+            <pre><code>
+                V = I x R
+            </code></pre>
+            <p>So:</p>
+            <ul>
+                <li>I = V / R</li>
+                <li>R = V / I</li>
+            </ul>
+            <p>Example: a 5 V supply connected to a 1 kΩ resistor:</p>
+            <pre><code>
+                I = 5 / 1000 = 0.005A = 5mA
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Basic components</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>What it does</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Resistor</td>
+                        <td>Limits current / divides voltage</td>
+                    </tr>
+                    <tr>
+                        <td>Capacitor</td>
+                        <td>Stores electrical energy; filtering/timing</td>
+                    </tr>
+                    <tr>
+                        <td>Inductor</td>
+                        <td>Stores energy in a magnetic field</td>
+                    </tr>
+                    <tr>
+                        <td>Diode</td>
+                        <td>Mainly allows current in one direction</td>
+                    </tr>
+                    <tr>
+                        <td>LED</td>
+                        <td>Diode that produces light</td>
+                    </tr>
+                    <tr>
+                        <td>Transistor</td>
+                        <td>Switches or amplifies signals</td>
+                    </tr>
+                    <tr>
+                        <td>Potentiometer</td>
+                        <td>Adjustable resistance/voltage</td>
+                    </tr>
+                    <tr>
+                        <td>Relay</td>
+                        <td>Electrically controlled switch</td>
+                    </tr>
+                    <tr>
+                        <td>Fuse</td>
+                        <td>Protects against excessive current</td>
+                    </tr>
+                    <tr>
+                        <td>IC</td>
+                        <td>Integrated circuit containing many electronic components</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>3. DC circuits</h2>
+            <p>Learn how to understand:</p>
+            <p>Battery → resistor → LED → ground</p>
+            <p>For example:</p>
+            <pre><code>
++5V
+ │
+[Resistor]
+ │
+[ LED ]
+ │
+ GND
+            </code></pre>
+            <p>You should learn:</p>
+            <ul>
+                <li>Series circuits</li>
+                <li>Parallel circuits</li>
+                <li>Voltage drops</li>
+                <li>Current paths</li>
+                <li>Ground</li>
+                <li>Short circuits</li>
+                <li>Open circuits</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Digital electronics</h2>
+            <p>Since you're a software developer, this part will probably feel familiar.</p>
+            <p>Learn:</p>
+            <pre><code>
+LOW  = 0
+HIGH = 1
+            </code></pre>
+            <p>Then:</p>
+            <ul>
+                <li>AND</li>
+                <li>OR</li>
+                <li>NOT</li>
+                <li>NAND</li>
+                <li>NOR</li>
+                <li>XOR</li>
+                <li>Flip-flops</li>
+                <li>Registers</li>
+                <li>Counters</li>
+                <li>Logic gates</li>
+            </ul>
+            <p>This leads into microcontrollers such as Arduino, STM32, ESP32, and similar devices.</p>
+        </section>
+
+        <section>
+            <h2>5. Analog electronics</h2>
+            <p>Then learn:</p>
+            <ul>
+                <li>Voltage dividers</li>
+                <li>RC circuits</li>
+                <li>Transistors</li>
+                <li>Operational amplifiers</li>
+                <li>Sensors</li>
+                <li>ADC</li>
+                <li>DAC</li>
+                <li>Signal filtering</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Microcontrollers</h2>
+            <p>For practical electronics, I'd then move to:</p>
+            <p>GPIO → buttons → LEDs → PWM → ADC → sensors → UART → I²C → SPI</p>
+            <p>For example:</p>
+            <pre><code>
+                              ┌──────────────-┐
+                Button ──────►│               │
+                LED ◄─────────│ Microcontroller
+                Sensor ──────►│               │
+                              └──────┬───────-┘
+                                     │
+                                  USB/UART
+            </code></pre>
+            <p>Given your software background and your previous work with STM32/Arduino IoT devices, this is probably the most useful path: electronics fundamentals → digital logic → microcontrollers → communication protocols → IoT hardware.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

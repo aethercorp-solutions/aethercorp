@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Containerization</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Containerization</h1>
+                    <p class="subtitle">
+                        Absolutely. Think of containerization as putting your application into a portable box that contains everything it needs to run.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. The simple idea</h2>
+            <p>Without Docker:</p>
+            <pre><code>
+Your App
+   ↓
+Node.js
+   ↓
+npm packages
+   ↓
+Operating System
+   ↓
+Your Computer
+            </code></pre>
+            <p>You might say:</p>
+            <p>"It works on my computer, but it doesn't work on the server."</p>
+            <p>With Docker:</p>
+            <pre><code>
+┌───────────────────────────┐
+│       Docker Container    │
+│                           │
+│  Your Node.js App         │
+│  Node.js                  │
+│  npm dependencies         │
+│  Configuration            │
+│                           │
+└───────────────────────────┘
+              ↓
+       Docker Engine
+              ↓
+     Linux / Windows / Mac
+            </code></pre>
+            <p>The container gives your application a consistent environment.</p>
+        </section>
+
+        <section>
+            <h2>2. Docker vs Virtual Machine</h2>
+            <p>This is important.</p>
+            <p>Virtual machine</p>
+            <pre><code>
+Computer
+│
+├── VM
+│   ├── Full Operating System
+│   └── Application
+│
+├── VM
+│   ├── Full Operating System
+│   └── Application
+            </code></pre>
+            <p>Each VM contains an entire OS, so it is relatively heavy.</p>
+            <p>Docker</p>
+            <pre><code>
+Computer
+│
+├── Container
+│   └── Node.js App
+│
+├── Container
+│   └── Python App
+│
+└── Container
+    └── MongoDB
+            </code></pre>
+            <p>Containers share the host's kernel, making them generally much lighter and faster to start.</p>
+        </section>
+
+        <section>
+            <h2>3. The 4 Docker concepts you need</h2>
+            <p>Don't try to memorize everything. Start with these:</p>
+            <p>Dockerfile</p>
+            <p>Instructions for building your container.</p>
+            <pre><code>
+Dockerfile
+    ↓
+docker build
+    ↓
+Docker Image
+            </code></pre>
+            <p>Image</p>
+            <p>A packaged template of your application.</p>
+            <pre><code>
+Image
+ ├── Node.js
+ ├── Your application
+ └── Dependencies
+            </code></pre>
+            <p>Container</p>
+            <p>A running instance of an image.</p>
+            <pre><code>
+Image
+  ↓
+docker run
+  ↓
+Container
+            </code></pre>
+            <p>Docker Hub / Registry</p>
+            <p>A place where Docker images can be stored.</p>
+            <pre><code>
+Your computer
+     ↓
+docker push
+     ↓
+Docker Hub
+     ↓
+Server
+     ↓
+docker pull
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Let's do a practical Docker example</h2>
+            <p>Since you work with Node.js, let's Dockerize a tiny Node.js application.</p>
+            <p>We'll make:</p>
+            <pre><code>
+docker-demo/
+├── package.json
+├── server.js
+└── Dockerfile
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 1 — Create the project</h2>
+            <pre><code>
+mkdir docker-demo
+cd docker-demo
+            </code></pre>
+            <p>Initialize Node:</p>
+            <pre><code>
+npm init -y
+            </code></pre>
+            <p>Install Express:</p>
+            <pre><code>
+npm install express
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Create the Node.js application</h2>
+            <p>Create:</p>
+            <pre><code>
+server.js
+            </code></pre>
+            <p>Put this inside:</p>
+            <pre><code>
+const express = require("express");
+
+const app = express();
+
+app.get("/", (req, res) => {
+    res.send("Hello from Docker!");
+});
+
+app.listen(3000, () => {
+    console.log("Server running on port 3000");
+});
+            </code></pre>
+            <p>Run it normally:</p>
+            <pre><code>
+node server.js
+            </code></pre>
+            <p>Then open:</p>
+            <pre><code>
+http://localhost:3000
+            </code></pre>
+            <p>You should see:</p>
+            <pre><code>
+Hello from Docker!
+            </code></pre>
+            <p>Stop it with:</p>
+            <pre><code>
+Ctrl + C
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Now create the Dockerfile</h2>
+            <p>Create a file named exactly:</p>
+            <pre><code>
+Dockerfile
+            </code></pre>
+            <p>No .txt.</p>
+            <p>Put:</p>
+            <pre><code>
+FROM node:24
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]
+            </code></pre>
+            <p>Let's understand each line.</p>
+            <p>FROM</p>
+            <pre><code>
+FROM node:24
+            </code></pre>
+            <p>Start with an image that already has Node.js installed.</p>
+            <p>Think:</p>
+            <p>"Give me a Linux environment with Node.js."</p>
+
+            <p>WORKDIR</p>
+            <pre><code>
+WORKDIR /app
+            </code></pre>
+            <p>Create/use:</p>
+            <pre><code>
+/app
+            </code></pre>
+            <p>inside the container.</p>
+            <p>It's basically:</p>
+            <p>"This is where my application lives."</p>
+
+            <p>COPY</p>
+            <pre><code>
+COPY package*.json ./
+            </code></pre>
+            <p>Copy your package files into the container.</p>
+
+            <p>RUN</p>
+            <pre><code>
+RUN npm install
+            </code></pre>
+            <p>Install your Node.js dependencies inside the image.</p>
+
+            <p>Another COPY</p>
+            <pre><code>
+COPY . .
+            </code></pre>
+            <p>Copy your application source code into the container.</p>
+
+            <p>EXPOSE</p>
+            <pre><code>
+EXPOSE 3000
+            </code></pre>
+            <p>Document that the application uses port 3000.</p>
+            <p>Important: EXPOSE by itself does not publish the port to your computer.</p>
+
+            <p>CMD</p>
+            <pre><code>
+CMD ["node", "server.js"]
+            </code></pre>
+            <p>This tells Docker:</p>
+            <p>"When the container starts, run this."</p>
+        </section>
+
+        <section>
+            <h2>7. Build the Docker image</h2>
+            <p>Now run:</p>
+            <pre><code>
+docker build -t docker-demo .
+            </code></pre>
+            <p>The important part:</p>
+            <pre><code>
+docker build
+            </code></pre>
+            <p>means:</p>
+            <p>Build an image.</p>
+            <p>And:</p>
+            <pre><code>
+-t docker-demo
+            </code></pre>
+            <p>means:</p>
+            <p>Give the image the name docker-demo.</p>
+            <p>The . means:</p>
+            <p>Use the current directory as the build context.</p>
+            <p>Afterward:</p>
+            <pre><code>
+docker images
+            </code></pre>
+            <p>You should see something like:</p>
+            <pre><code>
+REPOSITORY    TAG       IMAGE ID
+docker-demo   latest    abc123...
+node          24        ...
+            </code></pre>
+            <p>You have now created your first Docker image.</p>
+        </section>
+
+        <section>
+            <h2>8. Run the container</h2>
+            <p>Now:</p>
+            <pre><code>
+docker run -p 3000:3000 docker-demo
+            </code></pre>
+            <p>This is extremely important:</p>
+            <pre><code>
+-p 3000:3000
+            </code></pre>
+            <p>means:</p>
+            <pre><code>
+YOUR COMPUTER       CONTAINER
+     3000    →        3000
+            </code></pre>
+            <p>So:</p>
+            <pre><code>
+Browser
+   ↓
+localhost:3000
+   ↓
+Docker
+   ↓
+Container:3000
+   ↓
+Node.js
+            </code></pre>
+            <p>Open:</p>
+            <pre><code>
+http://localhost:3000
+            </code></pre>
+            <p>You should see:</p>
+            <pre><code>
+Hello from Docker!
+            </code></pre>
+            <p>🎉 Your Node.js application is running inside Docker.</p>
+        </section>
+
+        <section>
+            <h2>9. See the running container</h2>
+            <p>Open another terminal:</p>
+            <pre><code>
+docker ps
+            </code></pre>
+            <p>You'll see something similar to:</p>
+            <pre><code>
+CONTAINER ID   IMAGE         PORTS
+abc123         docker-demo   0.0.0.0:3000->3000/tcp
+            </code></pre>
+            <p>This means:</p>
+            <pre><code>
+localhost:3000
+       ↓
+container port 3000
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Stop the container</h2>
+            <p>Find the container:</p>
+            <pre><code>
+docker ps
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+docker stop abc123
+            </code></pre>
+            <p>You can also use:</p>
+            <pre><code>
+docker ps -a
+            </code></pre>
+            <p>to see stopped containers.</p>
+        </section>
+
+        <section>
+            <h2>11. Start it again</h2>
+            <p>Instead of rebuilding:</p>
+            <pre><code>
+docker start abc123
+            </code></pre>
+            <p>The image is already built.</p>
+            <p>You're simply starting the existing container again.</p>
+        </section>
+
+        <section>
+            <h2>12. The Docker workflow</h2>
+            <p>This is the workflow I recommend memorizing:</p>
+            <pre><code>
+            Dockerfile
+                │
+                ▼
+         docker build
+                │
+                ▼
+            Docker Image
+                │
+                ▼
+           docker run
+                │
+                ▼
+          Docker Container
+                │
+                ▼
+          Your Application
+            </code></pre>
+            <p>That's the fundamental Docker concept.</p>
+        </section>
+
+        <section>
+            <h2>13. What happens when you deploy?</h2>
+            <p>Suppose you have:</p>
+            <pre><code>
+React frontend
+Node.js API
+MongoDB
+            </code></pre>
+            <p>You could have:</p>
+            <pre><code>
+              Docker
+                │
+       ┌────────┼────────┐
+       ↓        ↓        ↓
+   React      Node.js   MongoDB
+ Container   Container  Container
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+Internet
+   │
+   ▼
+Cloud Server
+   │
+   ├── React Container :3000
+   │
+   ├── Node Container  :4000
+   │
+   └── MongoDB Container :27017
+            </code></pre>
+            <p>This is where Docker becomes extremely useful.</p>
+        </section>
+
+        <section>
+            <h2>14. Docker Compose</h2>
+            <p>When you have multiple containers, you usually don't want to manually run:</p>
+            <pre><code>
+docker run ...
+docker run ...
+docker run ...
+            </code></pre>
+            <p>You can use Docker Compose.</p>
+            <p>Example:</p>
+            <pre><code>
+services:
+
+  api:
+    build: .
+    ports:
+      - "4000:3000"
+
+  mongo:
+    image: mongo:8
+    ports:
+      - "27017:27017"
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+docker compose up
+            </code></pre>
+            <p>Docker starts both:</p>
+            <pre><code>
+            Docker Compose
+                │
+          ┌─────┴─────┐
+          ↓           ↓
+        Node.js      MongoDB
+       Container    Container
+            </code></pre>
+            <p>This is especially useful for your kind of Node.js + MongoDB backend.</p>
+        </section>
+
+        <section>
+            <h2>15. One important thing: containers are not your database</h2>
+            <p>Suppose you have:</p>
+            <pre><code>
+MongoDB Container
+       ↓
+    Database
+            </code></pre>
+            <p>If you delete the container, you can potentially lose the data unless you use a Docker volume.</p>
+            <p>That's why production databases are often managed separately, for example:</p>
+            <pre><code>
+AWS
+ │
+ ├── Application containers
+ │
+ └── Managed database
+            </code></pre>
+            <p>rather than treating the database container as permanent storage.</p>
+        </section>
+
+        <section>
+            <h2>16. Docker in AWS</h2>
+            <p>This connects directly to the AWS topics you've been learning.</p>
+            <p>A typical architecture could eventually look like:</p>
+            <pre><code>
+              Users
+                │
+                ▼
+           CloudFront
+                │
+                ▼
+           Load Balancer
+                │
+       ┌────────┴────────┐
+       ▼                 ▼
+  Node Container    Node Container
+       │                 │
+       └────────┬────────┘
+                ▼
+           MongoDB
+            </code></pre>
+            <p>AWS services such as ECS/Fargate can run Docker containers without you managing the underlying servers in the traditional way.</p>
+            <p>So the progression is roughly:</p>
+            <pre><code>
+Node.js
+   ↓
+Docker
+   ↓
+Docker Compose
+   ↓
+AWS ECS / Fargate
+   ↓
+Production deployment
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The simplest way to remember Docker</h2>
+            <p>Think of a shipping container 🚢.</p>
+            <p>A physical shipping container can contain:</p>
+            <pre><code>
+📦 Clothes
+📦 Electronics
+📦 Food
+            </code></pre>
+            <p>and the shipping company doesn't need to care exactly how the contents are organized.</p>
+            <p>Docker does something similar:</p>
+            <pre><code>
+🐳 Docker Container
+ ├── Your code
+ ├── Node.js
+ ├── npm packages
+ └── Configuration
+            </code></pre>
+            <p>You can move that container between environments:</p>
+            <pre><code>
+Your Mac
+   ↓
+Docker
+   ↓
+AWS
+   ↓
+Production
+            </code></pre>
+            <p>The big benefit is consistency:</p>
+            <p>"If it works inside the container, I can run that same container in another environment."</p>
+            <p>For your Node.js/AWS background, the next practical step would be learning Dockerize a real Node.js + Express + MongoDB API with Docker Compose, because that's much closer to what you'll encounter in an actual backend project.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

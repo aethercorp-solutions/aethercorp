@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Difference between Old and Modern Firebase </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Difference between Old and Modern Firebase </h1>
+                    <p class="subtitle"> The biggest difference is that “old Firebase” usually refers to the older Firebase SDK/API patterns and architecture, while modern Firebase uses the modular SDKs, newer APIs, better tooling, and current Google Cloud integrations. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> For a React Native / iOS / Node.js developer, the differences look like this: </h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>Older Firebase</th>
+                        <th>Modern Firebase</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SDK style</td>
+                        <td>Namespaced APIs</td>
+                        <td>Modular APIs</td>
+                    </tr>
+                    <tr>
+                        <td>JavaScript</td>
+                        <td>firebase.database()</td>
+                        <td>getDatabase(app)</td>
+                    </tr>
+                    <tr>
+                        <td>Initialization</td>
+                        <td>Often global Firebase object</td>
+                        <td>Explicit initializeApp()</td>
+                    </tr>
+                    <tr>
+                        <td>React Native</td>
+                        <td>Older react-native-firebase patterns</td>
+                        <td>@react-native-firebase/* or Firebase JS modular SDK depending on feature</td>
+                    </tr>
+                    <tr>
+                        <td>Authentication</td>
+                        <td>Older auth APIs</td>
+                        <td>Modern modular Auth APIs</td>
+                    </tr>
+                    <tr>
+                        <td>Firestore</td>
+                        <td>Namespaced API</td>
+                        <td>Modular Firestore API</td>
+                    </tr>
+                    <tr>
+                        <td>Realtime Database</td>
+                        <td>firebase.database()</td>
+                        <td>getDatabase()</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Functions</td>
+                        <td>Older Functions SDK/runtime patterns</td>
+                        <td>Modern Functions SDK + newer Node runtimes</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Messaging</td>
+                        <td>Older FCM implementations</td>
+                        <td>Current FCM/APNs integration</td>
+                    </tr>
+                    <tr>
+                        <td>Analytics</td>
+                        <td>Older Firebase Analytics APIs</td>
+                        <td>Current Google Analytics for Firebase</td>
+                    </tr>
+                    <tr>
+                        <td>Deployment</td>
+                        <td>Older Firebase CLI/tooling</td>
+                        <td>Modern Firebase CLI + Cloud tooling</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud backend</td>
+                        <td>More Firebase-centric</td>
+                        <td>Firebase + Google Cloud integration</td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td>Older rules/API practices</td>
+                        <td>Current Security Rules + App Check + IAM integration</td>
+                    </tr>
+                    <tr>
+                        <td>Architecture</td>
+                        <td>Firebase as mostly standalone platform</td>
+                        <td>Firebase as frontend platform integrated with Google Cloud</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>1. The biggest JavaScript difference: namespaced → modular</h2>
+            <p>Old Firebase:</p>
+            <pre><code>
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+
+const db = firebase.firestore();
+
+db.collection('users')
+  .doc(userId)
+  .get();
+            </code></pre>
+            <p>Modern Firebase:</p>
+            <pre><code>
+import { initializeApp } from 'firebase/app';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const userDoc = await getDoc(doc(db, 'users', userId));
+            </code></pre>
+            <p>The modern approach imports only the functionality you need.</p>
+            <p>That makes dependencies easier to reason about and can improve tree-shaking/bundle size.</p>
+        </section>
+
+        <section>
+            <h2>2. Realtime Database</h2>
+            <p>Old style:</p>
+            <pre><code>
+const database = firebase.database();
+
+database
+  .ref('users/' + userId)
+  .once('value');
+            </code></pre>
+            <p>Modern style:</p>
+            <pre><code>
+import {
+    getDatabase,
+    ref,
+    get
+} from 'firebase/database';
+
+const db = getDatabase();
+
+const snapshot = await get(
+    ref(db, `users/${userId}`)
+);
+            </code></pre>
+            <p>The underlying Firebase Realtime Database concept is still essentially the same.</p>
+            <p>It's mostly the SDK/API style that changed.</p>
+        </section>
+
+        <section>
+            <h2>3. Firestore</h2>
+            <p>Old:</p>
+            <pre><code>
+firebase.firestore()
+  .collection('users')
+  .where('active', '==', true)
+  .get();
+            </code></pre>
+            <p>Modern:</p>
+            <pre><code>
+const usersRef = collection(db, 'users');
+
+const q = query(
+  usersRef,
+  where('active', '==', true)
+);
+
+const snapshot = await getDocs(q);
+            </code></pre>
+            <p>Modern Firestore separates operations into explicit functions:</p>
+            <pre><code>
+collection()
+doc()
+query()
+where()
+orderBy()
+getDocs()
+addDoc()
+updateDoc()
+deleteDoc()
+            </code></pre>
+            <p>This is one of the most noticeable changes when maintaining an older Firebase project.</p>
+        </section>
+
+        <section>
+            <h2>4. Firebase Authentication</h2>
+            <p>Old:</p>
+            <pre><code>
+firebase.auth()
+  .signInWithEmailAndPassword(email, password);
+            </code></pre>
+            <p>Modern:</p>
+            <pre><code>
+import {
+    getAuth,
+    signInWithEmailAndPassword
+} from 'firebase/auth';
+
+const auth = getAuth();
+
+await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+);
+            </code></pre>
+            <p>Again, the authentication service itself hasn't fundamentally changed.</p>
+            <p>The client SDK API has become more modular.</p>
+        </section>
+
+        <section>
+            <h2>5. Cloud Functions changed considerably</h2>
+            <p>This is more important for your Castanet backend.</p>
+            <p>Older Firebase Functions commonly looked like:</p>
+            <pre><code>
+const functions = require('firebase-functions');
+
+exports.myFunction = functions.https.onRequest(
+  (req, res) => {
+    res.send('Hello');
+  }
+);
+            </code></pre>
+            <p>Modern Functions commonly use newer SDK patterns:</p>
+            <pre><code>
+const { onRequest } =
+  require('firebase-functions/v2/https');
+
+exports.myFunction = onRequest(
+  (req, res) => {
+    res.send('Hello');
+  }
+);
+            </code></pre>
+            <p>Modern Cloud Functions support 2nd generation functions, which are built on newer Google Cloud infrastructure.</p>
+            <p>That brings things such as:</p>
+            <ul>
+                <li>better scalability</li>
+                <li>concurrency</li>
+                <li>longer execution options</li>
+                <li>more configurable CPU/memory</li>
+                <li>better integration with Cloud Run</li>
+                <li>improved deployment behavior</li>
+            </ul>
+            <p>So this isn't merely a syntax change.</p>
+        </section>
+
+        <section>
+            <h2>6. Node.js versions matter</h2>
+            <p>This is especially important for older Firebase projects.</p>
+            <p>An old project might have been built around:</p>
+            <pre><code>
+Node.js 12
+Node.js 14
+Node.js 16
+            </code></pre>
+            <p>Modern Firebase/Google Cloud projects use currently supported Node.js runtimes.</p>
+            <p>So when upgrading an old project, you may have to update:</p>
+            <pre><code>
+Node.js
+Firebase Functions SDK
+Firebase CLI
+package.json
+Cloud Functions API
+deployment configuration
+            </code></pre>
+            <p>This can expose compatibility problems in old dependencies.</p>
+        </section>
+
+        <section>
+            <h2>7. Firebase Console also evolved</h2>
+            <p>The Firebase Console is still recognizable:</p>
+            <pre><code>
+    Firebase Console
+       │
+       ├── Authentication
+       ├── Firestore
+       ├── Realtime Database
+       ├── Storage
+       ├── Functions
+       ├── Messaging
+       ├── Analytics
+       └── Crashlytics
+            </code></pre>
+            <p>But modern Firebase is much more closely integrated with Google Cloud.</p>
+            <p>For example:</p>
+            <pre><code>
+Firebase
+   │
+   └── Google Cloud
+         ├── Cloud Functions
+         ├── Cloud Run
+         ├── IAM
+         ├── Cloud Logging
+         ├── Secret Manager
+         ├── Pub/Sub
+         └── Cloud Monitoring
+            </code></pre>
+            <p>This is particularly useful for larger applications.</p>
+        </section>
+
+        <section>
+            <h2>8. Firebase Authentication is more capable now</h2>
+            <p>Modern Firebase Auth supports a broad set of authentication mechanisms, including:</p>
+            <pre><code>
+Email/password
+Phone
+Google
+Apple
+Facebook
+GitHub
+Microsoft
+Anonymous
+Custom tokens
+OIDC
+SAML
+            </code></pre>
+            <p>It also has stronger integration with:</p>
+            <ul>
+                <li>Identity Platform</li>
+                <li>multi-factor authentication</li>
+                <li>App Check</li>
+                <li>security controls</li>
+                <li>Google Cloud IAM</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. App Check is an important modern concept</h2>
+            <p>Older Firebase applications often relied primarily on:</p>
+            <pre><code>
+Firebase Authentication
++
+Security Rules
+            </code></pre>
+            <p>Modern Firebase can additionally use Firebase App Check.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+Old
+
+Mobile App
+    │
+    ▼
+Firebase Auth
+    │
+    ▼
+Firebase
+            </code></pre>
+            <p>Modern:</p>
+            <pre><code>
+Mobile App
+    │
+    ├── Authentication
+    │
+    └── App Check
+          │
+          ▼
+       Firebase
+            </code></pre>
+            <p>App Check helps services distinguish requests coming from your legitimate application from requests coming from unauthorized clients.</p>
+        </section>
+
+        <section>
+            <h2>10. FCM changed too</h2>
+            <p>Firebase Cloud Messaging has evolved significantly.</p>
+            <p>Older mobile implementations often had more Firebase-specific setup directly in the application.</p>
+            <p>Modern FCM integrates more explicitly with:</p>
+            <pre><code>
+Android
+   ↓
+FCM
+
+iOS
+   ↓
+APNs
+   ↓
+FCM
+            </code></pre>
+            <p>For iOS, Firebase still ultimately works with Apple's APNs infrastructure.</p>
+            <p>This is particularly relevant to your Castanet React Native app, because you're dealing with:</p>
+            <pre><code>
+Firebase
+FCM
+APNs
+React Native
+iOS
+UIScene
+            </code></pre>
+            <p>The Firebase SDK itself isn't what requires your UIScene migration. That's an Apple/iOS lifecycle change, separate from Firebase.</p>
+        </section>
+
+        <section>
+            <h2>11. Firebase SDK versions are now much more important</h2>
+            <p>For example, your older Castanet environment has Firebase SDKs around the older generation.</p>
+            <p>You might encounter something like:</p>
+            <pre><code>
+Old:
+
+Firebase 9.x
+React Native Firebase older version
+React Native 0.68.x
+older iOS integration
+            </code></pre>
+            <p>versus a modern stack:</p>
+            <pre><code>
+Modern:
+
+Current Firebase iOS SDK
+Current React Native Firebase
+React Native newer version
+Xcode current
+iOS current
+APNs/FCM current integration
+            </code></pre>
+            <p>You shouldn't assume that simply upgrading Firebase will solve everything.</p>
+            <p>There are several independent layers:</p>
+            <pre><code>
+            Your App
+                │
+         React Native
+                │
+      React Native Firebase
+                │
+         Firebase SDK
+                │
+      Apple / Google APIs
+                │
+         iOS / Android
+            </code></pre>
+            <p>An upgrade at one layer can require changes at another.</p>
+        </section>
+
+        <section>
+            <h2>12. One important misconception</h2>
+            <p>Modern Firebase does NOT mean that Firebase services themselves were completely redesigned.</p>
+            <p>For example:</p>
+            <pre><code>
+Firebase Realtime Database
+            </code></pre>
+            <p>is still fundamentally a JSON tree database.</p>
+            <p>And:</p>
+            <pre><code>
+Firestore
+            </code></pre>
+            <p>is still a document database.</p>
+            <p>The major changes are often:</p>
+            <pre><code>
+SDK APIs
++
+runtime versions
++
+Cloud Functions architecture
++
+security capabilities
++
+Google Cloud integration
++
+mobile platform requirements
++
+developer tooling
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>For your Castanet project specifically</h2>
+            <p>Your architecture is roughly:</p>
+            <pre><code>
+                Castanet Mobile
+                React Native
+                     │
+          ┌──────────┼──────────┐
+          │          │          │
+      Firebase    FCM/Auth    Analytics
+          │
+          ▼
+    Firebase / Google Cloud
+          │
+          ▼
+    Castanet API
+          │
+          ▼
+    AWS Lambda / MongoDB
+            </code></pre>
+            <p>So if you're asking because you're upgrading the old Castanet Firebase implementation, I'd separate the work into four categories:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Upgrade</th>
+                        <th>What changes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Firebase SDK</td>
+                        <td>APIs/dependencies</td>
+                    </tr>
+                    <tr>
+                        <td>React Native Firebase</td>
+                        <td>Native module compatibility</td>
+                    </tr>
+                    <tr>
+                        <td>iOS/Xcode</td>
+                        <td>AppDelegate → UIScene, SDK compatibility</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase backend</td>
+                        <td>Functions/runtime/CLI/security</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>The UIScene issue you're currently working on is primarily an iOS 26/27 + Xcode lifecycle compatibility issue, not a "modern Firebase" requirement. Firebase can be modernized separately.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

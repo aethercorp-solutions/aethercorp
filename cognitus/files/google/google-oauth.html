@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Google OAuth </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Google OAuth </h1>
+                    <p class="subtitle"> Google OAuth is basically a way to let a user log in with their Google account without giving your app their Google password. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Simple flow </h2>
+            <p>Imagine your app has:</p>
+            <p>Your App → Google → Your App</p>
+            <ol>
+                <li>User clicks "Sign in with Google"</li>
+                <li>Your app sends the user to Google</li>
+                <li>Google asks the user to log in/approve access</li>
+                <li>Google authenticates the user</li>
+                <li>Google sends your app a code or token</li>
+                <li>Your backend verifies it</li>
+                <li>
+                    Your backend knows:
+                    <ul>
+                        <li>Who the Google user is</li>
+                        <li>Their email</li>
+                        <li>Their Google user ID</li>
+                    </ul>
+                </li>
+                <li>Your backend creates your own session/JWT/access token</li>
+                <li>Your app uses your token for future API requests</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>The important distinction</h2>
+            <p>There are usually two different tokens/concepts involved:</p>
+            <pre><code>
+Google OAuth
+     ↓
+Google authenticates user
+     ↓
+Google ID Token
+     ↓
+Your Backend verifies it
+     ↓
+Your Backend creates YOUR JWT
+     ↓
+Mobile/Web App uses YOUR JWT
+     ↓
+Your API
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>ID Token vs Access Token</h2>
+            <p>ID Token</p>
+            <p>Answers:</p>
+            <p>"Who is this user?"</p>
+            <p>Example payload:</p>
+            <pre><code>
+{
+    "sub": "123456789",
+    "email": "paul@example.com",
+    "name": "Paul",
+    "iss": "https://accounts.google.com",
+    "aud": "your-client-id"
+}
+            </code></pre>
+            <p>Your backend verifies the signature, issuer, audience, expiration, etc.</p>
+        </section>
+
+        <section>
+            <h2>Access Token</h2>
+            <p>Answers:</p>
+            <p>"What Google APIs is this user allowing my application to access?"</p>
+            <p>For example, if you want to access Google People API:</p>
+            <pre><code>
+Your App
+   ↓
+Google OAuth
+   ↓
+Access Token
+   ↓
+Google People API
+            </code></pre>
+            <p>In your Node.js backend</p>
+            <p>The code you showed previously:</p>
+            <pre><code>
+const loginTicket = await auth.verifyIdToken({
+    idToken: id_token,
+    audience: this.client_id
+});
+            </code></pre>
+            <p>is Google ID-token authentication.</p>
+            <p>You're essentially telling Google:</p>
+            <p>"Google, please verify that this ID token was genuinely issued for my application."</p>
+            <p>Then:</p>
+            <pre><code>
+const tokenPayload = loginTicket.getPayload();
+            </code></pre>
+            <p>gets information about the authenticated Google user.</p>
+            <p>Industry-standard architecture</p>
+            <p>For your Node.js + AWS Lambda setup, a common architecture is:</p>
+            <pre><code>
+                ┌──────────────┐
+                │    Google    │
+                │    OAuth     │
+                └──────┬───────┘
+                       │
+                 ID Token / Code
+                       │
+                       ▼
+┌──────────┐     ┌──────────────┐
+│ React /  │────▶│ API Gateway  │
+│ iOS / RN │     └──────┬───────┘
+└──────────┘            │
+                        ▼
+                 ┌──────────────┐
+                 │ AWS Lambda   │
+                 │ Node.js      │
+                 └──────┬───────┘
+                        │
+                 Verify Google
+                        │
+                        ▼
+                 ┌──────────────┐
+                 │   MongoDB    │
+                 └──────────────┘
+                        │
+                  Create YOUR JWT
+                        │
+                        ▼
+                 Mobile/Web App
+            </code></pre>
+            <p>The key idea: Google proves who the user is. Your backend then establishes your application's authenticated session.</p>
+            <p>This is why OAuth ≠ JWT. OAuth is the authorization/authentication framework; JWT is one possible token format used within or after that flow.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

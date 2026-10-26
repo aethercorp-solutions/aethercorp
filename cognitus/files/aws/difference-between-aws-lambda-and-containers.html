@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> AWS Lambda and containers </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> AWS Lambda and containers </h1>
+                    <p class="subtitle"> Think of AWS Lambda and containers as two ways to run your application code. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 🟣 Lambda = "Run my code when needed" </h2>
+            <p>You give AWS a function, and AWS runs it when something happens.</p>
+            <p>Example:</p>
+            <pre><code>
+User → API Gateway → Lambda → MongoDB
+            </code></pre>
+            <p>If a user calls your API:</p>
+            <ol>
+                <li>AWS starts/runs your Lambda.</li>
+                <li>Your code processes the request.</li>
+                <li>Lambda finishes.</li>
+                <li>You stop paying for that execution.</li>
+            </ol>
+            <p>Good for:</p>
+            <ul>
+                <li>APIs</li>
+                <li>Small backend functions</li>
+                <li>Event processing</li>
+                <li>Scheduled jobs</li>
+                <li>Serverless applications</li>
+            </ul>
+            <p>You don't manage the server.</p>
+        </section>
+
+        <section>
+            <h2>🟢 Container = "Give me my own packaged application"</h2>
+            <p>You package your application together with its environment.</p>
+            <p>For example:</p>
+            <pre><code>
+Docker Container
+├── Node.js
+├── Your application
+├── Dependencies
+└── Configuration
+            </code></pre>
+            <p>Then you can run that container on services like ECS, EKS, or your own server.</p>
+            <pre><code>
+User → Load Balancer → Container → MongoDB
+            </code></pre>
+            <p>The container typically stays running and waits for requests.</p>
+            <p>Good for:</p>
+            <ul>
+                <li>Large applications</li>
+                <li>Long-running services</li>
+                <li>Applications needing specific environments</li>
+                <li>Microservices</li>
+                <li>WebSocket/real-time applications</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>The simplest difference</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Lambda</th>
+                        <th>Container</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Runs</td>
+                        <td>When needed</td>
+                        <td>Usually continuously</td>
+                    </tr>
+                    <tr>
+                        <td>Server management</td>
+                        <td>AWS handles it</td>
+                        <td>You manage more of it</td>
+                    </tr>
+                    <tr>
+                        <td>Scaling</td>
+                        <td>Automatic</td>
+                        <td>You configure/manage scaling</td>
+                    </tr>
+                    <tr>
+                        <td>Startup</td>
+                        <td>Can have cold starts</td>
+                        <td>Usually already running</td>
+                    </tr>
+                    <tr>
+                        <td>Long-running tasks</td>
+                        <td>❌ Not ideal</td>
+                        <td>✅ Good</td>
+                    </tr>
+                    <tr>
+                        <td>Cost model</td>
+                        <td>Pay for execution</td>
+                        <td>Pay for running resources</td>
+                    </tr>
+                    <tr>
+                        <td>Deployment</td>
+                        <td>Function</td>
+                        <td>Entire application environment</td>
+                    </tr>
+                    <tr>
+                        <td>Example</td>
+                        <td>API endpoint</td>
+                        <td>Node.js backend server</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Easy analogy</h2>
+            <p>Lambda: 🍔</p>
+            <p>"Cook this burger when someone orders it."</p>
+
+            <p>Container: 🍳</p>
+            <p>"Keep a kitchen running and ready to cook burgers."</p>
+
+            <p>For your Node.js + API Gateway + MongoDB architecture, Lambda is excellent when your backend is mostly request/response APIs. Containers become more attractive when your backend needs to run continuously, maintain persistent connections, or perform long-running workloads.</p>
+        </section>
+
+        <section>
+            <p>The biggest difference becomes much clearer when you see the same Node.js API implemented both ways.</p>
+            <p>Let's build a simple GET /users API connected to MongoDB.</p>
+            <h2>1. Lambda architecture</h2>
+            <pre><code>
+                AWS
+                ┌─────────────────────────────────────────────┐
+                │                                             │
+                │  API Gateway                                │
+                │       │                                     │
+                │       ▼                                     │
+                │  ┌─────────────┐                            │
+                │  │   Lambda    │                            │
+                │  │ getUsers()  │                            │
+                │  └──────┬──────┘                            │
+                │         │                                   │
+                │         ▼                                   │
+                │     MongoDB                                 │
+                │                                             │
+                └─────────────────────────────────────────────┘
+            </code></pre>
+            <p>Project structure</p>
+            <pre><code>
+my-api/
+│
+├── src/
+│   ├── handlers/
+│   │   └── users.ts
+│   │
+│   ├── services/
+│   │   └── userService.ts
+│   │
+│   └── database/
+│       └── mongo.ts
+│
+├── package.json
+└── serverless.yml
+            </code></pre>
+            <p>Lambda handler</p>
+            <pre><code>
+// src/handlers/users.ts
+
+import { APIGatewayProxyHandler } from "aws-lambda";
+import { getUsers } from "../services/userService";
+
+export const handler: APIGatewayProxyHandler = async () => {
+  try {
+    const users = await getUsers();
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(users),
+    };
+
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: "Internal server error",
+      }),
+    };
+  }
+};
+            </code></pre>
+            <p>Notice something important:</p>
+            <p>There is no Express server.</p>
+            <p>You don't do:</p>
+            <pre><code>
+app.listen(3000);
+            </code></pre>
+            <p>AWS invokes your function.</p>
+        </section>
+
+        <section>
+            <h2>Service</h2>
+            <pre><code>
+// src/services/userService.ts
+
+import { getDatabase } from "../database/mongo";
+
+export async function getUsers() {
+  const db = await getDatabase();
+
+  return db
+    .collection("users")
+    .find({})
+    .toArray();
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>MongoDB connection</h2>
+            <pre><code>
+// src/database/mongo.ts
+
+import { MongoClient } from "mongodb";
+
+const client = new MongoClient(process.env.MONGO_URI!);
+
+let db: any;
+
+export async function getDatabase() {
+  if (!db) {
+    await client.connect();
+    db = client.db("myapp");
+  }
+
+  return db;
+}
+            </code></pre>
+            <p>The connection can potentially be reused across Lambda invocations.</p>
+        </section>
+
+        <section>
+            <h2>Serverless configuration</h2>
+            <pre><code>
+service: my-api
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+
+functions:
+
+  getUsers:
+    handler: src/handlers/users.handler
+    events:
+      - http:
+          path: users
+          method: get
+            </code></pre>
+            <p>Now AWS effectively creates:</p>
+            <pre><code>
+GET /users
+      ↓
+API Gateway
+      ↓
+Lambda
+      ↓
+handler()
+      ↓
+getUsers()
+      ↓
+MongoDB
+            </code></pre>
+            <p>You don't manage a server process.</p>
+        </section>
+
+        <section>
+            <h2>2. Container architecture</h2>
+            <p>Now let's implement the same API using Docker.</p>
+            <pre><code>
+                AWS
+                ┌─────────────────────────────────────────────┐
+                │                                             │
+                │  Load Balancer / API Gateway                │
+                │                │                            │
+                │                ▼                            │
+                │       ┌─────────────────┐                   │
+                │       │ Docker Container│                   │
+                │       │                 │                   │
+                │       │ Node.js         │                   │
+                │       │ Express         │                   │
+                │       │                 │                   │
+                │       │ app.listen()    │                   │
+                │       └────────┬────────┘                   │
+                │                │                            │
+                │                ▼                            │
+                │             MongoDB                         │
+                │                                             │
+                └─────────────────────────────────────────────┘
+            </code></pre>
+            <p>Project structure</p>
+            <pre><code>
+my-api/
+│
+├── src/
+│   ├── controllers/
+│   │   └── userController.ts
+│   │
+│   ├── routes/
+│   │   └── userRoutes.ts
+│   │
+│   ├── services/
+│   │   └── userService.ts
+│   │
+│   ├── database/
+│   │   └── mongo.ts
+│   │
+│   └── server.ts
+│
+├── package.json
+├── Dockerfile
+└── docker-compose.yml
+            </code></pre>
+            <p>Now you have an actual server.</p>
+        </section>
+
+        <section>
+            <h2>Express server</h2>
+            <pre><code>
+// src/server.ts
+
+import express from "express";
+import userRoutes from "./routes/userRoutes";
+
+const app = express();
+
+app.use(express.json());
+
+app.use("/users", userRoutes);
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+            </code></pre>
+            <p>This is the major difference.</p>
+            <p>With containers:</p>
+            <pre><code>
+app.listen(3000);
+            </code></pre>
+            <p>The application stays running.</p>
+        </section>
+
+        <section>
+            <h2>Routes</h2>
+            <pre><code>
+// src/routes/userRoutes.ts
+
+import { Router } from "express";
+import { getUsers } from "../controllers/userController";
+
+const router = Router();
+
+router.get("/", getUsers);
+
+export default router;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Controller</h2>
+            <pre><code>
+// src/controllers/userController.ts
+
+import { Request, Response } from "express";
+import { getUsers as getUsersService } from "../services/userService";
+
+export async function getUsers(
+  req: Request,
+  res: Response
+) {
+  try {
+    const users = await getUsersService();
+
+    res.json(users);
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+}
+            </code></pre>
+            <p>The service and MongoDB code can be almost identical.</p>
+        </section>
+
+        <section>
+            <h2>3. The Dockerfile</h2>
+            <p>This is where containers become very different.</p>
+            <pre><code>
+FROM node:24
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
+            </code></pre>
+            <p>You are essentially telling Docker:</p>
+            <p>"Create a machine-like environment containing Node.js, my application, and its dependencies, then start my server."</p>
+            <p>Docker produces:</p>
+            <pre><code>
+┌─────────────────────────────┐
+│       Docker Container      │
+│                             │
+│ Node.js                     │
+│ npm packages                │
+│ Your application            │
+│                             │
+│ npm start                   │
+│      ↓                      │
+│ app.listen(3000)            │
+│                             │
+└─────────────────────────────┘
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. The biggest code-level difference</h2>
+            <p>Here's the easiest comparison.</p>
+            <p>Lambda</p>
+            <pre><code>
+export const handler = async (event) => {
+
+    const users = await getUsers();
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(users)
+    };
+};
+            </code></pre>
+            <p>AWS calls this function.</p>
+            <pre><code>
+AWS
+ │
+ ├── request
+ │
+ ▼
+handler()
+ │
+ ▼
+response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Container</h2>
+            <pre><code>
+const app = express();
+
+app.get("/users", async (req, res) => {
+
+    const users = await getUsers();
+
+    res.json(users);
+});
+
+app.listen(3000);
+            </code></pre>
+            <p>Your application starts the server.</p>
+            <pre><code>
+Container
+ │
+ ├── start Node.js
+ │
+ ├── app.listen()
+ │
+ ├── wait...
+ │
+ ├── request → route
+ │
+ ├── response
+ │
+ ├── wait...
+ │
+ └── request → route
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Lambda project vs Container project</h2>
+            <p>Lambda</p>
+            <pre><code>
+my-api/
+│
+├── src/
+│   ├── handlers/
+│   │   ├── users.ts
+│   │   ├── auth.ts
+│   │   └── contacts.ts
+│   │
+│   ├── services/
+│   └── database/
+│
+├── serverless.yml
+└── package.json
+            </code></pre>
+            <p>You might have:</p>
+            <pre><code>
+GET /users
+    ↓
+getUsers Lambda
+
+POST /users
+    ↓
+createUser Lambda
+
+POST /login
+    ↓
+login Lambda
+
+GET /contacts
+    ↓
+getContacts Lambda
+            </code></pre>
+            <p>Potentially many independent functions.</p>
+        </section>
+
+        <section>
+            <h2>Container</h2>
+            <pre><code>
+my-api/
+│
+├── src/
+│   ├── controllers/
+│   ├── routes/
+│   ├── services/
+│   ├── middleware/
+│   ├── database/
+│   └── server.ts
+│
+├── Dockerfile
+└── package.json
+            </code></pre>
+            <p>One running application might handle everything:</p>
+            <pre><code>
+            Container
+                │
+┌───────────────┼────────────────┐
+│               │                │
+/users           /login          /contacts
+│               │                │
+▼               ▼                ▼
+Controller      Controller       Controller
+│               │                │
+└───────────────┼────────────────┘
+                ▼
+             MongoDB
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Scaling is also different</h2>
+            <p>Suppose 1,000 users suddenly hit your API.</p>
+            <p>Lambda</p>
+            <p>AWS can create more Lambda executions:</p>
+            <pre><code>
+            API Gateway
+                │
+      ┌─────────┼─────────┐
+      ▼         ▼         ▼
+   Lambda    Lambda    Lambda
+     #1        #2        #3
+      │         │         │
+      └─────────┼─────────┘
+                ▼
+             MongoDB
+            </code></pre>
+            <p>You don't manually create those servers.</p>
+        </section>
+
+        <section>
+            <h2>Containers</h2>
+            <p>You have containers:</p>
+            <pre><code>
+            Load Balancer
+                │
+      ┌─────────┼─────────┐
+      ▼         ▼         ▼
+ Container  Container  Container
+    #1         #2         #3
+      │         │         │
+      └─────────┼─────────┘
+                ▼
+             MongoDB
+            </code></pre>
+            <p>A service such as ECS can automatically increase the number of containers, but you configure and manage that infrastructure.</p>
+        </section>
+
+        <section>
+            <h2>7. In your AWS/Node.js world</h2>
+            <p>Your current type of architecture could look like:</p>
+            <p>Serverless</p>
+            <pre><code>
+    React / React Native
+        │
+        ▼
+   CloudFront
+        │
+        ▼
+  API Gateway
+        │
+        ▼
+ AWS Lambda
+        │
+        ▼
+    MongoDB
+            </code></pre>
+            <p>Very good for APIs like:</p>
+            <pre><code>
+POST /contacts
+GET  /contacts
+PUT  /contacts/:id
+DELETE /contacts/:id
+POST /login
+GET  /analytics
+            </code></pre>
+
+            <p>Containerized</p>
+            <pre><code>
+    React / React Native
+        │
+        ▼
+   CloudFront
+        │
+        ▼
+ Load Balancer
+        │
+        ▼
+   ECS / Fargate
+        │
+        ▼
+ Node.js + Express
+        │
+        ▼
+    MongoDB
+            </code></pre>
+            <p>The Node.js application is continuously running.</p>
+        </section>
+
+        <section>
+            <h2>The key mental model</h2>
+            <p>Think of it this way:</p>
+            <p>Lambda:</p>
+            <pre><code>
+REQUEST
+   ↓
+RUN FUNCTION
+   ↓
+RESPONSE
+   ↓
+DONE
+            </code></pre>
+            <p>Container:</p>
+            <pre><code>
+START APPLICATION
+       ↓
+  SERVER RUNNING
+       ↓
+REQUEST → PROCESS → RESPONSE
+       ↓
+REQUEST → PROCESS → RESPONSE
+       ↓
+REQUEST → PROCESS → RESPONSE
+       ↓
+   SERVER STAYS RUNNING
+            </code></pre>
+            <p>So when you are designing a backend, the fundamental question is:</p>
+            <p>"Do I want AWS to run individual pieces of my code when needed, or do I want to run my own application server inside a packaged environment?"</p>
+            <p>That's essentially Lambda vs containers.</p>
+        </section>
+
+        <section>
+            <p>The easiest way to understand it is to compare a traditional Node.js server with Node.js running as AWS Lambda functions.</p>
+            <p>Let's use the same GET /contacts API for both.</p>
+            <h2>1. Traditional Node.js application</h2>
+            <p>Architecture</p>
+            <pre><code>
+    React / React Native
+        │
+        │ GET /contacts
+        ▼
+   ┌──────────────┐
+   │ Node.js      │
+   │ Express      │
+   │ Server       │
+   │ :3000        │
+   └──────┬───────┘
+          │
+          ▼
+       MongoDB
+            </code></pre>
+            <p>Your Node.js application is a server that stays running.</p>
+            <p>Project</p>
+            <pre><code>
+my-api/
+├── src/
+│   ├── server.ts
+│   ├── routes/
+│   │   └── contactRoutes.ts
+│   ├── controllers/
+│   │   └── contactController.ts
+│   ├── services/
+│   │   └── contactService.ts
+│   └── database/
+│       └── mongo.ts
+│
+├── package.json
+└── .env
+            </code></pre>
+            <p>server.ts</p>
+            <pre><code>
+import express from "express";
+import contactRoutes from "./routes/contactRoutes";
+
+const app = express();
+
+app.use(express.json());
+
+app.use("/contacts", contactRoutes);
+
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
+});
+            </code></pre>
+            <p>The important part is:</p>
+            <pre><code>
+app.listen(3000);
+            </code></pre>
+            <p>Your application starts a server and keeps running.</p>
+            <p>Route</p>
+            <pre><code>
+router.get("/", getContacts);
+            </code></pre>
+            <p>Controller</p>
+            <pre><code>
+export async function getContacts(req, res) {
+    const contacts = await getContactsFromDatabase();
+
+    res.json(contacts);
+}
+            </code></pre>
+            <p>The flow is:</p>
+            <pre><code>
+Request
+   ↓
+Express Server
+   ↓
+Router
+   ↓
+Controller
+   ↓
+Service
+   ↓
+MongoDB
+   ↓
+Response
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. AWS Serverless application</h2>
+            <p>Now remove the traditional server.</p>
+            <p>Architecture</p>
+            <pre><code>
+    React / React Native
+        │
+        │ GET /contacts
+        ▼
+   API Gateway
+        │
+        ▼
+    Lambda
+        │
+        ▼
+     MongoDB
+            </code></pre>
+            <p>There is no:</p>
+            <pre><code>
+app.listen(3000)
+            </code></pre>
+            <p>AWS invokes your function when the request arrives.</p>
+        </section>
+
+        <section>
+            <h2>Project</h2>
+            <pre><code>
+my-api/
+├── src/
+│   ├── handlers/
+│   │   └── getContacts.ts
+│   ├── services/
+│   │   └── contactService.ts
+│   └── database/
+│       └── mongo.ts
+│
+├── package.json
+└── serverless.yml
+            </code></pre>
+            <p>Lambda handler</p>
+            <pre><code>
+export async function handler(event) {
+
+    const contacts = await getContactsFromDatabase();
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(contacts)
+    };
+}
+            </code></pre>
+            <p>AWS calls:</p>
+            <pre><code>
+handler()
+            </code></pre>
+            <p>when someone requests:</p>
+            <pre><code>
+GET /contacts
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. The biggest code difference</h2>
+            <p>Traditional Node.js</p>
+            <pre><code>
+const app = express();
+
+app.get("/contacts", async (req, res) => {
+
+    const contacts = await getContacts();
+
+    res.json(contacts);
+});
+
+app.listen(3000);
+            </code></pre>
+            <p>You own the server process.</p>
+        </section>
+
+        <section>
+            <h2>Serverless</h2>
+            <pre><code>
+export const handler = async (event) => {
+
+    const contacts = await getContacts();
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(contacts)
+    };
+};
+            </code></pre>
+            <p>AWS owns the server execution environment.</p>
+        </section>
+
+        <section>
+            <h2>4. You can still use Express with Lambda</h2>
+            <p>This is an important point.</p>
+            <p>Serverless doesn't necessarily mean:</p>
+            <p>"You cannot use Express."</p>
+            <p>You can do something like:</p>
+            <pre><code>
+import express from "express";
+import serverless from "serverless-http";
+
+const app = express();
+
+app.get("/contacts", async (req, res) => {
+    const contacts = await getContacts();
+    res.json(contacts);
+});
+
+export const handler = serverless(app);
+            </code></pre>
+            <p>Now:</p>
+            <pre><code>
+API Gateway
+     ↓
+Lambda
+     ↓
+Express
+     ↓
+Your routes
+            </code></pre>
+            <p>So you can migrate an existing Node.js application toward serverless without completely rewriting your business logic.</p>
+        </section>
+
+        <section>
+            <h2>5. Multiple endpoints</h2>
+            <p>Traditional Node.js:</p>
+            <pre><code>
+            Node.js Server
+                │
+┌───────────────┼────────────────┐
+▼               ▼                ▼
+GET /contacts   POST /contacts   POST /login
+│               │                │
+▼               ▼                ▼
+Controller      Controller       Controller
+            </code></pre>
+            <p>One server handles everything.</p>
+            <p>Serverless:</p>
+            <pre><code>
+            API Gateway
+                │
+ ┌──────────────┼──────────────┐
+ ▼              ▼              ▼
+getContacts      createContact    login
+Lambda            Lambda        Lambda
+ │              │              │
+ └──────────────┼──────────────┘
+                ▼
+             MongoDB
+            </code></pre>
+            <p>Each function can be independently deployed and scaled.</p>
+        </section>
+
+        <section>
+            <h2>6. Deployment is different</h2>
+            <p>Traditional Node.js</p>
+            <p>You might deploy to:</p>
+            <pre><code>
+EC2
+DigitalOcean
+Render
+Railway
+ECS
+VPS
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+npm install
+npm run build
+npm start
+            </code></pre>
+            <p>Then your server runs:</p>
+            <pre><code>
+Node.js
+   ↓
+Port 3000
+   ↓
+Always running
+            </code></pre>
+            <p>You are responsible for things like:</p>
+            <ul>
+                <li>Server</li>
+                <li>Process</li>
+                <li>Updates</li>
+                <li>Scaling</li>
+                <li>Load balancing</li>
+                <li>Monitoring</li>
+                <li>Availability</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

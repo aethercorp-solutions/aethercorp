@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Promise in TypeScript</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Promise in TypeScript</h1>
+                    <p class="subtitle">
+                        A Promise in TypeScript (and JavaScript) is an object that represents a value you don't have yet, but will get in the future.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of ordering food at a restaurant.</h2>
+            <ul>
+                <li>You order food → You get a receipt (the Promise).</li>
+                <li>The kitchen prepares the food.</li>
+                <li>
+                    Later, one of two things happens:
+                    <ul>
+                        <li>✅ Your food is ready (resolved).</li>
+                        <li>❌ The restaurant says they ran out of ingredients (rejected).</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>The receipt is not the food—it just promises you'll eventually get an answer.</p>
+        </section>
+
+        <section>
+            <h2>Without a Promise</h2>
+            <p>Imagine a function that returns immediately.</p>
+            <pre><code>
+function getName() {
+    return "Paul";
+}
+
+const name = getName();
+console.log(name);
+            </code></pre>
+            <p>Output:</p>
+            <pre><code>
+Paul
+            </code></pre>
+            <p>The value is available immediately.</p>
+        </section>
+
+        <section>
+            <h2>With a Promise</h2>
+            <p>Sometimes getting data takes time.</p>
+            <p>For example:</p>
+            <ul>
+                <li>Downloading from an API</li>
+                <li>Reading a file</li>
+                <li>Accessing a database</li>
+            </ul>
+            <pre><code>
+function getName(): Promise&lt;string&gt; {
+    return Promise.resolve("Paul");
+}
+            </code></pre>
+            <p>Notice:</p>
+            <pre><code>
+Promise&lt;string&gt;
+            </code></pre>
+            <p>means:</p>
+            <p>"I don't have a string yet, but I promise I'll give you one later."</p>
+        </section>
+
+        <section>
+            <h2>Visual Timeline</h2>
+            <pre><code>
+Call function
+      │
+      ▼
+ Returns Promise immediately
+      │
+      ▼
+ Wait...
+      │
+      ▼
+Promise resolves
+      │
+      ▼
+Value = "Paul"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Using .then()</h2>
+            <pre><code>
+function getName(): Promise&lt;string&gt; {
+    return Promise.resolve("Paul");
+}
+
+getName().then((name) => {
+    console.log(name);
+});
+            </code></pre>
+            <p>Output</p>
+            <pre><code>
+Paul
+            </code></pre>
+            <p>The .then() runs after the Promise finishes.</p>
+        </section>
+
+        <section>
+            <h2>Using async/await (much easier)</h2>
+            <p>Instead of .then(), we usually write:</p>
+            <pre><code>
+async function main() {
+    const name = await getName();
+    console.log(name);
+}
+
+main();
+            </code></pre>
+            <p>await means:</p>
+            <p>"Pause here until the Promise finishes."</p>
+        </section>
+
+        <section>
+            <h2>Example with an API</h2>
+            <pre><code>
+async function fetchUser(): Promise&lt;string&gt; {
+    return "Paul";
+}
+
+async function main() {
+    const user = await fetchUser();
+    console.log(user);
+}
+
+main();
+            </code></pre>
+            <p>Flow:</p>
+            <pre><code>
+fetchUser()
+      │
+      ▼
+Promise&lt;string&gt;
+      │
+await
+      │
+      ▼
+"Paul"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Promise can succeed or fail</h2>
+            <p>Success</p>
+            <pre><code>
+Promise.resolve("Success")
+            </code></pre>
+            <p>Failure</p>
+            <pre><code>
+Promise.reject("Something went wrong")
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+async function login(): Promise&lt;string&gt; {
+    throw new Error("Wrong password");
+}
+            </code></pre>
+            <p>Handle it:</p>
+            <pre><code>
+async function main() {
+    try {
+        const result = await login();
+        console.log(result);
+    } catch (error) {
+        console.log("Login failed");
+    }
+}
+    
+main();
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why APIs return Promises</h2>
+            <p>Suppose you request data from a server.</p>
+            <pre><code>
+Your App  ------------&gt; Server
+              waiting...
+Your App &lt;------------ Data
+            </code></pre>
+            <p>The server might take:</p>
+            <ul>
+                <li>100 ms</li>
+                <li>2 seconds</li>
+                <li>10 seconds</li>
+            </ul>
+            <p>Your program can't freeze while waiting, so it gets a Promise immediately and continues doing other work. When the server responds, the Promise is fulfilled.</p>
+        </section>
+
+        <section>
+            <h2>Breaking down this code</h2>
+            <pre><code>
+async function fetchUser(): Promise&lt;string&gt; {
+    return "Paul";
+}
+            </code></pre>
+            <p>Step 1</p>
+            <pre><code>
+async function fetchUser()
+            </code></pre>
+            <p>async tells TypeScript:</p>
+            <p>"This function always returns a Promise."</p>
+            <p>Even if you return a plain string, TypeScript wraps it automatically.</p>
+            <p>So this:</p>
+            <pre><code>
+async function fetchUser() {
+    return "Paul";
+}
+            </code></pre>
+            <p>is equivalent to:</p>
+            <pre><code>
+function fetchUser() {
+    return Promise.resolve("Paul");
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2</h2>
+            <pre><code>
+: Promise&lt;string&gt;
+            </code></pre>
+            <p>means:</p>
+            <p>"The Promise will eventually contain a string."</p>
+            <p>Not immediately:</p>
+            <pre><code>
+Now:
+Promise
+
+Later:
+"Paul"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Another example</h2>
+            <pre><code>
+async function getAge(): Promise&lt;number&gt; {
+    return 25;
+}
+            </code></pre>
+            <p>This is equivalent to:</p>
+            <pre><code>
+function getAge() {
+    return Promise.resolve(25);
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Promise types</h2>
+            <pre><code>
+Promise&lt;string&gt;      // later returns a string
+
+Promise&lt;number&gt;      // later returns a number
+
+Promise&lt;boolean&gt;     // later returns true/false
+
+Promise&lt;User&gt;        // later returns a User object
+
+Promise&lt;User[]&gt;      // later returns an array of users
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real-world analogy</h2>
+            <p>Imagine ordering a package online.</p>
+            <pre><code>
+Today
+│
+├── You place the order.
+│
+├── The store gives you an order receipt.
+│      ↑
+│   This is the Promise.
+│
+└── Wait...
+            </code></pre>
+            <p>Later:</p>
+            <pre><code>
+Tomorrow
+│
+├── Delivery arrives ✅
+│
+└── OR
+
+Package is canceled ❌
+            </code></pre>
+            <p>The receipt isn't the package—it represents the promise that you'll eventually receive either the package (success) or a cancellation (failure).</p>
+        </section>
+
+        <section>
+            <h2>Summary</h2>
+            <ul>
+                <li>A Promise represents a value that will be available later.</li>
+                <li>Promise&lt;T&gt; means "I'll eventually return a value of type T."</li>
+                <li>async functions always return a Promise.</li>
+                <li>await waits for the Promise to finish and gives you its resolved value.</li>
+                <li>Promises are commonly used for operations that take time, such as API requests, database queries, and file operations.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

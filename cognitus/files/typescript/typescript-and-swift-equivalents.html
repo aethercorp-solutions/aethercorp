@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Typescript and Swift equivalents</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Typescript and Swift equivalents</h1>
+                    <p class="subtitle">
+                        Since you already know Swift, the easiest way to learn TypeScript is to map its features to their Swift equivalents. Many concepts are surprisingly similar.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Typescript vs Swift</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>TypeScript</th>
+                        <th>Swift</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>interface</td>
+                        <td>protocol</td>
+                        <td>Defines the shape of an object.</td>
+                    </tr>
+                    <tr>
+                        <td>type</td>
+                        <td>typealias (sometimes)</td>
+                        <td>Creates a custom type or combines types.</td>
+                    </tr>
+                    <tr>
+                        <td>class</td>
+                        <td>class</td>
+                        <td>Object-oriented class.</td>
+                    </tr>
+                    <tr>
+                        <td>extends</td>
+                        <td>Inheritance (:)</td>
+                        <td>Child class inherits from parent.</td>
+                    </tr>
+                    <tr>
+                        <td>implements</td>
+                        <td>Protocol conformance</td>
+                        <td>Class promises to implement an interface/protocol.</td>
+                    </tr>
+                    <tr>
+                        <td>enum</td>
+                        <td>enum</td>
+                        <td>Enumeration values.</td>
+                    </tr>
+                    <tr>
+                        <td>readonly</td>
+                        <td>let</td>
+                        <td>Immutable property.</td>
+                    </tr>
+                    <tr>
+                        <td>const</td>
+                        <td>let</td>
+                        <td>Immutable variable.</td>
+                    </tr>
+                    <tr>
+                        <td>let</td>
+                        <td>var</td>
+                        <td>Mutable variable.</td>
+                    </tr>
+                    <tr>
+                        <td>any</td>
+                        <td>Any</td>
+                        <td>Can hold any type.</td>
+                    </tr>
+                    <tr>
+                        <td>unknown</td>
+                        <td>Any (must cast before use)</td>
+                        <td>Safer version of any.</td>
+                    </tr>
+                    <tr>
+                        <td>never</td>
+                        <td>Never</td>
+                        <td>Function never returns.</td>
+                    </tr>
+                    <tr>
+                        <td>null/undefined</td>
+                        <td>nil</td>
+                        <td>Missing value.</td>
+                    </tr>
+                    <tr>
+                        <td>?</td>
+                        <td>Optional (?)</td>
+                        <td>Value may be absent.</td>
+                    </tr>
+                    <tr>
+                        <td>??</td>
+                        <td>??</td>
+                        <td>Nil coalescing.</td>
+                    </tr>
+                    <tr>
+                        <td>?.</td>
+                        <td>?.</td>
+                        <td>Optional chaining.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>1. Variables</h2>
+            <p>TypeScript</p>
+            <pre><code>
+let name = "Paul";
+const age = 30;
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+var name = "Paul"
+let age = 30
+            </code></pre>
+            <p>Very similar:</p>
+            <ul>
+                <li>let (Swift) ≈ const (TypeScript)</li>
+                <li>var (Swift) ≈ let (TypeScript)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Interfaces = Protocols</h2>
+            <p>TypeScript</p>
+            <pre><code>
+interface User {
+    name: string;
+    age: number;
+}
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+protocol User {
+    var name: String { get }
+    var age: Int { get }
+}
+            </code></pre>
+            <p>Interfaces only describe structure.</p>
+        </section>
+
+        <section>
+            <h2>3. Classes</h2>
+            <p>TypeScript</p>
+            <pre><code>
+class Animal {
+    speak() {
+        console.log("...");
+    }
+}
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+class Animal {
+    func speak() {
+        print("...")
+    }
+}
+            </code></pre>
+            <p>Nearly identical.</p>
+        </section>
+
+        <section>
+            <h2>4. Inheritance</h2>
+            <p>TypeScript</p>
+            <pre><code>
+class Dog extends Animal {
+    speak() {
+        console.log("Woof");
+    }
+}
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+class Dog: Animal {
+    override func speak() {
+        print("Woof")
+    }
+}
+            </code></pre>
+            <p>extends = : ParentClass</p>
+        </section>
+
+        <section>
+            <h2>5. Implements = Protocol Conformance</h2>
+            <p>TypeScript</p>
+            <pre><code>
+interface Flyable {
+    fly(): void;
+}
+
+class Bird implements Flyable {
+    fly() {
+        console.log("Flying");
+    }
+}
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+protocol Flyable {
+    func fly()
+}
+
+class Bird: Flyable {
+    func fly() {
+        print("Flying")
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Optional Values</h2>
+            <p>TypeScript</p>
+            <pre><code>
+let name: string | null = null;
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+let name?: string;
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+var name: String?
+            </code></pre>
+            <p>Both mean the value might not exist.</p>
+        </section>
+
+        <section>
+            <h2>7. Optional Chaining</h2>
+            <p>TypeScript</p>
+            <pre><code>
+user?.address?.city
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+user?.address?.city
+            </code></pre>
+            <p>Exactly the same syntax.</p>
+        </section>
+
+        <section>
+            <h2>8. Nil Coalescing</h2>
+            <p>TypeScript</p>
+            <pre><code>
+const username = name ?? "Guest";
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+let username = name ?? "Guest"
+            </code></pre>
+            <p>Again, identical.</p>
+        </section>
+
+        <section>
+            <h2>9. Generics</h2>
+            <p>TypeScript</p>
+            <pre><code>
+function printItem&lt;T&gt;(item: T) {
+    console.log(item);
+}
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+func printItem&lt;T&gt;(_ item: T) {
+    print(item)
+}
+            </code></pre>
+            <p>Same idea: T can be any type.</p>
+        </section>
+
+        <section>
+            <h2>10. Generic Constraints</h2>
+            <p>TypeScript</p>
+            <pre><code>
+function printLength&lt;T extends { length: number }&gt;(item: T) {
+    console.log(item.length);
+}
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+protocol HasLength {
+    var length: Int { get }
+}
+
+func printLength&lt;T: HasLength&gt;(_ item: T) {
+    print(item.length)
+}
+            </code></pre>
+            <p>extends in generics is like Swift's protocol constraint.</p>
+        </section>
+
+        <section>
+            <h2>11. keyof</h2>
+            <p>One of TypeScript's most powerful features.</p>
+            <p>TypeScript</p>
+            <pre><code>
+interface User {
+    name: string;
+    age: number;
+}
+
+type Keys = keyof User;
+            </code></pre>
+            <p>Keys becomes:</p>
+            <pre><code>
+"name" | "age"
+            </code></pre>
+            <p>Swift doesn't have a direct equivalent. The closest is KeyPath.</p>
+            <pre><code>
+let keyPath = \User.name
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+                PartialKeyPath&lt;User&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>12. Mapped Types</h2>
+            <p>TypeScript</p>
+            <pre><code>
+type ReadonlyUser = {
+    readonly [K in keyof User]: User[K];
+};
+            </code></pre>
+            <p>This loops over every property and makes it readonly.</p>
+            <p>Swift has no direct equivalent.</p>
+            <p>You'd have to manually write:</p>
+            <pre><code>
+struct User {
+    let name: String
+    let age: Int
+}
+            </code></pre>
+            <p>TypeScript can generate new types automatically.</p>
+        </section>
+
+        <section>
+            <h2>13. Union Types</h2>
+            <p>TypeScript</p>
+            <pre><code>
+let value: string | number;
+            </code></pre>
+            <p>Can hold either.</p>
+            <p>Swift doesn't support arbitrary union types.</p>
+            <p>Closest:</p>
+            <pre><code>
+enum Value {
+    case text(String)
+    case number(Int)
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>14. Literal Types</h2>
+            <p>TypeScript</p>
+            <pre><code>
+type Direction = "left" | "right";
+            </code></pre>
+            <p>Only two allowed values.</p>
+            <p>Swift equivalent:</p>
+            <pre><code>
+enum Direction {
+    case left
+    case right
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>15. Utility Types</h2>
+            <p>TypeScript provides built-in helpers.</p>
+            <pre><code>
+Partial&lt;User&gt;
+            </code></pre>
+            <p>All properties become optional.</p>
+            <p>Swift has no built-in equivalent.</p>
+
+            <pre><code>
+Readonly&lt;User&gt;
+            </code></pre>
+            <p>All properties become immutable.</p>
+            <p>Swift:</p>
+            <pre><code>
+let
+            </code></pre>
+            <p>or immutable structs.</p>
+            
+            <pre><code>
+Pick&lt;User, "name"&gt;
+            </code></pre>
+            <p>Keeps only selected properties.</p>
+            <p>No direct Swift equivalent.</p>
+        </section>
+
+        <section>
+            <h2>16. Async/Await</h2>
+            <p>TypeScript</p>
+            <pre><code>
+const user = await fetchUser();
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+let user = try await fetchUser()
+            </code></pre>
+            <p>Swift additionally requires try for throwing functions.</p>
+        </section>
+
+        <section>
+            <h2>17. Type Inference</h2>
+            <p>TypeScript</p>
+            <pre><code>
+let age = 25;
+            </code></pre>
+            <p>Compiler knows it's a number.</p>
+            <p>Swift</p>
+            <pre><code>
+let age = 25
+            </code></pre>
+            <p>Compiler knows it's an Int.</p>
+        </section>
+
+        <section>
+            <h2>18. Type Guards</h2>
+            <p>TypeScript</p>
+            <pre><code>
+if (typeof value === "string") {
+    console.log(value.toUpperCase());
+}
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+if let value = value as? String {
+    print(value.uppercased())
+}
+            </code></pre>
+            <p>Both safely narrow the type before using it.</p>
+        </section>
+
+        <section>
+            <h2>19. Function Overloads</h2>
+            <p>TypeScript</p>
+            <pre><code>
+function add(a: number, b: number): number;
+function add(a: string, b: string): string;
+            </code></pre>
+            <p>Swift</p>
+            <pre><code>
+func add(_ a: Int, _ b: Int) -> Int
+
+func add(_ a: String, _ b: String) -> String
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>20. Extensions</h2>
+            <p>TypeScript</p>
+            <pre><code>
+interface User {
+    age: number;
+}
+
+interface User {
+    name: string;
+}
+            </code></pre>
+            <p>Interfaces merge automatically.</p>
+            <p>Swift uses explicit extensions:</p>
+            <pre><code>
+extension User {
+    func greet() {}
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Mental Mapping</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>If you know Swift...</th>
+                        <th>Think of TypeScript as...</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>protocol</td>
+                        <td>interface</td>
+                    </tr>
+                    <tr>
+                        <td>typealias</td>
+                        <td>type</td>
+                    </tr>
+                    <tr>
+                        <td>let</td>
+                        <td>const</td>
+                    </tr>
+                    <tr>
+                        <td>var</td>
+                        <td>let</td>
+                    </tr>
+                    <tr>
+                        <td>Optional (?)</td>
+                        <td>? or undefined</td>
+                    </tr>
+                    <tr>
+                        <td>nil</td>
+                        <td>null/undefined</td>
+                    </tr>
+                    <tr>
+                        <td>enum</td>
+                        <td>enum</td>
+                    </tr>
+                    <tr>
+                        <td>func&lt;T&gt;</td>
+                        <td>function&lt;T&gt;</td>
+                    </tr>
+                    <tr>
+                        <td>T: Protocol</td>
+                        <td>T extends Interface</td>
+                    </tr>
+                    <tr>
+                        <td>KeyPath</td>
+                        <td>keyof (closest concept)</td>
+                    </tr>
+                    <tr>
+                        <td>Any</td>
+                        <td>any</td>
+                    </tr>
+                    <tr>
+                        <td>Any with casting</td>
+                        <td>unknown</td>
+                    </tr>
+                    <tr>
+                        <td>Never</td>
+                        <td>never</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>The biggest TypeScript features that don't have close Swift equivalents are union types (A | B), mapped types ([K in keyof T]), conditional types, and utility types (Partial, Pick, Omit, Readonly). These are part of TypeScript's advanced type system for transforming types at compile time.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

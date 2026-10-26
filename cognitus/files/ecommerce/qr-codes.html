@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> QR codes </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> QR codes </h1>
+                    <p class="subtitle"> 
+                        QR codes can be very useful in corporate environments, especially if you treat the QR code as a dynamic pointer to information, rather than putting the actual information inside the QR code. 
+                        <p>For example:</p>
+                        <p>QR code → https://company.com/p/paul-dionisio</p>
+                        <p>If Paul's job title, phone number, or LinkedIn changes, you update the profile in your system. The QR code itself doesn't need to change.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Digital business cards </h2>
+            <p>Instead of printing a traditional business card:</p>
+            <p>Employee receives a physical card with:</p>
+            <pre><code>
+Paul Dionisio
+Senior Full Stack Developer
+[QR CODE]
+            </code></pre>
+            <p>Scanning it opens:</p>
+            <pre><code>
+Paul Dionisio
+Senior Full Stack Developer
+
+[Profile Photo]
+
+Company
+Email
+Phone
+Website
+LinkedIn
+GitHub
+
+[Save Contact]
+[Email]
+[Call]
+[LinkedIn]
+            </code></pre>
+            <p>You can provide a Save Contact button that downloads a .vcf contact file.</p>
+        </section>
+
+        <section>
+            <h2>2. Employee profiles</h2>
+            <p>This is potentially more valuable than business cards.</p>
+            <p>Give every employee a unique QR code:</p>
+            <pre><code>
+QR → company.com/employee/10482
+            </code></pre>
+            <p>The profile could contain:</p>
+            <pre><code>
+┌──────────────────────────────┐
+│       Employee Profile       │
+│                              │
+│       [Photo]                │
+│                              │
+│   Maria Santos               │
+│   Senior Accountant          │
+│   Finance Department         │
+│                              │
+│   📧 Email                   │
+│   ☎ Phone                    │
+│   💼 LinkedIn                │
+│                              │
+│   Office: Manila             │
+│   Team: Finance              │
+└──────────────────────────────┘
+            </code></pre>
+            <p>This can be useful for:</p>
+            <ul>
+                <li>HR directories</li>
+                <li>Company events</li>
+                <li>Conferences</li>
+                <li>Sales teams</li>
+                <li>Customer-facing employees</li>
+                <li>Employee identification</li>
+                <li>Internal organizational directories</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Employee ID cards</h2>
+            <p>You can put a QR code on an employee's ID.</p>
+            <p>For example:</p>
+            <pre><code>
+┌───────────────────────────┐
+│ COMPANY                   │
+│                           │
+│ [PHOTO]   JUAN DELA CRUZ  │
+│           Software Eng.   │
+│                           │
+│           ███████         │
+│           ██ QR ██        │
+│           ███████         │
+└───────────────────────────┘
+            </code></pre>
+            <p>Scanning could show:</p>
+            <pre><code>
+Employee: Juan Dela Cruz
+Department: Engineering
+Employee ID: EMP-10392
+Status: Active
+            </code></pre>
+            <p>For security, don't put sensitive employee information directly into the QR code. The QR should contain an opaque ID or secure URL, and your backend controls what is displayed.</p>
+        </section>
+
+        <section>
+            <h2>4. Internal company resources</h2>
+            <p>This is where QR codes become particularly interesting.</p>
+            <p>You can put QR codes around the office.</p>
+            <p>Example: Meeting room</p>
+            <p>Put a QR code outside a conference room:</p>
+            <pre><code>
+SCAN FOR ROOM INFORMATION
+
+       [ QR ]
+
+Conference Room A
+            </code></pre>
+            <p>Scan →</p>
+            <pre><code>
+Conference Room A
+
+Capacity: 12
+
+[Book Room]
+[View Calendar]
+[Report Problem]
+[Open Teams Meeting]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Equipment / IT assets</h2>
+            <p>This is one of the strongest corporate QR use cases.</p>
+            <p>Put a QR code on:</p>
+            <ul>
+                <li>laptops</li>
+                <li>monitors</li>
+                <li>printers</li>
+                <li>servers</li>
+                <li>routers</li>
+                <li>projectors</li>
+                <li>company vehicles</li>
+                <li>machinery</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+Laptop
+Asset ID: LAP-002391
+
+[QR CODE]
+            </code></pre>
+            <p>Scan:</p>
+            <pre><code>
+Asset: LAP-002391
+Type: MacBook Pro
+Assigned To: Paul Dionisio
+Department: Engineering
+Purchase Date: 2026
+
+[Report Problem]
+[Request Repair]
+[View Asset History]
+            </code></pre>
+            <p>Your backend could track:</p>
+            <pre><code>
+Asset
+   ↓
+Employee
+   ↓
+Department
+   ↓
+Maintenance
+   ↓
+Purchase / Warranty
+            </code></pre>
+            <p>This could become a complete QR-based asset management system.</p>
+        </section>
+
+        <section>
+            <h2>6. Internal documentation</h2>
+            <p>You can put QR codes on physical documents or equipment.</p>
+            <p>For example, beside a printer:</p>
+            <pre><code>
+Having trouble with this printer?
+
+        [ QR ]
+
+Scan for:
+• Setup instructions
+• Troubleshooting
+• Driver download
+• Support request
+            </code></pre>
+            <p>The QR points to:</p>
+            <pre><code>
+company.com/help/printer-023
+            </code></pre>
+            <p>You can change the documentation later without replacing the QR sticker.</p>
+        </section>
+
+        <section>
+            <h2>7. Office locations</h2>
+            <p>You can also use QR codes for internal navigation.</p>
+            <p>For example:</p>
+            <pre><code>
+SCAN FOR FLOOR 3
+
+        [ QR ]
+            </code></pre>
+            <p>Opening:</p>
+            <pre><code>
+Floor 3
+
+Engineering
+Finance
+HR
+Conference Rooms
+
+[View Floor Map]
+[Find Employee]
+[Find Meeting Room]
+            </code></pre>
+            <p>This can be particularly useful for large corporate offices.</p>
+        </section>
+
+        <section>
+            <h2>8. Corporate event networking</h2>
+            <p>Imagine your company attends a technology conference.</p>
+            <p>Instead of employees carrying dozens of cards:</p>
+            <pre><code>
+                CASTANET
+
+            Paul Dionisio
+            Full Stack Engineer
+           
+                [ QR ]
+            </code></pre>
+            <p>Someone scans it and gets the employee's digital profile.</p>
+            <p>You could even have:</p>
+            <pre><code>
+[Save Contact]
+
+[Connect on LinkedIn]
+
+[Request Demo]
+
+[Contact Sales]
+            </code></pre>
+            <p>And you can track how many times the QR was scanned.</p>
+        </section>
+
+        <section>
+            <h2>9. Sales representatives</h2>
+            <p>This is another interesting application.</p>
+            <p>A salesperson gives a prospect a printed brochure.</p>
+            <p>The brochure contains:</p>
+            <pre><code>
+    Want to learn more?
+
+       [ QR ]
+
+Scan for our company presentation
+            </code></pre>
+            <p>The QR opens:</p>
+            <pre><code>
+company.com/demo/acme-corp
+            </code></pre>
+            <p>You could track:</p>
+            <pre><code>
+Company: ACME Corp
+Campaign: Manila Expo 2026
+
+QR scans: 37
+Unique visitors: 24
+
+Documents viewed:
+✓ Company Profile
+✓ Product Demo
+✓ Pricing
+✓ Contact Sales
+            </code></pre>
+            <p>That turns a static printed document into a trackable digital experience.</p>
+        </section>
+
+        <section>
+            <h2>10. Internal employee onboarding</h2>
+            <p>Put a QR code on an onboarding document:</p>
+            <pre><code>
+WELCOME TO THE COMPANY
+
+Scan to start onboarding
+
+       [ QR ]
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+Welcome, Maria!
+
+Your onboarding
+
+✓ Company policies
+✓ Email setup
+✓ Slack setup
+○ Security training
+○ Benefits
+○ IT equipment
+            </code></pre>
+            <p>The QR can identify the employee and take them directly into their onboarding workflow.</p>
+        </section>
+
+        <section>
+            <h2>The important architecture</h2>
+            <p>If you're thinking about building a QR-based SaaS, I would structure it like this:</p>
+            <pre><code>
+            QR CODE
+                │
+                ▼
+       https://yourapp.com/q/8F72A
+                │
+                ▼
+           Your Backend
+                │
+      ┌─────────┴─────────┐
+      ▼                   ▼
+Identify QR          Check permissions
+      │                   │
+      └─────────┬─────────┘
+                ▼
+           Destination
+                │
+ ┌──────────────┼──────────────┐
+ ▼              ▼              ▼
+Employee       Business Card    Resource
+Profile                         Page
+            </code></pre>
+            <p>The key is dynamic QR codes.</p>
+            <p>Don't encode:</p>
+            <pre><code>
+Paul Dionisio
+Senior Developer
+paul@email.com
+0917...
+            </code></pre>
+            <p>directly into the QR.</p>
+            <p>Instead encode:</p>
+            <pre><code>
+https://yourcompany.com/q/8F72A
+            </code></pre>
+            <p>Then your database might have:</p>
+            <pre><code>
+QR
+├── id: 8F72A
+├── type: employee
+├── employeeId: 10482
+├── destination: /employees/10482
+├── active: true
+├── createdAt
+└── scanCount
+            </code></pre>
+            <p>Now you can change the destination without reprinting the QR.</p>
+        </section>
+
+        <section>
+            <h2>You could turn this into a corporate QR platform</h2>
+            <p>Given your existing React + Node.js + AWS + MongoDB experience, this is actually a fairly natural SaaS architecture for you.</p>
+            <p>Something like:</p>
+            <p>Corporate QR Manager</p>
+            <pre><code>
+Dashboard
+│
+├── Employees
+│   ├── Employee Profiles
+│   └── Business Cards
+│
+├── QR Codes
+│   ├── Create QR
+│   ├── Dynamic URLs
+│   └── QR Analytics
+│
+├── Resources
+│   ├── Documents
+│   ├── Policies
+│   ├── Equipment
+│   └── Locations
+│
+└── Analytics
+    ├── Total Scans
+    ├── Unique Scans
+    ├── Location
+    ├── Device
+    └── Time
+            </code></pre>
+            <p>A particularly useful model is:</p>
+            <p>One QR → many possible destinations over its lifetime.</p>
+            <p>For example, an employee's QR stays printed on their ID for years:</p>
+            <pre><code>
+2026 → Employee Profile
+2027 → Employee Profile
+2028 → New Department
+2029 → New Role
+            </code></pre>
+            <p>The physical QR never changes.</p>
+            <p>That's the main advantage of using dynamic QR codes for corporate systems.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

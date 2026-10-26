@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> LLM Integration with Node.js </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> LLM Integration with Node.js </h1>
+                    <p class="subtitle"> 
+                        LLM integration in Node.js means connecting your JavaScript backend to a Large Language Model (LLM), such as Claude, GPT, or Gemini, so your application can understand natural language, generate content, analyze documents, extract structured data, and automate tasks.
+                        <p>For an AI Engineer role, you should understand how to connect an LLM API, design prompts, validate responses, manage conversation history, implement RAG, and deploy the integration securely.</p>    
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. How LLM integration works </h2>
+            <pre><code>
+1. Client application
+React, React Native, Flutter, or iOS
+            </code></pre>
+            
+            <pre><code>
+2. Node.js backend
+Express API, authentication, validation, business logic
+            </code></pre>
+
+            <pre><code>
+3. LLM API
+Claude, OpenAI GPT, or Gemini
+            </code></pre>
+
+            <pre><code>
+4. Application response
+Return generated text, structured JSON, or results from tools and databases
+            </code></pre>
+
+            <p>For example, imagine you are adding AI to a contact management application like Castanet:</p>
+            <ol>
+                <li>The user asks, "Summarize my last conversation with John."</li>
+                <li>The React or React Native client sends the request to your Node.js API.</li>
+                <li>Node.js authenticates the user and retrieves the relevant notes from MongoDB.</li>
+                <li>Node.js sends the notes and instructions to Claude or GPT.</li>
+                <li>The model generates a summary.</li>
+                <li>The backend returns the result to the application.</li>
+            </ol>
+
+            <p>Important: The LLM does not automatically know your database contents. Your backend must provide relevant information or connect the model to authorized tools.</p>
+        </section>
+
+        <section>
+            <h2>2. Basic implementation using Node.js and Claude</h2>
+            <p>Let's build a small API using Express and Anthropic's Claude API.</p>
+            <p>Step 1: Install dependencies</p>
+            <pre><code>
+mkdir node-llm-demo
+cd node-llm-demo
+
+npm init -y
+npm install express @anthropic-ai/sdk dotenv
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Step 2: Configure environment variables</h2>
+            <p>Create a .env file:</p>
+            <pre><code>
+ANTHROPIC_API_KEY=your_api_key_here
+PORT=3000
+            </code></pre>
+            <p>Obtain your API key from the Anthropic Console.</p>
+            <p>Never expose the API key in your frontend or commit .env to Git.</p>
+        </section>
+
+        <section>
+            <h2>Step 3: Create the Node.js API</h2>
+            <p>Create server.js:</p>
+            <pre><code>
+
+require("dotenv").config();
+
+const express = require("express");
+const Anthropic = require("@anthropic-ai/sdk");
+
+const app = express();
+const client = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
+app.use(express.json());
+
+app.post("/api/ai/summarize", async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    if (typeof text !== "string" || !text.trim()) {
+      return res.status(400).json({
+        error: "Text is required",
+      });
+    }
+
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-5",
+      max_tokens: 500,
+      messages: [
+        {
+          role: "user",
+          content: `Summarize the following notes
+in 3 concise bullet points:
+
+${text}`,
+        },
+      ],
+    });
+
+    const summary = response.content
+      .filter((item) => item.type === "text")
+      .map((item) => item.text)
+      .join("\n");
+
+    res.json({ summary });
+  } catch (error) {
+    console.error("LLM request failed:", error.message);
+
+    res.status(500).json({
+      error: "Unable to generate summary",
+    });
+  }
+});
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log("LLM API server is running");
+});
+
+            </code></pre>
+
+            <p>Run the server:</p>
+            <pre><code>
+node server.js
+            </code></pre>
+
+            <p>Test it using curl:</p>
+            <pre><code>
+curl -X POST http://localhost:3000/api/ai/summarize \
+  -H "Content-Type: application/json" \
+  -d '{"text":"John is a product manager. We discussed the project launch next Monday and agreed to follow up on Friday."}'
+            </code></pre>
+
+            <p>Example response:</p>
+            <pre><code>
+{
+    "summary": "- John is a product manager.\n- The project launch is planned for next Monday.\n- Follow up on Friday."
+}
+            </code></pre>
+            <p>The model name is an example; check Anthropic's documentation for a currently supported model available to your account.</p>
+        </section>
+
+        <section>
+            <h2>3. The five major types of LLM integration</h2>
+            <pre><code>
+1. Chat completion
+
+Send a user's question to the LLM and return an answer. Maintain conversation history when context from previous messages is required.
+
+Use cases: chatbots, customer support, coding assistants.
+            </code></pre>
+
+            <pre><code>
+2. RAG (Retrieval-Augmented Generation)
+
+Retrieve relevant information from documents or a database and pass it to the LLM to generate a grounded answer.
+
+Use cases: internal knowledge assistants, immigration-document search, company policy Q&A.
+            </code></pre>
+
+            <pre><code>
+3. Structured output
+
+Extract information into a predictable schema, such as a person's name, case status, deadlines, and missing documents. Validate the output with Zod.
+
+Use cases: document processing, CRM automation, data migration.
+            </code></pre>
+
+            <pre><code>
+4. Tool calling
+
+Allow the model to request specific backend functions, such as looking up a contact, checking an application status, or creating a follow-up task. Your server executes the authorized function.
+
+Use cases: AI agents, workflow automation, intelligent assistants.
+            </code></pre>
+
+            <pre><code>
+5. Streaming responses
+
+Send generated text to the client incrementally using streaming APIs and Server-Sent Events (SSE), instead of waiting for the entire response.
+
+Use cases: real-time chat interfaces and AI coding tools.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. How RAG works with Node.js, Claude, and MongoDB</h2>
+            <p>This is particularly valuable if you're preparing for an AI Engineer interview.</p>
+            <pre><code>
+Documents and business data
+
+PDFs, case notes, CRM records
+            </code></pre>
+
+            <pre><code>
+Chunking and embeddings
+
+Split documents and convert text into vectors
+            </code></pre>
+
+            <pre><code>
+Vector search
+
+Retrieve relevant chunks using MongoDB Atlas Vector Search or another vector database
+            </code></pre>
+
+            <pre><code>
+Claude API
+
+Question + retrieved context → grounded answer
+            </code></pre>
+
+            <pre><code>
+Node.js API response
+
+Answer with source references and appropriate error handling
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>For example, a user asks:</h2>
+            <p>What documents are still missing from this client's visa application?</p>
+            <p>Your Node.js service would:</p>
+            <ol>
+                <li>Authenticate the user and verify access to the client's records.</li>
+                <li>Search the authorized documents and application notes.</li>
+                <li>Retrieve the most relevant passages.</li>
+                <li>Send those passages to Claude with clear instructions.</li>
+                <li>Generate a list of missing documents based on the supplied evidence.</li>
+                <li>1. Return the answer with source references, while avoiding unsupported claims.</li>
+            </ol>
+
+            <p>Unlike basic LLM integration, RAG requires an additional retrieval pipeline, an embedding model, document processing, and a searchable index.</p>
+        </section>
+
+        <section>
+            <h2>5. How to make an LLM integration production-ready</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concern</th>
+                        <th>Recommended approach</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Security</td>
+                        <td>Keep API keys on the backend; authenticate users and enforce authorization</td>
+                    </tr>
+                    <tr>
+                        <td>Input validation</td>
+                        <td>Use Zod or another schema-validation library</td>
+                    </tr>
+                    <tr>
+                        <td>Reliability</td>
+                        <td>Add timeouts, bounded retries, and rate-limit handling</td>
+                    </tr>
+                    <tr>
+                        <td>Cost control</td>
+                        <td>Limit input/output tokens and monitor usage</td>
+                    </tr>
+                    <tr>
+                        <td>Accuracy</td>
+                        <td>Use RAG, source references, and output validation where appropriate</td>
+                    </tr>
+                    <tr>
+                        <td>Observability</td>
+                        <td>Log latency, model errors, token usage, and request IDs without leaking sensitive data</td>
+                    </tr>
+                    <tr>
+                        <td>Testing</td>
+                        <td>Mock LLM calls and test invalid inputs, failures, and edge cases</td>
+                    </tr>
+                    <tr>
+                        <td>Privacy</td>
+                        <td>Minimize personal data sent to providers and apply retention policies</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Do not blindly trust model-generated JSON, execute arbitrary generated code, or let tool calling bypass your normal permission checks.</p>
+        </section>
+
+        <section>
+            <h2>6. What you should know for an AI Engineer interview</h2>
+            <p>Given your Node.js, MongoDB, AWS, and full-stack background, concentrate on these concepts:</p>
+            <ul>
+                <li>LLM APIs: prompts, system instructions, message roles, tokens, context windows.</li>
+                <li>Prompt engineering: clear instructions, examples, constraints, and output formats.</li>
+                <li>RAG: chunking, embeddings, vector similarity, retrieval quality, and grounding.</li>
+                <li>Tool calling: connecting the model to business APIs through controlled server-side functions.</li>
+                <li>Structured extraction: JSON schemas, Zod validation, and handling malformed outputs.</li>
+                <li>Production engineering: retries, rate limits, caching, monitoring, privacy, and cost optimization.</li>
+                <li>-Deployment: exposing your Express service through AWS Lambda/API Gateway or another backend platform.</li>
+            </ul>
+
+            <p>The key distinction to communicate in an interview is that integrating an LLM is not just calling an API. It means building a reliable software system around the model, including data retrieval, validation, security, evaluation, and monitoring.</p>
+            <p>Useful next step: build a small Node.js + Claude + MongoDB RAG application that answers questions about uploaded documents. That single project lets you demonstrate API integration, embeddings, retrieval, prompt design, and production-oriented backend engineering.</p>
+            <p>For LLM integration in Node.js, a VPS for dev and AI apps is an option.</p>
+            
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

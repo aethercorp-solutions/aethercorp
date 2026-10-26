@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> High-Dimensional Space </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> High-Dimensional Space </h1>
+                    <p class="subtitle"> 
+                        Think of high-dimensional space as a way of describing something using many numbers at the same time.
+                     </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Start with normal space </h2>
+            <p>You already know:</p>
+            <ul>
+                <li>1 dimension: a line → x</li>
+                <li>2 dimensions: a flat map → (x, y)</li>
+                <li>3 dimensions: physical space → (x, y, z)</li>
+            </ul>
+            <p>For example:</p>
+            <pre><code>
+Point A = (2, 5, 3)
+            </code></pre>
+            <p>That means the point has 3 coordinates.</p>
+        </section>
+
+        <section>
+            <h2>Now imagine 100 dimensions</h2>
+            <p>A point could be:</p>
+            <pre><code>
+A = (
+  0.12,
+  -0.83,
+  0.44,
+  0.91,
+  0.03,
+  ...
+  0.71
+)
+            </code></pre>
+            <p>There might be 100, 1,000, or even thousands of numbers.</p>
+            <p>That's a high-dimensional vector.</p>
+            <p>The important idea is:</p>
+            <p>A dimension is simply one independent number used to describe something.</p>
+        </section>
+
+        <section>
+            <h2>Why does AI use high-dimensional space?</h2>
+            <p>This is where vectors become very useful.</p>
+            <p>Suppose we want a computer to represent these sentences:</p>
+            <p>"I love dogs."</p>
+            <p>"Dogs are my favorite animals."</p>
+            <p>"The stock market crashed today."</p>
+            <p>The computer converts each sentence into a vector.</p>
+            <p>For example, imagine only 5 dimensions:</p>
+            <pre><code>
+"I love dogs"
+       ↓
+[0.82, 0.15, 0.91, 0.04, 0.77]
+
+"Dogs are my favorite animals"
+       ↓
+[0.79, 0.18, 0.88, 0.06, 0.74]
+
+"The stock market crashed today"
+       ↓
+[0.12, 0.91, 0.03, 0.82, 0.21]
+            </code></pre>
+            <p>The first two vectors are similar because their numerical patterns are similar.</p>
+            <p>The third is very different.</p>
+            <p>In a real AI system, instead of 5 dimensions, an embedding might have hundreds or thousands of dimensions.</p>
+        </section>
+
+        <section>
+            <h2>A useful mental picture</h2>
+            <p>Imagine every piece of information is a point in space.</p>
+            <p>In 2D:</p>
+            <pre><code>
+                Dogs
+                ●
+            ●
+         Dogs
+               
+                           ●
+                      Stock market
+            </code></pre>
+            <p>Related concepts tend to appear near one another.</p>
+            <p>In a high-dimensional space, you can't physically draw all the dimensions, but mathematically the same concept applies:</p>
+            <pre><code>
+                High-dimensional space
+
+                Dog ●
+                   ● Puppy
+                     ● Cat
+                          ● Animal
+                                 
+                                                             
+                                               ● Stock
+                                                  ● Finance
+            </code></pre>
+            <p>The computer doesn't need to "see" this space.</p>
+            <p>It works with the numbers representing the coordinates.</p>
+        </section>
+
+        <section>
+            <h2>What does each dimension mean?</h2>
+            <p>This is an important point.</p>
+            <p>You might think:</p>
+            <p>"Dimension 1 = dogs, dimension 2 = cats, dimension 3 = money..."</p>
+            <p>Usually not.</p>
+            <p>In modern neural-network embeddings, individual dimensions generally don't have such clean human-readable meanings.</p>
+            <p>Instead, information is distributed across many dimensions.</p>
+            <p>For example, conceptually:</p>
+            <pre><code>
+Dog
+
+Dimension 1:  0.82
+Dimension 2: -0.14
+Dimension 3:  0.71
+Dimension 4:  0.33
+Dimension 5: -0.52
+...
+Dimension 768: 0.19
+            </code></pre>
+            <p>The combination of all 768 values represents the information.</p>
+            <p>That's why it's called a representation.</p>
+        </section>
+
+        <section>
+            <h2>Why so many dimensions?</h2>
+            <p>Because real-world information is complicated.</p>
+            <p>Consider a person:</p>
+            <pre><code>
+Paul
+            </code></pre>
+            <p>You could potentially represent characteristics such as:</p>
+            <pre><code>
+programming
+iOS
+React
+AWS
+mobile
+AI
+cloud
+databases
+experience
+technology
+...
+            </code></pre>
+            <p>But AI doesn't necessarily assign one dimension to each of those concepts.</p>
+            <p>Instead, thousands of numerical dimensions can collectively encode complex relationships.</p>
+            <p>So you can think of high-dimensional space as an enormous mathematical coordinate system for representing patterns.</p>
+        </section>
+
+        <section>
+            <h2>The really powerful part: distance</h2>
+            <p>Once information has been converted into vectors, we can calculate how close or far apart two vectors are.</p>
+            <p>For example:</p>
+            <pre><code>
+Vector A = [0.8, 0.7, 0.9]
+Vector B = [0.81, 0.69, 0.88]
+
+Vector C = [0.1, 0.9, 0.2]
+            </code></pre>
+            <p>A and B are close.</p>
+            <p>A and C are farther apart.</p>
+            <p>Therefore:</p>
+            <pre><code>
+A ≈ B
+A ≠ C
+            </code></pre>
+            <p>AI systems can use mathematical measures such as cosine similarity to quantify this.</p>
+            <p>For example:</p>
+            <pre><code>
+similarity(A, B) = 0.98
+similarity(A, C) = 0.31
+            </code></pre>
+            <p>So the computer can conclude:</p>
+            <p>A and B are highly similar.</p>
+        </section>
+
+        <section>
+            <h2>This is extremely important for RAG</h2>
+            <p>Suppose you have thousands of documents:</p>
+            <pre><code>
+Database
+│
+├── document 1
+├── document 2
+├── document 3
+├── document 4
+├── ...
+└── document 100,000
+            </code></pre>
+            <p>You convert their text into vectors:</p>
+            <pre><code>
+Document 1 → [0.21, 0.73, ... 768 numbers]
+Document 2 → [0.18, 0.70, ... 768 numbers]
+Document 3 → [0.92, 0.11, ... 768 numbers]
+...
+            </code></pre>
+            <p>Then the user asks:</p>
+            <p>"How do I reset my password?"</p>
+            <p>The question is also converted into a vector:</p>
+            <pre><code>
+Question → [0.20, 0.71, ... 768 numbers]
+            </code></pre>
+            <p>The vector database searches for vectors mathematically close to the question.</p>
+            <p>It might find:</p>
+            <pre><code>
+Question
+   │
+   ├── 0.97 → "Password reset procedure"
+   ├── 0.91 → "Account recovery"
+   ├── 0.87 → "Changing your password"
+   └── 0.22 → "Database backup procedure"
+            </code></pre>
+            <p>The closest documents are retrieved.</p>
+            <p>Then the LLM receives those documents and generates the answer.</p>
+        </section>
+
+        <section>
+            <h2>The simplest definition</h2>
+            <p>You can remember it this way:</p>
+            <p>High-dimensional space is a mathematical space where objects are represented using many coordinates (numbers), allowing computers to measure relationships such as similarity, distance, and direction.</p>
+            <p>And for AI:</p>
+            <pre><code>
+Real-world information
+        ↓
+      Vector
+        ↓
+High-dimensional space
+        ↓
+Measure relationships
+        ↓
+Find similar information
+        ↓
+AI uses the result
+            </code></pre>
+            <p>So when people say "embeddings place information in a high-dimensional space," they're essentially saying:</p>
+            <p>AI converts information into long lists of numbers, and those numbers give each piece of information a position in a huge mathematical space. Similar information tends to have nearby positions.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

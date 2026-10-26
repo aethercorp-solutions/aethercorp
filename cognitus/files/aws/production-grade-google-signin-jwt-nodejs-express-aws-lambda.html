@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Production-grade Google Sign-In + JWT </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Production-grade Google Sign-In + JWT </h1>
+                    <p class="subtitle"> For a production-grade Google Sign-In + JWT + Node.js + Express + AWS Lambda/API Gateway, I would separate the responsibilities like this: </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Recommended architecture </h2>
+            <pre><code>
+                ┌──────────────────┐
+                │   iOS / Android  │
+                │    React / Web   │
+                └────────┬─────────┘
+                         │
+                         │ Google Sign-In
+                         ▼
+                ┌──────────────────┐
+                │      Google      │
+                │   OAuth / OIDC   │
+                └────────┬─────────┘
+                         │
+                Google ID Token
+                         │
+                         ▼
+┌──────────────────────────────────────────────────────┐
+│                  AWS API Gateway                     │
+└───────────────────────┬──────────────────────────────┘
+                    │
+                    ▼
+          ┌─────────────────────┐
+          │    AWS Lambda       │
+          │    Express App      │
+          └─────────┬───────────┘
+                    │
+          1. Verify Google ID Token
+                    │
+                    ▼
+          ┌─────────────────────┐
+          │      MongoDB        │
+          │                     │
+          │ googleSub           │
+          │ email               │
+          │ userId              │
+          └─────────┬───────────┘
+                    │
+             Create own JWT
+                    │
+                    ▼
+          Access Token + Refresh Token
+                    │
+                    ▼
+             Client Application
+            </code></pre>
+            <p>The important concept is:</p>
+            <p>Google's token authenticates the user with Google. Your application's JWT authenticates the user with your API.</p>
+            <p>Google specifically recommends sending the Google ID token to your backend and verifying it there rather than trusting a user ID supplied by the client.</p>
+        </section>
+
+        <section>
+            <h2>2. Don't do this</h2>
+            <p>A common implementation is:</p>
+            <pre><code>
+Client
+   ↓
+Google ID Token
+   ↓
+Backend
+   ↓
+decode JWT
+   ↓
+trust email
+            </code></pre>
+            <p>That's not sufficient.</p>
+            <p>Never do:</p>
+            <pre><code>
+const payload = jwt.decode(token);
+
+const email = payload.email;
+
+// Trust email
+            </code></pre>
+            <p>decode() does not prove that Google signed the token.</p>
+            <p>Instead:</p>
+            <pre><code>
+Google ID Token
+       ↓
+Google Auth Library
+       ↓
+verify signature
+       ↓
+verify aud
+       ↓
+verify iss
+       ↓
+verify exp
+       ↓
+trusted Google identity
+            </code></pre>
+            <p>Google recommends google-auth-library and verifyIdToken() for production Node.js implementations.</p>
+        </section>
+
+        <section>
+            <h2>3. Project structure</h2>
+            <p>For your Node.js/Express Lambda project, I'd structure it roughly like this:</p>
+            <pre><code>
+src/
+├── app.js
+├── handler.js
+│
+├── config/
+│   └── env.js
+│
+├── controllers/
+│   └── auth.controller.js
+│
+├── middleware/
+│   ├── authenticate.js
+│   └── errorHandler.js
+│
+├── services/
+│   ├── google.service.js
+│   ├── jwt.service.js
+│   └── auth.service.js
+│
+├── models/
+│   └── user.model.js
+│
+├── routes/
+│   ├── auth.routes.js
+│   └── user.routes.js
+│
+└── utils/
+    └── errors.js
+            </code></pre>
+            <p>This keeps:</p>
+            <pre><code>
+Controller
+    ↓
+Service
+    ↓
+Database
+            </code></pre>
+            <p>rather than putting authentication, JWT generation, MongoDB queries and HTTP responses inside one huge controller.</p>
+        </section>
+
+        <section>
+            <h2>4. Dependencies</h2>
+            <pre><code>
+npm install express serverless-http google-auth-library jsonwebtoken
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+{
+    "dependencies": {
+        "express": "^5.x",
+        "google-auth-library": "^10.x",
+        "jsonwebtoken": "^9.x",
+        "serverless-http": "^3.x"
+    }
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Environment variables</h2>
+            <p>Don't hard-code secrets.</p>
+            <pre><code>
+GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
+
+JWT_ISSUER=your-api
+JWT_AUDIENCE=your-mobile-app
+
+JWT_ACCESS_SECRET=very-long-random-secret
+JWT_REFRESH_SECRET=another-very-long-random-secret
+            </code></pre>
+            <p>In AWS, production secrets should preferably be managed through AWS Secrets Manager or Parameter Store, rather than committed to Git.</p>
+        </section>
+
+        <section>
+            <h2>6. Google verification service</h2>
+            <p>services/google.service.js</p>
+            <pre><code>
+const { OAuth2Client } = require("google-auth-library");
+
+const googleClient = new OAuth2Client(
+    process.env.GOOGLE_CLIENT_ID
+);
+
+exports.verifyGoogleIdToken = async (idToken) => {
+
+    if (!idToken) {
+        throw new Error("Google ID token is required");
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+
+    if (!payload) {
+        throw new Error("Invalid Google ID token");
+    }
+
+    if (!payload.sub) {
+        throw new Error("Google account ID missing");
+    }
+
+    if (!payload.email) {
+        throw new Error("Google email missing");
+    }
+
+    if (payload.email_verified !== true) {
+        throw new Error("Google email is not verified");
+    }
+
+    return {
+        googleSub: payload.sub,
+        email: payload.email,
+        name: payload.name,
+        picture: payload.picture
+    };
+};
+            </code></pre>
+            <p>This is important because Google's verification checks the JWT signature plus important claims such as aud, iss, and exp.</p>
+        </section>
+
+        <section>
+            <h2>7. Your JWT service</h2>
+            <p>After Google authentication succeeds, your server creates its own JWT.</p>
+            <p>services/jwt.service.js</p>
+            <pre><code>
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+
+exports.createAccessToken = (user) => {
+
+    return jwt.sign(
+        {
+            sub: user.id,
+            email: user.email,
+            tokenType: "access"
+        },
+        process.env.JWT_ACCESS_SECRET,
+        {
+            algorithm: "HS256",
+            expiresIn: "15m",
+            issuer: process.env.JWT_ISSUER,
+            audience: process.env.JWT_AUDIENCE,
+            jwtid: crypto.randomUUID()
+        }
+    );
+};
+
+exports.createRefreshToken = (user) => {
+
+    return jwt.sign(
+        {
+            sub: user.id,
+            tokenType: "refresh"
+        },
+        process.env.JWT_REFRESH_SECRET,
+        {
+            algorithm: "HS256",
+            expiresIn: "30d",
+            issuer: process.env.JWT_ISSUER,
+            audience: process.env.JWT_AUDIENCE,
+            jwtid: crypto.randomUUID()
+        }
+    );
+};
+            </code></pre>
+            <p>So you have:</p>
+            <pre><code>
+Google JWT
+     │
+     │ verify
+     ▼
+Google identity
+     │
+     │ find/create user
+     ▼
+Your User ID
+     │
+     ├── Access JWT   → 15 minutes
+     │
+     └── Refresh JWT  → 30 days
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>8. Google login controller</h2>
+            <p>controllers/auth.controller.js</p>
+            <pre><code>
+const {
+    verifyGoogleIdToken
+} = require("../services/google.service");
+
+const {
+    createAccessToken,
+    createRefreshToken
+} = require("../services/jwt.service");
+
+exports.googleLogin = async (req, res, next) => {
+
+    try {
+
+        const { idToken } = req.body;
+
+        if (!idToken) {
+            return res.status(400).json({
+                message: "Google ID token is required"
+            });
+        }
+
+        // 1. Verify Google's token
+        const googleUser =
+            await verifyGoogleIdToken(idToken);
+
+        // 2. Find or create your application user
+        let user = await User.findOne({
+            googleSub: googleUser.googleSub
+        });
+
+        if (!user) {
+
+            user = await User.create({
+                googleSub: googleUser.googleSub,
+                email: googleUser.email,
+                name: googleUser.name,
+                picture: googleUser.picture,
+                provider: "google"
+            });
+        }
+
+        // 3. Create YOUR tokens
+        const accessToken =
+            createAccessToken(user);
+
+        const refreshToken =
+            createRefreshToken(user);
+
+        // 4. Return your application's authentication
+        return res.status(200).json({
+
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                picture: user.picture
+            },
+
+            accessToken,
+
+            refreshToken
+
+        });
+
+    } catch (error) {
+
+        console.error("Google login failed:", error);
+
+        return next(error);
+    }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. Important: use Google's sub</h2>
+            <p>Your MongoDB user should ideally have something like:</p>
+            <pre><code>
+{
+    _id: ObjectId("..."),
+
+    googleSub: "103xxxxxxxxxxxxxxxx",
+
+    email: "user@gmail.com",
+
+    name: "John Doe",
+
+    provider: "google"
+}
+            </code></pre>
+            <p>Don't make email your permanent Google identity.</p>
+            <p>Google explicitly recommends using the Google ID token's sub claim as the unique Google account identifier.</p>
+            <p>So:</p>
+            <pre><code>
+googleSub
+   ↓
+Google identity
+            </code></pre>
+            <p>while:</p>
+            <pre><code>
+email
+   ↓
+profile/contact information
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. JWT authentication middleware</h2>
+            <p>Now all protected APIs use your JWT, not the Google token.</p>
+            <p>middleware/authenticate.js</p>
+            <pre><code>
+const jwt = require("jsonwebtoken");
+
+module.exports = (req, res, next) => {
+
+    try {
+
+        const authorization =
+            req.headers.authorization;
+
+        if (!authorization) {
+            return res.status(401).json({
+                message: "Authorization header required"
+            });
+        }
+
+        const [scheme, token] =
+            authorization.split(" ");
+
+        if (scheme !== "Bearer" || !token) {
+            return res.status(401).json({
+                message: "Invalid authorization format"
+            });
+        }
+
+        const payload = jwt.verify(
+            token,
+            process.env.JWT_ACCESS_SECRET,
+            {
+                algorithms: ["HS256"],
+                issuer: process.env.JWT_ISSUER,
+                audience: process.env.JWT_AUDIENCE
+            }
+        );
+
+        if (payload.tokenType !== "access") {
+            return res.status(401).json({
+                message: "Invalid token type"
+            });
+        }
+
+        req.user = {
+            id: payload.sub,
+            email: payload.email
+        };
+
+        next();
+
+    } catch (error) {
+
+        if (error.name === "TokenExpiredError") {
+            return res.status(401).json({
+                message: "Access token expired"
+            });
+        }
+
+        return res.status(401).json({
+            message: "Invalid access token"
+        });
+    }
+};
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>11. Protected route</h2>
+            <pre><code>
+const express = require("express");
+
+const router = express.Router();
+
+const authenticate =
+    require("../middleware/authenticate");
+
+router.get(
+    "/profile",
+    authenticate,
+    async (req, res) => {
+
+        const user = await User.findById(
+            req.user.id
+        );
+
+        res.json({
+            user
+        });
+    }
+);
+
+module.exports = router;
+            </code></pre>
+            <p>The client sends:</p>
+            <pre><code>
+GET /api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1Ni...
+            </code></pre>
+            <p>The flow is:</p>
+            <pre><code>
+Client
+  │
+  │ Authorization: Bearer JWT
+  ▼
+API Gateway
+  │
+  ▼
+Lambda
+  │
+  ▼
+Express
+  │
+  ▼
+authenticate middleware
+  │
+  ├── verify signature
+  ├── verify issuer
+  ├── verify audience
+  ├── verify expiration
+  └── verify token type
+  │
+  ▼
+req.user
+  │
+  ▼
+Controller
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>12. Express application</h2>
+            <p>app.js</p>
+            <pre><code>
+const express = require("express");
+
+const authRoutes =
+    require("./routes/auth.routes");
+
+const userRoutes =
+    require("./routes/user.routes");
+
+const app = express();
+
+app.use(express.json());
+
+app.use("/auth", authRoutes);
+
+app.use("/users", userRoutes);
+
+app.use((err, req, res, next) => {
+
+    console.error(err);
+
+    res.status(500).json({
+        message: "Internal server error"
+    });
+});
+
+module.exports = app;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. Lambda handler</h2>
+            <p>handler.js</p>
+            <pre><code>
+const serverless = require("serverless-http");
+
+const app = require("./app");
+
+exports.handler = serverless(app);
+            </code></pre>
+            <p>So Lambda doesn't need:</p>
+            <pre><code>
+app.listen(3000);
+            </code></pre>
+            <p>Instead:</p>
+            <pre><code>
+API Gateway
+     ↓
+Lambda handler
+     ↓
+serverless-http
+     ↓
+Express
+     ↓
+Routes
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>14. Serverless configuration</h2>
+            <p>For example:</p>
+            <pre><code>
+service: my-api
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: ap-southeast-1
+
+functions:
+
+  api:
+    handler: src/handler.handler
+
+    events:
+
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+
+      - httpApi:
+          path: /
+          method: ANY
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>15. The complete authentication flow</h2>
+            <p>This is the architecture I'd recommend for your current Node.js/Lambda application:</p>
+            <pre><code>
+                GOOGLE
+                │
+                │
+         Google Sign-In
+                │
+                ▼
+        Google ID Token
+                │
+                │ HTTPS
+                ▼
+       POST /auth/google
+                │
+                ▼
+       API Gateway
+                │
+                ▼
+            Lambda
+                │
+                ▼
+            Express
+                │
+                ▼
+      Google Auth Library
+                │
+         verifyIdToken()
+                │
+     ┌──────────┴──────────┐
+     │                     │
+   INVALID               VALID
+     │                     │
+   401                     ▼
+                    Google `sub`
+                           │
+                           ▼
+                       MongoDB
+                           │
+                  find/create user
+                           │
+                           ▼
+                  Application User
+                           │
+             ┌─────────────┴─────────────┐
+             │                           │
+       Access JWT                  Refresh JWT
+          15 min                     30 days
+             │                           │
+             └─────────────┬─────────────┘
+                           │
+                           ▼
+                        Client
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>16. Refresh token flow</h2>
+            <p>When access token expires:</p>
+            <pre><code>
+Client
+   │
+   │ POST /auth/refresh
+   │ refreshToken
+   ▼
+Lambda
+   │
+   ▼
+verify refresh JWT
+   │
+   ▼
+check refresh token in DB
+   │
+   ▼
+generate new access JWT
+   │
+   ▼
+Client
+            </code></pre>
+            <p>For a stronger production implementation, I would not treat a long-lived JWT refresh token as sufficient by itself. Store a hashed refresh-token/session identifier server-side and implement rotation + revocation.</p>
+            <p>For example:</p>
+            <pre><code>
+{
+    _id: "...",
+
+    userId: "...",
+
+    tokenHash: "...",
+
+    deviceId: "...",
+
+    platform: "ios",
+
+    expiresAt: "...",
+
+    revokedAt: null,
+
+    createdAt: "...",
+
+    lastUsedAt: "..."
+}
+            </code></pre>
+            <p>This is particularly useful for your existing device-token/user-token architecture.</p>
+        </section>
+
+        <section>
+            <h2>17. Even better: use asymmetric JWTs</h2>
+            <p>For a larger production system, I would consider:</p>
+            <pre><code>
+RS256 / ES256
+            </code></pre>
+            <p>instead of:</p>
+            <pre><code>
+HS256
+            </code></pre>
+            <p>Architecture:</p>
+            <pre><code>
+            JWT PRIVATE KEY
+                │
+                ▼
+           Auth Service
+                │
+                │ signs
+                ▼
+             JWT
+                │
+   ┌────────────┼────────────┐
+   ▼            ▼            ▼
+API #1       API #2       API #3
+   │            │            │
+   └────────────┼────────────┘
+                │
+          PUBLIC KEY
+          verifies JWT
+            </code></pre>
+            <p>This is useful when multiple services need to verify your JWT without sharing your signing secret.</p>
+        </section>
+
+        <section>
+            <h2>18. API Gateway JWT authorizer</h2>
+            <p>For an even more AWS-native architecture, you can move JWT verification out of Express.</p>
+            <pre><code>
+Client
+  │
+  ▼
+API Gateway
+  │
+  │ JWT Authorizer
+  │
+  ├── INVALID → 401
+  │
+  └── VALID
+       │
+       ▼
+     Lambda
+       │
+       ▼
+    Express
+            </code></pre>
+            <p>Then Lambda doesn't need to verify the JWT on every request.</p>
+            <p>However, there's an important distinction:</p>
+            <p>Google ID-token verification still belongs in your login flow.</p>
+            <pre><code>
+POST /auth/google
+
+Google ID Token
+      ↓
+Lambda
+      ↓
+google-auth-library
+      ↓
+verify Google token
+      ↓
+issue application JWT
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+GET /users/profile
+
+Application JWT
+      ↓
+API Gateway JWT Authorizer
+      ↓
+Lambda
+      ↓
+Express
+            </code></pre>
+            <p>That is a very clean architecture for AWS.</p>
+        </section>
+
+        <section>
+            <h2>19. What I would use for your application</h2>
+            <p>Given your existing Node.js + Express + Lambda + MongoDB + Google Sign-In architecture, I'd use:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Recommendation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Google authentication</td>
+                        <td>Google Identity Services</td>
+                    </tr>
+                    <tr>
+                        <td>Google token verification</td>
+                        <td>google-auth-library</td>
+                    </tr>
+                    <tr>
+                        <td>Google identity</td>
+                        <td>sub</td>
+                    </tr>
+                    <tr>
+                        <td>Application authentication</td>
+                        <td>Your own JWT</td>
+                    </tr>
+                    <tr>
+                        <td>Access JWT</td>
+                        <td>~15 minutes</td>
+                    </tr>
+                    <tr>
+                        <td>Refresh token</td>
+                        <td>Rotation + server-side session</td>
+                    </tr>
+                    <tr>
+                        <td>JWT algorithm</td>
+                        <td>RS256/ES256 for larger systems</td>
+                    </tr>
+                    <tr>
+                        <td>API Gateway</td>
+                        <td>HTTP API</td>
+                    </tr>
+                    <tr>
+                        <td>Protected API</td>
+                        <td>API Gateway JWT Authorizer</td>
+                    </tr>
+                    <tr>
+                        <td>Business authorization</td>
+                        <td>Express middleware/service</td>
+                    </tr>
+                    <tr>
+                        <td>User database</td>
+                        <td>MongoDB</td>
+                    </tr>
+                    <tr>
+                        <td>Refresh sessions</td>
+                        <td>MongoDB/Redis</td>
+                    </tr>
+                    <tr>
+                        <td>Secrets</td>
+                        <td>AWS Secrets Manager</td>
+                    </tr>
+                    <tr>
+                        <td>Runtime</td>
+                        <td>AWS Lambda</td>
+                    </tr>
+                    <tr>
+                        <td>Web framework</td>
+                        <td>Express</td>
+                    </tr>
+                    <tr>
+                        <td>Lambda adapter</td>
+                        <td>serverless-http</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Google's current guidance explicitly recommends server-side verification of the ID token and using sub as the stable Google account identifier.</p>
+            <p>The key distinction</p>
+            <pre><code>
+        AUTHENTICATION
+                │
+                ▼
+      Google ID Token
+                │
+          "Who is this?"
+                │
+                ▼
+         Your User ID
+                │
+                ▼
+           YOUR JWT
+                │
+          "Can they use
+           my API?"
+                │
+                ▼
+       API Gateway / Lambda
+            </code></pre>
+            <p>So Google OAuth ≠ your application's JWT.</p>
+            <p>Google proves the user's identity. Your backend establishes the application's authenticated session and authorization model.</p>
+            <p>If you're upgrading the signInWithGoogle implementation you showed earlier, this is the architecture I would move it toward, rather than simply adding jwt.sign() to the existing controller.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

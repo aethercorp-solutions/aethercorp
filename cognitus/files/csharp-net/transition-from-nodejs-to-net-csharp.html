@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Moving to .NET + C# is</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Moving to .NET + C# is</h1>
+                    <p class="subtitle">Yes. If you already know Node.js + JavaScript/TypeScript, moving to .NET + C# is quite straightforward. The biggest change is the language and framework style, not the backend concepts.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Think of the mapping like this</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Node.js</th>
+                        <th>.NET / C#</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>JavaScript / TypeScript</td>
+                        <td>C#</td>
+                    </tr>
+                    <tr>
+                        <td>Node.js</td>
+                        <td>.NET</td>
+                    </tr>
+                    <tr>
+                        <td>Express / Fastify</td>
+                        <td>ASP.NET Core</td>
+                    </tr>
+                    <tr>
+                        <td>npm</td>
+                        <td>NuGet</td>
+                    </tr>
+                    <tr>
+                        <td>package.json</td>
+                        <td>.csproj</td>
+                    </tr>
+                    <tr>
+                        <td>async/await</td>
+                        <td>async/await</td>
+                    </tr>
+                    <tr>
+                        <td>Promise</td>
+                        <td>Task</td>
+                    </tr>
+                    <tr>
+                        <td>Express middleware</td>
+                        <td>ASP.NET Core middleware</td>
+                    </tr>
+                    <tr>
+                        <td>Route handler</td>
+                        <td>Controller / Minimal API</td>
+                    </tr>
+                    <tr>
+                        <td>Mongoose</td>
+                        <td>Entity Framework Core</td>
+                    </tr>
+                    <tr>
+                        <td>MongoDB driver</td>
+                        <td>MongoDB .NET Driver</td>
+                    </tr>
+                    <tr>
+                        <td>process.env</td>
+                        <td>IConfiguration / Options</td>
+                    </tr>
+                    <tr>
+                        <td>JWT libraries</td>
+                        <td>ASP.NET Core authentication</td>
+                    </tr>
+                    <tr>
+                        <td>Jest</td>
+                        <td>xUnit / NUnit</td>
+                    </tr>
+                    <tr>
+                        <td>Axios</td>
+                        <td>HttpClient</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>So your existing backend knowledge is very transferable.</p>
+        </section>
+
+        <section>
+            <h2>2. First learn C# — don't start with ASP.NET immediately</h2>
+            <p>Coming from JavaScript, focus on these differences:</p>
+            <p>JavaScript</p>
+            <pre><code>
+const name = "Paul";
+const age = 41;
+
+function greet(name) {
+    return `Hello ${name}`;
+}
+            </code></pre>
+            <p>C#</p>
+            <pre><code>
+string name = "Paul";
+int age = 41;
+
+string Greet(string name)
+{
+    return $"Hello {name}";
+}
+            </code></pre>
+            <p>C# is strongly typed, so types are much more explicit.</p>
+            <pre><code>
+int age = 41;
+string name = "Paul";
+bool active = true;
+double price = 99.99;
+            </code></pre>
+            <p>You'll eventually learn:</p>
+            <ul>
+                <li>classes</li>
+                <li>interfaces</li>
+                <li>generics</li>
+                <li>enums</li>
+                <li>LINQ</li>
+                <li>nullable types</li>
+                <li>dependency injection</li>
+                <li>async/await</li>
+                <li>exceptions</li>
+                <li>records</li>
+                <li>delegates/events</li>
+            </ul>
+            <p>For a Node.js developer, LINQ is especially important.</p>
+        </section>
+
+        <section>
+            <h2>3. Understand the ASP.NET Core structure</h2>
+            <p>A typical Node.js API might look like:</p>
+            <pre><code>
+Node.js
+ ├── routes
+ ├── controllers
+ ├── services
+ ├── models
+ └── middleware
+            </code></pre>
+            <p>ASP.NET Core can look very similar:</p>
+            <pre><code>
+.NET
+ ├── Controllers
+ ├── Services
+ ├── Models
+ ├── Repositories
+ ├── Middleware
+ └── Program.cs
+            </code></pre>
+            <p>For example, your Node.js endpoint:</p>
+            <pre><code>
+app.get("/users/:id", async (req, res) => {
+    const user = await userService.getUser(req.params.id);
+
+    res.json(user);
+});
+            </code></pre>
+            <p>ASP.NET Core:</p>
+            <pre><code>
+[HttpGet("{id}")]
+public async Task&lt;IActionResult&gt; GetUser(string id)
+{
+    var user = await userService.GetUser(id);
+
+    return Ok(user);
+}
+            </code></pre>
+            <p>Notice something important:</p>
+            <p>You already understand the architecture.</p>
+            <p>You're mainly learning C# syntax and ASP.NET conventions.</p>
+        </section>
+
+        <section>
+            <h2>4. Learn Task because it's the C# equivalent of Promise</h2>
+            <p>Node.js:</p>
+            <pre><code>
+async function getUser() {
+    const user = await database.getUser();
+    return user;
+}
+            </code></pre>
+            <p>C#:</p>
+            <pre><code>
+async Task&lt;User&gt; GetUser()
+{
+    var user = await database.GetUserAsync();
+    return user;
+}
+            </code></pre>
+            <p>Think:</p>
+            <pre><code>
+JavaScript Promise
+        ↓
+C# Task&lt;T&gt;
+            </code></pre>
+            <p>So:</p>
+            <pre><code>
+Promise&lt;User&gt;
+            </code></pre>
+            <p>is conceptually similar to:</p>
+            <pre><code>
+Task&lt;User&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Learn Dependency Injection</h2>
+            <p>This is one of the biggest differences you'll notice.</p>
+            <p>Node.js often does:</p>
+            <pre><code>
+const userService = require("./UserService");
+            </code></pre>
+            <p>or:</p>
+            <pre><code>
+import { UserService } from "./UserService";
+            </code></pre>
+            <p>ASP.NET Core heavily uses Dependency Injection.</p>
+            <p>You register a service:</p>
+            <pre><code>
+builder.Services.AddScoped&lt;UserService&gt;();
+            </code></pre>
+            <p>Then inject it:</p>
+            <pre><code>
+public class UserController : ControllerBase
+{
+    private readonly UserService _userService;
+
+    public UserController(UserService userService)
+    {
+        _userService = userService;
+    }
+}
+            </code></pre>
+            <p>This pattern is everywhere in professional .NET applications.</p>
+        </section>
+
+        <section>
+            <h2>6. Learn Entity Framework Core</h2>
+            <p>If you've used MongoDB/Mongoose, you'll understand the purpose.</p>
+            <p>Mongoose:</p>
+            <pre><code>
+const UserSchema = new mongoose.Schema({
+    name: String,
+    email: String
+});
+            </code></pre>
+            <p>Entity Framework:</p>
+            <pre><code>
+public class User
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; }
+
+    public string Email { get; set; }
+}
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+var users = await db.Users.ToListAsync();
+            </code></pre>
+            <p>And filtering:</p>
+            <pre><code>
+var user = await db.Users
+    .FirstOrDefaultAsync(x => x.Email == email);
+            </code></pre>
+            <p>The x => syntax is a lambda, similar to JavaScript arrow functions.</p>
+            <p>JavaScript:</p>
+            <pre><code>
+users.find(x => x.email === email);
+            </code></pre>
+            <p>C#:</p>
+            <pre><code>
+users.FirstOrDefault(x => x.Email == email);
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. LINQ will feel familiar</h2>
+            <p>LINQ is one of the most useful things to learn.</p>
+            <p>JavaScript:</p>
+            <pre><code>
+const activeUsers = users
+    .filter(x => x.active)
+    .map(x => x.name);
+            </code></pre>
+            <p>C#:</p>
+            <pre><code>
+var activeUsers = users
+    .Where(x => x.Active)
+    .Select(x => x.Name)
+    .ToList();
+            </code></pre>
+            <p>Think:</p>
+            <pre><code>
+JavaScript       C#
+-------------------------
+filter()    →    Where()
+map()       →    Select()
+find()      →    FirstOrDefault()
+some()      →    Any()
+every()     →    All()
+sort()      →    OrderBy()
+            </code></pre>
+            <p>Once you understand LINQ, C# becomes much easier.</p>
+        </section>
+
+        <section>
+            <h2>8. Your existing Node.js architecture can transfer almost directly</h2>
+            <p>For example, suppose your current architecture is:</p>
+            <pre><code>
+React
+   ↓
+Node.js API
+   ↓
+Controller
+   ↓
+Service
+   ↓
+Repository
+   ↓
+MongoDB
+            </code></pre>
+            <p>You could build:</p>
+            <pre><code>
+React
+  ↓
+ASP.NET Core API
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Repository
+  ↓
+SQL Server / PostgreSQL
+            </code></pre>
+            <p>Or you can continue using MongoDB.</p>
+            <p>You don't have to switch databases just because you're switching from Node.js to .NET.</p>
+        </section>
+
+        <section>
+            <h2>9. Learn Minimal APIs too</h2>
+            <p>ASP.NET Core also has a simpler style similar to Express.</p>
+            <p>Node:</p>
+            <pre><code>
+app.get("/hello", (req, res) => {
+    res.json({ message: "Hello" });
+});
+            </code></pre>
+            <p>ASP.NET Core Minimal API:</p>
+            <pre><code>
+app.MapGet("/hello", () =>
+{
+    return new { message = "Hello" };
+});
+            </code></pre>
+            <p>This is probably the easiest way for a Node.js developer to initially understand ASP.NET Core.</p>
+        </section>
+
+        <section>
+            <h2>10. A good transition path for you</h2>
+            <p>Given that you already have substantial Node.js, React, MongoDB, AWS and API development experience, I wouldn't spend months learning beginner programming concepts.</p>
+            <p>I'd do this:</p>
+            <p>Phase 1 — C# fundamentals</p>
+            <p>Learn:</p>
+            <pre><code>
+C# syntax
+ ↓
+Classes
+ ↓
+Interfaces
+ ↓
+Generics
+ ↓
+Nullable types
+ ↓
+Exceptions
+ ↓
+LINQ
+ ↓
+async/await + Task
+            </code></pre>
+
+            <p>Phase 2 — ASP.NET Core</p>
+            <p>Learn:</p>
+            <pre><code>
+Minimal APIs
+ ↓
+Controllers
+ ↓
+Routing
+ ↓
+Middleware
+ ↓
+Dependency Injection
+ ↓
+Configuration
+ ↓
+Logging
+ ↓
+Authentication/JWT
+            </code></pre>
+
+            <p>Phase 3 — Database</p>
+            <p>Learn:</p>
+            <pre><code>
+Entity Framework Core
+ ↓
+DbContext
+ ↓
+Migrations
+ ↓
+LINQ
+ ↓
+Relationships
+            </code></pre>
+            <p>Then optionally:</p>
+            <pre><code>
+MongoDB .NET Driver
+            </code></pre>
+            <p>Phase 4 — Build a real API</p>
+            <p>Build something you already understand:</p>
+            <pre><code>
+React
+   ↓
+ASP.NET Core
+   ↓
+JWT Authentication
+   ↓
+Service Layer
+   ↓
+Entity Framework Core
+   ↓
+PostgreSQL / SQL Server
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+POST /api/auth/login
+
+GET /api/contacts
+
+POST /api/contacts
+
+PUT /api/contacts/{id}
+
+DELETE /api/contacts/{id}
+            </code></pre>
+            <p>That will teach you much faster than just reading C# tutorials.</p>
+        </section>
+
+        <section>
+            <h2>11. The most important mindset change</h2>
+            <p>Don't think:</p>
+            <p>"I need to learn backend development again."</p>
+            <p>You don't.</p>
+            <p>Think:</p>
+            <p>"I already know backend development. I need to learn how .NET expresses the same concepts."</p>
+            <p>For example:</p>
+            <pre><code>
+Express middleware
+        ↓
+ASP.NET middleware
+
+Promise
+        ↓
+Task
+
+Mongoose model
+        ↓
+EF Core entity
+
+JavaScript class
+        ↓
+C# class
+
+npm
+        ↓
+NuGet
+
+Express route
+        ↓
+ASP.NET endpoint/controller
+
+.env
+        ↓
+appsettings.json + IConfiguration
+            </code></pre>
+            <p>For you, I'd estimate the transition as:</p>
+            <p>Node.js → C# syntax: relatively easy</p>
+            <p>C# → ASP.NET Core: moderate</p>
+            <p>ASP.NET Core architecture: moderate</p>
+            <p>EF Core/LINQ: moderate</p>
+            <p>Enterprise .NET patterns: the bigger learning curve</p>
+            <p>If you spend 1–2 hours a day, you could become comfortable enough to start building real ASP.NET APIs in roughly 4–8 weeks, because your existing backend experience gives you a big head start.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

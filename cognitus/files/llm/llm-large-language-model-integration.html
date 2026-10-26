@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> LLM (Large Language Model) integration </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> LLM (Large Language Model) integration </h1>
+                    <p class="subtitle"> 
+                        LLM (Large Language Model) integration with an application means connecting an AI model to your existing software so it can understand user requests, generate responses, analyze data, and perform tasks.
+                        <p>For example, you can integrate an LLM into a web application, mobile app, CRM, ERP, chatbot, or internal business system.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. How LLM integration works </h2>
+            <pre><code>
+User / Application UI
+Web app, mobile app, or desktop software
+            </code></pre>
+            
+            <pre><code>
+Backend / Application Server
+
+Authentication, business logic, prompt construction
+            </code></pre>
+
+            <pre><code>
+LLM API
+
+OpenAI, Anthropic, Google, or a self-hosted model
+            </code></pre>
+
+            <pre><code>
+Data and Tools
+
+SQL database, internal APIs, documents, business services
+            </code></pre>
+
+            <p>The backend sends the user's request to the model, receives the response, and returns the result to the application. When necessary, it can also retrieve relevant data or invoke approved application functions.</p>
+        </section>
+
+        <section>
+            <h2>2. Common integration approaches</h2>
+            <pre><code>
+A. LLM API integration
+Connect directly to a hosted model using an API.
+- Best for: chatbots, content generation, summarization.
+- Complexity: Low to medium.
+- Example: A customer support chatbot using the OpenAI API.
+            </code></pre>
+
+            <pre><code>
+B. RAG (Retrieval-Augmented Generation)
+Let the LLM answer questions using your company's documents and data.
+- Best for: internal knowledge bases, policies, manuals, technical documentation.
+- Components: document processing, embeddings, vector database, retrieval, LLM.
+- Example: An employee asks questions about company policies.
+            </code></pre>
+
+            <pre><code>
+C. LLM with tools and function calling
+Allow the model to request specific operations through your backend.
+- Best for: business process automation.
+- Example: Checking an order, creating a support ticket, or generating a report.
+- Important: Your application must validate and authorize each operation.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Example: Integrating an LLM into a web application</h2>
+            <p>Suppose you have a Node.js backend and want to add an AI assistant.</p>
+            <p>Install the official OpenAI SDK:</p>
+            <pre><code>
+npm install openai express
+            </code></pre>
+            <p>Create a basic Express endpoint:</p>
+            <pre><code>
+import express from "express";
+import OpenAI from "openai";
+
+const app = express();
+app.use(express.json());
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+app.post("/api/ai", async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    if (typeof message !== "string" || !message.trim()) {
+      return res.status(400).json({
+        error: "A message is required",
+      });
+    }
+
+    const response = await client.responses.create({
+      model: process.env.OPENAI_MODEL || "gpt-5",
+      input: message,
+    });
+
+    res.json({
+      answer: response.output_text,
+    });
+  } catch (error) {
+    console.error("LLM request failed");
+    res.status(500).json({
+      error: "Unable to process your request",
+    });
+  }
+});
+
+app.listen(3000);
+            </code></pre>
+
+            <p>Set your API key and a model available to your account in environment variables. Keep the API key on the server, never in browser or mobile application code. The model identifier above is an example and may need to be changed to a currently available model.</p>
+            <p>Your frontend can call the endpoint with:</p>
+            <pre><code>
+const response = await fetch("/api/ai", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+        message: "Summarize the latest customer feedback",
+    }),
+});
+
+const result = await response.json();
+console.log(result.answer);
+            </code></pre>
+            <p>This is a minimal starting point. A production integration should also include authentication, rate limits, input validation, usage monitoring, and appropriate error handling.</p>
+        </section>
+
+        <section>
+            <h2>4. Recommended architecture by use case</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Requirement</th>
+                        <th>Recommended approach</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Chatbot or virtual assistant</td>
+                        <td>LLM API</td>
+                    </tr>
+                    <tr>
+                        <td>Ask questions about company documents</td>
+                        <td>RAG + LLM</td>
+                    </tr>
+                    <tr>
+                        <td>Query business data</td>
+                        <td>LLM + controlled backend tools</td>
+                    </tr>
+                    <tr>
+                        <td>Generate SQL queries</td>
+                        <td>LLM + SQL validation and read-only permissions</td>
+                    </tr>
+                    <tr>
+                        <td>Automate multi-step workflows</td>
+                        <td>LLM + tools or agent orchestration</td>
+                    </tr>
+                    <tr>
+                        <td>Run AI on private infrastructure</td>
+                        <td>Self-hosted model, subject to hardware and model requirements</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>5. Let's tailor the integration to your application</h2>
+            <p>I can help you design the architecture, choose the right model, implement the API integration, and connect it to your database.</p>
+            <p>What are you building?</p>
+            <p>Select the options that best describe your project.</p>
+            <p>1. Application type</p>
+            <ul>
+                <li>Web application</li>
+                <li>Mobile application</li>
+                <li>Enterprise application (ERP, CRM, internal system)</li>
+                <li>Desktop application</li>
+                <li>Existing API or backend service</li>
+            </ul>
+
+            <p>2. What should the LLM do?</p>
+            <ul>
+                <li>Answer user questions / chatbot</li>
+                <li>Search and answer from company documents</li>
+                <li>Read or analyze database information</li>
+                <li>Execute tasks and automate workflows</li>
+                <li>Generate text, reports, or summaries</li>
+            </ul>
+
+            <p>3. Technology stack</p>
+            <ul>
+                <li>Node.js / JavaScript</li>
+                <li>Python / FastAPI / Django</li>
+                <li>Java / Spring Boot</li>
+                <li>.NET / C#</li>
+                <li>PHP / Laravel</li>
+                <li>Other / not decided</li>
+            </ul>
+
+            <p>4. Data source</p>
+            <ul>
+                <li>SQL or NoSQL database</li>
+                <li>PDFs, Word files, or other documents</li>
+                <li>External APIs or third-party systems</li>
+                <li>No additional data; general AI responses</li>
+                <li>Multiple sources</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

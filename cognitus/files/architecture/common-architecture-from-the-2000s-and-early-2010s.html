@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Common architecture from the 2000s and early 2010s </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Common architecture from the 2000s and early 2010s </h1>
+                    <p class="subtitle"> That sentence describes a common architecture from the 2000s and early 2010s, where the web server and application server had clearly separated responsibilities. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Old approach: Web server + Application server </h2>
+            <p>A typical architecture looked like this:</p>
+            <pre><code>
+User's Browser
+      │
+      │ HTTP/HTTPS
+      ▼
+┌──────────────────┐
+│    Web Server    │
+│ Apache / IIS     │
+│ Nginx            │
+└────────┬─────────┘
+         │
+         │ forwards dynamic request
+         ▼
+┌──────────────────┐
+│ Application      │
+│ Server           │
+│                  │
+│ Java EE / .NET   │
+│ WebLogic / JBoss │
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│    Database      │
+│ Oracle / MySQL   │
+└──────────────────┘
+            </code></pre>
+            <p>The web server was primarily the HTTP-facing layer.</p>
+            <p>For example:</p>
+            <pre><code>
+GET /customers/123
+            </code></pre>
+            <p>Apache or IIS would:</p>
+            <ul>
+                <li>accept the TCP/HTTP connection</li>
+                <li>handle HTTP</li>
+                <li>serve static files such as HTML, CSS, JS, images</li>
+                <li>handle SSL/TLS in many deployments</li>
+                <li>perform URL routing/reverse proxying</li>
+                <li>forward dynamic requests to the application server</li>
+            </ul>
+            <p>The application server was responsible for the actual application logic.</p>
+            <p>For example:</p>
+            <pre><code>
+Customer customer =
+    customerService.getCustomer(123);
+
+if (customer.getBalance() > 100000) {
+    customer.setPriority("VIP");
+}
+            </code></pre>
+            <p>It could handle:</p>
+            <ul>
+                <li>business rules</li>
+                <li>authentication/authorization</li>
+                <li>transactions</li>
+                <li>database access</li>
+                <li>sessions</li>
+                <li>messaging</li>
+                <li>complex workflows</li>
+                <li>enterprise integrations</li>
+            </ul>
+            <p>So conceptually:</p>
+            <p>Web server = "Talk to the browser."</p>
+            <p>Application server = "Figure out what the request actually means."</p>
+        </section>
+
+        <section>
+            <h2>2. Example: Old e-commerce application</h2>
+            <p>Imagine an old Java enterprise shopping site.</p>
+            <p>A customer requests:</p>
+            <pre><code>
+GET /checkout
+            </code></pre>
+            <p>The flow might be:</p>
+            <pre><code>
+Browser
+   │
+   │ GET /checkout
+   ▼
+Apache HTTP Server
+   │
+   │ HTTP handling
+   │ static content
+   │ reverse proxy
+   ▼
+WebLogic / JBoss
+   │
+   ├── Check user session
+   ├── Load shopping cart
+   ├── Calculate discounts
+   ├── Calculate tax
+   ├── Check inventory
+   ├── Create order
+   └── Start database transaction
+          │
+          ▼
+       Oracle DB
+            </code></pre>
+            <p>The application server might contain things like:</p>
+            <pre><code>
+OrderService
+CartService
+PaymentService
+InventoryService
+CustomerService
+            </code></pre>
+            <p>The application server was often a large enterprise runtime providing infrastructure for those services.</p>
+        </section>
+
+        <section>
+            <h2>3. Why did they separate them?</h2>
+            <p>Because the web server and application server had different jobs.</p>
+            <p>Imagine 10,000 requests:</p>
+            <pre><code>
+                ┌── Static image
+                │
+Browser ────────► Web Server
+                │
+                ├── CSS
+                │
+                ├── JavaScript
+                │
+                └── Dynamic request
+                        │
+                        ▼
+                 Application Server
+                        │
+                        ▼
+                     Database
+            </code></pre>
+            <p>The web server could efficiently handle things like:</p>
+            <pre><code>
+/logo.png
+/styles.css
+/app.js
+/index.html
+            </code></pre>
+            <p>while the application server handled:</p>
+            <pre><code>
+POST /orders
+POST /payments
+GET /customers/123
+POST /checkout
+            </code></pre>
+            <p>This separation also allowed organizations to scale them independently.</p>
+            <p>For example:</p>
+            <pre><code>
+            Load Balancer
+                │
+     ┌──────────┴──────────┐
+     ▼                     ▼
+ Web Server 1          Web Server 2
+     │                     │
+     └──────────┬──────────┘
+                ▼
+      ┌─────────────────┐
+      │ App Server Pool │
+      │                 │
+      │ App 1           │
+      │ App 2           │
+      │ App 3           │
+      └────────┬────────┘
+               ▼
+            Database
+            </code></pre>
+            <p>This was particularly common in large enterprise systems.</p>
+        </section>
+
+        <section>
+            <h2>4. Modern approach</h2>
+            <p>Today, the distinction is much less rigid.</p>
+            <p>A modern application might look like:</p>
+            <pre><code>
+Browser / Mobile App
+        │
+        │ HTTPS
+        ▼
+   CDN / Load Balancer
+        │
+        ▼
+┌─────────────────────┐
+│ Web / API Application│
+│                     │
+│ Node.js / Python    │
+│ Java / .NET / Go    │
+└──────────┬──────────┘
+           │
+     ┌─────┼───────────┐
+     ▼     ▼           ▼
+ Database  Redis     Other APIs
+            </code></pre>
+            <p>For example, with Next.js:</p>
+            <pre><code>
+Browser
+   │
+   ▼
+Next.js
+   │
+   ├── Render UI
+   ├── API routes
+   ├── Authentication
+   ├── Business logic
+   └── Database queries
+          │
+          ▼
+       MongoDB
+            </code></pre>
+            <p>You don't necessarily have:</p>
+            <pre><code>
+Apache → WebLogic → Database
+            </code></pre>
+            <p>Instead, the application itself can handle HTTP and business logic.</p>
+        </section>
+
+        <section>
+            <h2>5. Your Node.js example</h2>
+            <p>Suppose you have:</p>
+            <pre><code>
+React
+  │
+  │ HTTPS
+  ▼
+Node.js / Express
+  │
+  ├── Authentication
+  ├── JWT validation
+  ├── Business logic
+  ├── API endpoints
+  └── MongoDB access
+            </code></pre>
+            <p>Your Node.js application might have:</p>
+            <pre><code>
+app.post("/orders", async (req, res) => {
+
+    // Authentication
+    const user = verifyJWT(req);
+
+    // Business logic
+    const cart = await getCart(user.id);
+    const total = calculateTotal(cart);
+
+    // Database
+    const order = await Order.create({
+        userId: user.id,
+        total
+    });
+
+    res.json(order);
+});
+            </code></pre>
+            <p>Here Node.js is simultaneously doing the HTTP-facing work and application/business processing.</p>
+            <p>That's one of the biggest differences.</p>
+        </section>
+
+        <section>
+            <h2>6. But modern systems can still separate them</h2>
+            <p>Modern doesn't mean the separation disappeared.</p>
+            <p>Instead, the layers have evolved.</p>
+            <p>For example:</p>
+            <pre><code>
+            Internet
+                │
+                ▼
+           CloudFront
+                │
+                ▼
+       Load Balancer / API
+                │
+                ▼
+         Application/API
+                │
+   ┌────────────┼────────────┐
+   ▼            ▼            ▼
+MongoDB       Redis       S3
+   │
+   ▼
+Other services
+            </code></pre>
+            <p>Or with AWS:</p>
+            <pre><code>
+Browser
+   │
+   ▼
+CloudFront
+   │
+   ▼
+API Gateway
+   │
+   ▼
+AWS Lambda
+   │
+   ├── Business logic
+   ├── Authentication
+   ├── Validation
+   └── Service calls
+          │
+     ┌────┴─────┐
+     ▼          ▼
+ MongoDB       S3
+            </code></pre>
+            <p>In this architecture, there may be no traditional application server like WebLogic or JBoss running continuously.</p>
+            <p>Lambda is effectively providing the application execution environment.</p>
+        </section>
+
+        <section>
+            <h2>7. The important terminology difference</h2>
+            <p>This is where people sometimes get confused.</p>
+            <p>Old architecture</p>
+            <p>Web server</p>
+            <pre><code>
+Apache / IIS
+            </code></pre>
+            <p>primarily handles:</p>
+            <pre><code>
+HTTP
+static files
+SSL
+proxying
+            </code></pre>
+            <p>Application server</p>
+            <pre><code>
+WebLogic
+JBoss
+WebSphere
+.NET application server
+            </code></pre>
+            <p>handles:</p>
+            <pre><code>
+business logic
+transactions
+database access
+enterprise services
+sessions
+messaging
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Modern architecture</h2>
+            <p>A single application runtime can do both:</p>
+            <pre><code>
+Node.js
+ASP.NET Core
+Django
+FastAPI
+Spring Boot
+Next.js
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+                Node.js
+                ┌─────────────────┐
+                │ HTTP handling   │
+                │ routing         │
+                │ middleware      │
+                │ authentication  │
+                │ business logic  │
+                │ database calls  │
+                └─────────────────┘
+            </code></pre>
+            <p>So the distinction is now often logical rather than physical.</p>
+        </section>
+
+        <section>
+            <h2>8. The evolution in one picture</h2>
+            <p>You can think of web architecture evolving roughly like this:</p>
+            <pre><code>
+                2000s
+────────────────────────────────────
+
+Browser
+   │
+   ▼
+Web Server
+(Apache/IIS)
+   │
+   ▼
+Application Server
+(WebLogic/JBoss/.NET)
+   │
+   ▼
+Database
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+                2010s
+────────────────────────────────────
+
+Browser
+   │
+   ▼
+Web Server / Reverse Proxy
+(Nginx/Apache)
+   │
+   ▼
+Application
+(Node.js / Spring / ASP.NET)
+   │
+   ▼
+Database
+            </code></pre>
+            <p>And increasingly today:</p>
+            <pre><code>
+                2020s
+────────────────────────────────────
+
+Browser / Mobile
+       │
+       ▼
+CDN / Load Balancer
+       │
+       ▼
+API / Application
+(Node.js / Next.js / Python / Go)
+       │
+   ┌───┼────┐
+   ▼   ▼    ▼
+ DB  Cache  Services
+            </code></pre>
+            <p>Or serverless:</p>
+            <pre><code>
+Browser
+   │
+   ▼
+CDN / API Gateway
+   │
+   ▼
+Lambda / Functions
+   │
+   ├── Business Logic
+   ├── AI/RAG
+   ├── Authentication
+   └── Integrations
+          │
+          ▼
+      Databases
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The key idea</h2>
+            <p>The old statement:</p>
+            <p>"The web server handles HTTP; the application server handles heavy business processing."</p>
+            <p>is describing a time when those responsibilities were commonly separated into different server products and processes.</p>
+            <p>Modern development tends to say:</p>
+            <p>"Separate responsibilities into layers/services, but they don't necessarily need to run on separate server products."</p>
+            <p>That's why your modern React → Node.js → MongoDB/AWS applications can perform both the HTTP/API work and business processing inside the application layer, while infrastructure such as CloudFront, API Gateway, Nginx, or a load balancer handles the edge/network concerns.</p>
+        </section>
+
+        <section>
+            <p>Exactly — the important point is that the web server usually does not “figure it out” dynamically by itself. The routing behavior is normally configured by developers/DevOps.</p>
+            <h2>Simple architecture</h2>
+            <pre><code>
+Browser
+   │
+   │ HTTP Request
+   ▼
+┌─────────────────┐
+│   Web Server    │
+│ Nginx / Apache  │
+└────────┬────────┘
+         │
+         ├── Static request ──────► File
+         │                         HTML/CSS/JS/Image
+         │
+         └── Dynamic request ────► Application Server
+                                   │
+                                   ├── Business logic
+                                   ├── Database
+                                   └── External services
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How does it know?</h2>
+            <p>The web server has routing rules.</p>
+            <p>For example, suppose you have:</p>
+            <pre><code>
+GET /images/logo.png
+GET /css/style.css
+GET /products
+POST /api/orders
+            </code></pre>
+            <p>Nginx might be configured approximately like this:</p>
+            <pre><code>
+location /images/ {
+    root /var/www;
+}
+
+location /css/ {
+    root /var/www;
+}
+
+location /api/ {
+    proxy_pass http://application-server:3000;
+}
+
+location /products {
+    proxy_pass http://application-server:3000;
+}
+            </code></pre>
+            <p>So:</p>
+            <pre><code>
+/images/logo.png
+       ↓
+Nginx
+       ↓
+/var/www/images/logo.png
+       ↓
+Return file
+            </code></pre>
+            <p>But:</p>
+            <pre><code>
+POST /api/orders
+       ↓
+Nginx
+       ↓
+Application Server :3000
+       ↓
+Order business logic
+       ↓
+Database
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What happens technically?</h2>
+            <p>When the request arrives:</p>
+            <pre><code>
+GET /products/123 HTTP/1.1
+Host: example.com
+            </code></pre>
+            <p>the web server examines things such as:</p>
+            <ul>
+                <li>HTTP method: GET, POST, PUT, etc.</li>
+                <li>URL/path: /products/123</li>
+                <li>Host/domain: example.com</li>
+                <li>Headers</li>
+                <li>Sometimes query parameters</li>
+            </ul>
+            <p>Then it matches those against its configuration.</p>
+            <p>For example:</p>
+            <pre><code>
+Request
+   │
+   ▼
+Nginx
+   │
+   ├── /static/*  → serve file
+   │
+   ├── /images/*  → serve file
+   │
+   ├── /api/*     → application server
+   │
+   └── /*         → application server
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Old approach</h2>
+            <p>In older web applications, you might have:</p>
+            <pre><code>
+Browser
+   ↓
+Apache
+   ↓
+PHP / Java / ASP.NET application
+   ↓
+Database
+            </code></pre>
+            <p>Apache could determine:</p>
+            <p>"This is a PHP request, so I need to invoke PHP."</p>
+            <p>For example:</p>
+            <pre><code>
+/index.php
+      ↓
+Apache
+      ↓
+PHP interpreter
+      ↓
+PHP code
+      ↓
+Database
+            </code></pre>
+            <p>Or with Java:</p>
+            <pre><code>
+Browser
+   ↓
+Apache
+   ↓
+Tomcat
+   ↓
+Java application
+   ↓
+Database
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Modern approach</h2>
+            <p>Today, the web server/reverse proxy is often primarily a traffic router.</p>
+            <p>For example:</p>
+            <pre><code>
+                ┌── React/Next.js
+                │
+Internet → Nginx ───┼── Node.js API
+                │
+                ├── Python API
+                │
+                └── Microservice
+            </code></pre>
+            <p>A request such as:</p>
+            <pre><code>
+https://example.com/
+            </code></pre>
+            <p>might go to the frontend.</p>
+            <pre><code>
+https://example.com/api/users
+            </code></pre>
+            <p>might go to Node.js.</p>
+            <pre><code>
+https://example.com/api/ai
+            </code></pre>
+            <p>might go to a Python AI service.</p>
+            <p>The web server isn't deciding based on whether the request is "easy" or "heavy." The routing configuration determines where it goes.</p>
+        </section>
+
+        <section>
+            <h2>One important distinction</h2>
+            <p>There are actually two different concepts that are often confused:</p>
+            <p>1. Web server deciding where to route</p>
+            <pre><code>
+Nginx
+   ↓
+"According to my configuration,
+ /api/* goes to Node.js"
+            </code></pre>
+            <p>2. Application server deciding what business logic to execute</p>
+            <pre><code>
+Node.js
+   ↓
+GET /api/orders/123
+   ↓
+OrderController
+   ↓
+OrderService
+   ↓
+MongoDB
+            </code></pre>
+            <p>So the web server generally decides which server/process receives the request, while the application server decides what the request actually means and what business processing should happen.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

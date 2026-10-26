@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Publish your Flutter app to Google Play Console for Internal Testing </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Publish your Flutter app to Google Play Console for Internal Testing </h1>
+                    <p class="subtitle"> If you mean how to publish your Flutter app to Google Play Console for Internal Testing, the flow is: </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Build a signed release AAB </h2>
+            <p>From your Flutter project:</p>
+            <pre><code>
+flutter clean
+flutter pub get
+
+flutter build appbundle --release
+            </code></pre>
+            <p>Your AAB will normally be here:</p>
+            <pre><code>
+build/app/outputs/bundle/release/app-release.aab
+            </code></pre>
+            <p>Since you already have an upload-keystore.jks, make sure your Flutter Android release signing is configured correctly.</p>
+        </section>
+
+        <section>
+            <h2>2. Increase the version</h2>
+            <p>In pubspec.yaml:</p>
+            <pre><code>
+version: 1.0.1+2
+            </code></pre>
+            <p>The important part for Google Play is the build number:</p>
+            <pre><code>
+    1.0.1+2
+       ↑
+   versionCode
+            </code></pre>
+            <p>Every uploaded build needs a higher version code.</p>
+            <p>For example:</p>
+            <pre><code>
+1.0.0+1
+1.0.1+2
+1.0.2+3
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Open Google Play Console</h2>
+            <p>Go to:</p>
+            <p>Google Play Console</p>
+            <p>Select your app.</p>
+            <p>Then go to:</p>
+            <p>Testing → Internal testing</p>
+        </section>
+
+        <section>
+            <h2>4. Create an internal testing release</h2>
+            <p>Click:</p>
+            <p>Create new release</p>
+            <p>Upload:</p>
+            <pre><code>
+build/app/outputs/bundle/release/app-release.aab
+            </code></pre>
+            <p>Then enter release notes, for example:</p>
+            <pre><code>
+Initial internal testing release.
+            </code></pre>
+            <p>Click Save → Review release → Start rollout to Internal testing.</p>
+        </section>
+
+        <section>
+            <h2>5. Add your testers</h2>
+            <p>Inside Internal testing, open the Testers tab.</p>
+            <p>You can create an email list such as:</p>
+            <pre><code>
+paul@example.com
+tester1@example.com
+tester2@example.com
+            </code></pre>
+            <p>Then save the tester list.</p>
+            <p>Google Play will provide a test invitation/opt-in link.</p>
+        </section>
+
+        <section>
+            <h2>6. Tester installs the app</h2>
+            <p>The tester:</p>
+            <ol>
+                <li>Opens the opt-in link.</li>
+                <li>Signs into Google using the tester email.</li>
+                <li>Joins the test.</li>
+                <li>Opens Google Play.</li>
+                <li>Installs the app.</li>
+            </ol>
+            <p>The app is distributed through Google Play just like a normal Play Store app, but only to your internal testers.</p>
+        </section>
+
+        <section>
+            <h2>Recommended Flutter CI/CD flow</h2>
+            <p>For your project, I would structure it like:</p>
+            <pre><code>
+GitHub
+   │
+   ├── feature/*
+   │      │
+   │      └── Developer testing
+   │
+   └── development
+          │
+          ▼
+      GitHub Actions
+          │
+          ▼
+    Flutter build AAB
+          │
+          ▼
+   Google Play Internal
+       Testing
+          │
+          ▼
+       Testers
+            </code></pre>
+            <p>Then later:</p>
+            <pre><code>
+development
+     ↓
+Google Play Internal Testing
+     ↓
+Closed Testing
+     ↓
+Production
+            </code></pre>
+            <p>For TestFlight, you can use the same development branch to build an iOS archive and upload it to App Store Connect.</p>
+            <p>If your goal is your current Flutter thetoast_mobile_app project, I can also give you the exact GitHub Actions .yml for development → Google Play Internal Testing, including your existing keystore setup.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

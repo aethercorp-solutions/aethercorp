@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Keras </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Keras </h1>
+                    <p class="subtitle"> Think of Keras as building a neural network by connecting simple building blocks. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. What is a Tensor? </h2>
+            <p>A tensor is simply data arranged in numbers.</p>
+            <p>You already know a normal variable:</p>
+            <pre><code>
+age = 41
+            </code></pre>
+            <p>That's basically a single number — a scalar.</p>
+            <p>A list:</p>
+            <pre><code>
+ages = [20, 30, 41, 50]
+            </code></pre>
+            <p>is a 1-dimensional tensor.</p>
+            <p>A table:</p>
+            <pre><code>
+20  170  70
+30  165  60
+41  175  90
+50  180  85
+            </code></pre>
+            <p>is a 2-dimensional tensor.</p>
+            <p>You can think of tensors like this:</p>
+            <pre><code>
+Scalar        → 5
+
+Vector        → [5, 10, 15]
+
+Matrix        → [[5, 10],
+                  [15, 20]]
+
+Higher tensor → images, videos, batches of images, etc.
+            </code></pre>
+            <p>Example: an image</p>
+            <p>A color image might be:</p>
+            <pre><code>
+Height × Width × Channels
+
+224 × 224 × 3
+            </code></pre>
+            <p>The 3 represents:</p>
+            <pre><code>
+Red
+Green
+Blue
+            </code></pre>
+            <p>So an image is essentially a tensor containing thousands of numbers.</p>
+        </section>
+
+        <section>
+            <h2>2. What is a Layer?</h2>
+            <p>A layer is something that transforms a tensor into another tensor.</p>
+            <p>Think:</p>
+            <pre><code>
+INPUT
+  ↓
+[ Layer ]
+  ↓
+OUTPUT
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+[1, 2, 3]
+     ↓
+  Dense Layer
+     ↓
+[0.7, 0.2]
+            </code></pre>
+            <p>The layer takes numbers in and produces new numbers.</p>
+        </section>
+
+        <section>
+            <h2>3. Why does a layer transform the numbers?</h2>
+            <p>Because the layer has weights.</p>
+            <p>For a simple neural network:</p>
+            <pre><code>
+input
+  ↓
+x weights
+  ↓
+calculation
+  ↓
+output
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+input = 10
+
+weight = 0.5
+
+10 × 0.5 = 5
+            </code></pre>
+            <p>A real neural-network layer has many weights and biases.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+output = input × weight + bias
+            </code></pre>
+            <p>During training, Keras adjusts those weights so the network becomes better at its task.</p>
+        </section>
+
+        <section>
+            <h2>4. Keras Example</h2>
+            <p>Here's a very simple neural network:</p>
+            <pre><code>
+import keras
+
+model = keras.Sequential([
+    keras.layers.Dense(10),
+    keras.layers.Dense(1)
+])
+            </code></pre>
+            <p>You can visualize it:</p>
+            <pre><code>
+Input Tensor
+     ↓
+┌─────────────┐
+│ Dense(10)   │
+└─────────────┘
+     ↓
+Tensor with 10 values
+     ↓
+┌─────────────┐
+│ Dense(1)    │
+└─────────────┘
+     ↓
+One output
+            </code></pre>
+            <p>So:</p>
+            <p>Tensor = the data</p>
+            <p>Layer = the operation that processes the data</p>
+        </section>
+
+        <section>
+            <h2>5. What does Dense(10) mean?</h2>
+            <p>Dense is one of the most common Keras layers.</p>
+            <pre><code>
+keras.layers.Dense(10)
+            </code></pre>
+            <p>means:</p>
+            <p>Create a fully connected layer that produces 10 output values.</p>
+            <p>For example:</p>
+            <pre><code>
+Input:
+
+[2, 5, 7]
+
+       ↓
+
+Dense(10)
+
+       ↓
+
+[0.2, 1.5, -0.3, 2.1, ...]
+              ↑
+         10 values
+            </code></pre>
+            <p>The layer has learned weights that determine how the input values affect those 10 outputs.</p>
+        </section>
+
+        <section>
+            <h2>6. Layers can do different jobs</h2>
+            <p>Keras has many types of layers.</p>
+            <p>Dense</p>
+            <p>Usually used for traditional neural networks:</p>
+            <pre><code>
+Dense(128)
+            </code></pre>
+            <p>Think:</p>
+            <p>"Take these numbers and learn relationships between them."</p>
+        </section>
+
+        <section>
+            <h2>ReLU</h2>
+            <p>An activation function:</p>
+            <pre><code>
+keras.layers.ReLU()
+            </code></pre>
+            <p>Very simply:</p>
+            <pre><code>
+negative → 0
+positive → unchanged
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+[-5, 2, -1, 7]
+
+       ↓ ReLU
+
+[0, 2, 0, 7]
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Conv2D</h2>
+            <p>Used heavily for images:</p>
+            <pre><code>
+keras.layers.Conv2D(...)
+            </code></pre>
+            <p>Think:</p>
+            <p>"Look for patterns in the image."</p>
+            <p>Such as:</p>
+            <pre><code>
+edges
+corners
+textures
+shapes
+objects
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Flatten</h2>
+            <p>Turns a multidimensional tensor into one long vector.</p>
+            <pre><code>
+Image
+
+28 × 28
+
+   ↓ Flatten
+
+784 values
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Dropout</h2>
+            <p>Randomly turns off some connections during training.</p>
+            <p>Think:</p>
+            <p>"Don't let the network become too dependent on particular neurons."</p>
+        </section>
+
+        <section>
+            <h2>7. Putting layers together</h2>
+            <p>This is where neural networks become interesting.</p>
+            <p>Imagine:</p>
+            <pre><code>
+model = keras.Sequential([
+    keras.layers.Dense(128, activation="relu"),
+    keras.layers.Dense(64, activation="relu"),
+    keras.layers.Dense(10, activation="softmax")
+])
+            </code></pre>
+            <p>Think of it as:</p>
+            <pre><code>
+INPUT
+  │
+  ▼
+┌──────────────┐
+│ Dense 128    │
+│ ReLU         │
+└──────────────┘
+  │
+  ▼
+128 numbers
+  │
+  ▼
+┌──────────────┐
+│ Dense 64     │
+│ ReLU         │
+└──────────────┘
+  │
+  ▼
+64 numbers
+  │
+  ▼
+┌──────────────┐
+│ Dense 10     │
+│ Softmax      │
+└──────────────┘
+  │
+  ▼
+10 probabilities
+            </code></pre>
+            <p>Each layer transforms the tensor.</p>
+        </section>
+
+        <section>
+            <h2>8. The easiest way to remember it</h2>
+            <p>Think of a factory.</p>
+            <pre><code>
+RAW MATERIAL
+     │
+     ▼
+┌───────────┐
+│ Machine 1 │  ← Layer
+└───────────┘
+     │
+     ▼
+┌───────────┐
+│ Machine 2 │  ← Layer
+└───────────┘
+     │
+     ▼
+┌───────────┐
+│ Machine 3 │  ← Layer
+└───────────┘
+     │
+     ▼
+PRODUCT
+            </code></pre>
+            <p>The material moving through the factory is the tensor.</p>
+            <p>The machines processing it are the layers.</p>
+            <p>So:</p>
+            <pre><code>
+Tensor = data
+
+Layer = data transformation
+
+Model = collection of layers
+
+Training = adjusting layer weights
+
+Prediction = passing tensors through the layers
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. One complete mental model</h2>
+            <p>When you start learning Keras, keep this picture in your head:</p>
+            <pre><code>
+                NEURAL NETWORK
+
+                Input Data
+                   │
+                   │  Tensor
+                   ▼
+                ┌─────────────┐
+                │   Layer 1   │
+                └─────────────┘
+                   │
+                   │  Tensor
+                   ▼
+                ┌─────────────┐
+                │   Layer 2   │
+                └─────────────┘
+                   │
+                   │  Tensor
+                   ▼
+                ┌─────────────┐
+                │   Layer 3   │
+                └─────────────┘
+                   │
+                   ▼
+                Prediction
+            </code></pre>
+            <p>Keras is essentially giving you an easy way to build and train this pipeline.</p>
+            <p>If you're learning Keras from scratch, the next important concept after tensors → layers is neurons → weights → activation functions → loss → optimizer → training.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved. https://chatgpt.com/c/6aaf1c95-f460-83ec-91d5-7c9aff84b1f5
+        </p>
+    </footer>
+</body>
+</html>

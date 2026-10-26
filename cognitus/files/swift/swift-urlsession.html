@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>URLSession</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">URLSession</h1>
+                    <p class="subtitle">URLSession is Swift/iOS's built-in way to communicate with a server over the internet.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Think of it like this:</h2>
+            <pre><code>
+Your iOS App
+    ↓
+URLSession
+    ↓
+Internet
+    ↓
+API Server
+    ↓
+Database
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Simple example</h2>
+            <p>Suppose your API is:</p>
+            <pre><code>
+GET https://api.example.com/users
+            </code></pre>
+            <p>Swift:</p>
+            <pre><code>
+import Foundation
+
+let url = URL(string: "https://api.example.com/users")!
+
+let task = URLSession.shared.dataTask(with: url) { data, response, error in
+
+    if let error = error {
+        print("Error:", error)
+        return
+    }
+
+    guard let data = data else {
+        return
+    }
+
+    print(String(data: data, encoding: .utf8) ?? "")
+}
+
+task.resume()
+            </code></pre>
+            <p>What is happening?</p>
+            <p>1. Create the URL</p>
+            <pre><code>
+let url = URL(string: "https://api.example.com/users")!
+            </code></pre>
+            <p>You're telling the app where the API is.</p>
+            <p>2. Create a request</p>
+            <pre><code>
+URLSession.shared.dataTask(with: url)
+            </code></pre>
+            <p>URLSession creates a network request.</p>
+            <p>3. Wait for the server</p>
+            <pre><code>
+{ data, response, error in
+            </code></pre>
+            <p>The closure runs when the request finishes.</p>
+            <p>You get:</p>
+            <ul>
+                <li>data → response body</li>
+                <li>response → HTTP information/status code</li>
+                <li>error → networking error</li>
+            </ul>
+            <p>4. Start the request</p>
+            <pre><code>
+task.resume()
+            </code></pre>
+            <p>This is important. Without resume(), the request doesn't actually start.</p>
+        </section>
+
+        <section>
+            <h2>POST request</h2>
+            <p>For example, logging in:</p>
+            <pre><code>
+var request = URLRequest(
+    url: URL(string: "https://api.example.com/login")!
+)
+
+request.httpMethod = "POST"
+request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+request.httpBody = try? JSONEncoder().encode([
+    "email": "test@example.com",
+    "password": "123456"
+])
+
+let task = URLSession.shared.dataTask(with: request) { data, response, error in
+    // Handle response
+}
+
+task.resume()
+            </code></pre>
+            <p>The important difference is that URLRequest lets you configure:</p>
+            <pre><code>
+HTTP method
+Headers
+Body
+URL
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Modern Swift</h2>
+            <p>Today, you will often see async/await instead of completion handlers:</p>
+            <pre><code>
+let url = URL(string: "https://api.example.com/users")!
+
+let (data, response) = try await URLSession.shared.data(from: url)
+
+let users = try JSONDecoder().decode([User].self, from: data)
+            </code></pre>
+            <p>This is much easier to read:</p>
+            <pre><code>
+URLSession
+   ↓
+send request
+   ↓
+await response
+   ↓
+decode JSON
+   ↓
+User objects
+            </code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

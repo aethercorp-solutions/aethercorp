@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Learn blockchain as a developer </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Learn blockchain as a developer </h1>
+                    <p class="subtitle"> 
+                        Given your software-development background, you can learn blockchain as a developer rather than starting with the financial/crypto side. I'd recommend learning it in layers.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Start with the core idea </h2>
+            <p>First understand these concepts:</p>
+            <ol>
+                <li>Blockchain — a shared database maintained by a network rather than one central server.</li>
+                <li>Block — a batch of transactions/data.</li>
+                <li>Hashing — turning data into a cryptographic fingerprint.</li>
+                <li>Digital signatures — proving that someone authorized a transaction.</li>
+                <li>Wallets — software that manages keys used to sign transactions.</li>
+                <li>Consensus — how network participants agree on the state of the blockchain.</li>
+                <li>Nodes — computers participating in the network.</li>
+                <li>Smart contracts — programs that execute on a blockchain.</li>
+                <li>Tokens — digital assets represented by blockchain data/programs.</li>
+                <li>Gas/transaction fees — costs for getting transactions processed.</li>
+            </ol>
+            <p>You don't need to understand every cryptographic detail initially.</p>
+        </section>
+
+        <section>
+            <h2>2. Learn the architecture</h2>
+            <p>Think of a blockchain application roughly like this:</p>
+            <pre><code>
+Your React / Mobile App
+          ↓
+       Web3 SDK
+          ↓
+       Wallet
+          ↓
+   Blockchain Network
+          ↓
+   Smart Contract
+          ↓
+ Blockchain State / Data
+            </code></pre>
+            <p>This is where your existing React + Node.js + TypeScript experience becomes very useful.</p>
+            <p>For example, instead of:</p>
+            <pre><code>
+React → Node.js → MongoDB
+            </code></pre>
+            <p>you might build:</p>
+            <pre><code>
+React → Wallet → Ethereum/EVM → Smart Contract
+            </code></pre>
+            <p>Your backend can still exist for things that don't belong on-chain.</p>
+        </section>
+
+        <section>
+            <h2>3. Pick one blockchain ecosystem</h2>
+            <p>I recommend starting with Ethereum/EVM.</p>
+            <p>Why?</p>
+            <ul>
+                <li>Large developer ecosystem</li>
+                <li>Solidity is relatively approachable</li>
+                <li>Many development tools</li>
+                <li>Concepts transfer to other EVM chains</li>
+                <li>You can build applications without needing to understand Bitcoin mining first</li>
+            </ul>
+            <p>Learn:</p>
+            <p>Ethereum → EVM → Solidity → Smart Contracts → Web3 applications</p>
+        </section>
+
+        <section>
+            <h2>4. Learn Solidity</h2>
+            <p>Once you understand the fundamentals, start Solidity.</p>
+            <p>A simple contract looks conceptually like:</p>
+            <pre><code>
+contract Counter {
+    uint256 public count;
+
+    function increment() public {
+        count += 1;
+    }
+}
+            </code></pre>
+            <p>The important realization is:</p>
+            <p>A smart contract is a program whose state and execution are maintained by a blockchain network.</p>
+            <p>That's the major difference from something like a Node.js API.</p>
+            <p>Your Node.js server:</p>
+            <pre><code>
+Client
+  ↓
+Node.js
+  ↓
+MongoDB
+            </code></pre>
+            <p>You control the server and database.</p>
+            <p>A smart contract:</p>
+            <pre><code>
+User
+  ↓
+Transaction
+  ↓
+Blockchain
+  ↓
+Smart Contract
+  ↓
+Blockchain State
+            </code></pre>
+            <p>The network collectively maintains the resulting state.</p>
+        </section>
+
+        <section>
+            <h2>5. Build small projects</h2>
+            <p>Don't spend months just watching blockchain explanations.</p>
+            <p>I'd progress like this:</p>
+            <p>Project 1 — Blockchain from scratch</p>
+            <p>Use JavaScript/TypeScript or Python to create a tiny blockchain.</p>
+            <p>Implement:</p>
+            <pre><code>
+Block
+ ├── timestamp
+ ├── data
+ ├── previousHash
+ └── hash
+            </code></pre>
+            <p>Then create:</p>
+            <pre><code>
+Block 1
+   ↓
+Block 2
+   ↓
+Block 3
+   ↓
+Block 4
+            </code></pre>
+            <p>You'll understand why modifying an old block affects subsequent hashes.</p>
+        </section>
+
+        <section>
+            <h2>Project 2 — Wallet</h2>
+            <p>Learn:</p>
+            <pre><code>
+Private key
+     ↓
+Public key
+     ↓
+Address
+            </code></pre>
+            <p>Then understand how a private key signs a transaction.</p>
+        </section>
+
+        <section>
+            <h2>Project 3 — Smart contract</h2>
+            <p>Build:</p>
+            <pre><code>
+Token
+            </code></pre>
+            <p>Learn:</p>
+            <ul>
+                <li>balances</li>
+                <li>transfers</li>
+                <li>ownership</li>
+                <li>events</li>
+                <li>contract state</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Project 4 — React blockchain application</h2>
+            <p>This would be particularly useful for you.</p>
+            <p>Build:</p>
+            <pre><code>
+React
+  ↓
+Wallet connection
+  ↓
+Smart contract
+  ↓
+Blockchain
+            </code></pre>
+            <p>For example:</p>
+            <p>Decentralized contact registry</p>
+            <p>A user could register an identity/address on-chain and interact with other registered users.</p>
+        </section>
+
+        <section>
+            <h2>Project 5 — Full-stack Web3 application</h2>
+            <p>Eventually:</p>
+            <pre><code>
+React
+   ↓
+Wallet
+   ↓
+Smart Contracts
+   ↓
+Blockchain
+   │
+   ├── Events
+   │
+   └── On-chain state
+         ↓
+       Node.js
+         ↓
+      MongoDB
+            </code></pre>
+            <p>This teaches you an important real-world concept:</p>
+            <p>Blockchain doesn't necessarily replace your backend.</p>
+            <p>Often, blockchain becomes one component of a larger system.</p>
+        </section>
+
+        <section>
+            <h2>6. Learn the important developer tools</h2>
+            <p>After Solidity basics, learn the modern development ecosystem:</p>
+            <ul>
+                <li>Solidity</li>
+                <li>EVM</li>
+                <li>Hardhat or Foundry</li>
+                <li>ethers.js or viem</li>
+                <li>Wallet interaction</li>
+                <li>Contract ABI</li>
+                <li>RPC</li>
+                <li>Events/logs</li>
+                <li>Test networks</li>
+                <li>Contract deployment</li>
+                <li>OpenZeppelin libraries</li>
+            </ul>
+            <p>You don't need to learn everything simultaneously.</p>
+            <p>A good sequence is:</p>
+            <pre><code>
+Blockchain concepts
+       ↓
+Ethereum
+       ↓
+EVM
+       ↓
+Solidity
+       ↓
+Smart contracts
+       ↓
+Foundry/Hardhat
+       ↓
+ethers.js/viem
+       ↓
+React + Web3
+       ↓
+Security
+       ↓
+Production applications
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Don't start by buying crypto</h2>
+            <p>This is important.</p>
+            <p>Learning blockchain ≠ trading cryptocurrency.</p>
+            <p>You can learn almost everything you need using:</p>
+            <ul>
+                <li>local blockchain environments</li>
+                <li>test networks</li>
+                <li>free developer tooling</li>
+                <li>sample tokens</li>
+            </ul>
+            <p>You should first understand why the technology works before putting money into it.</p>
+        </section>
+
+        <section>
+            <h2>8. Then learn blockchain security</h2>
+            <p>This becomes extremely important if you want to work professionally.</p>
+            <p>Study:</p>
+            <ul>
+                <li>Reentrancy</li>
+                <li>Integer/overflow issues</li>
+                <li>Access-control bugs</li>
+                <li>Signature replay</li>
+                <li>Front-running</li>
+                <li>Oracle manipulation</li>
+                <li>Flash-loan attacks</li>
+                <li>Private-key security</li>
+                <li>Smart-contract upgrade risks</li>
+            </ul>
+            <p>A smart contract bug can be fundamentally different from a normal web application bug because deployed contracts can control valuable assets.</p>
+        </section>
+
+        <section>
+            <h2>9. A practical 3-month roadmap</h2>
+            <p>Month 1 — Foundations</p>
+            <p>Week 1</p>
+            <pre><code>
+What is blockchain?
+What is Bitcoin?
+What is Ethereum?
+What is a node?
+What is a block?
+What is hashing?
+            </code></pre>
+
+            <p>Week 2</p>
+            <pre><code>
+Public/private keys
+Digital signatures
+Wallets
+Transactions
+Consensus
+Proof of Work
+Proof of Stake
+            </code></pre>
+
+            <p>Week 3</p>
+            <pre><code>
+Ethereum
+EVM
+Gas
+Accounts
+Transactions
+Smart contracts
+            </code></pre>
+            <p>Week 4</p>
+            <p>Build your own tiny blockchain in TypeScript.</p>
+        </section>
+
+        <section>
+            <h2>Month 2 — Smart contracts</h2>
+            <p>Learn:</p>
+            <pre><code>
+Solidity
+ ↓
+Contract
+ ↓
+State
+ ↓
+Functions
+ ↓
+Events
+ ↓
+Mappings
+ ↓
+Arrays
+ ↓
+Modifiers
+ ↓
+Errors
+            </code></pre>
+            <p>Build:</p>
+            <p>Token → Voting system → Simple marketplace</p>
+        </section>
+
+        <section>
+            <h2>Month 3 — Web3 development</h2>
+            <p>Build:</p>
+            <pre><code>
+React
+  +
+Wallet
+  +
+viem/ethers
+  +
+Solidity
+  +
+EVM
+            </code></pre>
+            <p>Then deploy a small decentralized application.</p>
+            <p>At this point you'll have moved from:</p>
+            <p>"I know what blockchain is."</p>
+            <p>to:</p>
+            <p>"I can build a blockchain application."</p>
+        </section>
+
+        <section>
+            <h2>What I would recommend specifically for you</h2>
+            <p>Since you already have substantial React, Node.js, TypeScript, Python, MongoDB, AWS and mobile-development experience, I wouldn't spend too much time learning generic programming concepts.</p>
+            <p>Your biggest learning gap is likely:</p>
+            <pre><code>
+Cryptography
+    ↓
+Distributed systems
+    ↓
+Blockchain architecture
+    ↓
+Ethereum/EVM
+    ↓
+Smart contracts
+    ↓
+Web3 application architecture
+            </code></pre>
+            <p>So your path could be:</p>
+            <p>Blockchain fundamentals → Ethereum/EVM → Solidity → Foundry/Hardhat → viem/ethers → React Web3 app → blockchain security.</p>
+            <p>If your eventual goal is making money as a developer, I'd focus less on crypto trading and more on becoming someone who can integrate blockchain into existing business systems—payments, asset ownership, verification, tokenization, identity, audit trails, and automated agreements.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

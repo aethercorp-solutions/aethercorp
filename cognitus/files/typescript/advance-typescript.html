@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Advance TypeScript</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Advance TypeScript</h1>
+                    <p class="subtitle">The biggest mistake people make is trying to memorize every feature. Instead, learn why each feature exists.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>If you already understand:</h2>
+            <ul>
+                <li>✅ types (string, number, etc.)</li>
+                <li>✅ interfaces</li>
+                <li>✅ functions</li>
+                <li>✅ async/await</li>
+                <li>✅ basic generics (<T>)</li>
+            </ul>
+            <p>then you're ready for advanced TypeScript.</p>
+        </section>
+
+        <section>
+            <h2>Level 1: Generics (The Foundation)</h2>
+            <p>Everything else builds on generics.</p>
+            <p>Without generics:</p>
+            <pre><code>
+function identity(value: any) {
+    return value;
+}
+
+const x = identity(5); // any
+            </code></pre>
+            <p>With generics:</p>
+            <pre><code>
+function identity<T>(value: T): T {
+    return value;
+}
+
+const x = identity(5); // number
+const y = identity("Hello"); // string
+            </code></pre>
+            <p>Think of <T> as</p>
+            <p>"I don't know the type yet. Tell me later."</p>
+        </section>
+
+        <section>
+            <h2>Multiple Generics</h2>
+            <pre><code>
+function pair<T, U>(first: T, second: U) {
+    return { first, second };
+}
+
+pair(1, "Paul");
+            </code></pre>
+            <p>Result</p>
+            <pre><code>
+{
+    first: number
+    second: string
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Level 2: Constraints</h2>
+            <p>Sometimes you don't want any type.</p>
+            <p>Example:</p>
+            <pre><code>
+function printLength<T>(item: T) {
+    console.log(item.length);
+}
+            </code></pre>
+            <p>Error.</p>
+            <p>Because</p>
+            <pre><code>
+T could be number.
+
+5.length?
+            </code></pre>
+            <p>Tell TypeScript the rule.</p>
+            <pre><code>
+function printLength&lt;T extends { length: number }&gt;(item: T) {
+    console.log(item.length);
+}
+            </code></pre>
+            <p>Now these work:</p>
+            <pre><code>
+printLength("Hello");
+
+printLength([1,2,3]);
+
+printLength({
+    length: 100
+});
+            </code></pre>
+            <p>Think</p>
+            <pre><code>
+extends = must satisfy this shape
+            </code></pre>
+            <p>NOT inheritance.</p>
+        </section>
+
+        <section>
+            <h2>Level 3: keyof</h2>
+            <p>Suppose</p>
+            <pre><code>
+const user = {
+    id:1,
+    name:"Paul",
+    age:40
+};
+            </code></pre>
+            <p>You only want valid property names.</p>
+            <pre><code>
+function getValue&lt;T, K extends keyof T&gt;(
+    obj:T,
+    key:K
+){
+    return obj[key];
+}
+            </code></pre>
+            <p>Now</p>
+            <pre><code>
+getValue(user,"name");
+            </code></pre>
+            <p>Works.</p>
+            <p>But</p>
+            <pre><code>
+getValue(user,"salary");
+            </code></pre>
+            <p>Error.</p>
+            <p>Because</p>
+            <pre><code>
+keyof user
+
+=
+
+"id" | "name" | "age"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Level 4: Indexed Access Types</h2>
+            <p>You can access a property's type.</p>
+            <pre><code>
+type User = {
+    id:number;
+    name:string;
+};
+
+type Name = User["name"];
+            </code></pre>
+            <p>Result</p>
+            <pre><code>
+string
+            </code></pre>
+            <p>Multiple keys</p>
+            <pre><code>
+type Info = User["id" | "name"];
+            </code></pre>
+            <p>Result</p>
+            <pre><code>
+number | string
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Level 5: Union Types</h2>
+            <pre><code>
+type Status =
+    | "loading"
+    | "success"
+    | "error";
+            </code></pre>
+            <p>Usage</p>
+            <pre><code>
+let status: Status;
+
+status = "loading";
+
+status = "done"; // Error
+            </code></pre>
+            <p>Perfect for APIs.</p>
+        </section>
+
+        <section>
+            <h2>Level 6: Literal Types</h2>
+            <p>Instead of</p>
+            <pre><code>
+string
+            </code></pre>
+            <p>Use</p>
+            <pre><code>
+"GET"
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+type Method =
+    | "GET"
+    | "POST";
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Level 7: Type Narrowing</h2>
+            <p>Suppose</p>
+            <pre><code>
+type User =
+    | string
+    | number;
+            </code></pre>
+            <p>How do you know which?</p>
+            <pre><code>
+function print(value: string | number) {
+
+    if(typeof value === "string"){
+
+        console.log(value.toUpperCase());
+
+    }else{
+
+        console.log(value.toFixed(2));
+
+    }
+
+}
+            </code></pre>
+            <p>TypeScript understands.</p>
+            <p>This is called narrowing.</p>
+        </section>
+
+        <section>
+            <h2>Level 8: Discriminated Unions</h2>
+            <p>One of the most useful features.</p>
+            <pre><code>
+type Circle = {
+    type:"circle";
+    radius:number;
+};
+
+type Rectangle = {
+    type:"rectangle";
+    width:number;
+    height:number;
+};
+            </code></pre>
+            <p>Now</p>
+            <pre><code>
+type Shape =
+    | Circle
+    | Rectangle;
+            </code></pre>
+            <p>Usage</p>
+            <pre><code>
+function area(shape:Shape){
+
+    if(shape.type==="circle"){
+
+        return Math.PI * shape.radius **2;
+
+    }
+
+    return shape.width * shape.height;
+
+}
+            </code></pre>
+            <p>No casting needed.</p>
+        </section>
+
+        <section>
+            <h2>Level 9: Utility Types</h2>
+            <p>Instead of creating new types manually.</p>
+            <p>Original</p>
+            <pre><code>
+interface User{
+    id:number;
+    name:string;
+    age:number;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Partial</h2>
+            <p>Everything optional.</p>
+            <pre><code>
+Partial&lt;User&gt;
+            </code></pre>
+            <p>Equivalent</p>
+            <pre><code>
+{
+    id?;
+    name?;
+    age?;
+}
+            </code></pre>
+            <p>Useful for updates.</p>
+        </section>
+
+        <section>
+            <h2>Required</h2>
+            <p>Everything required.</p>
+            <pre><code>
+Required&lt;User&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Pick</h2>
+            <pre><code>
+type UserPreview =
+Pick&lt;User,"id" | "name"&gt;
+            </code></pre>
+            <p>Result</p>
+            <pre><code>
+{
+    id:number;
+    name:string;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Omit</h2>
+            <pre><code>
+Omit&lt;User,"age"&gt;
+            </code></pre>
+            <p>Result</p>
+            <pre><code>
+{
+    id:number;
+    name:string;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Record</h2>
+            <pre><code>
+type Scores =
+Record&lt;string,number&gt;
+            </code></pre>
+            <p>Equivalent</p>
+            <pre><code>
+{
+    [key:string]:number;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Level 10: Mapped Types</h2>
+            <p>Transform every property.</p>
+            <pre><code>
+type User = {
+
+    id:number;
+    name:string;
+
+};
+            </code></pre>
+            <p>Mapped type</p>
+            <pre><code>
+type ReadonlyUser = {
+
+    readonly [K in keyof User]:
+
+    User[K];
+
+};
+            </code></pre>
+            <p>Equivalent</p>
+            <pre><code>
+{
+
+    readonly id:number;
+    
+    readonly name:string;
+    
+}
+            </code></pre>
+            <p>TypeScript's built-in Readonly<T> is implemented using this idea.</p>
+        </section>
+
+        <section>
+            <h2>Level 11: Conditional Types</h2>
+            <p>"If this type...</p>
+            <p>then...</p>
+            <p>otherwise..."</p>
+            <pre><code>
+type IsString&lt;T&gt; =
+    T extends string
+        ? true
+        : false;
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+type A = IsString&lt;string&gt;
+            </code></pre>
+            <p>Result</p>
+            <pre><code>
+true
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Level 12: infer</h2>
+            <p>Extract types automatically.</p>
+            <pre><code>
+type Return&lt;T&gt; =
+    T extends (...args:any[])=>infer R
+        ? R
+        : never;
+            </code></pre>
+            <p>Example</p>
+            <pre><code>
+function add(){
+
+    return 10;
+
+}
+            </code></pre>
+            <pre><code>
+type Result =
+Return&lt;typeof add&gt;
+            </code></pre>
+            <p>Result</p>
+            <pre><code>
+number
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Level 13: Template Literal Types</h2>
+            <pre><code>
+type Event =
+    "click"
+    | "hover";
+            </code></pre>
+            <p>Build new strings.</p>
+            <pre><code>
+type EventHandler =
+`on${Capitalize&lt;Event&gt;}`;
+            </code></pre>
+            <p>Result</p>
+            <pre><code>
+"onClick"
+
+"onHover"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Level 14: Generic API Example</h2>
+            <pre><code>
+interface ApiResponse&lt;T&gt; {
+    success: boolean;
+    data: T;
+}
+
+interface User {
+    id: number;
+    name: string;
+}
+
+async function fetchUser(): Promise&lt;ApiResponse&lt;User&gt;&gt; {
+    return {
+        success: true,
+        data: {
+            id: 1,
+            name: "Paul"
+        }
+    };
+}
+            </code></pre>
+            <p>The API wrapper (ApiResponse&lt;T&gt;) stays the same, while T changes depending on the data you fetch.</p>
+        </section>
+
+        <section>
+            <h2>Level 15: Putting It All Together</h2>
+            <pre><code>
+function getValue&lt;T, K extends keyof T&gt;(
+    obj: T,
+    key: K
+): T[K] {
+    return obj[key];
+}
+
+interface User {
+    id: number;
+    name: string;
+    age: number;
+}
+
+const user: User = {
+    id: 1,
+    name: "Paul",
+    age: 40
+};
+
+const name = getValue(user, "name"); // string
+const age = getValue(user, "age");   // number
+            </code></pre>
+            <p>This combines:</p>
+            <ul>
+                <li>Generic types (T, K)</li>
+                <li>Constraints (K extends keyof T)</li>
+                <li>Indexed access types (T[K])</li>
+                <li>Type inference (no need to specify &lt;User, "name"&gt;)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>A Roadmap to Master TypeScript</h2>
+            <p>Learn these topics in order because each builds on the previous one:</p>
+            <ol>
+                <li>Generics (&lt;T&gt;)</li>
+                <li>Generic Constraints (extends)</li>
+                <li>keyof</li>
+                <li>Indexed Access Types (T[K])</li>
+                <li>Union & Intersection Types</li>
+                <li>Literal Types</li>
+                <li>Type Narrowing</li>
+                <li>Discriminated Unions</li>
+                <li>Utility Types (Partial, Pick, Omit, Record, Readonly)</li>
+                <li>Mapped Types</li>
+                <li>Conditional Types</li>
+                <li>infer</li>
+                <li>Template Literal Types</li>
+                <li>Real-world patterns (typed API clients, React hooks, Axios wrappers, repositories, event systems)</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>How to truly master it</h2>
+            <p>Reading isn't enough—you need to build things that force you to use these features repeatedly. Since you're working with React, Node.js, Axios, and APIs, try implementing:</p>
+            <ul>
+                <li>A fully typed Axios client with request/response generics.</li>
+                <li>A reusable API service (ApiService&lt;T&gt;) that supports CRUD operations.</li>
+                <li>Generic React hooks like useFetch&lt;T&gt;() or useForm&lt;T&gt;().</li>
+                <li>A repository pattern where entities are generic.</li>
+                <li>Utility types for transforming DTOs into UI models.</li>
+            </ul>
+            <p>By solving real problems with these concepts, you'll start recognizing when each feature is the right tool instead of trying to memorize syntax. That's the point where advanced TypeScript becomes intuitive.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

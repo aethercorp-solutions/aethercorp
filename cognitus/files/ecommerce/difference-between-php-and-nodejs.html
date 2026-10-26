@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> PHP vs NodeJS </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> PHP vs NodeJS </h1>
+                    <p class="subtitle"> The biggest difference is that PHP is a server-side programming language traditionally used for web applications, while Node.js is a JavaScript runtime that lets you run JavaScript on the server. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Simple comparison </h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>PHP</th>
+                        <th>Node.js</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>What is it?</td>
+                        <td>Programming language</td>
+                        <td>JavaScript runtime</td>
+                    </tr>
+                    <tr>
+                        <td>Main language</td>
+                        <td>PHP</td>
+                        <td>JavaScript / TypeScript</td>
+                    </tr>
+                    <tr>
+                        <td>Runs on</td>
+                        <td>Server</td>
+                        <td>Server</td>
+                    </tr>
+                    <tr>
+                        <td>Typical use</td>
+                        <td>Web backends, CMS, APIs</td>
+                        <td>APIs, real-time apps, full-stack apps</td>
+                    </tr>
+                    <tr>
+                        <td>Execution model</td>
+                        <td>Traditionally request/process based</td>
+                        <td>Event-driven, non-blocking</td>
+                    </tr>
+                    <tr>
+                        <td>Concurrency</td>
+                        <td>Often multiple processes/threads</td>
+                        <td>Event loop + async I/O</td>
+                    </tr>
+                    <tr>
+                        <td>Package manager</td>
+                        <td>Composer</td>
+                        <td>npm / yarn</td>
+                    </tr>
+                    <tr>
+                        <td>Popular frameworks</td>
+                        <td>Laravel, Symfony</td>
+                        <td>Express, NestJS, Fastify</td>
+                    </tr>
+                    <tr>
+                        <td>Database support</td>
+                        <td>Excellent</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>Real-time apps</td>
+                        <td>Possible</td>
+                        <td>Very strong</td>
+                    </tr>
+                    <tr>
+                        <td>Frontend sharing</td>
+                        <td>No</td>
+                        <td>Yes — same JS/TS language</td>
+                    </tr>
+                    <tr>
+                        <td>Learning if you know JS</td>
+                        <td>New language</td>
+                        <td>Very easy transition</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Example</h2>
+            <p>A PHP web server might handle a request like:</p>
+            <pre><code>
+&lt;?php
+    $name = "Paul";
+    echo "Hello " . $name;
+?&gt;
+            </code></pre>
+            <p>Node.js:</p>
+            <pre><code>
+const name = "Paul";
+console.log(`Hello ${name}`);
+            </code></pre>
+
+            <p>For an API:</p>
+            <p>PHP/Laravel:</p>
+            <pre><code>
+Route::get('/users', function () {
+    return User::all();
+});
+            </code></pre>
+            <p>Node.js/Express:</p>
+            <pre><code>
+app.get('/users', async (req, res) => {
+    const users = await User.find();
+    res.json(users);
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The important technical difference: concurrency</h2>
+            <p>Node.js is particularly designed around asynchronous I/O.</p>
+            <p>Imagine your server receives:</p>
+            <pre><code>
+Request 1 → query database
+Request 2 → query database
+Request 3 → call external API
+Request 4 → query database
+            </code></pre>
+            <p>Node.js doesn't have to sit there waiting for Request 1's database query to finish.</p>
+            <p>Its event loop can effectively do:</p>
+            <pre><code>
+Start DB query 1
+       ↓
+Start DB query 2
+       ↓
+Start API request
+       ↓
+Handle another request
+       ↓
+DB query 1 finishes → process result
+            </code></pre>
+            <p>This is one reason Node.js is popular for APIs, chat systems, notifications, streaming, and applications making many external/database calls.</p>
+            <p>PHP can also handle asynchronous/concurrent workloads, especially with modern runtimes and frameworks, but traditional PHP's execution model is different. Technologies such as PHP-FPM, workers, queues, and frameworks can provide scalable concurrency.</p>
+        </section>
+
+        <section>
+            <h2>Another major difference: JavaScript everywhere</h2>
+            <p>With Node.js you can use JavaScript/TypeScript on both sides:</p>
+            <pre><code>
+React
+   ↓
+JavaScript / TypeScript
+   ↓
+Node.js
+   ↓
+MongoDB / PostgreSQL
+            </code></pre>
+            <p>That's a major advantage for a full-stack developer.</p>
+            <p>With PHP you might have:</p>
+            <pre><code>
+React
+   ↓
+JavaScript / TypeScript
+   ↓
+PHP / Laravel
+   ↓
+MySQL
+            </code></pre>
+            <p>So you have two primary languages.</p>
+        </section>
+
+        <section>
+            <h2>PHP isn't "older Node.js"</h2>
+            <p>It's important not to think of PHP as simply an older version of Node.js.</p>
+            <p>They have different architectures and histories:</p>
+            <p>PHP</p>
+            <pre><code>
+Browser
+   ↓
+Web Server
+   ↓
+PHP
+   ↓
+Database
+   ↓
+Response
+            </code></pre>
+            <p>Node.js</p>
+            <pre><code>
+Browser
+   ↓
+HTTP Server
+   ↓
+Node.js Event Loop
+   ├── Database
+   ├── External APIs
+   ├── Files
+   └── Other async operations
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>For your background</h2>
+            <p>Since you're already working with React + Node.js + AWS Lambda + MongoDB, Node.js is particularly relevant to your existing full-stack architecture.</p>
+            <p>For example, your Castanet backend can naturally be:</p>
+            <pre><code>
+React
+   ↓
+Node.js / Express
+   ↓
+AWS Lambda
+   ↓
+MongoDB
+            </code></pre>
+            <p>And because Lambda supports Node.js directly, you can use the same JavaScript/TypeScript ecosystem across much of the stack.</p>
+            <p>In one sentence:</p>
+            <p>PHP is a web-oriented programming language; Node.js is a runtime that allows JavaScript to operate as a server-side/backend platform.</p>
+            <p>If you're learning backend development today, I can also 
+                explain PHP/Laravel vs Node.js/Express technically, including routing, middleware, database access, authentication, async processing, and deployment.</p>
+        </section>
+
+        <section>
+            <p>Use PHP when you're building a traditional web application, especially with Laravel/WordPress. Use Node.js when you need JavaScript/TypeScript on the backend, APIs, real-time features, or lots of asynchronous I/O.</p>
+            <p>When PHP makes sense</p>
+            <p>Use PHP when:</p>
+            <ul>
+                <li>Building a traditional website or web application</li>
+                <li>Using WordPress</li>
+                <li>Using Laravel or Symfony</li>
+                <li>Building CRUD/business applications</li>
+                <li>Working with an existing PHP codebase</li>
+                <li>Your hosting environment is already optimized for PHP</li>
+                <li>You want a straightforward request → database → response architecture</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+Customer
+   ↓
+Laravel/PHP
+   ↓
+MySQL
+   ↓
+HTML response
+            </code></pre>
+            <p>Typical applications:</p>
+            <ul>
+                <li>Company websites</li>
+                <li>E-commerce</li>
+                <li>Content management systems</li>
+                <li>Admin dashboards</li>
+                <li>Business management systems</li>
+                <li>WordPress sites</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>When Node.js makes sense</h2>
+            <p>Use Node.js when:</p>
+            <ul>
+                <li>Building REST/GraphQL APIs</li>
+                <li>Building real-time applications</li>
+                <li>Using WebSockets</li>
+                <li>Building chat/notification systems</li>
+                <li>Your frontend is React/Angular/Vue and you want JavaScript/TypeScript across the stack</li>
+                <li>Your application communicates with many external APIs</li>
+                <li>You have lots of asynchronous operations</li>
+                <li>Building serverless applications with AWS Lambda</li>
+                <li>Building microservices</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+React
+  ↓
+Node.js / Express
+  ↓
+MongoDB
+  ↓
+External APIs
+            </code></pre>
+            <p>For example, a notification system:</p>
+            <pre><code>
+User A ──┐
+User B ──┼──> Node.js ──> WebSocket ──> Users
+User C ──┘
+            </code></pre>
+            <p>Node.js is particularly convenient here because of its event-driven architecture.</p>
+        </section>
+
+        <section>
+            <h2>A practical comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Situation</th>
+                        <th>PHP</th>
+                        <th>Node.js</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>WordPress</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Laravel application</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Traditional website</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                        <td>⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>REST API</td>
+                        <td>⭐⭐⭐⭐</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>Real-time chat</td>
+                        <td>⭐⭐⭐</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>WebSockets</td>
+                        <td>⭐⭐⭐</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>Serverless AWS Lambda</td>
+                        <td>⭐⭐⭐</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>React + backend</td>
+                        <td>⭐⭐⭐</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>Existing PHP system</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Existing Node system</td>
+                        <td></td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>Large CRUD business app</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>Lots of external API calls</td>
+                        <td>⭐⭐⭐⭐</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>Same language frontend/backend</td>
+                        <td></td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>The stars aren't a quality ranking; they're just indicating how naturally each technology fits the particular scenario.</p>
+        </section>
+
+        <section>
+            <h2>An important point</h2>
+            <p>Don't choose Node.js simply because it's "faster," or PHP because it's "easier."</p>
+            <p>For many ordinary CRUD applications:</p>
+            <pre><code>
+PHP + Laravel + MySQL
+            </code></pre>
+            <p>and</p>
+            <pre><code>
+Node.js + Express/NestJS + PostgreSQL/MongoDB
+            </code></pre>
+            <p>can both work extremely well.</p>
+            <p>The existing ecosystem, team skills, hosting, architecture, and application requirements often matter more than raw language performance.</p>
+        </section>
+
+        <section>
+            <h2>For your own development</h2>
+            <p>Given the stack you've been working with:</p>
+            <pre><code>
+React
+Node.js
+AWS Lambda
+MongoDB
+Firebase
+Google APIs
+OAuth/JWT
+GitHub Actions
+            </code></pre>
+            <p>Node.js is the more natural backend technology for you to continue specializing in.</p>
+            <p>You'd mainly learn PHP when you encounter a project that specifically uses Laravel, WordPress, or an existing PHP backend.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

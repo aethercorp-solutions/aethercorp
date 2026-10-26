@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Blockchain </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Blockchain </h1>
+                    <p class="subtitle"> Blockchain is a shared digital record book that allows many computers to agree on and keep a history of transactions without needing one central authority to control the record. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> A simple way to imagine it: </h2>
+            <p>Blockchain = a shared spreadsheet/database that thousands of computers maintain together, where past records are extremely difficult to secretly change.</p>
+        </section>
+
+        <section>
+            <h2>1. Traditional database</h2>
+            <p>Normally, a company might have one central database:</p>
+            <pre><code>
+Bank
+  ↓
+Central Database
+  ↓
+Your balance: $1,000
+            </code></pre>
+            <p>The bank controls the database. It can add, modify, or remove records according to its rules.</p>
+        </section>
+
+        <section>
+            <h2>2. Blockchain</h2>
+            <p>With a blockchain, copies of the record are distributed across many computers:</p>
+            <pre><code>
+                ┌── Computer A
+                │
+                ├── Computer B
+   Blockchain ──┼── Computer C
+                │
+                ├── Computer D
+                │
+                └── Computer E
+            </code></pre>
+            <p>The computers communicate with each other and agree on which transactions are valid.</p>
+        </section>
+
+        <section>
+            <h2>Why is it called a "blockchain"?</h2>
+            <p>Transactions are grouped into blocks.</p>
+            <p>For example:</p>
+            <pre><code>
+Block 1
+ ├─ Alice → Bob: $10
+ ├─ John → Mary: $25
+ └─ Tom → Sarah: $5
+        ↓
+Block 2
+ ├─ Bob → Alice: $3
+ ├─ Mary → David: $15
+ └─ ...
+        ↓
+Block 3
+ └─ ...
+            </code></pre>
+            <p>Each block is cryptographically connected to the previous block:</p>
+            <pre><code>
+Block 1 → Block 2 → Block 3 → Block 4 → ...
+            </code></pre>
+            <p>That's the chain in blockchain.</p>
+            <p>If someone tries to secretly change an old transaction, the cryptographic relationships no longer match, making the alteration detectable.</p>
+        </section>
+
+        <section>
+            <h2>The important concept: consensus</h2>
+            <p>This connects directly to your previous question about cryptocurrency.</p>
+            <p>Suppose someone says:</p>
+            <p>"I own 100 Bitcoin."</p>
+            <p>How does the network know whether that's true?</p>
+            <p>The computers participating in the blockchain follow a consensus mechanism—rules for determining which transactions are legitimate and what the current state of the ledger is.</p>
+            <p>For example:</p>
+            <pre><code>
+    Person A: "Alice sends Bob 1 coin."
+             ↓
+       Network checks:
+       - Does Alice have it?
+       - Is the transaction valid?
+       - Has Alice already spent it?
+             ↓
+       Network agrees
+             ↓
+       Transaction recorded
+            </code></pre>
+            <p>So your earlier idea was essentially correct:</p>
+            <p>A cryptocurrency works because a network of participants agrees on the rules and collectively maintains the ledger.</p>
+        </section>
+
+        <section>
+            <h2>Blockchain vs. cryptocurrency</h2>
+            <p>They're not the same thing.</p>
+            <p>Blockchain is the underlying technology.</p>
+            <p>Cryptocurrency is one application of that technology.</p>
+            <p>Think:</p>
+            <pre><code>
+    Blockchain
+    │
+    ├── Bitcoin
+    ├── Ethereum
+    ├── Stablecoins
+    └── Other applications
+            </code></pre>
+            <p>Bitcoin uses a blockchain to maintain its transaction history.</p>
+        </section>
+
+        <section>
+            <h2>Why blockchain is useful</h2>
+            <p>The interesting property is that you can have:</p>
+            <p>Digital ownership + shared verification + no single database administrator.</p>
+            <p>That can be useful for things like:</p>
+            <ul>
+                <li>Cryptocurrency</li>
+                <li>Digital assets</li>
+                <li>Smart contracts</li>
+                <li>Tokenized assets</li>
+                <li>Supply-chain records</li>
+                <li>Certain financial settlement systems</li>
+                <li>Decentralized applications</li>
+            </ul>
+            <p>But blockchain is not automatically better than a normal database. If one trusted organization can efficiently maintain the records, a traditional database is often faster, cheaper, and simpler.</p>
+        </section>
+
+        <section>
+            <h2>The core idea</h2>
+            <p>If you remember only one thing:</p>
+            <p>Blockchain is a decentralized, cryptographically linked ledger whose participants use consensus to agree on the state of the record.</p>
+            <p>And Bitcoin is essentially a monetary system built on top of this idea.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

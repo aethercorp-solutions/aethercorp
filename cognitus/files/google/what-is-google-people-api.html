@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Google People </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Google People </h1>
+                    <p class="subtitle"> Google People usually refers to Google's contacts service, which lets you store and manage people's contact information through your Google account. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> What can you do with Google People? </h2>
+            <ul>
+                <li>Save contacts — Store names, phone numbers, email addresses, and profile photos.</li>
+                <li>Sync contacts — Keep your contacts synchronized across Android devices and Google services.</li>
+                <li>Organize people — Create contact groups and labels.</li>
+                <li>Manage contacts — Edit, merge duplicate contacts, or restore recently deleted contacts.</li>
+                <li>Access contacts — Use your contacts in Gmail, Google Meet, and other supported Google services.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Is Google People the same as Google Contacts?</h2>
+            <p>Essentially, yes, but the names can refer to different things.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Google People</td>
+                        <td>The contacts management system or underlying contacts functionality used by Google services.</td>
+                    </tr>
+                    <tr>
+                        <td>Google Contacts</td>
+                        <td>The app and website used to manage your contacts.</td>
+                    </tr>
+                    <tr>
+                        <td>Google People API</td>
+                        <td>A developer API for accessing and managing contact information and certain profile information with authorization.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>You can access your contacts here:</p>
+            <p>Google Contacts</p>
+            <p>Manage your contacts online.</p>
+            <p>contacts.google.com</p>
+            <p>Are you asking about Google People as a user, or the Google People API as a software developer? If you're developing an app, I can explain how to integrate it with a backend such as Node.js.</p>
+        </section>
+
+        <section>
+            <h2>Google People API for software developers</h2>
+            <p>The Google People API is a REST API that allows your application to access and manage Google Contacts and certain profile information, provided the user grants the required permissions.</p>
+            <p>For example, if you're developing a mobile app with a Node.js backend, you can let users connect their Google account and import their Google contacts into your application.</p>
+            <p>1. What can you build with it?</p>
+            <pre><code>
+Import Google Contacts
+Retrieve contact names, email addresses, phone numbers, and other available contact fields.
+            </code></pre>
+
+            <pre><code>
+Read the signed-in user's profile
+Retrieve supported profile information, such as their name and email address, when the appropriate authorization is granted.
+            </code></pre>
+
+            <pre><code>
+Synchronize contacts
+Build features that synchronize contact data with your own application's database.
+            </code></pre>
+
+            <pre><code>
+Build people-discovery features
+Help users find people they already know by matching authorized contact information against your application's users.
+            </code></pre>
+            <p>Important: The API does not give your app unrestricted access to every Google user's contacts. Access depends on OAuth authorization, requested scopes, and Google's API policies.</p>
+        </section>
+
+        <section>
+            <h2>2. How the architecture works</h2>
+            <p>If you have a mobile application built with React Native or Flutter and a Node.js backend, a typical integration looks like this:</p>
+            <pre><code>
+1. Mobile application
+User taps "Import Google Contacts"
+            </code></pre>
+
+            <pre><code>
+2. Google OAuth 2.0
+User signs in and grants the requested permission
+            </code></pre>
+
+            <pre><code>
+3. Node.js backend
+Validates the session and securely accesses Google APIs
+            </code></pre>
+
+            <pre><code>
+4. Google People API
+Returns the authorized user's contact data
+            </code></pre>
+
+            <pre><code>
+5. Application database
+Optionally stores normalized contacts for application features
+            </code></pre>
+            <p>The API supports retrieving the authenticated user's contacts through people.connections.list.</p>
+        </section>
+
+        <section>
+            <h2>3. Set up the Google People API</h2>
+            <ol>
+                <li>Open the Google Cloud Console</li>
+                <li>Create a project or select an existing project.</li>
+                <li>Open APIs & Services → Library and enable the Google People API.</li>
+                <li>Configure the OAuth consent screen and request the necessary scopes.</li>
+                <li>Create OAuth credentials appropriate for your application.</li>
+                <li>Implement the OAuth authorization flow and request the user's consent.</li>
+            </ol>
+            <p>Official documentation: Google People API.</p>
+            <p>For read-only contact importing, the relevant scope is:</p>
+            <p>https://www.googleapis.com/auth/contacts.readonly</p>
+            <p>This allows your application to read the user's contacts without requesting permission to modify them.</p>
+        </section>
+
+        <section>
+            <h2>4. Example implementation using Node.js</h2>
+            <p>Once your OAuth flow has obtained a valid Google access token with the required scope, your backend can request contacts using the native fetch API.</p>
+            <pre><code>
+async function getGoogleContacts(accessToken) {
+    const url = new URL(
+        "https://people.googleapis.com/v1/people/me/connections"
+    );
+    
+    url.searchParams.set("personFields", "names,emailAddresses,phoneNumbers");
+    url.searchParams.set("pageSize", "100");
+    
+    const response = await fetch(url, {
+        headers: {
+        Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    
+    if (!response.ok) {
+        throw new Error(
+        `Google People API error: ${response.status} ${await response.text()}`
+        );
+    }
+    
+    const data = await response.json();
+    
+    return (data.connections || []).map((person) => ({
+        name: person.names?.[0]?.displayName ?? null,
+        email: person.emailAddresses?.[0]?.value ?? null,
+        phone: person.phoneNumbers?.[0]?.value ?? null,
+    }));
+}
+            </code></pre>
+            <p>Example output:</p>
+            <pre><code>
+[
+  {
+    "name": "John Smith",
+    "email": "john@example.com",
+    "phone": "+639171234567"
+  },
+  {
+    "name": "Maria Santos",
+    "email": "maria@example.com",
+    "phone": null
+  }
+]
+            </code></pre>
+            <p>The sample demonstrates the API request and basic mapping. It assumes that authentication has already been completed; it does not implement OAuth itself. For production, also handle pagination using nextPageToken, token expiration, errors, and secure token storage.</p>
+        </section>
+
+        <section>
+            <h2>5. Important OAuth distinction</h2>
+            <p>Google People API is not the same as Google Sign-In.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Primary purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Google Sign-In / OpenID Connect</td>
+                        <td>Authenticate the user and establish their identity</td>
+                    </tr>
+                    <tr>
+                        <td>Google People API</td>
+                        <td>Retrieve or manage authorized contact and profile information</td>
+                    </tr>
+                    <tr>
+                        <td>Google OAuth 2.0</td>
+                        <td>Obtain permission to access the requested Google resources</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>You can use Google Sign-In without requesting access to a user's contacts. You need additional authorization if your app wants to import those contacts.</p>
+            <p>Also, contact access may require Google verification before a public application can request certain scopes in production. Review the OAuth verification requirements.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> React Native Metro vs Expo </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> React Native Metro vs Expo </h1>
+                    <p class="subtitle"> React Native Metro vs Expo, they are related but serve very different purposes. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Metro </h2>
+            <p>Metro is the JavaScript bundler used by React Native.</p>
+            <p>Its main job is to take your JavaScript/TypeScript source code and dependencies and turn them into a bundle that your React Native app can execute.</p>
+            <pre><code>
+Your JS/TS code
+      ↓
+    Metro
+      ↓
+JavaScript bundle
+      ↓
+React Native runtime
+      ↓
+iOS / Android
+            </code></pre>
+            <p>Metro handles things such as:</p>
+            <ul>
+                <li>Bundling JavaScript/TypeScript</li>
+                <li>Resolving imports</li>
+                <li>Fast Refresh</li>
+                <li>Development server</li>
+                <li>Watching files</li>
+                <li>Source maps</li>
+                <li>React Native module resolution</li>
+            </ul>
+            <p>For example, in a typical React Native project:</p>
+            <pre><code>
+npx react-native start
+            </code></pre>
+            <p>starts Metro.</p>
+            <p>You can then build the native application separately:</p>
+            <pre><code>
+npx react-native run-ios
+            </code></pre>
+            <p>or</p>
+            <pre><code>
+npx react-native run-android
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Expo</h2>
+            <p>Expo is a development platform/toolchain built around React Native.</p>
+            <p>Expo provides much more than a bundler. It gives you libraries, development tools, configuration, build services, and APIs that make React Native development easier.</p>
+            <p>For example:</p>
+            <pre><code>
+                Expo
+                │
+   ┌────────────┼─────────────┐
+   ↓            ↓             ↓
+Expo SDK      Expo CLI      EAS Build
+   │                          │
+   ↓                          ↓
+Camera, GPS,              iOS / Android
+Notifications, etc.          builds
+   │
+   ↓
+React Native
+   │
+   ↓
+ Metro
+            </code></pre>
+            <p>Expo projects still use Metro for JavaScript bundling.</p>
+            <p>So an important point is:</p>
+            <p>Expo does not replace Metro. Expo normally uses Metro underneath.</p>
+        </section>
+
+        <section>
+            <h2>Simple comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Metro</th>
+                        <th>Expo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>What is it?</td>
+                        <td>JavaScript bundler</td>
+                        <td>React Native development platform</td>
+                    </tr>
+                    <tr>
+                        <td>Bundles JS</td>
+                        <td>✅</td>
+                        <td>Uses Metro</td>
+                    </tr>
+                    <tr>
+                        <td>Fast Refresh</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>iOS/Android development</td>
+                        <td>Supports it</td>
+                        <td>Supports it</td>
+                    </tr>
+                    <tr>
+                        <td>Native APIs</td>
+                        <td>No</td>
+                        <td>Many Expo APIs</td>
+                    </tr>
+                    <tr>
+                        <td>Build service</td>
+                        <td>❌</td>
+                        <td>EAS Build</td>
+                    </tr>
+                    <tr>
+                        <td>App configuration</td>
+                        <td>Limited</td>
+                        <td>Expo config</td>
+                    </tr>
+                    <tr>
+                        <td>OTA updates</td>
+                        <td>❌ by itself</td>
+                        <td>Expo Updates</td>
+                    </tr>
+                    <tr>
+                        <td>Camera/location/etc.</td>
+                        <td>Not provided</td>
+                        <td>Expo SDK</td>
+                    </tr>
+                    <tr>
+                        <td>Native customization</td>
+                        <td>N/A</td>
+                        <td>Can use native projects/modules</td>
+                    </tr>
+                    <tr>
+                        <td>Can use bare React Native?</td>
+                        <td>✅</td>
+                        <td>Expo can be added to existing RN projects</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>In your Castanet project</h2>
+            <p>Your current setup is essentially:</p>
+            <pre><code>
+    Castanet Mobile
+      │
+      ├── React Native
+      │      │
+      │      └── Metro
+      │
+      ├── iOS
+      │      └── Xcode
+      │
+      └── Android
+             └── Gradle
+            </code></pre>
+            <p>You are using React Native CLI + Metro, not an Expo-managed project.</p>
+            <p>If you migrated toward Expo, it could look more like:</p>
+            <pre><code>
+    Castanet Mobile
+      │
+      ├── Expo
+      │    ├── Expo SDK
+      │    ├── Expo CLI
+      │    └── EAS
+      │
+      ├── React Native
+      │
+      └── Metro
+             │
+             └── JS bundle
+            </code></pre>
+            <p>The easiest way to remember it</p>
+            <p>Metro = the engine that bundles your React Native JavaScript.</p>
+            <p>Expo = a larger development platform that makes building React Native applications easier, and it uses Metro underneath.</p>
+            <p>For your RN 0.68 Castanet app, Metro is not something you would normally replace with Expo just to solve your current iOS 27/UIScene issue. The UIScene/AppDelegate problem is on the native iOS/Xcode side, not a Metro problem.</p>
+        </section>
+
+        <section>
+            <h2>The key distinction is:</h2>
+            <p>React Native is the core framework for building cross-platform mobile apps. Expo is a platform/toolchain built on top of React Native that provides additional APIs, tooling, configuration, and build services.</p>
+            <p>Think of it like this:</p>
+            <pre><code>
+                EXPO
+                ┌─────────────────────────┐
+                │ Expo SDK                │
+                │ Expo Router             │
+                │ Expo Modules            │
+                │ Expo CLI                │
+                │ EAS Build / Submit      │
+                │ Expo Updates            │
+                └────────────┬────────────┘
+                             │
+                      ┌──────▼──────┐
+                      │ React Native│
+                      └──────┬──────┘
+                             │
+                        ┌────▼────┐
+                        │  Metro  │
+                        └────┬────┘
+                             │
+                 ┌───────────┴───────────┐
+                 ▼                       ▼
+               iOS                    Android
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>1. React Native</h2>
+            <p>React Native is the actual application framework.</p>
+            <p>You write:</p>
+            <pre><code>
+&lt;View&gt;
+    &lt;Text&gt;Hello World&lt;/Text&gt;
+    &lt;Button title="Login" /&gt;
+&lt;/View&gt;
+            </code></pre>
+            <p>React Native connects those JavaScript/TypeScript components to native iOS and Android functionality.</p>
+            <p>Technically, you have:</p>
+            <pre><code>
+TypeScript / JavaScript
+          ↓
+      React Native
+          ↓
+   Native platform APIs
+     ↙          ↘
+   iOS        Android
+            </code></pre>
+            <p>For iOS:</p>
+            <pre><code>
+React Native
+     ↓
+Objective-C / Swift
+     ↓
+UIKit / Foundation / native APIs
+            </code></pre>
+            <p>For Android:</p>
+            <pre><code>
+React Native
+     ↓
+Java / Kotlin
+     ↓
+Android SDK
+            </code></pre>
+            <p>React Native itself gives you the fundamental pieces:</p>
+            <ul>
+                <li>React components</li>
+                <li>Native components</li>
+                <li>JavaScript/TypeScript runtime integration</li>
+                <li>Native modules</li>
+                <li>Native UI</li>
+                <li>iOS/Android projects</li>
+                <li>Metro bundling</li>
+                <li>Fast Refresh</li>
+                <li>React Native CLI tooling</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Expo</h2>
+            <p>Expo is an ecosystem built around React Native.</p>
+            <p>Instead of having to configure many things yourself, Expo provides ready-made solutions.</p>
+            <p>For example:</p>
+            <pre><code>
+React Native
+     +
+Expo Camera
+Expo Location
+Expo Notifications
+Expo SecureStore
+Expo ImagePicker
+Expo FileSystem
+Expo Router
+Expo Updates
+EAS Build
+EAS Submit
+     ↓
+  Expo ecosystem
+            </code></pre>
+            <p>So if you need the camera, instead of implementing a native module yourself, you can use something like:</p>
+            <pre><code>
+import { CameraView } from 'expo-camera';
+            </code></pre>
+            <p>Expo provides the native implementation behind that API.</p>
+        </section>
+
+        <section>
+            <h2>3. The biggest difference</h2>
+            <p>Here's the easiest comparison:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>React Native</th>
+                        <th>Expo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Type</td>
+                        <td>Framework</td>
+                        <td>Platform/toolchain/ecosystem</td>
+                    </tr>
+                    <tr>
+                        <td>Built on React</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Cross-platform</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Uses Metro</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Native iOS project</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Native Android project</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Camera API</td>
+                        <td>Can use native libraries</td>
+                        <td>Expo provides one</td>
+                    </tr>
+                    <tr>
+                        <td>Notifications</td>
+                        <td>Can use native libraries</td>
+                        <td>Expo provides one</td>
+                    </tr>
+                    <tr>
+                        <td>Location</td>
+                        <td>Can use native libraries</td>
+                        <td>Expo provides one</td>
+                    </tr>
+                    <tr>
+                        <td>File system</td>
+                        <td>Can use native libraries</td>
+                        <td>Expo provides one</td>
+                    </tr>
+                    <tr>
+                        <td>Build service</td>
+                        <td>❌</td>
+                        <td>EAS</td>
+                    </tr>
+                    <tr>
+                        <td>App distribution tools</td>
+                        <td>Limited</td>
+                        <td>EAS Submit</td>
+                    </tr>
+                    <tr>
+                        <td>OTA updates</td>
+                        <td>Not built into core</td>
+                        <td>Expo Updates</td>
+                    </tr>
+                    <tr>
+                        <td>Routing</td>
+                        <td>You choose library</td>
+                        <td>Expo Router available</td>
+                    </tr>
+                    <tr>
+                        <td>Configuration</td>
+                        <td>More manual</td>
+                        <td>More automated</td>
+                    </tr>
+                    <tr>
+                        <td>Native customization</td>
+                        <td>Very flexible</td>
+                        <td>Also possible, but Expo adds its own layer</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. React Native does NOT mean "no Expo"</h2>
+            <p>This is an important misconception.</p>
+            <p>You can have:</p>
+            <p>Pure React Native</p>
+            <pre><code>
+React Native
+├── Metro
+├── iOS
+└── Android
+            </code></pre>
+            <p>or:</p>
+            <p>React Native + Expo</p>
+            <pre><code>
+Expo
+├── Expo SDK
+├── Expo tooling
+├── React Native
+│   └── Metro
+├── iOS
+└── Android
+            </code></pre>
+            <p>Expo is therefore not an alternative programming language or a replacement for React Native.</p>
+            <p>Expo uses React Native.</p>
+        </section>
+
+        <section>
+            <h2>5. Example: Camera</h2>
+            <p>Suppose you need barcode scanning.</p>
+            <p>React Native approach</p>
+            <p>You might install a third-party native library:</p>
+            <pre><code>
+npm install react-native-vision-camera
+            </code></pre>
+            <p>Then you may need to configure:</p>
+            <pre><code>
+iOS
+├── Podfile
+├── Info.plist
+├── permissions
+└── native dependencies
+
+Android
+├── Gradle
+├── AndroidManifest.xml
+└── permissions
+            </code></pre>
+            <p>Then your JavaScript talks to the native implementation.</p>
+        </section>
+
+        <section>
+            <h2>Expo approach</h2>
+            <p>You could use an Expo-supported camera module:</p>
+            <pre><code>
+npx expo install expo-camera
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+import { CameraView } from 'expo-camera';
+            </code></pre>
+            <p>Expo handles much of the integration for you.</p>
+        </section>
+
+        <section>
+            <h2>6. Build system is a major difference</h2>
+            <p>This is one of the biggest practical differences.</p>
+            <p>With traditional React Native:</p>
+            <pre><code>
+Developer
+   │
+   ├── Xcode
+   ├── CocoaPods
+   ├── Gradle
+   ├── Android SDK
+   └── React Native CLI
+            </code></pre>
+            <p>You are responsible for much of the native build environment.</p>
+            <p>With Expo, you can use:</p>
+            <pre><code>
+Developer
+   │
+   └── EAS
+        ├── Build iOS
+        ├── Build Android
+        ├── Submit to App Store
+        └── Submit to Google Play
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+eas build --platform ios
+            </code></pre>
+            <p>can build the iOS application using Expo's build infrastructure.</p>
+        </section>
+
+        <section>
+            <h2>7. Native code is where things get interesting</h2>
+            <p>People sometimes say:</p>
+            <p>"Expo doesn't let you write native code."</p>
+            <p>That's no longer an accurate description.</p>
+            <p>Modern Expo can work with native projects.</p>
+            <p>You can have:</p>
+            <pre><code>
+Expo
+  ↓
+React Native
+  ↓
+Native iOS / Android
+  ↓
+Your custom native code
+            </code></pre>
+            <p>You can also generate native projects:</p>
+            <pre><code>
+npx expo prebuild
+            </code></pre>
+            <p>which creates:</p>
+            <pre><code>
+ios/
+android/
+            </code></pre>
+            <p>You can then customize native code when necessary.</p>
+            <p>So the distinction is increasingly:</p>
+            <p>Expo gives you more abstraction and tooling; React Native gives you the underlying application framework.</p>
+        </section>
+
+        <section>
+            <h2>8. Your Castanet app is a good example</h2>
+            <p>Your existing Castanet architecture is approximately:</p>
+            <pre><code>
+Castanet
+│
+├── React Native
+│
+├── Metro
+│
+├── JavaScript/TypeScript
+│
+├── iOS
+│   ├── Xcode
+│   ├── AppDelegate
+│   ├── SceneDelegate
+│   └── CocoaPods
+│
+└── Android
+    ├── Gradle
+    └── Android SDK
+            </code></pre>
+            <p>You're dealing directly with things such as:</p>
+            <pre><code>
+AppDelegate.mm
+SceneDelegate
+Info.plist
+Podfile
+Xcode
+Firebase
+FCM
+StoreKit
+native modules
+            </code></pre>
+            <p>That's a traditional/bare React Native architecture.</p>
+            <p>If you introduced Expo, you could have:</p>
+            <pre><code>
+Castanet
+│
+├── Expo
+│   ├── Expo SDK
+│   ├── Expo Modules
+│   ├── EAS
+│   └── Expo Updates
+│
+├── React Native
+│
+├── Metro
+│
+├── iOS
+│
+└── Android
+            </code></pre>
+            <p>But Expo wouldn't magically eliminate native iOS concerns. If you have Firebase, StoreKit, custom native modules, or special iOS lifecycle requirements, you can still end up working with native projects.</p>
+        </section>
+
+        <section>
+            <h2>9. A useful analogy</h2>
+            <p>Think of React Native as the engine:</p>
+            <pre><code>
+            React Native
+                ↓
+     ┌──────────┴──────────┐
+     ↓                     ↓
+    iOS                 Android
+            </code></pre>
+            <p>Expo is more like a complete development platform around that engine:</p>
+            <pre><code>
+                            Expo
+                ┌────────────┼─────────────┐
+                ↓            ↓             ↓
+              SDK          Tools          EAS
+                │            │             │
+                └────────────┼─────────────┘
+                             ↓
+                        React Native
+                             ↓
+                        iOS / Android
+            </code></pre>
+            <p>In one sentence</p>
+            <p>React Native gives you the framework for building the mobile application; Expo gives you a higher-level ecosystem around React Native that simplifies native APIs, project configuration, development, updates, and app builds.</p>
+            <p>For someone working on your Castanet RN 0.68 application, the most important practical distinction is that moving from React Native CLI to Expo is a project/tooling architecture change—not simply replacing Metro—and it would not by itself fix the iOS 27 UIScene issue you're currently working through.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

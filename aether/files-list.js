@@ -14,8 +14,10 @@ const htmlFiles = [
   "files/file-format/md-file.html",
   "files/mongodb/mongodb-query-explained-simply.html",
   "files/neural-network/neural-network-simple-explanation.html",
+  "files/rag/chunkless-rag.html",
   "files/rag/long-context-in-an-llm.html",
   "files/rag/production-grade-retrieval-augmented-generation-rag-system.html",
   "files/rag/retrieval-augmented-generation-application.html",
+  "files/react/difference-between-react-web-builds-and-react-native-builds.html",
   "files/vite/vite.html"
 ];

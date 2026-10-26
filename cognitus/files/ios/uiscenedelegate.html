@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> UIApplicationDelegate vs UISceneDelegate </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> UIApplicationDelegate vs UISceneDelegate </h1>
+                    <p class="subtitle"> 
+                        The simplest way to think about it is:
+                        <p>UIApplicationDelegate = manages the whole application</p>
+                        <p>UISceneDelegate = manages an individual window/scene of the application</p>
+                        <p>This distinction is especially important for your React Native Castanet project, because newer iOS SDKs require scene-based lifecycle support.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. UIApplicationDelegate </h2>
+            <p>Your AppDelegate.m traditionally handled almost everything:</p>
+            <pre><code>
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    // App initialization
+    return YES;
+}
+
+- (UIWindow *)window
+{
+    // Main application window
+}
+
+@end
+            </code></pre>
+            <p>It is responsible for application-level events, such as:</p>
+            <ul>
+                <li>App finished launching</li>
+                <li>Push notification registration</li>
+                <li>Background/foreground transitions</li>
+                <li>Opening URLs</li>
+                <li>Universal links</li>
+                <li>Firebase initialization</li>
+                <li>Global application configuration</li>
+                <li>React Native bridge setup</li>
+            </ul>
+            <p>Think:</p>
+            <pre><code>
+        UIApplication
+                │
+          AppDelegate
+                │
+   ┌────────────┴────────────┐
+   │                         │
+Scene A                   Scene B
+            </code></pre>
+            <p>The AppDelegate represents the application itself.</p>
+        </section>
+
+        <section>
+            <h2>2. UISceneDelegate</h2>
+            <p>UISceneDelegate was introduced with iOS 13 to separate UI/window lifecycle from the application lifecycle.</p>
+            <p>For example:</p>
+            <pre><code>
+@implementation SceneDelegate
+
+- (void)scene:(UIScene *)scene
+    willConnectToSession:(UISceneSession *)session
+    options:(UISceneConnectionOptions *)connectionOptions
+{
+    // Configure the UIWindow / root view controller
+}
+
+- (void)sceneDidBecomeActive:(UIScene *)scene
+{
+}
+
+- (void)sceneWillResignActive:(UIScene *)scene
+{
+}
+
+- (void)sceneDidEnterBackground:(UIScene *)scene
+{
+}
+
+@end
+            </code></pre>
+            <p>The scene delegate handles things such as:</p>
+            <ul>
+                <li>Creating/configuring the UIWindow</li>
+                <li>Connecting the root view controller</li>
+                <li>Scene becoming active</li>
+                <li>Scene entering background</li>
+                <li>Scene becoming inactive</li>
+                <li>Scene disconnection</li>
+                <li>Multiple windows/scenes</li>
+            </ul>
+            <p>Think:</p>
+            <pre><code>
+UIApplication
+     │
+     └── AppDelegate
+             │
+             ├── SceneDelegate #1
+             │       └── UIWindow
+             │
+             └── SceneDelegate #2
+                     └── UIWindow
+            </code></pre>
+            <p>This allows an iPad app, for example, to have multiple windows of the same application.</p>
+        </section>
+
+        <section>
+            <h2>3. The important difference</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>UIApplicationDelegate</th>
+                        <th>UISceneDelegate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Represents</td>
+                        <td>Entire application</td>
+                        <td>One UI scene/window</td>
+                    </tr>
+                    <tr>
+                        <td>Introduced</td>
+                        <td>Original iOS lifecycle</td>
+                        <td>iOS 13</td>
+                    </tr>
+                    <tr>
+                        <td>App initialization</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase setup</td>
+                        <td>Usually ✅</td>
+                        <td>Usually ❌</td>
+                    </tr>
+                    <tr>
+                        <td>Push notification setup</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td>React Native bridge</td>
+                        <td>Usually AppDelegate</td>
+                        <td>Usually coordinated with Scene</td>
+                    </tr>
+                    <tr>
+                        <td>UIWindow</td>
+                        <td>Legacy responsibility</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Root UIViewController</td>
+                        <td>Legacy responsibility</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Scene foreground/background</td>
+                        <td>Application-level events</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Multiple windows</td>
+                        <td>Not designed for it</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>Required by newer SDK/runtime</td>
+                        <td>App delegate still exists</td>
+                        <td>Yes for scene-based apps</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. Old Objective-C application</h2>
+            <p>Your old project probably looks roughly like this:</p>
+            <pre><code>
+// AppDelegate.m
+
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    self.window = [[UIWindow alloc] initWithFrame:
+                   [UIScreen mainScreen].bounds];
+
+    self.window.rootViewController = ...;
+
+    [self.window makeKeyAndVisible];
+
+    return YES;
+}
+            </code></pre>
+            <p>The flow was:</p>
+            <pre><code>
+UIApplication
+      ↓
+AppDelegate
+      ↓
+Create UIWindow
+      ↓
+Create RootViewController
+      ↓
+makeKeyAndVisible
+      ↓
+Application UI
+            </code></pre>
+            <p>That was the traditional iOS architecture.</p>
+        </section>
+
+        <section>
+            <h2>5. Modern scene-based application</h2>
+            <p>Now the flow is more like:</p>
+            <pre><code>
+UIApplication
+      │
+      ↓
+AppDelegate
+      │
+      │ application-level setup
+      │
+      ↓
+UIScene
+      │
+      ↓
+SceneDelegate
+      │
+      ↓
+UIWindow
+      │
+      ↓
+RootViewController
+            </code></pre>
+            <p>So the window creation moves from:</p>
+            <pre><code>
+AppDelegate
+            </code></pre>
+            <p>to:</p>
+            <pre><code>
+SceneDelegate
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+// SceneDelegate.m
+
+- (void)scene:(UIScene *)scene
+    willConnectToSession:(UISceneSession *)session
+    options:(UISceneConnectionOptions *)connectionOptions
+{
+    if (![scene isKindOfClass:[UIWindowScene class]]) {
+        return;
+    }
+
+    UIWindowScene *windowScene = (UIWindowScene *)scene;
+
+    self.window = [[UIWindow alloc] initWithWindowScene:windowScene];
+
+    self.window.rootViewController = ...;
+
+    [self.window makeKeyAndVisible];
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. What happens to AppDelegate?</h2>
+            <p>This is where many legacy projects get confused.</p>
+            <p>You don't delete AppDelegate.</p>
+            <p>Instead, you divide its responsibilities.</p>
+            <p>AppDelegate</p>
+            <pre><code>
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    // Firebase
+    // React Native initialization
+    // Push notifications
+    // Global application configuration
+
+    return YES;
+}
+
+@end
+            </code></pre>
+            <p>SceneDelegate</p>
+            <pre><code>
+@implementation SceneDelegate
+
+- (void)scene:(UIScene *)scene
+    willConnectToSession:(UISceneSession *)session
+    options:(UISceneConnectionOptions *)connectionOptions
+{
+    // UIWindow
+    // Root View Controller
+    // React Native root view
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. For your React Native Castanet project</h2>
+            <p>This is particularly relevant to the error you've been seeing:</p>
+            <pre><code>
+Application failed to launch:
+UIScene life cycle is required for apps built with this SDK.
+            </code></pre>
+            <p>Your project is essentially being told:</p>
+            <pre><code>
+"Your application is built against a modern iOS SDK,
+but you're still using the old application-only lifecycle."
+            </code></pre>
+            <p>So you need this architecture:</p>
+            <pre><code>
+            Castanet
+                │
+         ┌──────┴──────┐
+         │             │
+   AppDelegate     SceneDelegate
+         │             │
+ Application setup    UI setup
+         │             │
+ Firebase            UIWindow
+ React Native        Root View
+ Notifications       RCTRootView
+ URL handling        React Native UI
+            </code></pre>
+            <p>The key point is:</p>
+            <p>Don't move everything from AppDelegate into SceneDelegate.</p>
+            <p>Instead:</p>
+            <p>Keep in AppDelegate</p>
+            <pre><code>
+didFinishLaunchingWithOptions
+            </code></pre>
+            <p>for things like:</p>
+            <pre><code>
+Firebase
+React Native initialization
+push notification registration
+application-wide services
+            </code></pre>
+            <p>Put in SceneDelegate</p>
+            <pre><code>
+scene:willConnectToSession:options:
+            </code></pre>
+            <p>for:</p>
+            <pre><code>
+UIWindow
+RCTRootView
+rootViewController
+makeKeyAndVisible
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>One important React Native detail</h2>
+            <p>For your project, SceneDelegate does not mean you need to create a completely separate React Native application.</p>
+            <p>You still have:</p>
+            <pre><code>
+React Native
+     ↓
+RCTBridge
+     ↓
+RCTRootView
+     ↓
+UIViewController
+     ↓
+UIWindow
+     ↓
+SceneDelegate
+            </code></pre>
+            <p>So the scene lifecycle is basically the UIKit container around your existing React Native application.</p>
+            <p>Your current error is therefore not saying:</p>
+            <p>"React Native is broken."</p>
+            <p>It's saying:</p>
+            <p>"UIKit needs your application to participate in the scene lifecycle."</p>
+            <p>And that is why your recent SceneDelegate.m work is the correct direction.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

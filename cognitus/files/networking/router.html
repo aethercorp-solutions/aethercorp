@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Router </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Router </h1>
+                    <p class="subtitle"> A router is a network device whose main job is to move IP packets between different networks. Your home router is actually several networking devices combined into one: a router, Ethernet switch, Wi-Fi access point, DHCP server, NAT gateway, firewall, and often DNS forwarder. </p>
+                    <p> Here is the complete flow from your Mac/iPhone to a website. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. The basic idea </h2>
+            <p>Suppose your Mac has:</p>
+            <pre><code>
+    Mac
+192.168.1.10
+     |
+     | Ethernet / Wi-Fi
+     |
+192.168.1.1
+Home Router
+     |
+     | WAN
+     |
+ISP
+     |
+Internet
+     |
+Web Server
+142.250.x.x
+            </code></pre>
+            <p>Your Mac and router are on your local network:</p>
+            <pre><code>
+192.168.1.0/24
+            </code></pre>
+            <p>The Internet is a collection of many other networks.</p>
+            <p>The router's fundamental job is:</p>
+            <p>Look at the destination IP address of a packet and decide which network/interface should receive it next.</p>
+        </section>
+
+        <section>
+            <h2>2. What happens when your computer connects to Wi-Fi?</h2>
+            <p>When your Mac connects to your router's Wi-Fi, several things happen.</p>
+            <p>Your router normally provides:</p>
+            <pre><code>
+IP address
+Subnet mask
+Default gateway
+DNS server
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+Mac
+IP:       192.168.1.10
+Mask:     255.255.255.0
+Gateway:  192.168.1.1
+DNS:      192.168.1.1
+            </code></pre>
+            <p>The subnet mask tells the computer which addresses are local.</p>
+            <p>For:</p>
+            <pre><code>
+192.168.1.10/24
+            </code></pre>
+            <p>the local network is:</p>
+            <pre><code>
+192.168.1.0 - 192.168.1.255
+            </code></pre>
+            <p>So:</p>
+            <pre><code>
+192.168.1.20
+            </code></pre>
+            <p>is local.</p>
+            <p>But:</p>
+            <pre><code>
+142.250.72.14
+            </code></pre>
+            <p>is not local.</p>
+            <p>Therefore the Mac sends traffic for 142.250.72.14 to its default gateway:</p>
+            <pre><code>
+192.168.1.1
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. DHCP gives your computer its configuration</h2>
+            <p>Usually your computer doesn't manually configure all of this.</p>
+            <p>It uses DHCP.</p>
+            <p>The basic DHCP process is commonly described as:</p>
+            <pre><code>
+Mac                  Router
+ |                      |
+ | DHCP Discover        |
+ |---------------------&gt;|
+ |                      |
+ | DHCP Offer           |
+ |&lt;---------------------|
+ |                      |
+ | DHCP Request         |
+ |---------------------&gt;|
+ |                      |
+ | DHCP ACK             |
+ |&lt;---------------------|
+            </code></pre>
+            <p>The router might assign:</p>
+            <pre><code>
+IP address:     192.168.1.10
+Subnet mask:    255.255.255.0
+Gateway:        192.168.1.1
+DNS:            192.168.1.1
+Lease:          24 hours
+            </code></pre>
+            <p>Now your Mac knows how to communicate.</p>
+        </section>
+
+        <section>
+            <h2>4. Router vs switch</h2>
+            <p>This is an important distinction.</p>
+            <p>A switch primarily operates at Layer 2.</p>
+            <p>A router operates primarily at Layer 3.</p>
+            <p>For example:</p>
+            <pre><code>
+Mac A
+192.168.1.10
+   |
+   |
+Switch
+   |
+   +---- Mac B
+   |     192.168.1.20
+   |
+   +---- Router
+         192.168.1.1
+            </code></pre>
+            <p>The switch looks primarily at MAC addresses.</p>
+            <p>The router looks primarily at IP addresses.</p>
+            <p>MAC address</p>
+            <p>Example:</p>
+            <pre><code>
+A4:83:E7:12:34:56
+            </code></pre>
+            <p>IP address</p>
+            <p>Example:</p>
+            <pre><code>
+192.168.1.10
+            </code></pre>
+            <p>MAC addresses are used for delivery on the local Layer-2 network.</p>
+            <p>IP addresses are used for communication between networks.</p>
+        </section>
+
+        <section>
+            <h2>5. Let's access Google</h2>
+            <p>Suppose you type:</p>
+            <pre><code>
+https://www.google.com
+            </code></pre>
+            <p>There are actually many networking steps involved.</p>
+            <p>First:</p>
+            <pre><code>
+www.google.com
+            </code></pre>
+            <p>is a domain name.</p>
+            <p>Your computer needs an IP address.</p>
+            <p>So it performs a DNS lookup.</p>
+            <p>For example:</p>
+            <pre><code>
+www.google.com
+        |
+        v
+DNS
+        |
+        v
+142.250.x.x
+            </code></pre>
+            <p>The actual returned addresses can vary.</p>
+            <p>Now your computer knows the destination IP.</p>
+        </section>
+
+        <section>
+            <h2>6. Your computer determines whether the destination is local</h2>
+            <p>Suppose:</p>
+            <pre><code>
+Mac:
+192.168.1.10/24
+
+Destination:
+142.250.72.14
+            </code></pre>
+            <p>The Mac calculates whether:</p>
+            <pre><code>
+142.250.72.14
+            </code></pre>
+            <p>belongs to:</p>
+            <pre><code>
+192.168.1.0/24
+            </code></pre>
+            <p>It doesn't.</p>
+            <p>Therefore:</p>
+            <pre><code>
+Destination is remote
+        |
+        v
+Send packet to default gateway
+        |
+        v
+192.168.1.1
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. But there is a problem: Ethernet needs a MAC address</h2>
+            <p>The Mac knows:</p>
+            <pre><code>
+Gateway IP = 192.168.1.1
+            </code></pre>
+            <p>But Ethernet/Wi-Fi needs a destination MAC address.</p>
+            <p>So the computer uses ARP for IPv4.</p>
+            <p>It asks:</p>
+            <pre><code>
+Who has 192.168.1.1?
+            </code></pre>
+            <p>The router responds:</p>
+            <pre><code>
+192.168.1.1 is at
+AA:BB:CC:DD:EE:FF
+            </code></pre>
+            <p>The Mac can now construct a Layer-2 frame.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+Ethernet/Wi-Fi Frame
++--------------------------------+
+| Destination MAC                |
+| AA:BB:CC:DD:EE:FF              |
++--------------------------------+
+| Source MAC                     |
+| Mac's MAC                      |
++--------------------------------+
+| Payload                        |
+| IP Packet                      |
++--------------------------------+
+            </code></pre>
+            <p>Inside that frame is the IP packet.</p>
+        </section>
+
+        <section>
+            <h2>8. The IP packet</h2>
+            <p>The IP packet contains something like:</p>
+            <pre><code>
+Source IP:
+192.168.1.10
+
+Destination IP:
+142.250.72.14
+            </code></pre>
+            <p>The important thing is:</p>
+            <p>The destination IP remains the ultimate destination while the packet travels through routers.</p>
+            <p>The Layer-2 frame, however, changes at every network hop.</p>
+        </section>
+
+        <section>
+            <h2>9. The packet reaches your router</h2>
+            <p>Your router receives the frame.</p>
+            <p>It examines:</p>
+            <pre><code>
+Destination MAC
+            </code></pre>
+            <p>and recognizes:</p>
+            <p>This frame is for me.</p>
+            <p>It removes the Layer-2 encapsulation and examines the IP packet.</p>
+            <p>It sees:</p>
+            <pre><code>
+Source:
+192.168.1.10
+
+Destination:
+142.250.72.14
+            </code></pre>
+            <p>Now the router performs a routing lookup.</p>
+        </section>
+
+        <section>
+            <h2>10. The routing table</h2>
+            <p>Routers have a routing table.</p>
+            <p>A simplified example:</p>
+            <pre><code>
+Destination       Gateway          Interface
+
+192.168.1.0/24    directly connected LAN
+10.0.0.0/8        10.0.0.1         WAN
+0.0.0.0/0         ISP gateway      WAN
+            </code></pre>
+            <p>The most important entry is:</p>
+            <pre><code>
+0.0.0.0/0
+            </code></pre>
+            <p>This is the default route.</p>
+            <p>It basically means:</p>
+            <p>If I don't have a more specific route, send it here.</p>
+            <p>So:</p>
+            <pre><code>
+142.250.72.14
+            </code></pre>
+            <p>doesn't match:</p>
+            <pre><code>
+192.168.1.0/24
+            </code></pre>
+            <p>Therefore the router uses:</p>
+            <pre><code>
+0.0.0.0/0
+            </code></pre>
+            <p>and sends the packet toward the ISP.</p>
+        </section>
+
+        <section>
+            <h2>11. Longest-prefix matching</h2>
+            <p>This is one of the most important concepts in routing.</p>
+            <p>Suppose the router has:</p>
+            <pre><code>
+10.0.0.0/8
+10.10.0.0/16
+10.10.20.0/24
+0.0.0.0/0
+            </code></pre>
+            <p>Destination:</p>
+            <pre><code>
+10.10.20.50
+            </code></pre>
+            <p>It matches all of these:</p>
+            <pre><code>
+10.0.0.0/8
+10.10.0.0/16
+10.10.20.0/24
+0.0.0.0/0
+            </code></pre>
+            <p>The router chooses:</p>
+            <pre><code>
+10.10.20.0/24
+            </code></pre>
+            <p>because /24 is the most specific match.</p>
+            <p>This is called:</p>
+            <p>Longest Prefix Match.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

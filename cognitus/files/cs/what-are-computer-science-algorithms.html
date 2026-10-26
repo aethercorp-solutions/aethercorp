@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> What Are Computer Science Algorithms? </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> What Are Computer Science Algorithms? </h1>
+                    <p class="subtitle"> 
+                        A computer science algorithm is a step-by-step set of instructions designed to solve a problem or perform a specific task efficiently.
+                        <p>
+                            In software development, algorithms tell a computer how to process data, make decisions, search for information, and produce results.
+                        </p>
+                        <p>
+                            For example, when you log in to an application, search for a user, sort a list of products, or send a message, algorithms help the application perform those operations.
+                        </p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. A Simple Example of an Algorithm </h2>
+            <p>Suppose you want to find the largest number in a list.</p>
+            <p>Input: [10, 5, 25, 8, 15]</p>
+            <p>The algorithm works like this:</p>
+            <pre><code>
+Step 1: Start with the first number, 10, as the largest.
+
+
+Step 2: Compare 5 with 10. Keep 10.
+
+
+Step 3: Compare 25 with 10. The largest is now 25.
+
+
+Step 4: Compare 8 and 15 with 25. Keep 25.
+
+Final result
+25
+            </code></pre>
+            <p>Here is how you could implement this algorithm in JavaScript:</p>
+            <pre><code>
+function findLargest(numbers) {
+    let largest = numbers[0];
+
+    for (const number of numbers) {
+        if (number > largest) {
+            largest = number;
+        }
+    }
+
+    return largest;
+}
+
+console.log(findLargest([10, 5, 25, 8, 15]));
+// Output: 25
+            </code></pre>
+            <p>The algorithm is the problem-solving logic. JavaScript is the programming language used to implement that logic.</p>
+        </section>
+
+        <section>
+            <h2>2. Common Types of Computer Science Algorithms</h2>
+            <p>There are many algorithms, each designed for a different category of problems.</p>
+            <p>1. Searching algorithms</p>
+            <p>Used to find specific data in a collection.</p>
+            <ul>
+                <li>Linear Search</li>
+                <li>Binary Search</li>
+            </ul>
+            <p>Example: Finding a customer by ID in a list.</p>
+
+            <p>2. Sorting algorithms</p>
+            <p>Used to arrange data in a particular order.</p>
+            <ul>
+                <li>Bubble Sort</li>
+                <li>Merge Sort</li>
+                <li>Quick Sort</li>
+            </ul>
+            <p>Example: Sorting products by price or users by name.</p>
+
+            <p>3. Graph algorithms</p>
+            <p>Used to analyze relationships between connected objects.</p>
+            <ul>
+                <li>Breadth-First Search (BFS)</li>
+                <li>Depth-First Search (DFS)</li>
+                <li>Dijkstra's Algorithm</li>
+            </ul>
+            <p>Example: Finding the shortest route between two locations.</p>
+
+            <p>4. Dynamic programming algorithms</p>
+            <p>Solve complex problems by breaking them into smaller subproblems and reusing previously calculated results.</p>
+            <p>Example: Optimizing resource allocation or calculating Fibonacci numbers efficiently.</p>
+
+            <p>5. Machine learning algorithms</p>
+            <p>Learn patterns from data to make predictions or classifications.</p>
+            <ul>
+                <li>Linear Regression</li>
+                <li>Decision Trees</li>
+                <li>K-Means Clustering</li>
+            </ul>
+            <p>Example: Predicting customer behavior or detecting spam.</p>
+        </section>
+
+        <section>
+            <h2>3. What Is Algorithm Complexity?</h2>
+            <p>An algorithm must not only produce the correct result; ideally, it should also use computing resources efficiently.</p>
+            <p>Computer science uses time complexity and space complexity to analyze this efficiency.</p>
+            <p>Time complexity describes how the amount of work grows as the input gets larger. Space complexity describes how memory usage grows.</p>
+            <p>One common notation is Big O notation.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Complexity</th>
+                        <th>Meaning</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>\(O(1)\)</td>
+                        <td>Constant time</td>
+                        <td>Accessing an array element by index</td>
+                    </tr>
+                    <tr>
+                        <td>\(O(\log n)\)</td>
+                        <td>Logarithmic growth</td>
+                        <td>Binary search on a sorted array</td>
+                    </tr><tr>
+                        <td>\(O(n)\)</td>
+                        <td>Linear growth</td>
+                        <td>Scanning a list of users</td>
+                    </tr>
+                    <tr>
+                        <td>\(O(n \log n)\)</td>
+                        <td>Efficient comparison sorting</td>
+                        <td>Merge sort</td>
+                    </tr>
+                    <tr>
+                        <td>\(O(n^2)\)</td>
+                        <td>Quadratic growth</td>
+                        <td>A simple nested-loop comparison</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Consider searching through one million sorted records:</p>
+            <ul>
+                <li>Linear search: May inspect up to 1,000,000 elements.</li>
+                <li>Binary search: Needs roughly 20 comparisons in the worst case for a one-million-element array.</li>
+            </ul>
+            <p>That is why choosing the right algorithm can significantly improve application performance.</p>
+        </section>
+
+        <section>
+            <h2>4. How Algorithms Are Used in Real Applications</h2>
+            <p>Algorithms are used throughout a typical software architecture.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Application feature</th>
+                        <th>Algorithms or techniques involved</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>User authentication</td>
+                        <td>Credential verification, cryptographic hashing, token validation</td>
+                    </tr>
+                    <tr>
+                        <td>Search functionality</td>
+                        <td>Linear search, binary search, indexing and ranking</td>
+                    </tr>
+                    <tr>
+                        <td>Inventory management</td>
+                        <td>Sorting, filtering, aggregation and optimization</td>
+                    </tr>
+                    <tr>
+                        <td>Messaging applications</td>
+                        <td>Queue processing, message ordering and delivery retries</td>
+                    </tr>
+                    <tr>
+                        <td>GPS navigation</td>
+                        <td>Shortest-path algorithms</td>
+                    </tr>
+                    <tr>
+                        <td>AI-powered features</td>
+                        <td>Search, optimization, classification and machine learning</td>
+                    </tr>
+                    <tr>
+                        <td>Database queries</td>
+                        <td>Query planning, indexing and join algorithms</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>For example, in an inventory management system, an algorithm could calculate available stock:</p>
+
+            <pre><code>
+function calculateAvailableStock(
+    totalStock,
+    reservedStock,
+    damagedStock
+) {
+    return totalStock - reservedStock - damagedStock;
+}
+
+console.log(calculateAvailableStock(100, 20, 5));
+// Output: 75
+            </code></pre>
+            <p>This is a simple algorithm implemented using arithmetic. More sophisticated inventory systems may use algorithms to forecast demand, optimize replenishment, and allocate stock across warehouses.</p>
+        </section>
+
+        <section>
+            <h2>5. What Are the Main Concepts to Learn?</h2>
+            <p>If you're learning computer science algorithms for software engineering, I recommend this progression:</p>
+            <ol>
+                <li>Fundamentals: Variables, conditions, loops, functions and recursion.</li>
+                <li>Data structures: Arrays, linked lists, hash tables, stacks, queues, trees and graphs.</li>
+                <li>Searching and sorting: Linear search, binary search, merge sort and quick sort.</li>
+                <li>Algorithm analysis: Big O notation, time complexity and space complexity.</li>
+                <li>Problem-solving strategies: Divide and conquer, greedy algorithms, backtracking and dynamic programming.</li>
+                <li>Advanced applications: Graph algorithms, concurrency, distributed systems and machine learning.</li>
+            </ol>
+
+            <p>The key difference</p>
+            <ul>
+                <li>Data structure: How data is organized and stored.</li>
+                <li>Algorithm: How data is processed to solve a problem.</li>
+                <li>Programming language: The language used to implement the solution.</li>
+                <li>Software architecture: How the larger components of an application are organized.</li>
+            </ul>
+            <p>For example, a hash table is a data structure, a search procedure is an algorithm, JavaScript is a programming language, and a client-server design is a software architecture.</p>
+            <p>The most important takeaway: Learning algorithms teaches you how to solve software problems correctly and efficiently, regardless of whether you use Java, JavaScript, Python, Dart, or another programming language.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

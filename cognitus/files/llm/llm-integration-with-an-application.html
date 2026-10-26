@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> LLM Integration with an Application </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> LLM Integration with an Application </h1>
+                    <p class="subtitle"> 
+                        LLM (Large Language Model) integration means connecting an application to an AI model such as Claude, GPT, or Gemini so your software can understand natural language, analyze data, generate responses, summarize documents, and automate tasks.
+                        <p>As a full-stack developer using Node.js, React, and mobile technologies, you can integrate an LLM into web applications, backend services, and iOS or React Native apps.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. How LLM integration works </h2>
+            <pre><code>
+1. Frontend application
+
+React, React Native, Flutter, or SwiftUI
+
+User enters a question or submits a document.
+            </code></pre>
+
+            <pre><code>
+2. Backend API
+
+Node.js + Express or AWS Lambda
+
+Authenticates the user, validates input, and prepares the prompt.
+            </code></pre>
+
+            <pre><code>
+3. LLM provider
+
+OpenAI, Anthropic Claude, or Google Gemini
+
+Processes the prompt and returns an AI-generated response.
+            </code></pre>
+
+            <pre><code>
+4. Application logic and data
+
+MongoDB, PostgreSQL, internal APIs, or vector databases
+
+Optionally retrieves relevant data, validates results, and executes authorized actions.
+            </code></pre>
+
+            <pre><code>
+5. Response to the user
+
+The frontend displays the generated answer or completed task.
+            </code></pre>
+
+            <p>The important point is that the LLM is one component of the application. Your backend still controls authentication, business rules, database access, and security.</p>
+        </section>
+
+        <section>
+            <h2>2. Example: Integrating Claude with Node.js</h2>
+            <p>Suppose you are building a contact management application and want users to ask AI to summarize contact notes.</p>
+            <p>Step 1: Install the SDK</p>
+            <pre><code>
+npm install express @anthropic-ai/sdk dotenv
+            </code></pre>
+            <p>Create a .env file:</p>
+            <pre><code>
+ANTHROPIC_API_KEY=your_api_key_here
+            </code></pre>
+            <p>Keep the API key on the server. Never expose it in React, React Native, Flutter, or iOS client code.</p>
+        </section>
+
+        <section>
+            <h2>Step 2: Create the backend endpoint</h2>
+            <pre><code>
+import express from "express";
+import Anthropic from "@anthropic-ai/sdk";
+import "dotenv/config";
+
+const app = express();
+app.use(express.json());
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY
+});
+
+app.post("/api/summarize", async (req, res) => {
+  try {
+    const { notes } = req.body;
+
+    if (typeof notes !== "string" || !notes.trim()) {
+      return res.status(400).json({
+        error: "Notes are required"
+      });
+    }
+
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-5",
+      max_tokens: 300,
+      messages: [
+        {
+          role: "user",
+          content: `Summarize these contact notes in three concise bullet points: ${notes}`
+        }
+      ]
+    });
+
+    const summary = response.content
+      .filter(block => block.type === "text")
+      .map(block => block.text)
+      .join("\n");
+
+    res.json({ summary });
+  } catch (error) {
+    console.error("LLM request failed", error);
+
+    res.status(500).json({
+      error: "Unable to generate summary"
+    });
+  }
+});
+
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
+});
+            </code></pre>
+            <p>This model identifier is an example; confirm that it is available for your Anthropic account before deploying.</p>
+        </section>
+
+        <section>
+            <h2>Step 3: Call the API from React</h2>
+            <pre><code>
+async function summarizeContact(notes) {
+    const response = await fetch("/api/summarize", {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ notes })
+    });
+    
+    if (!response.ok) {
+        throw new Error("Failed to summarize contact");
+    }
+    
+    const result = await response.json();
+    
+    return result.summary;
+}
+            </code></pre>
+            <p>When the user clicks Summarize, your frontend calls the Node.js endpoint. The backend sends the notes to Claude and returns the generated summary.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

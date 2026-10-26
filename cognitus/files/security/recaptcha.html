@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> reCAPTCHA </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> reCAPTCHA </h1>
+                    <p class="subtitle"> reCAPTCHA is a free security service by Google that protects websites from spam, fraud, and automated bot abuse. [1] (https://developers.google.com/recaptcha), [2] (https://cloud.google.com/security/products/recaptcha) </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> How It Works </h2>
+            <ul>
+                <li>Behavioral Analysis: Tracks user interactions like mouse movements and typing patterns to tell humans and bots apart.</li>
+                <li>Risk Scoring: Evaluates traffic risk to block malicious access without hurting user experience. [1] (https://frontegg.com/glossary/recaptcha), [2] (https://www.radware.com/cyberpedia/bot-management/recaptcha/), [3] (https://cloud.google.com/security/products/recaptcha)</li>
+            </ul>
+        </section>
+        
+        <section>
+            <h2>Main Versions</h2>
+            <ul>
+                <li>reCAPTCHA v3: Runs in the background without user interaction and returns a score based on activity.</li>
+                <li>reCAPTCHA v2: Uses the classic "I'm not a robot" checkbox or an invisible badge, showing image or puzzle challenges when risk is high.</li>
+                <li>reCAPTCHA Android: Protects native mobile applications using Google Play services. [1] (https://developers.google.com/recaptcha/docs/versions), [2] (https://developers.google.com/recaptcha), [3] (https://www.radware.com/cyberpedia/bot-management/recaptcha/)</li>
+            </ul>
+            <p>If you want to set it up, let me know:</p>
+            <ul>
+                <li>Are you adding it to a WordPress site, a custom web app, or a mobile app?</li>
+                <li>Which version do you want to use (v2 or v3)?</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>To implement reCAPTCHA v2, you need to complete a two-part setup: a client-side integration to display the checkbox and a server-side integration to verify the user's response.</p>
+            <p>Here is the step-by-step guide to setting it up:</p>
+            <h2>1. Get Your API Keys</h2>
+            <p>Before writing code, register your website on the reCAPTCHA admin console.</p>
+            <ul>
+                <li>Go to the Google reCAPTCHA Admin Console.</li>
+                <li>Choose reCAPTCHA v2 and select the "I'm not a robot" checkbox option.</li>
+                <li>Enter your domain name (e.g., yourwebsite.com).</li>
+                <li>
+                    Copy your two generated keys:
+                    <ul>
+                        <li>Site Key: Used in your HTML code (visible to users).</li>
+                        <li>Secret Key: Used in your backend code (keep this private).</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Client-Side Implementation (HTML)</h2>
+            <p>Paste the JavaScript library inside your &lt;head&gt; tag, and place the reCAPTCHA container inside your &lt;form&gt; where you want the checkbox to appear.</p>
+            <pre><code>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;reCAPTCHA v2 Implementation&lt;/title&gt;
+
+    &lt;!-- 1. Load the reCAPTCHA JavaScript API --&gt;
+    &lt;script src="https://www.google.com/recaptcha/api.js" async defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    &lt;form action="verify.php" method="POST"&gt;
+
+        &lt;!-- Your form inputs --&gt;
+        &lt;input
+            type="text"
+            name="name"
+            placeholder="Your Name"
+            required
+        &gt;
+        &lt;br&gt;&lt;br&gt;
+
+        &lt;!-- 2. Add the reCAPTCHA widget --&gt;
+        &lt;div
+            class="g-recaptcha"
+            data-sitekey="YOUR_SITE_KEY"
+        &gt;&lt;/div&gt;
+
+        &lt;br&gt;
+
+        &lt;button type="submit"&gt;Submit&lt;/button&gt;
+
+    &lt;/form&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Server-Side Verification (Backend)</h2>
+            <p>When a user checks the box, reCAPTCHA generates a token named g-recaptcha-response. When the form is submitted, your backend must send a POST request to Google to verify this token.</p>
+            <p>Here is a backend implementation example using PHP:</p>
+            <pre><code>
+&lt;?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // 1. Get the secret key and the user's response token
+    $secretKey = "YOUR_SECRET_KEY";
+    $userResponse = $_POST['g-recaptcha-response'];
+    $userIp = $_SERVER['REMOTE_ADDR'];
+
+    // 2. Prepare the API request URL
+    $url = "https://google.com" . $secretKey . "&response=" . $userResponse . "&remoteip=" . $userIp;
+
+    // 3. Make the request to Google
+    $response = file_get_contents($url);
+    $responseKeys = json_decode($response, true);
+
+    // 4. Check if the verification succeeded
+    if ($responseKeys["success"]) {
+        echo "&lt;h3&gt;Success! You are a human. Proceeding with form submission...&lt;/h3&gt;";
+        // Process your form logic here
+    } else {
+        echo "&lt;h3&gt;Verification failed. Please try again.&lt;/h3&gt;";
+    }
+}
+?&gt;
+
+            </code></pre>
+            <p>If you prefer a different programming language for the backend, let me know:</p>
+            <ul>
+                <li>What backend language or framework are you using (e.g., Node.js, Python, or programming directly in WordPress)?</li>
+                <li>Do you want to customize the look, like changing it to a dark theme or making it invisible?</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>If you're comparing Google reCAPTCHA with Cloudflare Turnstile, both solve the same core problem: detecting bots and automated abuse without making legitimate users solve annoying CAPTCHAs.</p>
+            <h2>Quick comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Google reCAPTCHA</th>
+                        <th>Cloudflare Turnstile</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Main purpose</td>
+                        <td>Bot detection / abuse prevention</td>
+                        <td>Bot detection / abuse prevention</td>
+                    </tr>
+                    <tr>
+                        <td>CAPTCHA challenges</td>
+                        <td>Sometimes</td>
+                        <td>Generally no traditional CAPTCHA</td>
+                    </tr>
+                    <tr>
+                        <td>User experience</td>
+                        <td>Good, but can occasionally show puzzles</td>
+                        <td>Usually very low friction</td>
+                    </tr>
+                    <tr>
+                        <td>Privacy</td>
+                        <td>Collects more behavioral/security signals</td>
+                        <td>Designed with stronger privacy focus</td>
+                    </tr>
+                    <tr>
+                        <td>Integration</td>
+                        <td>Very mature and widely supported</td>
+                        <td>Very easy and modern</td>
+                    </tr>
+                    <tr>
+                        <td>Bot detection</td>
+                        <td>Excellent</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>Risk scoring</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Works without Cloudflare hosting</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Cloudflare account required</td>
+                        <td>No</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Google ecosystem integration</td>
+                        <td>Excellent</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Best for</td>
+                        <td>Established applications, Google ecosystem</td>
+                        <td>Modern web apps wanting low-friction protection</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>1. Google reCAPTCHA</h2>
+            <p>Google reCAPTCHA has several generations.</p>
+            <p>The important modern options are:</p>
+            
+            <p>reCAPTCHA v2</p>
+            <ul>
+                <li>Checkbox: "I'm not a robot"</li>
+                <li>Can display image challenges.</li>
+                <li>Very recognizable.</li>
+                <li>Easy to implement.</li>
+                <li>More intrusive for users.</li>
+            </ul>
+
+            <p>reCAPTCHA v3</p>
+            <ul>
+                <li>No checkbox.</li>
+                <li>Runs in the background.</li>
+                <li>Returns a score, typically from 0.0–1.0.</li>
+                <li>Your backend decides what to do with suspicious requests.</li>
+            </ul>
+
+            <p>For example:</p>
+            <pre><code>
+User → Login
+      ↓
+reCAPTCHA v3
+      ↓
+score = 0.92
+      ↓
+Backend → allow
+            </code></pre>
+            <p>versus:</p>
+            <pre><code>
+score = 0.15
+      ↓
+Backend → require additional verification / block
+            </code></pre>
+            <p>This is particularly useful for APIs, login, registration, password reset, contact forms, etc.</p>
+        </section>
+
+        <section>
+            <h2>2. Cloudflare Turnstile</h2>
+            <p>Cloudflare Turnstile is arguably the more attractive choice for a modern React + Node.js application.</p>
+            <p>It tries to verify that the user is legitimate without making them interact with a traditional CAPTCHA.</p>
+            <p>Typical flow:</p>
+            <pre><code>
+React
+  ↓
+Turnstile widget
+  ↓
+Turnstile token
+  ↓
+Node.js / Lambda backend
+  ↓
+Cloudflare verification API
+  ↓
+allow / reject
+            </code></pre>
+            <p>The important thing is that the frontend token isn't enough.</p>
+            <p>Your backend must verify the token.</p>
+        </section>
+
+        <section>
+            <h2>For your Castanet architecture</h2>
+            <p>Given your architecture:</p>
+            <pre><code>
+React Dashboard
+       ↓
+     Axios
+       ↓
+ API Gateway
+       ↓
+ AWS Lambda / Node.js
+       ↓
+ MongoDB
+            </code></pre>
+            <p>I'd lean toward Cloudflare Turnstile.</p>
+            <p>For example:</p>
+            <pre><code>
+React
+   │
+   │ Turnstile token
+   ▼
+API Gateway
+   │
+   ▼
+Lambda
+   │
+   ├── Verify Turnstile token
+   │
+   ├── Validate Firebase/Auth JWT
+   │
+   └── Process request
+          │
+          ▼
+       MongoDB
+            </code></pre>
+            <p>That gives you two separate layers of protection:</p>
+            <ol>
+                <li>Authentication → Is this actually the authenticated Castanet user?</li>
+                <li>Bot protection → Is this request likely coming from a legitimate human/client rather than automation?</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Where reCAPTCHA is stronger</h2>
+            <p>I'd choose Google reCAPTCHA if:</p>
+            <ul>
+                <li>You already use Google heavily.</li>
+                <li>You want Google's established risk-analysis ecosystem.</li>
+                <li>You need reCAPTCHA's specific enterprise capabilities.</li>
+                <li>You already have reCAPTCHA implemented.</li>
+                <li>Your organization has standardized on Google security products.</li>
+            </ul>
+            <p>For example, a large enterprise might already have:</p>
+            <pre><code>
+Google Cloud
+Firebase
+Google Identity
+reCAPTCHA Enterprise
+Cloud Logging
+            </code></pre>
+            <p>In that environment, reCAPTCHA makes a lot of sense.</p>
+        </section>
+
+        <section>
+            <h2>Where Turnstile is stronger</h2>
+            <p>I'd choose Turnstile if:</p>
+            <ul>
+                <li>You want minimal user interaction.</li>
+                <li>You don't want image puzzles.</li>
+                <li>You care about privacy.</li>
+                <li>You have a React frontend.</li>
+                <li>You have a Node.js backend.</li>
+                <li>You are protecting registration/login/forms/API endpoints.</li>
+                <li>You want something relatively simple to integrate.</li>
+            </ul>
+            <p>For a startup-style application, I generally prefer:</p>
+            <p>Cloudflare Turnstile + your existing authentication system.</p>
+        </section>
+
+        <section>
+            <h2>One important distinction</h2>
+            <p>Don't think of either service as an authentication mechanism.</p>
+            <p>This:</p>
+            <pre><code>
+Turnstile = "Is this request probably human?"
+            </code></pre>
+            <p>while:</p>
+            <pre><code>
+Firebase Auth / JWT = "Who is this user?"
+            </code></pre>
+            <p>So for Castanet:</p>
+            <pre><code>
+                ┌─────────────────┐
+                │    React App    │
+                └────────┬────────┘
+                         │
+                  Turnstile token
+                         │
+                         ▼
+                ┌─────────────────┐
+                │ API Gateway     │
+                └────────┬────────┘
+                         │
+                         ▼
+                ┌─────────────────┐
+                │ AWS Lambda      │
+                │                 │
+                │ 1. JWT check    │
+                │ 2. Turnstile    │
+                │    verification │
+                │ 3. Rate limit   │
+                └────────┬────────┘
+                         │
+                         ▼
+                      MongoDB
+            </code></pre>
+            <p>My pick for Castanet: Cloudflare Turnstile. It's a particularly good fit for your React + AWS Lambda + Node.js architecture and should produce a less annoying experience than traditional CAPTCHA challenges.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Agentic AI </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Agentic AI </h1>
+                    <p class="subtitle"> 
+                        Agentic AI is artificial intelligence that can take a goal, plan the steps needed to achieve it, use tools, perform actions, check results, and adjust its approach with less human intervention. 
+                        <p>Think of the difference this way: a traditional AI answers your questions, while an AI agent can help complete the actual work.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> How Agentic AI works </h2>
+            <pre><code>
+1. Receive a goal
+Example: Process a client's immigration application.
+            </code></pre>
+
+            <pre><code>
+2. Plan and reason
+Identify required documents, missing information, and next steps.
+            </code></pre>
+
+            <pre><code>
+3. Use tools and take action
+Read PDFs, query a database, call APIs, or draft emails.
+            </code></pre>
+
+            <pre><code>
+4. Verify and adapt
+Check results, retry recoverable failures, and flag issues for human review.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Traditional AI vs. Agentic AI</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Capability</th>
+                        <th>Traditional AI</th>
+                        <th>Agentic AI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Answers questions</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Plans multiple steps</td>
+                        <td>Limited</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Calls APIs and tools</td>
+                        <td>Usually requires integration logic</td>
+                        <td>Can select and use available tools</td>
+                    </tr>
+                    <tr>
+                        <td>Maintains workflow state</td>
+                        <td>Usually handled externally</td>
+                        <td>Can use stored state and workflow tools</td>
+                    </tr>
+                    <tr>
+                        <td>Handles failures</td>
+                        <td>Typically follows fixed logic</td>
+                        <td>Can reason about recovery options</td>
+                    </tr>
+                    <tr>
+                        <td>Works independently</td>
+                        <td>Mostly responds to prompts</td>
+                        <td>Can execute approved multi-step tasks</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Agentic AI isn't necessarily more intelligent than other AI. The key difference is how the AI is connected to tools, workflows, memory, and decision-making permissions.</p>
+        </section>
+
+        <section>
+            <h2>Real-world example: Agentic AI for immigration services</h2>
+            <p>Imagine you're building an AI automation system for a company helping clients apply for Spanish visas.</p>
+            <pre><code>
+Document processing agent
+Reads passports, bank statements, and application forms; extracts structured information and flags missing documents.
+            </code></pre>
+
+            <pre><code>
+Immigration knowledge agent
+Uses RAG to retrieve relevant information from approved immigration rules and internal company procedures.
+            </code></pre>
+
+            <pre><code>
+Workflow agent
+Checks the case database, identifies the next required step, and creates follow-up tasks.
+            </code></pre>
+
+            <pre><code>
+Communication agent
+Drafts personalized emails requesting missing documents and prepares them for staff approval.
+            </code></pre>
+            <p>For example, if a client uploads a bank statement, the system could extract the closing balance, compare it against a configured threshold using normal code, retrieve the relevant requirements, update the case, and draft an email if something is missing.</p>
+            <p>A human should still approve consequential decisions, legal interpretations, and sensitive external actions.</p>
+        </section>
+
+        <section>
+            <h2>How you could build Agentic AI as a developer</h2>
+            <p>Given your experience with React, Node.js, AWS Lambda, MongoDB, and API integrations, you can build an agent without training your own AI model.</p>
+            <p>A practical stack could be:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Technology</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AI reasoning</td>
+                        <td>OpenAI API or Anthropic Claude API</td>
+                    </tr>
+                    <tr>
+                        <td>Backend</td>
+                        <td>Node.js + TypeScript</td>
+                    </tr>
+                    <tr>
+                        <td>Tool calling</td>
+                        <td>Function calling with Zod validation</td>
+                    </tr>
+                    <tr>
+                        <td>Workflow orchestration</td>
+                        <td>LangGraph or a custom state machine</td>
+                    </tr>
+                    <tr>
+                        <td>Knowledge retrieval</td>
+                        <td>RAG + embeddings + vector search</td>
+                    </tr>
+                    <tr>
+                        <td>Database</td>
+                        <td>MongoDB or PostgreSQL</td>
+                    </tr>
+                    <tr>
+                        <td>Background jobs</td>
+                        <td>AWS SQS + Lambda</td>
+                    </tr>
+                    <tr>
+                        <td>Monitoring</td>
+                        <td>Structured logs, retries, tracing, audit records</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>The basic architecture looks like this:</p>
+            <pre><code>
+User request / business event
+Agent orchestrator - state and permissions
+
+LLM                                     RAG / Database
+Reasoning and tool selection            Trusted information and state
+
+Validated tools - APIs, document processing, email, case updates
+
+Verify outcome, log actions, retry or request human approval
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>A simple example in TypeScript</h2>
+            <p>This demonstrates the core idea: the AI chooses a tool, your code executes it, and the result is returned to the AI. A production implementation also needs a loop, validation, authorization, and limits on tool calls.</p>
+            <pre><code>
+import OpenAI from "openai";
+
+const client = new OpenAI();
+
+const tools = [{
+  type: "function" as const,
+  name: "get_case_status",
+  description: "Retrieve an immigration case status",
+  parameters: {
+    type: "object",
+    properties: {
+      caseId: { type: "string" }
+    },
+    required: ["caseId"],
+    additionalProperties: false
+  },
+  strict: true
+}];
+
+const response = await client.responses.create({
+  model: process.env.OPENAI_MODEL!,
+  input: "Check the status of case ES-123.",
+  tools
+});
+
+for (const item of response.output) {
+  if (item.type === "function_call" &&
+      item.name === "get_case_status") {
+    const { caseId } = JSON.parse(item.arguments);
+    // Validate permissions, then call your database/API.
+    console.log("Requested case:", caseId);
+  }
+}
+            </code></pre>
+            <p>The example demonstrates tool selection, not a complete autonomous agent. To make it genuinely agentic, you would execute the tool, send its output back to the model, and continue until the task is complete or requires human intervention.</p>
+        </section>
+
+        <section>
+            <h2>Agentic AI vs. RAG vs. automation</h2>
+            <ul>
+                <li>RAG: Gives an AI relevant information from your documents and knowledge base.</li>
+                <li>Traditional automation: Executes predefined rules, such as sending an email when a case enters a particular stage.</li>
+                <li>Agentic AI: Chooses among permitted actions based on the task and the information it discovers.</li>
+            </ul>
+            <p>In a robust production system, these work together: RAG supplies evidence, normal code enforces business rules, and the agent coordinates the workflow.</p>
+            <p>My recommendation: For your next AI development project, build a small immigration case-processing agent using Node.js, TypeScript, MongoDB, RAG, and API tool calling. Start with document completeness checks and email drafts, then add controlled case updates and more complex workflows. That would be a strong practical example to discuss in a Senior Software Developer interview.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Traditional Deployment </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Traditional Deployment </h1>
+                    <p class="subtitle"> You can implement essentially the same architecture without AWS, Serverless Framework, Lambda, API Gateway, or SSM using a bare-metal server plus normal Linux software. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Your current AWS setup: </h2>
+            <pre><code>
+service: castanet-api
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: us-east-2
+
+  environment:
+    NODE_ENV: ${sls:stage}
+    MONGO_URI: ${ssm:/castanet/${sls:stage}/mongo-uri}
+
+functions:
+  api:
+    handler: src/handler.handler
+
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+            </code></pre>
+            <p>can become a Node.js + Express + Nginx + MongoDB + systemd architecture.</p>
+        </section>
+
+        <section>
+            <h2>1. AWS architecture vs bare metal</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>AWS version</th>
+                        <th>Bare-metal equivalent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>EC2/Lambda</td>
+                        <td>Linux server</td>
+                    </tr>
+                    <tr>
+                        <td>Lambda</td>
+                        <td>Node.js process</td>
+                    </tr>
+                    <tr>
+                        <td>API Gateway</td>
+                        <td>Nginx</td>
+                    </tr>
+                    <tr>
+                        <td>Serverless Framework</td>
+                        <td>systemd + deployment scripts</td>
+                    </tr>
+                    <tr>
+                        <td>AWS SSM Parameter Store</td>
+                        <td>.env / environment file / Vault</td>
+                    </tr>
+                    <tr>
+                        <td>CloudWatch</td>
+                        <td>journald + Prometheus/Grafana</td>
+                    </tr>
+                    <tr>
+                        <td>Lambda scaling</td>
+                        <td>Node.js cluster / multiple processes</td>
+                    </tr>
+                    <tr>
+                        <td>AWS region</td>
+                        <td>Your physical server/datacenter</td>
+                    </tr>
+                    <tr>
+                        <td>nodejs22.x</td>
+                        <td>Node.js 22</td>
+                    </tr>
+                    <tr>
+                        <td>API Gateway HTTP API</td>
+                        <td>Nginx → Express</td>
+                    </tr>
+                    <tr>
+                        <td>MongoDB Atlas</td>
+                        <td>MongoDB installed locally</td>
+                    </tr>
+                    <tr>
+                        <td>IAM</td>
+                        <td>Linux users/firewall/application authentication</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>2. Install Linux</h2>
+            <p>For example:</p>
+            <pre><code>
+Ubuntu Server 24.04 LTS
+            </code></pre>
+            <p>Your server could be:</p>
+            <pre><code>
+Internet
+    |
+    | HTTPS :443
+    v
++----------------+
+|     Nginx      |
+|  Reverse Proxy |
++----------------+
+        |
+        | localhost:3000
+        v
++----------------+
+| Node.js 22     |
+| Express API    |
+| Castanet API   |
++----------------+
+        |
+        | localhost:27017
+        v
++----------------+
+|    MongoDB     |
++----------------+
+            </code></pre>
+            <p>You don't need AWS at all.</p>
+        </section>
+
+        <section>
+            <h2>3. Your Node.js application</h2>
+            <p>Instead of Lambda:</p>
+            <pre><code>
+export const handler = async (event) => {
+    ...
+};
+            </code></pre>
+            <p>you can have a normal HTTP server:</p>
+            <pre><code>
+const express = require("express");
+
+const app = express();
+
+app.use(express.json());
+
+app.get("/health", (req, res) => {
+    res.json({
+        status: "ok"
+    });
+});
+
+app.get("/contacts", async (req, res) => {
+    // MongoDB query
+});
+
+app.listen(3000, "127.0.0.1", () => {
+    console.log("Castanet API listening on port 3000");
+});
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+http://127.0.0.1:3000
+            </code></pre>
+            <p>is your API.</p>
+        </section>
+
+        <section>
+            <h2>4. Replace Lambda handler</h2>
+            <p>If your current project looks like:</p>
+            <pre><code>
+castanet-api/
+├── src/
+│   ├── handler.js
+│   ├── contacts.js
+│   └── ...
+├── serverless.yml
+└── package.json
+            </code></pre>
+            <p>you could change it to:</p>
+            <pre><code>
+castanet-api/
+├── src/
+│   ├── server.js
+│   ├── routes/
+│   │   ├── contacts.js
+│   │   ├── auth.js
+│   │   └── users.js
+│   ├── controllers/
+│   ├── services/
+│   └── models/
+├── .env
+├── package.json
+└── ...
+            </code></pre>
+            <p>server.js:</p>
+            <pre><code>
+require("dotenv").config();
+
+const express = require("express");
+
+const app = express();
+
+app.use(express.json());
+
+app.get("/health", (req, res) => {
+    res.json({
+        status: "ok",
+        environment: process.env.NODE_ENV
+    });
+});
+
+app.use("/contacts", require("./routes/contacts"));
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, "127.0.0.1", () => {
+    console.log(`Castanet API running on port ${PORT}`);
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>5. Replace ${sls:stage}</h2>
+            <p>Your AWS configuration:</p>
+            <pre><code>
+NODE_ENV: ${sls:stage}
+            </code></pre>
+            <p>means Serverless gives you something like:</p>
+            <pre><code>
+development
+uat
+production
+            </code></pre>
+            <p>On bare metal, you simply define it yourself.</p>
+            <p>For example:</p>
+            <p>Development</p>
+            <pre><code>
+NODE_ENV=development
+            </code></pre>
+            <p>UAT</p>
+            <pre><code>
+NODE_ENV=uat
+            </code></pre>
+            <p>Production</p>
+            <pre><code>
+NODE_ENV=production
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>6. Replace AWS SSM Parameter Store</h2>
+            <p>Currently:</p>
+            <pre><code>
+MONGO_URI: ${ssm:/castanet/${sls:stage}/mongo-uri}
+            </code></pre>
+            <p>means:</p>
+            <pre><code>
+/castanet/development/mongo-uri
+/castanet/uat/mongo-uri
+/castanet/production/mongo-uri
+            </code></pre>
+            <p>AWS SSM stores the actual MongoDB connection string.</p>
+            <p>On bare metal, the simplest replacement is an environment file.</p>
+            <p>For example:</p>
+            <pre><code>
+/etc/castanet/production.env
+            </code></pre>
+            <p>containing:</p>
+            <pre><code>
+NODE_ENV=production
+PORT=3000
+
+MONGO_URI=mongodb://127.0.0.1:27017/castanet
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+chmod 600 /etc/castanet/production.env
+            </code></pre>
+            <p>This is much better than putting the password directly into your source code.</p>
+        </section>
+
+        <section>
+            <h2>7. Better alternative: HashiCorp Vault</h2>
+            <p>If you want something closer to AWS SSM/Secrets Manager:</p>
+            <pre><code>
+Node.js
+   |
+   v
+HashiCorp Vault
+   |
+   +---- MongoDB credentials
+   +---- JWT secret
+   +---- Google OAuth credentials
+   +---- Firebase credentials
+            </code></pre>
+            <p>You could use:</p>
+            <pre><code>
+HashiCorp Vault
+            </code></pre>
+            <p>on your own infrastructure.</p>
+            <p>Then your bare-metal environment can be much closer to AWS:</p>
+            <pre><code>
+AWS SSM
+     ↓
+/castanet/production/mongo-uri
+            </code></pre>
+            <p>becomes:</p>
+            <pre><code>
+Vault
+     ↓
+secret/castanet/production
+            </code></pre>
+            <p>For a small Castanet deployment, however, an appropriately protected environment file is considerably simpler.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> struct </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> struct </h1>
+                    <p class="subtitle"> 
+                        In Swift, a struct (structure) is a custom data type that groups related data and functions into one reusable unit. You use it to represent things such as inventory items, users, contacts, API responses, or products in an iOS application.
+                        <p>Think of a struct as a blueprint for creating objects that hold data.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Basic Swift struct </h2>
+            <pre><code>
+struct InventoryItem {
+    let id: Int
+    var name: String
+    var quantity: Int
+}
+            </code></pre>
+
+            <p>Here is what each part means:</p>
+            <ul>
+                <li>struct InventoryItem — defines a new data type.</li>
+                <li>let id: Int — a constant ID that cannot be changed.</li>
+                <li>var name: String — a name that can be changed.</li>
+                <li>var quantity: Int — a quantity that can be changed.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Create and use a struct</h2>
+            <pre><code>
+struct InventoryItem {
+    let id: Int
+    var name: String
+    var quantity: Int
+}
+
+// Create an instance
+var item = InventoryItem(
+    id: 101,
+    name: "iPhone",
+    quantity: 10
+)
+
+// Read the properties
+print(item.name)      // iPhone
+print(item.quantity)  // 10
+
+// Update a property
+item.quantity = 15
+
+print(item.quantity)  // 15
+            </code></pre>
+
+            <pre><code>
+InventoryItem
+
+Struct definition (blueprint)
+
+Create an instance
+            </code></pre>
+
+            <pre><code>
+item
+- id: 101
+- name: "iPhone"
+- quantity: 15
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Struct can contain functions</h2>
+            <p>A struct can contain both data (properties) and behavior (methods).</p>
+            <pre><code>
+struct InventoryItem {
+    var name: String
+    var quantity: Int
+
+    func displayInfo() -> String {
+        return "\(name): \(quantity) units"
+    }
+
+    mutating func addStock(_ amount: Int) {
+        quantity += amount
+    }
+}
+
+var item = InventoryItem(
+    name: "MacBook",
+    quantity: 5
+)
+
+print(item.displayInfo())
+// MacBook: 5 units
+
+item.addStock(10)
+
+print(item.quantity)
+// 15
+            </code></pre>
+            <p>Notice mutating in addStock().</p>
+            <p>In a struct, a method needs the mutating keyword when it modifies the struct's own stored properties.</p>
+        </section>
+
+        <section>
+            <h2>4. What is the difference between struct and class?</h2>
+            <p>This is one of the most important concepts in modern Swift.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>struct</th>
+                        <th>class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Type</td>
+                        <td>Value type</td>
+                        <td>Reference type</td>
+                    </tr>
+                    <tr>
+                        <td>Inheritance</td>
+                        <td>No class inheritance</td>
+                        <td>Supports inheritance</td>
+                    </tr>
+                    <tr>
+                        <td>Copy behavior</td>
+                        <td>Copies the value</td>
+                        <td>Shares a reference to the same instance</td>
+                    </tr>
+                    <tr>
+                        <td>Mutating properties</td>
+                        <td>Often requires a var instance</td>
+                        <td>Can modify properties through a let reference when permitted</td>
+                    </tr>
+                    <tr>
+                        <td>Common uses</td>
+                        <td>Models, API data, SwiftUI views</td>
+                        <td>Shared objects, services, UIKit controllers</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>The key difference: value vs. reference</h2>
+            <p>Struct example:</p>
+            <pre><code>
+struct User {
+    var name: String
+}
+
+var user1 = User(name: "Paul")
+var user2 = user1
+
+user2.name = "John"
+
+print(user1.name) // Paul
+print(user2.name) // John
+            </code></pre>
+
+            <p>user2 receives its own value. Changing it does not change user1.</p>
+            <p>Class example:</p>
+
+            <pre><code>
+class User {
+    var name: String
+
+    init(name: String) {
+        self.name = name
+    }
+}
+
+let user1 = User(name: "Paul")
+let user2 = user1
+
+user2.name = "John"
+
+print(user1.name) // John
+            </code></pre>
+
+            <p>Both variables refer to the same class instance, so the change is visible through both references.</p>
+        </section>
+
+        <section>
+            <h2>5. Why structs are important in modern iOS development</h2>
+            <p>In a well-organized Swift application, structs are commonly used to separate your data from your business logic and user interface.</p>
+            <p>For example, an inventory app might use this structure:</p>
+
+            <pre><code>
+Model — InventoryItem.swift
+Defines inventory data: ID, name, quantity, barcode.
+
+Service — InventoryService.swift
+Fetches inventory from an API and decodes JSON.
+
+ViewModel — InventoryViewModel.swift
+Manages application state and coordinates data operations.
+
+View — SwiftUI or UIKit
+Displays inventory and handles user interaction.
+            </code></pre>
+
+            <p>For example, a struct can represent JSON received from your backend:</p>
+
+            <pre><code>
+struct InventoryItem: Codable, Identifiable {
+    let id: Int
+    var name: String
+    var quantity: Int
+}
+            </code></pre>
+
+            <ul>
+                <li>Codable allows Swift to encode and decode the model to and from formats such as JSON.</li>
+                <li>Identifiable gives each item a stable identity for lists and other UI features.</li>
+                <li>The struct defines the data; it does not need to handle networking or screen rendering itself.</li>
+            </ul>
+
+            <p>Remember: Use a struct when you want to model a value or group related data together. Use a class when you need shared reference identity or class inheritance. In modern Swift, structs are an excellent default for data models.
+Is this conversation helpful so far?</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

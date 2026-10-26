@@ -129,6 +129,64 @@ Frontend (Next.js / React Native)
             <p>The key idea is: never trust client input. Validate every request in Lambda using Zod before writing to DynamoDB or processing business logic.</p>
             <p>For a Request-for-Quote system, using Zod in the Lambda layer is considered an industry-standard approach.</p>
         </section>
+
+        <section>
+            <p>This line of JavaScript:</p>
+            <pre><code>
+const { z } = require("zod");
+            </code></pre>
+            <p>Simply means: load the z tool from the zod library so you can validate data.</p>
+            <p>Let's break it down.</p>
+            <p>1. What does each part mean?</p>
+            <ul>
+                <li>require("zod") — loads the Zod library, which helps check whether data is valid.</li>
+                <li>{ z } — extracts the z object from the library.</li>
+                <li>const — declares a variable that cannot be reassigned.</li>
+            </ul>
+
+            <p>2. Simple example</p>
+            <p>Imagine your Castanet backend receives a contact's information. You want to make sure the contact has a valid name and email.</p>
+            <pre><code>
+const { z } = require("zod");
+
+const contactSchema = z.object({
+  name: z.string(),
+  email: z.string().email()
+});
+            </code></pre>
+            <p>Here's what this means:</p>
+            <ul>
+                <li>z.object() — defines the expected structure of the contact.</li>
+                <li>z.string() — requires a value to be text.</li>
+                <li>z.string().email() — requires a valid email format.</li>
+            </ul>
+            <p>For example:</p>
+            <p>Valid Contact</p>
+            <pre><code>
+{ name: "Paul", email: "paul@example.com" }
+            </code></pre>
+
+            <p>Invalid contact</p>
+            <pre><code>
+{ name: 123, email: "not-an-email" }
+            </code></pre>
+            <p>The second example fails because the name is a number and the email format is invalid.</p>
+
+            <p>3. How do you actually validate the data?</p>
+            <p>Defining a schema describes the rules. To check data against those rules, use .parse():</p>
+            <pre><code>
+const contact = {
+    name: "Paul",
+    email: "paul@example.com"
+};
+
+const result = contactSchema.parse(contact);
+            </code></pre>
+            <p>If the data is valid, .parse() returns it. If the data is invalid, it throws an error.</p>
+            <p>Remember it this way</p>
+            <p>Zod is like a security guard for your data. It checks whether incoming data matches the rules you defined before your application processes it.</p>
+            <p>For a Node.js API such as Castanet's, you can use Zod to validate request bodies, query parameters, and other incoming data before saving it to MongoDB.</p>
+        </section>
     </main>
 
     <footer>

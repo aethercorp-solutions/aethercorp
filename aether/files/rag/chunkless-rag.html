@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Chunkless RAG</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Chunkless RAG</h1>
+                    <p class="subtitle">
+                        Chunkless RAG is a document-retrieval approach where you avoid splitting documents into fixed-size chunks and instead let an AI system retrieve and navigate meaningful document structures—such as sections, pages, tables, paragraphs, figures, and relationships between them.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Traditional RAG</h2>
+            <p>A typical RAG pipeline looks like:</p>
+            <pre><code>
+PDF
+ ↓
+Extract text
+ ↓
+Split into chunks
+ ↓
+Create embeddings
+ ↓
+Vector database
+ ↓
+Similarity search
+ ↓
+LLM
+            </code></pre>
+            <p>For example, a 100-page PDF might become:</p>
+            <pre><code>
+Document
+ ├── Chunk 1
+ ├── Chunk 2
+ ├── Chunk 3
+ ├── ...
+ └── Chunk 500
+            </code></pre>
+            <p>The problem is that chunks don't necessarily correspond to meaning.</p>
+            <p>A table can be split in half. A heading can be separated from its paragraph. A question may require information from several sections.</p>
+        </section>
+
+        <section>
+            <h2>Chunkless RAG</h2>
+            <p>Instead of treating the document as a bag of chunks, you preserve its document structure:</p>
+            <pre><code>
+PDF
+ ↓
+Docling
+ ↓
+Structured Document
+ ↓
+ ├── Title
+ ├── Section
+ │    ├── Paragraph
+ │    ├── Table
+ │    └── Figure
+ ├── Section
+ │    ├── Paragraph
+ │    └── Table
+ └── References
+ ↓
+AI Agent
+ ↓
+Navigate relevant parts
+ ↓
+Answer
+            </code></pre>
+            <p>The key idea is:</p>
+            <p>Don't just retrieve pieces of text. Retrieve and navigate the document.</p>
+            <p>Where Docling fits</p>
+            <p>Docling is useful because it converts complex documents into structured representations while preserving things such as:</p>
+            <ul>
+                <li>headings</li>
+                <li>paragraphs</li>
+                <li>tables</li>
+                <li>lists</li>
+                <li>figures</li>
+                <li>page boundaries</li>
+                <li>reading order</li>
+                <li>document hierarchy</li>
+            </ul>
+            <p>So instead of:</p>
+            <pre><code>
+"Revenue increased 12%..."
+"Table 4..."
+"Operating expenses..."
+            </code></pre>
+            <p>you can maintain something conceptually closer to:</p>
+            <pre><code>
+{
+    "section": "Financial Results",
+    "children": [
+        {
+        "type": "paragraph",
+        "text": "Revenue increased 12%..."
+        },
+        {
+        "type": "table",
+        "caption": "Table 4 - Revenue by Region"
+        }
+    ]
+}
+            </code></pre>
+            <p>That structure becomes extremely useful for an AI agent.</p>
+        </section>
+
+        <section>
+            <h2>How the Agent Navigates</h2>
+            <p>Imagine you ask:</p>
+            <p>"Why did operating expenses increase in 2025?"</p>
+            <p>A traditional RAG system might search embeddings and retrieve:</p>
+            <pre><code>
+Chunk 182
+Chunk 247
+Chunk 391
+            </code></pre>
+            <p>A document-aware agent can reason more like:</p>
+            <pre><code>
+User question
+      ↓
+Find "operating expenses"
+      ↓
+Locate Financial Results
+      ↓
+Inspect subsection
+      ↓
+Find related table
+      ↓
+Inspect footnote
+      ↓
+Navigate to explanation
+      ↓
+Answer
+            </code></pre>
+            <p>In other words, the agent can perform something resembling:</p>
+            <pre><code>
+search()
+   ↓
+open_section()
+   ↓
+inspect_table()
+   ↓
+follow_reference()
+   ↓
+read_context()
+   ↓
+answer()
+            </code></pre>
+            <p>This is closer to browsing a document than searching a vector database.</p>
+        </section>
+
+        <section>
+            <h2>Chunkless ≠ No Retrieval</h2>
+            <p>This is an important distinction.</p>
+            <p>"Chunkless RAG" doesn't necessarily mean:</p>
+            <p>Never split anything.</p>
+            <p>It usually means that fixed arbitrary chunks aren't the primary representation of knowledge.</p>
+            <p>You can still use:</p>
+            <ul>
+                <li>paragraph-level retrieval</li>
+                <li>section-level retrieval</li>
+                <li>semantic search</li>
+                <li>vector embeddings</li>
+                <li>BM25</li>
+                <li>metadata filtering</li>
+                <li>graph relationships</li>
+                <li>page references</li>
+            </ul>
+            <p>For example:</p>
+            <pre><code>
+Document
+   │
+   ├── Section
+   │     ├── Paragraph
+   │     ├── Paragraph
+   │     └── Table
+   │
+   ├── Section
+   │     └── Paragraph
+   │
+   └── References
+            </code></pre>
+            <p>Each node can potentially be searchable.</p>
+        </section>
+
+        <section>
+            <h2>Why This Is Interesting for Your RAG Project</h2>
+            <p>For a research/publication repository, this approach can be especially useful.</p>
+            <p>Instead of storing:</p>
+            <pre><code>
+publication_123_chunk_001
+publication_123_chunk_002
+publication_123_chunk_003
+            </code></pre>
+            <p>you could model:</p>
+            <pre><code>
+Publication
+│
+├── Metadata
+│
+├── Abstract
+│
+├── Introduction
+│
+├── Methodology
+│   ├── Dataset
+│   ├── Experimental Setup
+│   └── Evaluation
+│
+├── Results
+│   ├── Table 1
+│   ├── Table 2
+│   └── Figure 3
+│
+├── Discussion
+│
+└── References
+            </code></pre>
+            <p>Then your AI agent can answer questions by navigating this structure.</p>
+            <p>For example:</p>
+            <p>"Compare the methodology used in papers A and B."</p>
+            <p>The agent could do:</p>
+            <pre><code>
+Paper A
+ └── Methodology
+      └── Experimental Setup
+
+Paper B
+ └── Methodology
+      └── Experimental Setup
+
+              ↓
+
+          Compare
+            </code></pre>
+            <p>That's much more powerful than simply retrieving the top 10 similar chunks.</p>
+        </section>
+
+        <section>
+            <h2>A Practical Architecture</h2>
+            <p>I'd design a modern system like this:</p>
+            <pre><code>
+                ┌───────────────┐
+                │ PDF / DOCX    │
+                └───────┬───────┘
+                        ↓
+                 ┌─────────────┐
+                 │   Docling   │
+                 └──────┬──────┘
+                        ↓
+             Structured Document
+                        │
+          ┌─────────────┼─────────────┐
+          ↓             ↓             ↓
+      Sections       Tables        Figures
+          │             │             │
+          └─────────────┼─────────────┘
+                        ↓
+                Document Store
+                        │
+          ┌─────────────┴─────────────┐
+          ↓                           ↓
+    Vector Search               Structure Search
+          │                           │
+          └─────────────┬─────────────┘
+                        ↓
+                   AI Agent
+                        ↓
+              Navigate / Retrieve
+                        ↓
+                     LLM
+                        ↓
+                    Answer
+            </code></pre>
+            <p>The best implementation is often hybrid, rather than purely chunkless.</p>
+            <p>Hybrid RAG</p>
+            <p>Use vectors for:</p>
+            <p>"Find concepts related to transformer architectures."</p>
+            <p>Use structure for:</p>
+            <p>"What does Section 4.2 say?"</p>
+            <p>Use tables for:</p>
+            <p>"What was the accuracy for Dataset B?"</p>
+            <p>Use references for:</p>
+            <p>"Which paper does this claim cite?"</p>
+            <p>The agent decides which mechanism to use.</p>
+        </section>
+
+        <section>
+            <h2>The big conceptual difference</h2>
+            <p>Traditional RAG</p>
+            <pre><code>
+Question
+ ↓
+Similarity search
+ ↓
+Top chunks
+ ↓
+LLM
+            </code></pre>
+            <p>Agentic / chunkless RAG</p>
+            <pre><code>
+Question
+ ↓
+Understand intent
+ ↓
+Search document
+ ↓
+Locate relevant structure
+ ↓
+Navigate
+ ↓
+Inspect surrounding context
+ ↓
+Retrieve supporting evidence
+ ↓
+Reason
+ ↓
+Answer
+            </code></pre>
+            <p>That's why Docling + an AI agent is interesting: Docling gives you a much richer representation of the document, while the agent can use that representation as a navigation space rather than treating the PDF as a pile of independent text chunks.</p>
+            <p>If you're building your Next.js + RAG research repository, this architecture could be a very good fit: Docling → structured document tree → hybrid retrieval → agentic navigation → citations back to page/section/table.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

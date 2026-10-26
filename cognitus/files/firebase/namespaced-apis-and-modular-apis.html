@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Namespaced APIs and Modular APIs </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Namespaced APIs and Modular APIs </h1>
+                    <p class="subtitle"> 
+                        The terms Namespaced APIs and Modular APIs are commonly used when talking about libraries such as Firebase, especially when migrating from the older Firebase JavaScript SDK to the modern SDK. 
+                        <p>The main difference is how you import and access functionality.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Namespaced API — older style </h2>
+            <p>Everything is accessed through a central object/namespace.</p>
+            <pre><code>
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
+
+firebase.initializeApp(config);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+firebase.auth().signInWithEmailAndPassword(email, password);
+
+firebase.firestore()
+  .collection('users')
+  .doc(userId)
+  .get();
+            </code></pre>
+            <p>The important characteristic is:</p>
+            <pre><code>
+firebase
+   ├── auth()
+   ├── firestore()
+   ├── storage()
+   └── messaging()
+            </code></pre>
+            <p>You access functionality through the firebase namespace.</p>
+            <p>This was the traditional Firebase JavaScript API.</p>
+        </section>
+
+        <section>
+            <h2>2. Modular API — modern style</h2>
+            <p>Functionality is imported individually and used directly.</p>
+            <pre><code>
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, collection, doc, getDoc } from 'firebase/firestore';
+
+const app = initializeApp(config);
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+await signInWithEmailAndPassword(auth, email, password);
+
+const userDoc = await getDoc(
+  doc(db, 'users', userId)
+);
+            </code></pre>
+            <p>Instead of:</p>
+            <pre><code>
+firebase.auth()
+firebase.firestore()
+            </code></pre>
+            <p>you use:</p>
+            <pre><code>
+getAuth(app)
+getFirestore(app)
+            </code></pre>
+            <p>And instead of methods chained from objects:</p>
+            <pre><code>
+firebase.firestore()
+  .collection('users')
+  .doc(userId)
+  .get()
+            </code></pre>
+            <p>you use individual functions:</p>
+            <pre><code>
+getDoc(
+  doc(
+    collection(db, 'users'),
+    userId
+  )
+)
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The easiest way to visualize it</h2>
+            <p>Namespaced</p>
+            <pre><code>
+firebase
+   │
+   ├── auth()
+   │     └── signInWithEmailAndPassword()
+   │
+   ├── firestore()
+   │     └── collection()
+   │           └── doc()
+   │                 └── get()
+   │
+   └── storage()
+            </code></pre>
+            <p>You start from a big namespace and navigate downward.</p>
+            <p>Modular</p>
+            <pre><code>
+    initializeApp()
+       │
+       ├── getAuth()
+       │      └── signInWithEmailAndPassword()
+       │
+       └── getFirestore()
+              ├── collection()
+              ├── doc()
+              └── getDoc()
+            </code></pre>
+            <p>You import only the functions you need.</p>
+        </section>
+
+        <section>
+            <h2>Why Firebase moved to Modular APIs</h2>
+            <p>One of the biggest reasons is tree shaking and bundle size.</p>
+            <p>With a namespaced API, your code tends to revolve around a large Firebase object:</p>
+            <pre><code>
+firebase.firestore()
+firebase.auth()
+firebase.storage()
+            </code></pre>
+            <p>The modular API makes dependencies much more explicit:</p>
+            <pre><code>
+import { getAuth } from 'firebase/auth';
+import { getFirestore, getDoc, doc } from 'firebase/firestore';
+            </code></pre>
+            <p>A bundler can determine more precisely which pieces of Firebase your application actually uses and remove unused code.</p>
+            <p>For example:</p>
+            <pre><code>
+import { getAuth } from 'firebase/auth';
+            </code></pre>
+            <p>is much more explicit than:</p>
+            <pre><code>
+import firebase from 'firebase';
+            </code></pre>
+            <p>This can improve bundle size, tree-shaking, and maintainability.</p>
+        </section>
+
+        <section>
+            <h2>Side-by-side Firebase example</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operation</th>
+                        <th>Namespaced API</th>
+                        <th>Modular API</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Initialize</td>
+                        <td>firebase.initializeApp()</td>
+                        <td>initializeApp()</td>
+                    </tr>
+                    <tr>
+                        <td>Auth</td>
+                        <td>firebase.auth()</td>
+                        <td>getAuth(app)</td>
+                    </tr>
+                    <tr>
+                        <td>Firestore</td>
+                        <td>firebase.firestore()</td>
+                        <td>getFirestore(app)</td>
+                    </tr>
+                    <tr>
+                        <td>Get document</td>
+                        <td>.doc().get()</td>
+                        <td>getDoc(doc())</td>
+                    </tr>
+                    <tr>
+                        <td>Query</td>
+                        <td>.collection().where()</td>
+                        <td>query(collection(), where())</td>
+                    </tr>
+                    <tr>
+                        <td>Add document</td>
+                        <td>.add()</td>
+                        <td>addDoc()</td>
+                    </tr>
+                    <tr>
+                        <td>Update</td>
+                        <td>.update()</td>
+                        <td>updateDoc()</td>
+                    </tr>
+                    <tr>
+                        <td>Delete</td>
+                        <td>.delete()</td>
+                        <td>deleteDoc()</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Example: Firestore</h2>
+            <p>Namespaced:</p>
+            <pre><code>
+const db = firebase.firestore();
+
+db.collection('users')
+  .doc('123')
+  .get()
+  .then(doc => {
+    console.log(doc.data());
+  });
+            </code></pre>
+            <p>Modular:</p>
+            <pre><code>
+const db = getFirestore(app);
+
+const userRef = doc(db, 'users', '123');
+
+const snapshot = await getDoc(userRef);
+
+console.log(snapshot.data());
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>One important distinction</h2>
+            <p>Namespaced vs Modular is not the same thing as Firebase version itself.</p>
+            <p>For example:</p>
+            <pre><code>
+Old Firebase SDK
+        ↓
+Namespaced API
+            </code></pre>
+            <p>versus:</p>
+            <pre><code>
+Modern Firebase SDK
+        ↓
+Modular API
+            </code></pre>
+            <p>The modern Firebase SDK introduced the modular API while also retaining compatibility with the older namespaced API for a period.</p>
+            <p>So you may encounter code like:</p>
+            <pre><code>
+firebase.auth()
+            </code></pre>
+            <p>in an application using a relatively recent Firebase version. That doesn't necessarily mean the entire Firebase SDK is ancient—it may simply mean the application is still using the compatibility/namespaced style.</p>
+            <p>In short</p>
+            <p>Namespaced API:</p>
+            <p>"Give me the Firebase object, then I'll call methods on it."</p>
+            <pre><code>
+firebase.auth().currentUser
+            </code></pre>
+            <p>Modular API:</p>
+            <p>"Give me the specific Firebase functions I need, and I'll compose them."</p>
+            <pre><code>
+getAuth(app).currentUser
+            </code></pre>
+            <p>For a modern React/React Native project, Modular APIs are generally the style you will encounter in current Firebase documentation and new code.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

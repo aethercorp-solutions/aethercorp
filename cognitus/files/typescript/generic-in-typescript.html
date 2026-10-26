@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Generic in TypeScript</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Generic in TypeScript</h1>
+                    <p class="subtitle">
+                        A generic in TypeScript is a way to make code work with different types without rewriting it.
+                        <p>Think of it as a placeholder for a type.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Without Generics</h2>
+            <p>Imagine a function that returns a string.</p>
+            <pre><code>
+function getValue(value: string): string {
+    return value;
+}
+            </code></pre>
+            <p>It only works with strings.</p>
+            <p>If you want numbers too:</p>
+            <pre><code>
+function getNumber(value: number): number {
+    return value;
+}
+            </code></pre>
+            <p>Now you're repeating code.</p>
+        </section>
+
+        <section>
+            <h2>With Generics</h2>
+            <p>Instead of specifying the type, use a placeholder (T).</p>
+            <pre><code>
+function getValue<T>(value: T): T {
+    return value;
+}
+            </code></pre>
+            <p>T means "whatever type the caller gives me."</p>
+            <p>Examples:</p>
+            <pre><code>
+getValue&lt;string&gt;("Hello");
+            </code></pre>
+            <p>T = string</p>
+            <p>Returns:</p>
+            <pre><code>
+"Hello"
+            </code></pre>
+
+            <pre><code>
+getValue&lt;number&gt;(100);
+            </code></pre>
+            <p>Returns:</p>
+            <pre><code>
+100
+            </code></pre>
+            <p>You usually don't even need to specify it.</p>
+            <p>TypeScript figures it out.</p>
+            <pre><code>
+getValue("Hello"); // T = string
+getValue(100);     // T = number
+getValue(true);    // T = boolean
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Why use Generics?</h2>
+            <p>One function works for every type.</p>
+            <p>Without generics:</p>
+            <pre><code>
+function printString(value: string) {
+    console.log(value);
+}
+
+function printNumber(value: number) {
+    console.log(value);
+}
+
+function printBoolean(value: boolean) {
+    console.log(value);
+}
+            </code></pre>
+            <p>With generics:</p>
+            <pre><code>
+function print<T>(value: T) {
+    console.log(value);
+}
+            </code></pre>
+            <p>Now it works for anything.</p>
+        </section>
+
+        <section>
+            <h2>Generic Arrays</h2>
+            <p>Instead of saying:</p>
+            <pre><code>
+string[]
+            </code></pre>
+            <p>you can write</p>
+            <pre><code>
+Array&lt;string&gt;
+            </code></pre>
+            <p>Examples:</p>
+            <pre><code>
+const names: Array&lt;string&gt; = ["John", "Jane"];
+
+const numbers: Array&lt;number&gt; = [1, 2, 3];
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Generic Interfaces</h2>
+            <p>Without generics:</p>
+            <pre><code>
+interface UserResponse {
+    data: User;
+}
+            </code></pre>
+            <p>If you need posts:</p>
+            <pre><code>
+interface PostResponse {
+    data: Post;
+}
+            </code></pre>
+            <p>Lots of duplication.</p>
+            <p>With generics:</p>
+            <pre><code>
+interface ApiResponse&lt;T&gt; {
+    data: T;
+}
+            </code></pre>
+            <p>Use it like this:</p>
+            <pre><code>
+const user: ApiResponse&lt;User&gt; = {
+    data: {
+        id: 1,
+        name: "John",
+    },
+};
+
+const post: ApiResponse&lt;Post&gt; = {
+    data: {
+        id: 10,
+        title: "Hello",
+    },
+};
+            </code></pre>
+            <p>Same interface, different types.</p>
+        </section>
+
+        <section>
+            <h2>Generic Functions (Real Example)</h2>
+            <pre><code>
+async function fetchData<T>(url: string): Promise<T> {
+    const response = await fetch(url);
+    return response.json();
+}
+            </code></pre>
+            <p>Suppose you have:</p>
+            <pre><code>
+type User = {
+    id: number;
+    name: string;
+};
+            </code></pre>
+            <p>Call it like this:</p>
+            <pre><code>
+const user = await fetchData&lt;User&gt;("/api/user");
+            </code></pre>
+            <p>TypeScript knows:</p>
+            <pre><code>
+user.id
+user.name
+            </code></pre>
+            <p>and provides autocomplete.</p>
+        </section>
+
+        <section>
+            <h2>Multiple Generic Types</h2>
+            <p>You can have more than one placeholder.</p>
+            <pre><code>
+function pair&lt;T, U&gt;(first: T, second: U) {
+    return {
+        first,
+        second,
+    };
+}
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+const result = pair("John", 25);
+            </code></pre>
+            <p>TypeScript infers:</p>
+            <pre><code>
+T = string
+U = number
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+{
+    first: "John",
+    second: 25
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Generic Constraints</h2>
+            <p>Sometimes you want to limit what types are allowed.</p>
+            <p>Without a constraint:</p>
+            <pre><code>
+function printLength<T>(item: T) {
+    console.log(item.length); // ❌ Error
+}
+            </code></pre>
+            <p>T could be a number, which doesn't have a length property.</p>
+            <p>Add a constraint:</p>
+            <pre><code>
+function printLength&lt;T extends { length: number }&gt;(item: T) {
+    console.log(item.length);
+}
+            </code></pre>
+            <p>Now these work:</p>
+            <pre><code>
+printLength("Hello");
+printLength([1, 2, 3]);
+            </code></pre>
+            <p>But this doesn't:</p>
+            <pre><code>
+printLength(100); // ❌ number has no length
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real-World Axios Example</h2>
+            <pre><code>
+type User = {
+    id: number;
+    name: string;
+};
+
+const response = await axios.get&lt;User&gt;("/users/1");
+            </code></pre>
+            <p>Here:</p>
+            <pre><code>
+&lt;User&gt;
+            </code></pre>
+            <p>is the generic.</p>
+            <p>It tells Axios:</p>
+            <p>"The server will return a User."</p>
+            <p>Now TypeScript knows:</p>
+            <pre><code>
+response.data.id
+response.data.name
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Easy Way to Remember</h2>
+            <p>Think of a generic as a type variable, just like variables hold values.</p>
+            <pre><code>
+let x = 10;
+            </code></pre>
+            <p>x is a placeholder for a value.</p>
+            <p>Similarly:</p>
+            <pre><code>
+function identity<T>(value: T): T {
+    return value;
+}
+            </code></pre>
+            <p>T is a placeholder for a type.</p>
+            <p>If you call:</p>
+            <pre><code>
+identity("Hello");
+            </code></pre>
+            <p>then:</p>
+            <pre><code>
+T = string
+            </code></pre>
+            <p>If you call:</p>
+            <pre><code>
+identity(123);
+            </code></pre>
+            <p>then:</p>
+            <pre><code>
+T = number
+            </code></pre>
+            <p>The function logic stays the same—it simply adapts to the type you pass in.</p>
+            <p>A simple analogy</p>
+            <p>Imagine a gift box 📦.</p>
+            <ul>
+                <li>The box is your generic function.</li>
+                <li>The item inside can be anything.</li>
+            </ul>
+            <pre><code>
+function box<T>(item: T): T {
+    return item;
+}
+            </code></pre>
+            <p>You can put in:</p>
+            <pre><code>
+box("Book");     // T = string
+box(42);         // T = number
+box(true);       // T = boolean
+            </code></pre>
+            <p>The box doesn't care what's inside—it just keeps the item's type intact. That's exactly what generics do: they let you write reusable code while preserving type safety.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

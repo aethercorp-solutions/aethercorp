@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Firebase Push Notification </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Firebase Push Notification </h1>
+                    <p class="subtitle"> 
+                        Firebase Push Notification is a service provided by Firebase called Firebase Cloud Messaging (FCM) that allows an application to send notifications to users' devices, even when the app is running in the background or is not currently open.
+                    
+                        <p>For example, in your Castanet Contact Management Platform, you could use Firebase push notifications to remind users to contact someone on their contact list.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> How Firebase Push Notifications work </h2>
+            <pre><code>
+1. Backend (Node.js / AWS Lambda)
+Determines when a notification should be sent.
+            </code></pre>
+
+            <pre><code>
+2. Firebase Cloud Messaging (FCM)
+Routes the push notification to the intended device.
+            </code></pre>
+
+            <pre><code>
+3. User's mobile device
+Displays the notification on Android or iOS, subject to notification permissions and platform requirements.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Example of a push notification</h2>
+            <pre><code>
+Castanet
+Time to contact John!
+You have a contact who is due for a follow-up today.
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>What technologies are involved?</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Responsibility</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>React Native</td>
+                        <td>Receives and handles notifications in the mobile app.</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase Cloud Messaging (FCM)</td>
+                        <td>Delivers push messages to devices.</td>
+                    </tr>
+                    <tr>
+                        <td>Node.js / AWS Lambda</td>
+                        <td>Determines when to send notifications and prepares the message.</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase device token</td>
+                        <td>Identifies the target app installation for message delivery.</td>
+                    </tr>
+                    <tr>
+                        <td>APNs (iOS)</td>
+                        <td>Apple's push notification service, which FCM uses to deliver notifications to iOS devices.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>How this relates to your Castanet project</h2>
+            <p>Based on the Castanet notification workflow you shared earlier, the process works conceptually like this:</p>
+            <ol>
+                <li>AWS Lambda triggers the scheduled notification function.</li>
+                <li>NotificationService.sendNotifications() checks which contacts need reminders.</li>
+                <li>The backend retrieves registered device tokens.</li>
+                <li>The notification service sends the message through FCM.</li>
+                <li>The user's device receives and displays the notification.</li>
+            </ol>
+            <p>Your existing code includes:</p>
+
+            <pre><code>
+exports.schedule_notification = async (event, context, callback) => {
+    await LogService.log('Notification', 'Trigger', []);
+    await NotificationService.sendNotifications();
+};
+            </code></pre>
+            <p>This function is the backend trigger for your scheduled notification workflow. The actual FCM message-sending logic is handled inside NotificationService or its related service.</p>
+        </section>
+
+        <section>
+            <h2>Push notifications vs. local notifications</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Push notifications</th>
+                        <th>Local notifications</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sent through a remote messaging service such as FCM.</td>
+                        <td>Scheduled or created directly on the device.</td>
+                    </tr>
+                    <tr>
+                        <td>Can be triggered by a backend server.</td>
+                        <td>Can work without a backend sending each notification.</td>
+                    </tr>
+                    <tr>
+                        <td>Requires network connectivity for new remote messages to arrive.</td>
+                        <td>Can often be displayed without an internet connection once scheduled.</td>
+                    </tr>
+                    <tr>
+                        <td>Example: a server sends a contact reminder.</td>
+                        <td>Example: the app schedules a reminder locally for tomorrow.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Important: Firebase Authentication and Firebase Cloud Messaging are different services. Authentication manages user identity and sign-in; FCM delivers push notifications.</p>
+            <p>For your full-stack developer profile, you can describe this experience as: “Implemented scheduled push notification workflows using AWS Lambda, Node.js, and Firebase Cloud Messaging (FCM) to deliver automated reminders to mobile application users.”</p>
+        </section>
+
+        <section>
+            <p>Since your Castanet stack is React Native + Node.js + AWS Lambda + Firebase Cloud Messaging (FCM), here's a practical end-to-end implementation showing how scheduled push notifications work.</p>
+            <h2>Architecture</h2>
+            <img src="../../images/fcm-architecture.png" />
+
+            <ol>
+                <li>React Native app gets an FCM device token.</li>
+                <li>App sends the token to the Node.js API.</li>
+                <li>API stores the token in MongoDB.</li>
+                <li>AWS Lambda runs on a schedule.</li>
+                <li>Lambda checks which users need reminders.</li>
+                <li>Lambda sends notifications through FCM.</li>
+                <li>React Native receives the notification.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>1. React Native (Get FCM Token)</h2>
+            <p>Install Firebase Messaging.</p>
+            <pre><code>
+npm install @react-native-firebase/app
+npm install @react-native-firebase/messaging
+            </code></pre>
+
+            <p>Request permission and get the token.</p>
+            <pre><code>
+import messaging from '@react-native-firebase/messaging';
+
+export async function registerDevice() {
+  await messaging().requestPermission();
+
+  const token = await messaging().getToken();
+
+  console.log(token);
+
+  return token;
+}
+            </code></pre>
+            <p>Example output:</p>
+            <pre><code>
+eW91ci1mY20tdG9rZW4...
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Send Token to Node.js</h2>
+            <pre><code>
+const token = await registerDevice();
+
+await fetch('https://api.trycastanet.com/device/register', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    token,
+    userEmail: 'user@example.com'
+  })
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Node.js Express API</h2>
+            <p>MongoDB Model</p>
+            <pre><code>
+const mongoose = require('mongoose');
+
+const DeviceSchema = new mongoose.Schema({
+  userEmail: String,
+  token: String,
+  platform: String,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+module.exports = mongoose.model('Device', DeviceSchema);
+            </code></pre>
+
+            <p>Register Endpoint</p>
+            <pre><code>
+const express = require('express');
+const Device = require('./models/device');
+
+const router = express.Router();
+
+router.post('/device/register', async (req, res) => {
+  const { userEmail, token } = req.body;
+
+  await Device.findOneAndUpdate(
+    { userEmail },
+    { token },
+    { upsert: true }
+  );
+
+  res.json({
+    success: true
+  });
+});
+
+module.exports = router;
+            </code></pre>
+            <p>Now every logged-in user has an FCM token stored.</p>
+        </section>
+
+        <section>
+            <h2>4. AWS Lambda Scheduled Function</h2>
+            <p>Your Serverless configuration looks similar to this.</p>
+            <pre><code>
+functions:
+  schedule_notification:
+    handler: handler.schedule_notification
+    events:
+      - schedule: rate(5 minutes)
+            </code></pre>
+
+            <p>Lambda:</p>
+            <pre><code>
+exports.schedule_notification = async () => {
+    await NotificationService.sendNotifications();
+};
+            </code></pre>
+            <p>This matches the workflow you shared from Castanet.</p>
+        </section>
+
+        <section>
+            <h2>5. Notification Service</h2>
+            <p>Install Firebase Admin.</p>
+            <pre><code>
+npm install firebase-admin
+            </code></pre>
+            <p>Initialize it.</p>
+            <pre><code>
+const admin = require('firebase-admin');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+            </code></pre>
+            <p>Send notifications.</p>
+            <pre><code>
+const Device = require('../models/device');
+
+exports.sendNotifications = async () => {
+
+  const devices = await Device.find();
+
+  for (const device of devices) {
+
+    await admin.messaging().send({
+      token: device.token,
+      notification: {
+        title: 'Contact Reminder',
+        body: 'Time to contact one of your connections.'
+      },
+      data: {
+        type: 'contact-reminder'
+      }
+    });
+
+  }
+
+};
+            </code></pre>
+            <p>This is the actual FCM delivery step.</p>
+        </section>
+
+        <section>
+            <h2>6. Scheduled Contact Logic</h2>
+            <p>In your Castanet project, the flow resembles this.</p>
+            <pre><code>
+const dueContacts = await ContactRepo.getDueContacts(userEmail);
+
+const overdueContacts = await ContactRepo.getOverdueContacts(userEmail);
+
+if (dueContacts.length || overdueContacts.length) {
+    sendNotification();
+}
+            </code></pre>
+            <p>Example:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Contact</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>John</td>
+                        <td>Due Today</td>
+                    </tr>
+                    <tr>
+                        <td>Sarah</td>
+                        <td>Overdue</td>
+                    </tr>
+                    <tr>
+                        <td>Mike</td>
+                        <td>Not Due</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Only John and Sarah trigger notifications.</p>
+        </section>
+
+        <section>
+            <h2>7. Receive Notifications in React Native</h2>
+            <p>Foreground notifications.</p>
+            <pre><code>
+import messaging from '@react-native-firebase/messaging';
+
+messaging().onMessage(async remoteMessage => {
+  console.log(remoteMessage.notification.title);
+});
+            </code></pre>
+            <p>Background notifications.</p>
+            <pre><code>
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+    console.log('Background', remoteMessage);
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>iOS Configuration</h2>
+            <p>For iOS, FCM uses Apple Push Notification service (APNs) underneath.</p>
+            <p>Required setup:</p>
+            <ul>
+                <li>Enable Push Notifications capability in Xcode.</li>
+                <li>Enable Background Modes → Remote notifications.</li>
+                <li>Upload an APNs Authentication Key (.p8) to the Firebase Console.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Complete Notification Sequence</h2>
+            <img src="../../images/fcm-workflow.png" />
+            <p>This implementation aligns closely with the Castanet architecture you described: React Native registers FCM tokens, Node.js/Express stores them in MongoDB, AWS Lambda (using the Serverless Framework) runs scheduled jobs, and Firebase Cloud Messaging delivers push notifications to both iOS (via APNs) and Android devices.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

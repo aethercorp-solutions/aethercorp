@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> How OpenAI requests and executes a tool </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> How OpenAI requests and executes a tool </h1>
+                    <p class="subtitle"> 
+                        OpenAI models can request tools such as APIs, database queries, web searches, or custom functions by generating a structured tool call. The model does not necessarily execute the code itself. Instead, the application or orchestration runtime receives the request, validates it, executes the corresponding function, and sends the result back to the model.
+                        <p>This is the foundation of tool calling, which enables AI applications to interact with external systems.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. The architecture </h2>
+            <pre><code>
+1. User
+"Find customer 123 in the database."
+            </code></pre>
+
+            <pre><code>
+2. OpenAI model
+Interprets the request and decides whether a tool is needed.
+            </code></pre>
+
+            <pre><code>
+3. Tool call
+Structured function name and arguments, such as get_customer(id="123").
+            </code></pre>
+
+            <pre><code>
+4. Application runtime
+Validates arguments, checks permissions, and dispatches the function.
+            </code></pre>
+
+            <pre><code>
+5. External system
+Executes SQL, calls an API, or performs another operation.
+            </code></pre>
+
+            <pre><code>
+6. Tool result -> Model
+The result is added to the conversation so the model can interpret it and respond.
+            </code></pre>
+
+            <p>The important distinction is that the model chooses and describes the action, while the host application normally executes it.</p>
+        </section>
+
+        <section>
+            <h2>2. Step 1 — Define a tool using a schema</h2>
+            <p>Suppose you're building a Node.js backend and want the model to retrieve customer records.</p>
+            <p>You expose a function definition to the OpenAI API:</p>
+            <pre><code>
+const tools = [
+  {
+    type: "function",
+    name: "get_customer",
+    description: "Retrieve a customer by ID",
+    parameters: {
+      type: "object",
+      properties: {
+        customer_id: {
+          type: "string",
+          description: "The unique customer ID"
+        }
+      },
+      required: ["customer_id"],
+      additionalProperties: false
+    },
+    strict: true
+  }
+];
+            </code></pre>
+
+            <p>This schema tells the model:</p>
+            <ul>
+                <li>The tool is named get_customer.</li>
+                <li>It retrieves a customer by ID.</li>
+                <li>It accepts a string called customer_id.</li>
+                <li>The argument is required.</li>
+                <li>No additional arguments are allowed.</li>
+            </ul>
+            <p>Defining the tool does not execute it. It makes the function available for the model to request.</p>
+            <p>The function definition also does not automatically grant database access. Your application must implement the function and configure the appropriate credentials and permissions.</p>
+        </section>
+
+        <section>
+            <h2>3. Step 2 — The model returns a tool-call request</h2>
+            <p>Your application sends the user's message and the tool definitions to the OpenAI Responses API.</p>
+            <pre><code>
+const response = await client.responses.create({
+    model: "YOUR_SUPPORTED_MODEL",
+    input: "Find customer 123 in the database.",
+    tools
+});
+            </code></pre>
+
+            <p>The model may return a structured output item resembling this:</p>
+
+            <pre><code>
+{
+    "type": "function_call",
+    "call_id": "call_abc123",
+    "name": "get_customer",
+    "arguments": "{\"customer_id\":\"123\"}"
+}
+            </code></pre>
+
+            <p>Here is what each field means:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>type</td>
+                        <td>Identifies the output as a function call.</td>
+                    </tr>
+                    <tr>
+                        <td>call_id</td>
+                        <td>Correlates the result with this specific request.</td>
+                    </tr>
+                    <tr>
+                        <td>name</td>
+                        <td>Identifies the function your application must dispatch.</td>
+                    </tr>
+                    <tr>
+                        <td>arguments</td>
+                        <td>JSON-encoded arguments for the function.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Notice that arguments is a JSON string in this representation. Your code parses it into a JavaScript object before using it.</p>
+            <p>The model does not normally return executable JavaScript for a standard function call. It returns a structured instruction to invoke a function.</p>
+            <p>The exact response structure depends on the API and tool type. See the official</p>
+            <p>OpenAI function-calling documentation</p>
+        </section>
+
+        <section>
+            <h2>4. Step 3 — Your backend executes the requested function</h2>
+            <p>The backend needs an implementation that maps the permitted tool name to actual code.</p>
+            <pre><code>
+async function getCustomer({ customer_id }) {
+    // Example: query your database using a parameterized query.
+    const result = await db.query(
+        "SELECT id, name, email FROM customers WHERE id = $1",
+        [customer_id]
+    );
+    
+    return result.rows[0] ?? null;
+}
+            </code></pre>
+
+            <p>Then dispatch the tool call:</p>
+            <pre><code>
+const args = JSON.parse(toolCall.arguments);
+
+if (toolCall.name === "get_customer") {
+  const customer = await getCustomer(args);
+}
+            </code></pre>
+
+            <p>This is where the actual operation happens.</p>
+            <p>For example, the application may:</p>
+            <ol>
+                <li>Receive the model's request.</li>
+                <li>Parse and validate the arguments.</li>
+                <li>Authenticate the application user.</li>
+                <li>Check whether that user may access the requested customer.</li>
+                <li>Query PostgreSQL.</li>
+                <li>1. Convert the database result into a safe response.</li>
+            </ol>
+            <p>Critical security detail: Do not let the model supply arbitrary SQL or choose an unrestricted function to execute. Use an allowlist of tool names, validate arguments on the server, and enforce authorization independently of the model.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

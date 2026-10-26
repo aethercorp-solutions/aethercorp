@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Learn patterns from data</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Learn patterns from data</h1>
+                    <p class="subtitle">Think of TensorFlow as a toolkit that helps a computer learn patterns from data.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Simple example: predicting house prices</h2>
+            <p>Suppose you give TensorFlow data like:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Size</th>
+                        <th>Bedrooms</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>50 m²</td>
+                        <td>1</td>
+                        <td>₱2M</td>
+                    </tr>
+                    <tr>
+                        <td>80 m²</td>
+                        <td>2</td>
+                        <td>₱3M</td>
+                    </tr>
+                    <tr>
+                        <td>120 m²</td>
+                        <td>3</td>
+                        <td>₱5M</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>You want the computer to learn:</p>
+            <p>House features → Price</p>
+        </section>
+
+        <section>
+            <h2>1. You give TensorFlow data</h2>
+            <pre><code>
+X = [[50, 1],
+     [80, 2],
+     [120, 3]]
+
+y = [2, 3, 5]
+            </code></pre>
+            <p>X contains the inputs/features.</p>
+            <p>y contains the answers TensorFlow should learn.</p>
+        </section>
+
+        <section>
+            <h2>2. TensorFlow creates a neural network</h2>
+            <p>A very simple network looks like:</p>
+            <pre><code>
+House Size ──────┐
+    ├──> Neural Network ──> Predicted Price
+Bedrooms ────────┘
+            </code></pre>
+            <p>Inside the network are weights.</p>
+            <pre><code>
+Size × weight₁
+Bedrooms × weight₂
+       ↓
+    calculation
+       ↓
+   prediction
+            </code></pre>
+            <p>The weights determine how important each input is.</p>
+        </section>
+
+        <section>
+            <h2>3. It makes a prediction</h2>
+            <p>Initially, the weights are basically guesses.</p>
+            <p>For example:</p>
+            <pre><code>
+Actual price:     ₱5M
+Predicted price:  ₱3M
+            </code></pre>
+            <p>That's a big error.</p>
+            <p>TensorFlow calculates this error using a loss function.</p>
+            <pre><code>
+Prediction
+    ↓
+Compare with actual answer
+    ↓
+Loss / Error
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. TensorFlow adjusts the weights</h2>
+            <p>This is the important part.</p>
+            <p>TensorFlow uses backpropagation + gradient descent to figure out:</p>
+            <p>"Which weights should I change, and by how much, to reduce the error?"</p>
+            <p>For example:</p>
+            <pre><code>
+Before:
+
+Size weight     = 0.20
+Bedroom weight  = 0.10
+Error            = HIGH
+
+        ↓ training
+
+After:
+
+Size weight     = 0.35
+Bedroom weight  = 0.18
+Error            = LOWER
+            </code></pre>
+            <p>It repeats this process thousands or millions of times.</p>
+            <pre><code>
+Data
+ ↓
+Prediction
+ ↓
+Calculate error
+ ↓
+Adjust weights
+ ↓
+Prediction
+ ↓
+Calculate error
+ ↓
+Adjust weights
+ ↓
+...
+            </code></pre>
+            <p>This repeated process is called training.</p>
+        </section>
+
+        <section>
+            <h2>5. Eventually it learns the pattern</h2>
+            <p>After training, you can give it a new house:</p>
+            <pre><code>
+Size:       100 m²
+Bedrooms:   2
+            </code></pre>
+            <p>TensorFlow might predict:</p>
+            <pre><code>
+₱3.8M
+            </code></pre>
+            <p>The important thing is that you didn't explicitly program:</p>
+            <pre><code>
+IF size > 90 AND bedrooms == 2
+THEN price = ₱3.8M
+            </code></pre>
+            <p>Instead, the neural network learned the relationship from examples.</p>
+        </section>
+
+        <section>
+            <h2>What is a "Tensor"?</h2>
+            <p>This is where the name TensorFlow comes from.</p>
+            <p>A tensor is basically a way of storing numbers.</p>
+            <p>You can think of it as:</p>
+            <pre><code>
+Scalar
+  5
+
+Vector
+  [5, 10, 15]
+
+Matrix
+  [5, 10]
+  [15, 20]
+
+3D Tensor
+  [
+    [1, 2],
+    [3, 4],
+
+    [5, 6],
+    [7, 8]
+  ]
+            </code></pre>
+            <p>Neural networks process huge amounts of these numerical structures.</p>
+            <p>TensorFlow = tensors flowing through a computational graph/neural network.</p>
+        </section>
+
+        <section>
+            <h2>How this applies to images</h2>
+            <p>Suppose TensorFlow learns to recognize cats.</p>
+            <p>An image can be represented as numbers:</p>
+            <pre><code>
+Image
+ ↓
+Pixels
+ ↓
+Numbers
+ ↓
+TensorFlow neural network
+ ↓
+Features
+ ↓
+Prediction
+
+          Cat: 97%
+          Dog:  2%
+          Bird: 1%
+            </code></pre>
+            <p>The network gradually learns things such as:</p>
+            <pre><code>
+pixels
+  ↓
+edges
+  ↓
+shapes
+  ↓
+eyes / ears / fur patterns
+  ↓
+cat
+            </code></pre>
+            <p>You don't manually program those features. The network learns them during training.</p>
+        </section>
+
+        <section>
+            <h2>TensorFlow vs a normal program</h2>
+            <p>Traditional programming</p>
+            <pre><code>
+Rules + Data
+     ↓
+  Program
+     ↓
+  Answer
+            </code></pre>
+            <p>You tell the computer the rules.</p>
+            <p>Machine learning</p>
+            <pre><code>
+Data + Answers
+      ↓
+   TensorFlow
+      ↓
+ Learned Model
+      ↓
+ New Data
+      ↓
+   Prediction
+            </code></pre>
+            <p>The computer learns the rules/patterns.</p>
+        </section>
+
+        <section>
+            <h2>In one sentence</h2>
+            <p>TensorFlow is a framework that lets you build and train neural networks by repeatedly making predictions, measuring errors, and adjusting the network's weights until it learns useful patterns from data.</p>
+            <p>If you're coming from Swift/Objective-C, a useful next step is understanding TensorFlow vs Core ML, because Core ML is Apple's way of running trained ML models on iPhone/Mac.</p>
+        </section>
+
+        <section>
+            <p>No. You do not need to become an AI scientist to be an AI developer.</p>
+            <p>Think of AI careers as a spectrum:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Role</td>
+                        <td>Main focus</td>
+                        <td>Math required</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AI/ML Research Scientist</td>
+                        <td>Invent new algorithms/models</td>
+                        <td>🔴 High</td>
+                    </tr>
+                    <tr>
+                        <td>ML Engineer</td>
+                        <td>Train, optimize, deploy models</td>
+                        <td>🟠 Medium–High</td>
+                    </tr>
+                    <tr>
+                        <td>AI Engineer / AI Developer</td>
+                        <td>Build applications using AI models</td>
+                        <td>🟡 Medium</td>
+                    </tr>
+                    <tr>
+                        <td>AI Full-Stack Developer</td>
+                        <td>Integrate AI into web/mobile/backend apps</td>
+                        <td>🟢 Low–Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Software Developer using AI</td>
+                        <td>Add AI APIs/features to applications</td>
+                        <td>🟢 Low</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>For an AI developer</h2>
+            <p>You mainly need to understand how AI works well enough to use it correctly.</p>
+            <p>For example, you should understand:</p>
+            <pre><code>
+Data
+ ↓
+Numbers / Tensors
+ ↓
+Model
+ ↓
+Prediction
+ ↓
+Loss
+ ↓
+Optimization
+ ↓
+Better model
+            </code></pre>
+            <p>You don't necessarily need to derive the mathematics behind every neural-network architecture.</p>
+            <p>Example</p>
+            <p>Suppose you want to build a customer-support AI:</p>
+            <pre><code>
+React
+   ↓
+Node.js API
+   ↓
+LLM API
+   ↓
+RAG / Vector Database
+   ↓
+Company Documents
+            </code></pre>
+            <p>As an AI developer, your job might be:</p>
+            <ul>
+                <li>Build the React interface</li>
+                <li>Build the Node.js API</li>
+                <li>Implement authentication</li>
+                <li>Connect an LLM</li>
+                <li>Create embeddings</li>
+                <li>Implement RAG</li>
+                <li>Store/retrieve vectors</li>
+                <li>Handle prompts</li>
+                <li>Evaluate responses</li>
+                <li>Deploy the application</li>
+            </ul>
+            <p>You don't necessarily need to invent a new transformer architecture.</p>
+            <p>When you need more mathematics</p>
+            <p>If you want to become an ML researcher, then mathematics becomes much more important:</p>
+            <pre><code>
+Linear Algebra
+     ↓
+Calculus
+     ↓
+Probability
+     ↓
+Statistics
+     ↓
+Optimization
+     ↓
+Machine Learning
+     ↓
+Deep Learning
+            </code></pre>
+            <p>For example, you might study:</p>
+            <pre><code>
+y=Wx+b
+            </code></pre>
+            <p>and understand how gradient descent changes W:</p>
+            <pre><code>
+Wnew​=W−η∂W∂L​
+            </code></pre>
+            <p>An AI developer should understand what this means conceptually. An AI scientist may need to understand and derive it deeply.</p>
+            <p>For you specifically</p>
+            <p>Given your existing background in React, Node.js, Python, Swift, Objective-C, TensorFlow, Core ML and backend development, I would not recommend trying to become an AI scientist first.</p>
+            <p>A better path is:</p>
+            <pre><code>
+    Senior Software Developer
+        ↓
+AI Developer
+        ↓
+AI Full-Stack Developer
+        ↓
+ML Engineer        ← optional
+        ↓
+AI Scientist       ← only if you really enjoy research/math
+            </code></pre>
+            <p>Your biggest advantage is that you already know how to build production software. You can add AI knowledge on top of that rather than starting over as a mathematician.</p>
+            <p>In short:</p>
+            <ul>
+                <li>AI scientist = creates/improves the AI.</li>
+                <li>AI developer = uses AI to create software.</li>
+            </ul>
+            <p>Both are valuable, but they are different careers.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

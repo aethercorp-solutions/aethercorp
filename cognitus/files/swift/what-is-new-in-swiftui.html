@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> What's new in SwiftUI </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> What's new in SwiftUI </h1>
+                    <p class="subtitle"> 
+                        If you're asking what's new in SwiftUI in recent versions of iOS and Xcode, SwiftUI has evolved significantly. It is Apple's modern UI framework for building native iPhone, iPad, Mac, Apple Watch, and Apple TV applications using Swift. 
+                        <p>Since you already have experience with native iOS development using UIKit, Swift, and Objective-C, the biggest change is how you build interfaces: SwiftUI uses a declarative approach instead of manually managing views and updating their properties.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. The biggest differences between UIKit and SwiftUI </h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>UIKit (traditional)</th>
+                        <th>SwiftUI (modern)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>UIViewController</td>
+                        <td>View structures</td>
+                    </tr>
+                    <tr>
+                        <td>Storyboards, XIBs, or programmatic views</td>
+                        <td>Swift-based UI declarations</td>
+                    </tr>
+                    <tr>
+                        <td>Manually update labels and buttons</td>
+                        <td>UI updates automatically when state changes</td>
+                    </tr>
+                    <tr>
+                        <td>Auto Layout constraints</td>
+                        <td>VStack, HStack, ZStack, and modifiers</td>
+                    </tr>
+                    <tr>
+                        <td>Delegate and target-action patterns</td>
+                        <td>State bindings and closures</td>
+                    </tr>
+                    <tr>
+                        <td>UITableView / UICollectionView</td>
+                        <td>List / LazyVGrid / LazyHGrid</td>
+                    </tr>
+                    <tr>
+                        <td>Imperative lifecycle</td>
+                        <td>onAppear, task, and view lifecycle hooks</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>For example, a UIKit label requires creating a UILabel and configuring it. In SwiftUI:</p>
+            <pre><code>
+struct ContentView: View {
+    var body: some View {
+        Text("Hello, SwiftUI!")
+            .font(.title)
+            .foregroundStyle(.blue)
+            .padding()
+    }
+}
+            </code></pre>
+            <p>You describe what the UI should look like, and SwiftUI manages rendering it.</p>
+        </section>
+
+        <section>
+            <h2>2. Important modern SwiftUI features</h2>
+            <p>1. Liquid Glass — iOS 26</p>
+            <p>Apple's newer translucent design language changes the appearance of navigation bars, tab bars, toolbars, and controls. SwiftUI adopts much of the system appearance automatically, with APIs to customize glass effects. </p>
+        
+            <p>2. Reordering views — 2027 platform releases</p>
+            <p>New APIs allow users to drag and reorder items in List, LazyVGrid, and other supported containers without implementing all the drag-and-drop logic yourself. </p>
+        
+            <p>3. Smarter toolbars</p>
+            <p>New toolbar controls can prioritize important actions, move lower-priority items into overflow menus, and automatically minimize the top bar while scrolling. These features are part of the announced 2027 platform updates. </p>
+
+            <p>4. Swipe actions beyond List</p>
+            <p>The new swipeActionsContainer API extends swipe-action support to custom scrollable layouts, making it easier to build interfaces with actions such as archive, delete, or mark as complete. </p>
+        
+            <p>5. Better document handling</p>
+            <p>Expanded document APIs support more direct file reading and writing, progress reporting, and document creation workflows. This is especially useful for editors, file-management apps, and productivity tools. </p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

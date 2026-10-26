@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Tool calling </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Tool calling </h1>
+                    <p class="subtitle"> 
+                        Tool calling is a feature that allows an AI model to use external functions, APIs, databases, and other software to perform actions instead of only generating text. 
+                        <p>Think of it this way: the AI decides what needs to be done, calls a tool to do it, receives the result, and then responds to the user.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. How tool calling works </h2>
+            <pre><code>
+1. User asks a question
+"Find the current status of application REF-123"
+            </code></pre>
+
+            <pre><code>
+2. AI selects a tool
+Decides to call getApplicationStatus().
+            </code></pre>
+
+
+            <pre><code>
+3. Tool executes
+Your backend calls the API or queries the database.
+            </code></pre>
+
+            <pre><code>
+4. AI returns the result
+"Application REF-123 is awaiting review."
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Example using Node.js and an AI API</h2>
+            <p>Suppose you're building an immigration services platform and want an AI assistant to look up application statuses.</p>
+            <p>First, define a tool the AI is allowed to request:</p>
+            <pre><code>
+const tools = [
+  {
+    type: "function",
+    name: "get_application_status",
+    description: "Get an application's current status",
+    parameters: {
+      type: "object",
+      properties: {
+        referenceNumber: {
+          type: "string",
+          description: "Application reference number"
+        }
+      },
+      required: ["referenceNumber"],
+      additionalProperties: false
+    },
+    strict: true
+  }
+];
+            </code></pre>
+            <p>The AI can request a call with arguments like:</p>
+            <pre><code>
+{
+    "referenceNumber": "REF-123"
+}
+            </code></pre>
+            <p>Your application executes the corresponding function:</p>
+            <pre><code>
+async function getApplicationStatus(referenceNumber) {
+    const response = await fetch(
+        `https://api.example.com/applications/${encodeURIComponent(referenceNumber)}`,
+        {
+        headers: {
+            Authorization: `Bearer ${process.env.API_TOKEN}`
+        }
+        }
+    );
+    
+    if (!response.ok) {
+        throw new Error("Unable to retrieve application status");
+    }
+    
+    const application = await response.json();
+    
+    return {
+        referenceNumber: application.referenceNumber,
+        status: application.status,
+        updatedAt: application.updatedAt
+    };
+}
+            </code></pre>
+            <p>Important: defining a tool does not execute it automatically. Your application must handle the AI's tool-call request, validate the arguments, execute the function, and send the result back to the model so it can formulate its answer. The example function is illustrative and would need to be connected to your actual API.</p>
+        </section>
+
+        <section>
+            <h2>3. Tool calling vs. a normal AI response</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Normal AI response</th>
+                        <th>AI with tool calling</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Generates text from its available context</td>
+                        <td>Can request real operations</td>
+                    </tr>
+                    <tr>
+                        <td>May not know current database values</td>
+                        <td>Can retrieve current data</td>
+                    </tr>
+                    <tr>
+                        <td>Cannot send an email by merely describing it</td>
+                        <td>Can request an email-sending function</td>
+                    </tr>
+                    <tr>
+                        <td>Can suggest a calculation</td>
+                        <td>Can call a calculator or execute code</td>
+                    </tr>
+                    <tr>
+                        <td>Answers based on provided information</td>
+                        <td>Can retrieve information and then answer</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Tool calling does not mean the AI can access everything on your computer or server. It can only use tools that your application or platform makes available, subject to their permissions.</p>
+        </section>
+
+        <section>
+            <h2>4. Tool calling vs. MCP vs. agentic AI</h2>
+            <p>These three concepts are related but different.</p>
+            <p>Tool calling</p>
+            <p>The mechanism an AI uses to request a function, such as searchClients() or sendEmail().</p>
+
+            <p>MCP (Model Context Protocol)</p>
+            <p>A standard way for AI applications to discover and interact with tools and resources exposed by MCP servers.</p>
+        
+            <p>Agentic AI</p>
+            <p>An AI system that can plan and perform multiple steps, using tools repeatedly to work toward a goal.</p>
+        </section>
+
+        <section>
+            <h2>5. How you could use it in a production system</h2>
+            <p>For an immigration services platform like the one you're exploring, you could expose tools such as:</p>
+            <ul>
+                <li>get_client_details() — retrieve authorized client records.</li>
+                <li>search_immigration_rules() — find relevant official guidance in a RAG knowledge base.</li>
+                <li>extract_document_fields() — request structured extraction from a document.</li>
+                <li>check_missing_documents() — compare client records with a required-document checklist.</li>
+                <li>create_follow_up_draft() — prepare an email for a caseworker to review.</li>
+                <li>update_case_status() — update a case after authorization and validation.</li>
+            </ul>
+            <p>The AI chooses when to request a tool, but your backend should enforce access controls, validate inputs, log important actions, and require human approval for consequential operations.</p>
+            <p>Interview-ready explanation:</p>
+            <p>Tool calling allows an LLM to interact with external systems through predefined functions. I define each tool with a clear description and schema, let the model request the appropriate function, validate the arguments on the backend, execute the API or database operation, and return the result to the model. In production, I also implement authentication, authorization, error handling, retries where appropriate, and audit logging. This enables AI applications to do useful work while keeping business logic and security under application control.</p>
+            <p>For your Node.js and AI integration work, the next useful step is learning how to implement the full tool-calling loop with the OpenAI or Anthropic API, including multiple tool calls and error handling.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

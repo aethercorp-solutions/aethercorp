@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Network consensus </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Network consensus </h1>
+                    <p class="subtitle"> Network consensus means: </p>
+                    <p>A group of computers in a network agree on what is true and what should be recorded.</p>
+                    <p>In cryptocurrency, this is extremely important because there is no single bank deciding which transactions are valid.</p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Simple example </h2>
+            <p>Imagine 5 people have copies of the same notebook:</p>
+            <pre><code>
+Alice's notebook
+Bob's notebook
+Carlos's notebook
+David's notebook
+Eve's notebook
+            </code></pre>
+            <p>Everyone records transactions.</p>
+            <p>Now Paul says:</p>
+            <p>"I sent 2 BTC to Alice."</p>
+            <p>The network checks whether Paul actually has 2 BTC and whether the transaction follows the rules.</p>
+            <p>If the network agrees:</p>
+            <pre><code>
+Paul → Alice
+ 2 BTC
+   ↓
+Everyone records it
+            </code></pre>
+            <p>Now all the notebooks have essentially the same history.</p>
+            <p>That's consensus.</p>
+        </section>
+
+        <section>
+            <h2>Why do we need consensus?</h2>
+            <p>Imagine there were no consensus mechanism.</p>
+            <p>Paul could tell one computer:</p>
+            <p>"I sent 2 BTC to Alice."</p>
+            <p>and another:</p>
+            <p>"I sent the same 2 BTC to Bob."</p>
+            <p>You would have:</p>
+            <pre><code>
+Computer A: Paul → Alice  2 BTC
+
+Computer B: Paul → Bob    2 BTC
+            </code></pre>
+            <p>Now the network disagrees about reality.</p>
+            <p>That's a major problem for digital money.</p>
+            <p>Consensus solves this by providing rules for determining:</p>
+            <p>Which transactions are valid and what the official history of the network is.</p>
+        </section>
+
+        <section>
+            <h2>Bitcoin's consensus</h2>
+            <p>Bitcoin uses a mechanism called Proof of Work (PoW).</p>
+            <p>Very roughly:</p>
+            <pre><code>
+Transactions
+     ↓
+Bitcoin nodes verify them
+     ↓
+Miners compete to produce a block
+     ↓
+Network verifies the block
+     ↓
+Block added to blockchain
+     ↓
+Network continues from there
+            </code></pre>
+            <p>The important idea is that no single computer gets to simply declare the truth.</p>
+            <p>The network follows predetermined rules.</p>
+        </section>
+
+        <section>
+            <h2>Think of it like a classroom</h2>
+            <p>Imagine 1 teacher vs. 1,000 students.</p>
+            <p>If the teacher says:</p>
+            <p>"The answer is 42."</p>
+            <p>Everyone accepts it because the teacher has authority.</p>
+            <p>That's somewhat like a centralized system.</p>
+            <p>Now imagine there is no teacher.</p>
+            <p>The students need a procedure for agreeing on the correct answer.</p>
+            <p>They follow predefined rules and verify each other's work.</p>
+            <p>That's closer to decentralized consensus.</p>
+        </section>
+
+        <section>
+            <h2>Consensus ≠ everyone voting</h2>
+            <p>This is an important distinction.</p>
+            <p>When people hear "consensus," they might imagine:</p>
+            <p>"51% of computers vote YES."</p>
+            <p>That's not quite how Bitcoin works.</p>
+            <p>Bitcoin nodes independently verify transactions against the protocol's rules.</p>
+            <p>The network's consensus emerges from everyone following the same rules and converging on the same valid blockchain history.</p>
+        </section>
+
+        <section>
+            <h2>The big picture</h2>
+            <p>This connects directly to your previous question about why people can trust cryptocurrency:</p>
+            <p>Cryptography → proves authorization</p>
+            <p>Consensus → determines what transactions are accepted</p>
+            <p>Blockchain → records the agreed history</p>
+            <p>Scarcity → limits the asset</p>
+            <p>Network adoption → creates demand</p>
+            <p>Demand → contributes to market value</p>
+            <p>So consensus is essentially the mechanism that answers:</p>
+            <p>"In a decentralized system with no bank in charge, how do all these computers agree on what happened?"</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

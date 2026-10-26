@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Local RAG project with Node.js + MongoDB </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Local RAG project with Node.js + MongoDB </h1>
+                    <p class="subtitle"> For a local RAG project with Node.js + MongoDB, a good development setup is: </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> LOCAL MACHINE </h2>
+            <pre><code>
+                ┌─────────────────────────────────────────────┐
+                │                                             │
+                │  Node.js / Express                          │
+                │       │                                     │
+                │       ├── Document ingestion                │
+                │       ├── PDF chunking                      │
+                │       ├── Embeddings                        │
+                │       ├── Vector search                     │
+                │       └── LLM generation                    │
+                │              │                              │
+                │              ▼                              │
+                │       ┌───────────────┐                     │
+                │       │   MongoDB     │                     │
+                │       │               │                     │
+                │       │ documents     │                     │
+                │       │ chunks        │                     │
+                │       │ embeddings    │                     │
+                │       └───────────────┘                     │
+                │                                             │
+                └─────────────────────────────────────────────┘
+            </code></pre>
+            <p>For MongoDB, I'd recommend MongoDB Atlas locally accessible if you want MongoDB Vector Search later, but if your goal is to learn the architecture first, you can run MongoDB locally with Docker.</p>
+        </section>
+
+        <section>
+            <h2>1. Install Node.js</h2>
+            <p>Check:</p>
+            <pre><code>
+node -v
+npm -v
+            </code></pre>
+            <p>I'd use Node.js 24 LTS/current LTS line for a new project.</p>
+            <p>Create your project:</p>
+            <pre><code>
+mkdir rag-node
+cd rag-node
+
+npm init -y
+            </code></pre>
+            <p>Install the basic packages:</p>
+            <pre><code>
+npm install express mongoose dotenv cors
+            </code></pre>
+            <p>For development:</p>
+            <pre><code>
+npm install -D nodemon
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Run MongoDB locally with Docker</h2>
+            <p>This is probably the easiest setup.</p>
+            <p>Check Docker:</p>
+            <pre><code>
+docker --version
+            </code></pre>
+            <p>Run MongoDB:</p>
+            <pre><code>
+docker run -d \
+  --name rag-mongodb \
+  -p 27017:27017 \
+  -v rag-mongodb-data:/data/db \
+  mongo:8
+            </code></pre>
+            <p>Check that it's running:</p>
+            <pre><code>
+docker ps
+            </code></pre>
+            <p>You should see something like:</p>
+            <pre><code>
+CONTAINER ID   IMAGE     PORTS
+xxxxx          mongo:8   0.0.0.0:27017->27017/tcp
+            </code></pre>
+            <p>Your local MongoDB connection is:</p>
+            <pre><code>
+mongodb://localhost:27017
+            </code></pre>
+        </section>
+
+        <section>
+            <p>The easiest way to understand Docker is to think of your Mac as the physical computer, and Docker containers as isolated little environments running inside Docker on that computer.</p>
+            <h2>Your local computer</h2>
+            <pre><code>
+┌──────────────────────────────────────────────────────────────┐
+│                     YOUR MAC                                 │
+│                                                              │
+│  macOS                                                       │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │                    DOCKER                              │  │
+│  │                                                        │  │
+│  │  ┌──────────────────┐     ┌────────────────────────┐   │  │
+│  │  │ Container        │     │ Container              │   │  │
+│  │  │                  │     │                        │   │  │
+│  │  │ Node.js          │     │ MongoDB                │   │  │
+│  │  │                  │     │                        │   │  │
+│  │  │ Port 3000        │     │ Port 27017             │   │  │
+│  │  └────────┬─────────┘     └──────────┬─────────────┘   │  │
+│  │           │                          │                 │  │
+│  └───────────┼──────────────────────────┼────────────────-┘  │
+│              │                          │                    │
+│              ▼                          ▼                    │
+│         localhost:3000            localhost:27017            │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+            </code></pre>
+            <p>The important thing is:</p>
+            <p>Docker containers are not separate physical computers.</p>
+            <p>They are isolated processes running under Docker on your computer.</p>
+        </section>
+
+        <section>
+            <h2>Compare it to installing normally</h2>
+            <p>Without Docker, you might install:</p>
+            <pre><code>
+YOUR MAC
+│
+├── Node.js
+│
+├── MongoDB
+│
+├── Redis
+│
+├── Python
+│
+└── PostgreSQL
+            </code></pre>
+            <p>Everything is installed directly into macOS.</p>
+            <p>With Docker:</p>
+            <pre><code>
+YOUR MAC
+│
+├── macOS
+│
+└── Docker
+     │
+     ├── Node.js Container
+     │
+     ├── MongoDB Container
+     │
+     ├── Redis Container
+     │
+     └── PostgreSQL Container
+            </code></pre>
+            <p>That's the basic idea.</p>
+        </section>
+
+        <section>
+            <h2>Your RAG project specifically</h2>
+            <p>You could eventually have this:</p>
+            <pre><code>
+                YOUR MAC
+                ┌─────────────────────────────────────────────────────────────┐
+                │                                                             │
+                │                         macOS                               │
+                │                                                             │
+                │  ┌───────────────────────────────────────────────────────┐  │
+                │  │                       DOCKER                          │  │
+                │  │                                                       │  │
+                │  │  ┌─────────────────┐                                  │  │
+                │  │  │ Node.js         │                                  │  │
+                │  │  │ RAG API         │                                  │  │
+                │  │  │                 │                                  │  │
+                │  │  │ :3000           │                                  │  │
+                │  │  └────────┬────────┘                                  │  │
+                │  │           │                                           │  │
+                │  │           │                                           │  │
+                │  │           ▼                                           │  │
+                │  │  ┌─────────────────┐                                  │  │
+                │  │  │ MongoDB         │                                  │  │
+                │  │  │                 │                                  │  │
+                │  │  │ documents       │                                  │  │
+                │  │  │ chunks          │                                  │  │
+                │  │  │ embeddings      │                                  │  │
+                │  │  │                 │                                  │  │
+                │  │  │ :27017          │                                  │  │
+                │  │  └─────────────────┘                                  │  │
+                │  │                                                       │  │
+                │  │  ┌─────────────────┐                                  │  │
+                │  │  │ Redis           │                                  │  │
+                │  │  │                 │                                  │  │
+                │  │  │ cache / queue   │                                  │  │
+                │  │  │                 │                                  │  │
+                │  │  │ :6379           │                                  │  │
+                │  │  └─────────────────┘                                  │  │
+                │  │                                                       │  │
+                │  │  ┌─────────────────┐                                  │  │
+                │  │  │ Ollama / LLM    │                                  │  │
+                │  │  │                 │                                  │  │
+                │  │  │ Local AI model  │                                  │  │
+                │  │  │                 │                                  │  │
+                │  │  │ :11434          │                                  │  │
+                │  │  └─────────────────┘                                  │  │
+                │  │                                                       │  │
+                │  └───────────────────────────────────────────────────────┘  │
+                │                                                             │
+                └─────────────────────────────────────────────────────────────┘
+            </code></pre>
+            <p>Your browser can access:</p>
+            <pre><code>
+http://localhost:3000
+            </code></pre>
+            <p>Your Node.js application can access MongoDB:</p>
+            <pre><code>
+mongodb://mongodb:27017/ragdb
+            </code></pre>
+            <p>if Node.js and MongoDB are both containers on the same Docker network.</p>
+        </section>
+
+        <section>
+            <h2>What does "container" actually mean?</h2>
+            <p>Imagine your Mac has a big building:</p>
+            <pre><code>
+                YOUR MAC
+                ┌───────────────────────┐
+                │                       │
+                │       DOCKER          │
+                │                       │
+                │  ┌─────┐   ┌─────┐    │
+                │  │Node │   │Mongo│    │
+                │  │     │   │     │    │
+                │  └─────┘   └─────┘    │
+                │                       │
+                └───────────────────────┘
+            </code></pre>
+            <p>Each container has its own:</p>
+            <ul>
+                <li>filesystem</li>
+                <li>processes</li>
+                <li>networking</li>
+                <li>environment variables</li>
+                <li>dependencies</li>
+            </ul>
+            <p>So your MongoDB container doesn't need MongoDB installed directly on macOS.</p>
+        </section>
+
+        <section>
+            <h2>But containers share your computer's resources</h2>
+            <p>This is important.</p>
+            <p>Containers aren't virtual machines in the traditional sense.</p>
+            <p>They ultimately use your Mac's:</p>
+            <pre><code>
+CPU
+RAM
+Disk
+Network
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+                YOUR MAC
+                16 GB RAM
+                     │
+            ┌────────┴────────┐
+            │                 │
+         Docker            macOS
+            │
+      ┌─────┼─────────┐
+      │     │         │
+   Node   Mongo     Redis
+    1GB    2GB       500MB
+            </code></pre>
+            <p>Docker manages those processes and resources.</p>
+        </section>
+
+        <section>
+            <h2>And your MongoDB volume is outside the container</h2>
+            <p>This part is especially important for the command you asked about earlier.</p>
+            <p>You had:</p>
+            <pre><code>
+-v rag-mongodb-data:/data/db
+            </code></pre>
+            <p>Visually:</p>
+            <pre><code>
+YOUR MAC
+│
+└── Docker
+     │
+     └── MongoDB Container
+          │
+          │ /data/db
+          ▼
+     ┌──────────────────────┐
+     │ rag-mongodb-data     │
+     │                      │
+     │ MongoDB data         │
+     │                      │
+     │ documents            │
+     │ chunks               │
+     │ embeddings           │
+     └──────────────────────┘
+            </code></pre>
+            <p>So:</p>
+            <pre><code>
+Container = MongoDB program/environment
+
+Volume = persistent MongoDB data
+            </code></pre>
+            <p>If you delete the container:</p>
+            <pre><code>
+docker rm rag-mongodb
+            </code></pre>
+            <p>the volume can remain:</p>
+            <pre><code>
+rag-mongodb-data
+            </code></pre>
+            <p>Then you can create another MongoDB container and attach the same volume.</p>
+        </section>
+
+        <section>
+            <h2>The simplest mental model</h2>
+            <p>Think of your Mac as a house:</p>
+            <pre><code>
+🏠 YOUR MAC
+│
+├── 📦 Node.js container
+├── 📦 MongoDB container
+├── 📦 Redis container
+└── 📦 Ollama container
+            </code></pre>
+            <p>Each 📦 is isolated, but they're all running inside your computer.</p>
+            <p>And Docker Compose becomes the thing that says:</p>
+            <p>"Start all these boxes, connect them together, configure their ports, and give them persistent storage."</p>
+            <p>For your Node.js + MongoDB RAG project, Docker Compose is the next concept I'd learn after docker run, because it makes this whole architecture much easier to manage.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

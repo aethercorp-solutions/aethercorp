@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Platform authentication vs Application authentication </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Platform authentication vs Application authentication </h1>
+                    <p class="subtitle"> 
+                        
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <p>The simplest way to think about it is:</p>
+            <ul>
+                <li>Platform authentication = “Which platform are you using?”</li>
+                <li>Application authentication = “Which user/application is allowed to use my backend?”</li>
+            </ul>
+            <p>In your AWS + Node.js serverless architecture, you typically want both.</p>
+
+            <h2> 1. Platform authentication </h2>
+            <p>This identifies where the request comes from or which platform-specific authentication mechanism is being used.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>iOS → Sign in with Apple / Google Sign-In</li>
+                <li>Android → Google Sign-In</li>
+                <li>Web → Google OAuth / web login</li>
+                <li>Internal service → API key or service credentials</li>
+            </ul>
+            <p>For example:</p>
+            <pre><code>
+iOS
+  ↓
+Apple / Google authentication
+  ↓
+identity from provider
+            </code></pre>
+            <p>Platform authentication answers:</p>
+            <pre><code>
+"How did this user authenticate?"
+"Which platform/provider is involved?"
+            </code></pre>
+            <p>You might have:</p>
+            <pre><code>
+platform = "ios"
+platform = "android"
+platform = "web"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Application authentication</h2>
+            <p>This is authentication between your client and your own backend.</p>
+            <p>For your system:</p>
+            <pre><code>
+React Native / Web
+       ↓
+   Login
+       ↓
+Your Node.js API
+       ↓
+Application JWT
+            </code></pre>
+            <p>After successful login, your backend can issue something like:</p>
+            <pre><code>
+{
+    "accessToken": "your-application-jwt",
+    "refreshToken": "...",
+    "userId": "123",
+    "platform": "ios"
+}
+            </code></pre>
+            <p>The application JWT is then used on API requests:</p>
+            <pre><code>
+Authorization: Bearer &lt;application-jwt&gt;
+            </code></pre>
+            <p>Your Lambda/API Gateway middleware verifies:</p>
+            <pre><code>
+JWT signature
+JWT expiration
+user identity
+claims
+            </code></pre>
+            <p>Application authentication answers:</p>
+            <pre><code>
+"Is this request authenticated with MY application?"
+"Which user is making this request?"
+"Is their application session still valid?"
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The important distinction</h2>
+            <p>Imagine a user logs in with Google on iOS:</p>
+            <pre><code>
+                PLATFORM AUTH
+                iPhone ────────────────→ Google
+                                           │
+                                           │ Google identity/token
+                                           ↓
+                                    Your Node.js API
+                                           │
+                                           │ verify Google identity
+                                           ↓
+                              APPLICATION AUTH
+                                    Your JWT
+                                           │
+                                           ↓
+                                 Your API endpoints
+            </code></pre>
+            <p>Google's token is not necessarily your application's session token.</p>
+            <p>You can use Google's authentication to establish identity, then issue your own application JWT.</p>
+        </section>
+
+        <section>
+            <h2>Why separate them?</h2>
+            <p>This becomes especially important with your iOS + Android + Web architecture.</p>
+            <p>You could have:</p>
+            <pre><code>
+                ┌── iOS ──────── Google / Apple
+                │
+User ────────────┼── Android ──── Google
+                │
+                └── Web ──────── Google
+                        │
+                        ↓
+                 Identity Provider
+                        │
+                        ↓
+                 Your Backend
+                        │
+                        ↓
+               Application JWT
+                        │
+             ┌──────────┼──────────┐
+             ↓          ↓          ↓
+           iOS       Android      Web
+            </code></pre>
+            <p>The platform/provider authentication can vary, while your application's authentication remains consistent.</p>
+            <p>For example:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>iOS</th>
+                        <th>Android</th>
+                        <th>Web</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Platform authentication</td>
+                        <td>Apple/Google</td>
+                        <td>Google</td>
+                        <td>Google</td>
+                    </tr>
+                    <tr>
+                        <td>Provider token</td>
+                        <td>Apple/Google token</td>
+                        <td>Google token</td>
+                        <td>Google token</td>
+                    </tr>
+                    <tr>
+                        <td>Backend authentication</td>
+                        <td>Your JWT</td>
+                        <td>Your JWT</td>
+                        <td>Your JWT</td>
+                    </tr>
+                    <tr>
+                        <td>Refresh mechanism</td>
+                        <td>Your refresh token</td>
+                        <td>Your refresh token</td>
+                        <td>Your refresh token</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>In your current architecture</h2>
+            <p>Based on the JWT/refresh-token system you've been working on, I'd recommend thinking of it as:</p>
+            <pre><code>
+                PLATFORM AUTHENTICATION
+                ───────────────────────
+                Google / Apple / etc.
+                         │
+                         ↓
+                Verify provider token
+                         │
+                         ↓
+                Find/create application user
+                         │
+                         ↓
+                APPLICATION AUTHENTICATION
+                ─────────────────────────
+                Application Access JWT
+                         │
+                         ↓
+                API requests
+                         │
+                 JWT expires
+                         ↓
+                Application refresh
+                         │
+                         ↓
+                New Application JWT
+            </code></pre>
+            <p>So when your application JWT expires, you generally do not make the user log in to Google/Apple again. Your refresh-token mechanism should establish a new application session.</p>
+            <p>That distinction is also why your earlier problem with userTokenMustExist rejecting an expired application JWT matters: the refresh endpoint needs a separate validation path that can accept an expired-but-authentic JWT and use the refresh credential to issue a new application JWT.</p>
+        </section>
+
+        <section>
+            <p>Firebase Authentication with Google and direct Google OAuth using Google's SDK use the same underlying Google OAuth identity system, but they have different responsibilities and flows.</p>
+            <h2>1. Direct Google OAuth</h2>
+            <p>Your app talks directly to Google:</p>
+            <pre><code>
+iOS / Android / Web
+       ↓
+Google OAuth SDK
+       ↓
+Google
+       ↓
+Google ID Token / Access Token
+       ↓
+Your Node.js backend
+       ↓
+Verify Google token
+       ↓
+Create your own application session/JWT
+            </code></pre>
+            <p>You are responsible for:</p>
+            <ul>
+                <li>Google OAuth configuration</li>
+                <li>verifying Google ID tokens</li>
+                <li>managing your application's users</li>
+                <li>issuing your own JWT/session</li>
+                <li>refresh-token handling</li>
+                <li>linking accounts</li>
+                <li>platform-specific OAuth behavior</li>
+            </ul>
+            <p>For example, your existing architecture can do:</p>
+            <pre><code>
+Google SDK
+   ↓
+Google ID Token
+   ↓
+POST /auth/google
+   ↓
+Node.js
+   ↓
+Verify Google token
+   ↓
+Find/create user
+   ↓
+Issue Application JWT
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>2. Firebase Authentication with Google</h2>
+            <p>Firebase sits between your application and Google:</p>
+            <pre><code>
+iOS / Android / Web
+       ↓
+Firebase Auth SDK
+       ↓
+Google
+       ↓
+Firebase Authentication
+       ↓
+Firebase ID Token
+       ↓
+Your Node.js backend
+       ↓
+Verify Firebase ID Token
+            </code></pre>
+            <p>Firebase handles much of the authentication infrastructure for you:</p>
+            <ul>
+                <li>Google sign-in</li>
+                <li>user identity management</li>
+                <li>token issuance</li>
+                <li>token refresh</li>
+                <li>account linking</li>
+                <li>authentication state</li>
+                <li>multiple authentication providers</li>
+            </ul>
+            <p>Your backend verifies the Firebase ID token, rather than directly verifying Google's ID token.</p>
+        </section>
+
+        <section>
+            <h2>The important distinction</h2>
+            <p>The Google account is ultimately the same identity, but the token your backend receives is different.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Direct Google OAuth</th>
+                        <th>Firebase Auth + Google</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Identity provider</td>
+                        <td>Google</td>
+                        <td>Google through Firebase</td>
+                    </tr>
+                    <tr>
+                        <td>SDK</td>
+                        <td>Google SDK</td>
+                        <td>Firebase Auth SDK</td>
+                    </tr>
+                    <tr>
+                        <td>Backend verifies</td>
+                        <td>Google ID token</td>
+                        <td>Firebase ID token</td>
+                    </tr>
+                    <tr>
+                        <td>User database</td>
+                        <td>You manage it</td>
+                        <td>Firebase manages auth users</td>
+                    </tr>
+                    <tr>
+                        <td>Token management</td>
+                        <td>You manage more</td>
+                        <td>Firebase handles much of it</td>
+                    </tr>
+                    <tr>
+                        <td>Google API access</td>
+                        <td>Straightforward</td>
+                        <td>Usually still need Google OAuth access token</td>
+                    </tr>
+                    <tr>
+                        <td>Custom backend JWT</td>
+                        <td>You can issue one</td>
+                        <td>You can still issue one</td>
+                    </tr>
+                    <tr>
+                        <td>Complexity</td>
+                        <td>More control</td>
+                        <td>Easier authentication</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>For your AWS Node.js architecture</h2>
+            <p>Given the authentication system you've been building, you could have:</p>
+            <pre><code>
+                ┌── Google OAuth
+                iOS ─────────┤
+                             │
+                Android ─────┤──→ Node.js API ──→ MongoDB
+                             │
+                Web ─────────┘
+            </code></pre>
+            <p>with your backend issuing your own:</p>
+            <pre><code>
+Application Access JWT
+Application Refresh Token
+            </code></pre>
+            <p>Or:</p>
+            <pre><code>
+                ┌── Google
+                ↓
+   iOS/Android/Web
+                ↓
+          Firebase Auth
+                ↓
+         Firebase ID Token
+                ↓
+          Node.js API
+                ↓
+             MongoDB
+                ↓
+      Your Application JWT
+            </code></pre>
+            <p>So Firebase Auth is not simply "another Google OAuth SDK." It is an authentication service that can use Google as an identity provider.</p>
+            <p>For your current multi-platform iOS + Android + Web + AWS Serverless architecture, the choice mainly comes down to whether you want Firebase to own the authentication layer or whether you want your Node.js backend to own authentication directly.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

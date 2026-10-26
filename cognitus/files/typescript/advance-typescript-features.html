@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Advanced TypeScript Features</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Advanced TypeScript Features</h1>
+                    <p class="subtitle">
+                        Advanced TypeScript features help you write safer, smarter, and more reusable code. Here's a simple explanation of the most useful ones.
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Generics</h2>
+            <p>Create code that works with any type.</p>
+            <p>Without generics:</p>
+            <pre><code>
+function getFirst(arr: string[]): string {
+    return arr[0];
+}
+            </code></pre>
+            <p>With generics:</p>
+            <pre><code>
+function getFirst<T>(arr: T[]): T {
+    return arr[0];
+}
+
+getFirst([1, 2, 3]);       // number
+getFirst(["a", "b"]);      // string
+            </code></pre>
+            <p>Think of it as:</p>
+            <p>"I don't care what type it is. Just keep it consistent."</p>
+        </section>
+
+        <section>
+            <h2>2. keyof</h2>
+            <p>Get all property names of an object.</p>
+            <pre><code>
+interface User {
+    name: string;
+    age: number;
+}
+
+type Keys = keyof User;
+            </code></pre>
+            <p>Keys becomes:</p>
+            <pre><code>
+"name" | "age"
+            </code></pre>
+            <p>Useful for preventing invalid property names.</p>
+            <pre><code>
+function getValue&lt;T, K extends keyof T&gt;(obj: T, key: K) {
+    return obj[key];
+}
+
+getValue(user, "name"); // ✅
+getValue(user, "email"); // ❌ Error
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. extends</h2>
+            <p>Limit what types are allowed.</p>
+            <pre><code>
+function printLength&lt;T extends { length: number }&gt;(item: T) {
+    console.log(item.length);
+}
+            </code></pre>
+            <p>Works:</p>
+            <pre><code>
+printLength("Hello");
+printLength([1, 2, 3]);
+            </code></pre>
+            <p>Doesn't work:</p>
+            <pre><code>
+printLength(100);
+            </code></pre>
+            <p>because numbers don't have length.</p>
+        </section>
+
+        <section>
+            <h2>4. Union Types</h2>
+            <p>One variable can have multiple possible types.</p>
+            <pre><code>
+let id: string | number;
+
+id = 1;
+id = "ABC";
+            </code></pre>
+            <p>Like saying:</p>
+            <p>"This can be either a string or a number."</p>
+        </section>
+
+        <section>
+            <h2>5. Intersection Types</h2>
+            <p>Combine multiple types together.</p>
+            <pre><code>
+type Person = {
+    name: string;
+};
+
+type Employee = {
+    salary: number;
+};
+
+type Staff = Person & Employee;
+            </code></pre>
+            <p>Now:</p>
+            <pre><code>
+const user: Staff = {
+    name: "John",
+    salary: 50000
+};
+            </code></pre>
+            <p>Think:</p>
+            <p>Merge two objects into one.</p>
+        </section>
+
+        <section>
+            <h2>6. Utility Types</h2>
+            <p>Partial</p>
+            <p>Makes every property optional.</p>
+            <pre><code>
+interface User {
+    name: string;
+    age: number;
+}
+    
+type UpdateUser = Partial&lt;User&gt;;
+            </code></pre>
+            <p>Now:</p>
+            <pre><code>
+{
+    name: "Paul"
+}
+            </code></pre>
+            <p>is valid.</p>
+        </section>
+
+        <section>
+            <h2>Pick</h2>
+            <p>Choose only certain properties.</p>
+            <pre><code>
+type BasicUser = Pick&lt;User, "name"&gt;
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+{
+    name: string;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Omit</h2>
+            <p>Remove properties.</p>
+            <pre><code>
+type UserWithoutAge = Omit&lt;User, "age"&gt;;
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+{
+    name: string;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Readonly</h2>
+            <p>Prevent changes.</p>
+            <pre><code>
+const user: Readonly&lt;User&gt; = {
+    name: "Paul",
+    age: 25
+};
+
+user.age = 30; // Error
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Mapped Types</h2>
+            <p>Transform every property in an object.</p>
+            <pre><code>
+type Optional&lt;T&gt; = {
+    [K in keyof T]?: T[K];
+};
+            </code></pre>
+            <p>Instead of writing optional versions manually.</p>
+        </section>
+
+        <section>
+            <h2>8. Conditional Types</h2>
+            <p>If-else for types.</p>
+            <pre><code>
+type IsString&lt;T&gtrarr; =
+    T extends string ? true : false;
+            </code></pre>
+            <p>Examples:</p>
+            <pre><code>
+IsString&lt;string&gt; // true
+    IsString&lt;number&gt; // false
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>9. infer</h2>
+            <p>Automatically extract a type.</p>
+            <pre><code>
+type Return&lt;T&gt; =
+    T extends (...args: any[]) => infer R
+        ? R
+        : never;
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+function add() {
+    return 10;
+}
+
+type Result = Return&lt;typeof add&gt;;
+            </code></pre>
+            <p>Result becomes:</p>
+            <pre><code>
+number
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>10. Type Guards</h2>
+            <p>Help TypeScript know the type during runtime.</p>
+            <pre><code>
+function print(id: string | number) {
+    if (typeof id === "string") {
+        console.log(id.toUpperCase());
+    } else {
+        console.log(id.toFixed(2));
+    }
+}
+            </code></pre>
+            <p>TypeScript understands which methods are safe in each branch.</p>
+        </section>
+
+        <section>
+            <h2>11. Discriminated Unions</h2>
+            <p>Useful when objects have different shapes.</p>
+            <pre><code>
+type Circle = {
+    kind: "circle";
+    radius: number;
+};
+
+type Square = {
+    kind: "square";
+    size: number;
+};
+
+type Shape = Circle | Square;
+
+function area(shape: Shape) {
+    if (shape.kind === "circle") {
+        return Math.PI * shape.radius ** 2;
+    }
+
+    return shape.size * shape.size;
+}
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>12. Async Type (Awaited)</h2>
+            <p>Extract the resolved value of a Promise.</p>
+            <pre><code>
+type Result = Awaited&lt;Promise&lt;string&gt;&gt;;
+            </code></pre>
+            <p>Result:</p>
+            <pre><code>
+string
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Real-world example (React API)</h2>
+            <pre><code>
+interface User {
+    id: number;
+    name: string;
+}
+
+async function getUser(): Promise&lt;User&gt; {
+    const res = await fetch("/api/user");
+    return res.json();
+}
+
+type UserData = Awaited&lt;ReturnType&lt;typeof getUser&gt;&gt;;
+            </code></pre>
+            <p>UserData automatically becomes:</p>
+            <pre><code>
+User
+            </code></pre>
+            <p>No need to write it twice.</p>
+        </section>
+
+        <section>
+            <h2>Quick summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Simple meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Generics</td>
+                        <td>Reuse code for any type</td>
+                    </tr>
+                    <tr>
+                        <td>keyof</td>
+                        <td>Get object property names</td>
+                    </tr>
+                    <tr>
+                        <td>extends</td>
+                        <td>Restrict allowed types</td>
+                    </tr>
+                    <tr>
+                        <td>Union (|)</td>
+                        <td>One of several types</td>
+                    </tr>
+                    <tr>
+                        <td>Intersection (&)</td>
+                        <td>Combine multiple types</td>
+                    </tr>
+                    <tr>
+                        <td>Partial</td>
+                        <td>Make all properties optional</td>
+                    </tr>
+                    <tr>
+                        <td>Pick</td>
+                        <td>Select specific properties</td>
+                    </tr>
+                    <tr>
+                        <td>Omit</td>
+                        <td>Remove specific properties</td>
+                    </tr>
+                    <tr>
+                        <td>Readonly</td>
+                        <td>Prevent modifications</td>
+                    </tr>
+                    <tr>
+                        <td>Mapped Types</td>
+                        <td>Transform every property in a type</td>
+                    </tr>
+                    <tr>
+                        <td>Conditional Types</td>
+                        <td>If-else logic for types</td>
+                    </tr>
+                    <tr>
+                        <td>infer</td>
+                        <td>Automatically extract a type</td>
+                    </tr>
+                    <tr>
+                        <td>Type Guards</td>
+                        <td>Narrow types safely at runtime</td>
+                    </tr>
+                    <tr>
+                        <td>Discriminated Unions</td>
+                        <td>Safely handle different object shapes</td>
+                    </tr>
+                    <tr>
+                        <td>Awaited</td>
+                        <td>Get the value inside a Promise</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Once you're comfortable with interfaces, classes, and basic types, these advanced features make TypeScript especially powerful by catching more errors at compile time while reducing repetitive code.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

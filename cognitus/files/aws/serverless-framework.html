@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> AWS Serverless Framework </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> AWS Serverless Framework </h1>
+                    <p class="subtitle"> If you mean AWS Serverless Framework, it’s a way to build and deploy serverless applications on AWS using configuration/code rather than manually creating each AWS resource. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Typical stack:</h2>
+            <ul>
+                <li>AWS Lambda — runs your application code</li>
+                <li>Amazon API Gateway — exposes HTTP APIs</li>
+                <li>Amazon DynamoDB — serverless database</li>
+                <li>Amazon S3 — object storage</li>
+                <li>Amazon EventBridge / SQS / SNS — event-driven workflows</li>
+                <li>CloudFormation — provisions the infrastructure</li>
+            </ul>
+            <p>A common Serverless Framework project might look like:</p>
+            <pre><code>
+service: my-api
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: ap-southeast-1
+
+functions:
+  hello:
+    handler: src/handler.hello
+    events:
+      - httpApi:
+          path: /hello
+          method: get
+            </code></pre>
+            <p>Then you can deploy with:</p>
+            <pre><code>
+serverless deploy
+            </code></pre>
+            <p>The framework handles packaging your Lambda, creating/updating the AWS infrastructure, and wiring the resources together.</p>
+            <p>If you're learning it, I can walk you through Serverless Framework from zero → deploying a real AWS API, including AWS credentials, project setup, Lambda, API Gateway, DynamoDB, IAM, and deployment.</p>
+        </section>
+
+        <section>
+            <p>Absolutely. That’s a good way to learn Serverless Framework, especially since you’re already working with a Castanet AWS/Node.js API.</p>
+            <p>We can build it progressively:</p>
+            <ol>
+                <li>
+                    Prerequisites
+                    <ul>
+                        <li>Node.js</li>
+                        <li>AWS account</li>
+                        <li>AWS CLI</li>
+                        <li>AWS IAM user/role</li>
+                        <li>AWS credentials</li>
+                    </ul>
+                </li>
+                <li>
+                    Create a Serverless project
+                    <pre><code>
+mkdir serverless-api
+cd serverless-api
+npm init -y
+npm install -D serverless
+                    </code></pre>
+                </li>
+                <li>
+                    Create a Lambda function
+                    <ul>
+                        <li>Understand handler</li>
+                        <li>Understand Lambda events</li>
+                        <li>Test locally</li>
+                    </ul>
+                </li>
+                <li>
+                    Add API Gateway
+                    <pre><code>
+functions:
+  api:
+    handler: src/handler.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+                    </code></pre>
+                </li>
+                <li>
+                    Deploy to AWS
+                    <pre><code>
+npx serverless deploy
+                    </code></pre>
+                </li>
+                <li>
+                    Add DynamoDB
+                    <ul>
+                        <li>Table definition</li>
+                        <li>CRUD operations</li>
+                        <li>Environment-specific tables</li>
+                    </ul>
+                </li>
+                <li>
+                    Understand IAM
+                    <ul>
+                        <li>Lambda execution roles</li>
+                        <li>
+                            Permissions such as:
+                            <ul>
+                                <li>dynamodb:GetItem</li>
+                                <li>dynamodb:PutItem</li>
+                                <li>dynamodb:UpdateItem</li>
+                                <li>dynamodb:DeleteItem</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Create environments
+                    <pre><code>
+developer
+uat
+production
+                    </code></pre>
+                    <p>For example:</p>
+                    <pre><code>
+npx serverless deploy --stage developer
+npx serverless deploy --stage uat
+npx serverless deploy --stage production
+                    </code></pre>
+                </li>
+                <li>
+                    Environment-specific configuration
+                    <pre><code>
+provider:
+  environment:
+    NODE_ENV: ${sls:stage}
+                    </code></pre>
+                </li>
+                <li>
+                    Then connect it to your Castanet architecture
+                    <p>We can eventually reproduce your current setup:</p>
+                    <pre><code>
+React / Mobile App
+       │
+       ▼
+   API Gateway
+       │
+       ▼
+    Lambda
+       │
+    ┌──┴───┐
+    ▼      ▼
+ MongoDB   AWS services
+                    </code></pre>
+                    <p>And compare that with your current:</p>
+                    <pre><code>
+service: castanet-api
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: us-east-2
+
+  environment:
+    NODE_ENV: ${sls:stage}
+    MONGO_URI: ${ssm:/castanet/${sls:stage}/mongo-uri}
+
+functions:
+  api:
+    handler: src/handler.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+                    </code></pre>
+                </li>
+            </ol>
+            <p>The learning path I'd recommend</p>
+            <p>Don't start with DynamoDB immediately. Start with the smallest possible Node.js → Lambda → API Gateway → AWS deployment, so you understand what Serverless Framework is actually generating.</p>
+            <p>Then we add IAM → environment variables → SSM Parameter Store → DynamoDB → multiple stages → CI/CD.</p>
+            <p>That will also make it much easier to understand exactly what your existing castanet-api serverless.yml is doing.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

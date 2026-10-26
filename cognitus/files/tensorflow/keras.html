@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Keras </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Keras </h1>
+                    <p class="subtitle"> 
+                        Keras is a high-level deep learning / neural network framework used to build, train, and deploy machine-learning models. 
+                        <p>Think of it as a developer-friendly API for neural networks.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Simple example </h2>
+            <p>Without a high-level framework, implementing a neural network involves dealing with tensors, matrix operations, gradients, optimization, GPU execution, etc.</p>
+            <p>With Keras, you can write something like:</p>
+            <pre><code>
+import keras
+from keras import layers
+
+model = keras.Sequential([
+    layers.Dense(128, activation="relu"),
+    layers.Dense(10, activation="softmax")
+])
+
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+model.fit(x_train, y_train, epochs=10)
+            </code></pre>
+            <p>Keras handles much of the underlying complexity.</p>
+        </section>
+
+        <section>
+            <h2>What can Keras be used for?</h2>
+            <p>You can build models for:</p>
+            <ul>
+                <li>🖼️ Image recognition — classify images, detect objects</li>
+                <li>📝 Natural language processing — text classification, embeddings, etc.</li>
+                <li>🔊 Audio processing — speech/audio classification</li>
+                <li>📈 Time-series prediction — forecasting sensor or business data</li>
+                <li>🤖 Computer vision — image segmentation, object detection</li>
+                <li>🧠 Generative AI — neural-network architectures and model training</li>
+                <li>📱 Edge/mobile ML — models that can eventually be converted for deployment</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Keras vs TensorFlow</h2>
+            <p>Historically, Keras was most commonly associated with TensorFlow:</p>
+            <pre><code>
+Your Python code
+       ↓
+     Keras
+       ↓
+   TensorFlow
+       ↓
+ CPU / GPU / TPU
+            </code></pre>
+            <p>Modern Keras is more flexible. Keras 3 can work with multiple backends, including:</p>
+            <pre><code>
+                Keras
+                /  |  \
+               /   |   \
+        TensorFlow JAX PyTorch
+            </code></pre>
+            <p>So Keras is primarily the high-level model-building interface, while TensorFlow, JAX, or PyTorch can provide the underlying computational engine.</p>
+        </section>
+
+        <section>
+            <h2>Keras vs PyTorch</h2>
+            <p>A useful way to think about it:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Keras</th>
+                        <th>PyTorch</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Abstraction</td>
+                        <td>High-level</td>
+                        <td>Lower-level/flexible</td>
+                    </tr>
+                    <tr>
+                        <td>Learning curve</td>
+                        <td>Easier</td>
+                        <td>Moderate</td>
+                    </tr>
+                    <tr>
+                        <td>Model definition</td>
+                        <td>Very concise</td>
+                        <td>More explicit</td>
+                    </tr>
+                    <tr>
+                        <td>Research flexibility</td>
+                        <td>Good</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>Production</td>
+                        <td>Excellent</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>Beginner-friendly</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                        <td>⭐⭐⭐⭐</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>For someone coming from React/Node/Flutter/iOS development, Keras can feel somewhat like a high-level framework/API that hides a lot of ML implementation details.</p>
+            <p>For example, instead of manually implementing a neural network's forward pass and training loop, you can describe the architecture and call:</p>
+            <pre><code>
+model.fit(...)
+            </code></pre>
+            <p>and Keras manages the training process.</p>
+            <p>In one sentence: Keras lets you build and train neural networks using relatively simple Python code without having to implement all the underlying mathematical and hardware machinery yourself.</p>
+        </section>
+
+        <section>
+            <h2>Keras Beginner Tutorial — Lesson 1</h2>
+            <p>Absolutely. Let's start Keras from absolute zero, assuming you know Python/programming but not machine learning.</p>
+            <p>We'll build up gradually:</p>
+            <pre><code>
+Python
+  ↓
+NumPy / data
+  ↓
+Machine Learning concepts
+  ↓
+Keras basics
+  ↓
+Neural Networks
+  ↓
+CNN / image recognition
+  ↓
+Transfer Learning
+  ↓
+RAG + embeddings
+  ↓
+AI applications
+  ↓
+Agents / Agentic AI
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>1. What are we actually trying to do?</h2>
+            <p>Let's say we want a computer to recognize handwritten numbers:</p>
+            <pre><code>
+Image
+  ↓
+   7
+            </code></pre>
+            <p>We could give the computer thousands of examples:</p>
+            <pre><code>
+image       correct answer
+
+[image]  →      0
+[image]  →      1
+[image]  →      2
+...
+[image]  →      9
+            </code></pre>
+            <p>The computer learns patterns from these examples.</p>
+            <p>Eventually:</p>
+            <pre><code>
+New image
+    ↓
+ Neural Network
+    ↓
+"7"
+            </code></pre>
+            <p>This is machine learning.</p>
+        </section>
+
+        <section>
+            <h2>2. What is a neural network?</h2>
+            <p>A neural network is essentially a mathematical function that learns a relationship between input and output.</p>
+            <p>For example:</p>
+            <pre><code>
+Input
+  ↓
+Neural Network
+  ↓
+Output
+            </code></pre>
+            <p>For an image classifier:</p>
+            <pre><code>
+pixels
+  ↓
+[ neural network ]
+  ↓
+0 1 2 3 4 5 6 7 8 9
+            </code></pre>
+            <p>The network produces probabilities such as:</p>
+            <pre><code>
+0 → 0.01
+1 → 0.02
+2 → 0.01
+3 → 0.03
+4 → 0.01
+5 → 0.02
+6 → 0.04
+7 → 0.82
+8 → 0.03
+9 → 0.01
+            </code></pre>
+            <p>The model therefore predicts:</p>
+            <pre><code>
+7
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>3. Where does Keras come in?</h2>
+            <p>Keras gives us convenient Python APIs for creating that neural network.</p>
+            <p>Instead of implementing all the mathematics ourselves:</p>
+            <pre><code>
+matrix multiplication
+gradient calculation
+backpropagation
+weight updates
+GPU computation
+etc.
+            </code></pre>
+            <p>we can describe the model:</p>
+            <pre><code>
+model = keras.Sequential([
+    keras.layers.Dense(128, activation="relu"),
+    keras.layers.Dense(10, activation="softmax")
+])
+            </code></pre>
+            <p>Keras takes care of much of the machinery.</p>
+        </section>
+
+        <section>
+            <h2>4. Install Keras</h2>
+            <p>For this tutorial, I'd recommend using a virtual environment.</p>
+            <p>Create a project:</p>
+            <pre><code>
+mkdir keras-beginner
+cd keras-beginner
+            </code></pre>
+            <p>Create a Python environment:</p>
+            <pre><code>
+python3 -m venv .venv
+            </code></pre>
+            <p>Activate it on macOS:</p>
+            <pre><code>
+source .venv/bin/activate
+            </code></pre>
+            <p>Then install Keras:</p>
+            <pre><code>
+pip install --upgrade pip
+pip install keras tensorflow
+            </code></pre>
+            <p>Check:</p>
+            <pre><code>
+python -c "import keras; print(keras.__version__)"
+            </code></pre>
+            <p>You should see a Keras version number.</p>
+        </section>
+
+        <section>
+            <h2>5. Your first Keras program</h2>
+            <p>Create:</p>
+            <pre><code>
+hello_keras.py
+            </code></pre>
+            <p>Put this inside:</p>
+            <pre><code>
+import keras
+
+print("Keras version:", keras.__version__)
+            </code></pre>
+            <p>Run:</p>
+            <pre><code>
+python hello_keras.py
+            </code></pre>
+            <p>That's technically your first Keras program.</p>
+            <p>But let's do something more interesting.</p>
+        </section>
+
+        <section>
+            <h2>6. Our first neural network</h2>
+            <p>Create:</p>
+            <pre><code>
+first_model.py
+            </code></pre>
+            <pre><code>
+import keras
+
+model = keras.Sequential([
+    keras.layers.Dense(10, activation="relu"),
+    keras.layers.Dense(1)
+])
+
+model.summary()
+            </code></pre>
+            <p>Run:</p>
+            <pre><code>
+python first_model.py
+            </code></pre>
+            <p>You'll see something similar to:</p>
+            <pre><code>
+Model: "sequential"
+
+┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━┓
+┃ Layer                ┃ Output Shape ┃ Params  ┃
+┡━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━┩
+│ dense                │ (None, 10)   │ ...     │
+├──────────────────────┼──────────────┼─────────┤
+│ dense_1              │ (None, 1)    │ ...     │
+└──────────────────────┴──────────────┴─────────┘
+            </code></pre>
+            <p>Don't worry about the numbers yet.</p>
+        </section>
+
+        <section>
+            <h2>7. What did we just create?</h2>
+            <p>This:</p>
+            <pre><code>
+model = keras.Sequential([
+    keras.layers.Dense(10, activation="relu"),
+    keras.layers.Dense(1)
+])
+            </code></pre>
+            <p>creates:</p>
+            <pre><code>
+Input
+  │
+  ▼
+┌─────────────────┐
+│ Dense layer     │
+│ 10 neurons      │
+│ ReLU            │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Dense layer     │
+│ 1 neuron        │
+└────────┬────────┘
+         │
+         ▼
+       Output
+            </code></pre>
+            <p>There are two important concepts here.</p>
+            <p>Dense</p>
+            <p>A Dense layer is a neural-network layer where neurons are connected to the neurons in the previous layer.</p>
+            <pre><code>
+keras.layers.Dense(10)
+            </code></pre>
+            <p>means:</p>
+            <p>Create a layer containing 10 neurons.</p>
+        </section>
+
+        <section>
+            <h2>8. What is a neuron?</h2>
+            <p>Don't think of a biological neuron initially.</p>
+            <p>Think of it as a mathematical calculation.</p>
+            <p>Very roughly:</p>
+            <pre><code>
+inputs
+  ↓
+multiply by weights
+  ↓
+add bias
+  ↓
+activation function
+  ↓
+output
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+x1 ──┐
+     │
+x2 ──┼──> neuron ──> output
+     │
+x3 ──┘
+            </code></pre>
+            <p>The neuron learns the appropriate weights.</p>
+        </section>
+
+        <section>
+            <h2>9. What are weights?</h2>
+            <p>Suppose:</p>
+            <pre><code>
+x1 = 5
+x2 = 10
+            </code></pre>
+            <p>A neuron might calculate something conceptually like:</p>
+            <pre><code>
+output = (5 × weight1) + (10 × weight2) + bias
+            </code></pre>
+            <p>Initially, the weights are basically random.</p>
+            <p>Training changes them.</p>
+            <p>Eventually:</p>
+            <pre><code>
+random weights
+      ↓
+training
+      ↓
+better weights
+      ↓
+useful predictions
+            </code></pre>
+            <p>This is one of the most important ideas in deep learning.</p>
+        </section>
+
+        <section>
+            <h2>10. What does "training" mean?</h2>
+            <p>Suppose we're teaching a model:</p>
+            <pre><code>
+2 + 3 = 5
+4 + 7 = 11
+10 + 20 = 30
+            </code></pre>
+            <p>We give it:</p>
+            <pre><code>
+input → expected output
+
+2     → 5
+4     → 11
+10    → 30
+            </code></pre>
+            <p>The model makes a prediction.</p>
+            <p>For example:</p>
+            <pre><code>
+2 + 3
+
+model predicts:
+4.2
+
+correct answer:
+5
+            </code></pre>
+            <p>The model calculates how wrong it was.</p>
+            <p>That's the loss.</p>
+            <p>Then the training process adjusts the weights.</p>
+            <pre><code>
+prediction
+    ↓
+calculate error
+    ↓
+adjust weights
+    ↓
+prediction gets better
+            </code></pre>
+            <p>This happens repeatedly.</p>
+        </section>
+
+        <section>
+            <h2>11. compile()</h2>
+            <p>Before training, we configure the model:</p>
+            <pre><code>
+model.compile(
+    optimizer="adam",
+    loss="mse"
+)
+            </code></pre>
+            <p>There are two important things here.</p>
+            <p>Optimizer</p>
+            <pre><code>
+optimizer="adam"
+            </code></pre>
+            <p>The optimizer determines how the model changes its weights during training.</p>
+            <p>You'll encounter:</p>
+            <pre><code>
+Adam
+SGD
+RMSprop
+            </code></pre>
+            <p>A very common starting choice is:</p>
+            <pre><code>
+optimizer="adam"
+            </code></pre>
+            <p>Loss</p>
+            <pre><code>
+loss="mse"
+            </code></pre>
+            <p>Loss measures:</p>
+            <p>How wrong is the model?</p>
+            <p>MSE means:</p>
+            <p>Mean Squared Error</p>
+            <p>For example:</p>
+            <pre><code>
+actual = 10
+prediction = 8
+
+error = 10 - 8
+      = 2
+
+squared error = 4
+            </code></pre>
+            <p>The training process tries to minimize the loss.</p>
+        </section>
+
+        <section>
+            <h2>12. fit()</h2>
+            <p>This is where the model learns.</p>
+            <pre><code>
+model.fit(x, y, epochs=10)
+            </code></pre>
+            <p>Conceptually:</p>
+            <pre><code>
+x = inputs
+y = correct answers
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+x = [1, 2, 3, 4]
+y = [2, 4, 6, 8]
+            </code></pre>
+            <p>We're teaching:</p>
+            <pre><code>
+x → 2x
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. Let's build our first actual learning model</h2>
+            <p>Create:</p>
+            <pre><code>
+learn.py
+            </code></pre>
+            <pre><code>
+import keras
+import numpy as np
+
+# Training data
+x = np.array([1, 2, 3, 4, 5], dtype=float)
+y = np.array([2, 4, 6, 8, 10], dtype=float)
+
+# Create model
+model = keras.Sequential([
+    keras.layers.Dense(1, input_shape=[1])
+])
+
+# Configure training
+model.compile(
+    optimizer="adam",
+    loss="mse"
+)
+
+# Train
+model.fit(x, y, epochs=500, verbose=0)
+
+# Test
+prediction = model.predict(np.array([10.0]))
+
+print("Prediction:", prediction)
+            </code></pre>
+            <p>Run:</p>
+            <pre><code>
+python learn.py
+            </code></pre>
+            <p>You should get something approximately like:</p>
+            <pre><code>
+Prediction: [[20.0]]
+            </code></pre>
+            <p>It learned approximately:</p>
+            <pre><code>
+y = 2x
+            </code></pre>
+            <p>We didn't explicitly tell it:</p>
+            <pre><code>
+y = 2x
+            </code></pre>
+            <p>We gave it examples:</p>
+            <pre><code>
+1 → 2
+2 → 4
+3 → 6
+4 → 8
+5 → 10
+            </code></pre>
+            <p>and it learned the relationship.</p>
+        </section>
+
+        <section>
+            <h2>14. The important mental model</h2>
+            <p>Remember this:</p>
+            <pre><code>
+                TRAINING
+
+                x                 y
+             input             answer
+               │                  │
+               │                  │
+               ▼                  │
+           ┌─────────┐            │
+           │         │            │
+           │  MODEL  │            │
+           │         │            │
+           └────┬────┘            │
+                │                 │
+                ▼                 │
+            prediction            │
+                │                 │
+                └───────┬─────────┘
+                        ▼
+                      LOSS
+                        │
+                        ▼
+                  adjust weights
+                        │
+                        └──────────► repeat
+            </code></pre>
+            <p>After enough training:</p>
+            <pre><code>
+new input
+   ↓
+trained model
+   ↓
+prediction
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>15. What you should learn next</h2>
+            <p>Don't jump into CNNs or LLMs yet. First understand these five concepts:</p>
+            <pre><code>
+1. Tensor
+2. Layer
+3. Activation function
+4. Loss
+5. Optimizer
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+6. Training
+7. Epoch
+8. Batch
+9. Validation
+10. Overfitting
+            </code></pre>
+            <p>Then we'll build an actual image classifier using MNIST:</p>
+            <pre><code>
+            28 × 28 image
+                │
+                ▼
+           ┌─────────┐
+           │ Keras   │
+           │ Neural  │
+           │ Network │
+           └────┬────┘
+                │
+                ▼
+         0 1 2 3 4 5 6 7 8 9
+            </code></pre>
+            <p>That will be your first genuinely useful Keras project.</p>
+            <p>Lesson 2 should be "Tensors and Layers" because understanding those two concepts will make almost everything else in Keras much easier.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

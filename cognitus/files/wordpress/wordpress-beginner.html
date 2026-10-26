@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Wordpress </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Wordpress </h1>
+                    <p class="subtitle"> Absolutely. Since you already have experience with React, Node.js, AWS, MongoDB, APIs, and deployment, I’d teach WordPress from a developer perspective—not just as a “click around the dashboard” tutorial. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> WordPress: Beginner → Deployment Roadmap </h2>
+            <p>We can build one complete project from scratch:</p>
+            <p>Project: A professional company/business website</p>
+            <p>Stack:</p>
+            <ul>
+                <li>WordPress</li>
+                <li>PHP</li>
+                <li>MySQL</li>
+                <li>HTML/CSS/JavaScript</li>
+                <li>WordPress REST API</li>
+                <li>Custom theme</li>
+                <li>Plugins</li>
+                <li>Git</li>
+                <li>Local development</li>
+                <li>Production deployment</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>1. Understand what WordPress actually is</h2>
+            <p>WordPress is essentially a PHP web application + MySQL database.</p>
+            <p>A simplified architecture:</p>
+            <pre><code>
+Browser
+   │
+   ▼
+Web Server
+(Nginx/Apache)
+   │
+   ▼
+PHP
+   │
+   ▼
+WordPress
+   │
+   ├── Themes
+   ├── Plugins
+   ├── Media
+   ├── Users
+   └── WordPress Core
+          │
+          ▼
+       MySQL
+            </code></pre>
+            <p>Compare this with something you're already familiar with:</p>
+            <pre><code>
+React frontend
+      │
+      ▼
+Node.js / Express API
+      │
+      ▼
+MongoDB
+            </code></pre>
+            <p>WordPress:</p>
+            <pre><code>
+PHP/Theme
+      │
+      ▼
+WordPress Core
+      │
+      ▼
+MySQL
+            </code></pre>
+            <p>The important difference is that WordPress already provides much of the application infrastructure that you'd normally build yourself.</p>
+        </section>
+
+        <section>
+            <h2>Part 1 — Install WordPress locally</h2>
+            <p>There are two good ways to learn.</p>
+            <p>Option A — Local development</p>
+            <p>Install:</p>
+            <ul>
+                <li>PHP</li>
+                <li>MySQL/MariaDB</li>
+                <li>Apache/Nginx</li>
+                <li>WordPress</li>
+            </ul>
+            <p>Or use a development environment such as Local to avoid manually configuring everything.</p>
+            <p>For learning WordPress development, I recommend eventually understanding both:</p>
+            <pre><code>
+Local environment
+       ↓
+WordPress
+       ↓
+PHP
+       ↓
+MySQL
+            </code></pre>
+            <p>and the underlying components individually.</p>
+        </section>
+
+        <section>
+            <h2>Part 2 — Understand the WordPress directory</h2>
+            <p>After installing WordPress you'll see something like:</p>
+            <pre><code>
+wordpress/
+│
+├── wp-admin/
+├── wp-content/
+│   ├── plugins/
+│   ├── themes/
+│   └── uploads/
+│
+├── wp-includes/
+│
+├── wp-config.php
+├── index.php
+└── wp-login.php
+            </code></pre>
+            <p>The three most important directories are:</p>
+            <p>wp-admin</p>
+            <p>WordPress administration system.</p>
+            <pre><code>
+/wp-admin
+            </code></pre>
+            <p>You normally don't modify this.</p>
+            <p>wp-includes</p>
+            <p>WordPress core libraries.</p>
+            <p>Again, don't modify this.</p>
+            <p>wp-content</p>
+            <p>This is where most customization happens:</p>
+            <pre><code>
+wp-content/
+│
+├── themes/
+│
+├── plugins/
+└── uploads/
+            </code></pre>
+            <p>As a developer, you'll spend most of your time here.</p>
+        </section>
+
+        <section>
+            <h2>Part 3 — WordPress Dashboard</h2>
+            <p>Open:</p>
+            <pre><code>
+/wp-admin
+            </code></pre>
+            <p>You'll see:</p>
+            <pre><code>
+Dashboard
+Posts
+Media
+Pages
+Comments
+Appearance
+Plugins
+Users
+Tools
+Settings
+            </code></pre>
+            <p>Understand the difference between:</p>
+            <p>Posts</p>
+            <p>Usually dynamic content:</p>
+            <pre><code>
+Blog
+News
+Articles
+Updates
+            </code></pre>
+
+            <p>Pages</p>
+            <p>Usually fixed website sections:</p>
+            <pre><code>
+Home
+About
+Services
+Contact
+            </code></pre>
+            <p>But technically, both are stored as WordPress post types.</p>
+            <p>That's an important WordPress concept.</p>
+        </section>
+
+        <section>
+            <h2>Part 4 — WordPress database</h2>
+            <p>WordPress uses MySQL/MariaDB.</p>
+            <p>Some important tables:</p>
+            <pre><code>
+wp_posts
+wp_postmeta
+wp_users
+wp_usermeta
+wp_terms
+wp_term_relationships
+wp_options
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+wp_posts
+            </code></pre>
+            <p>stores things such as:</p>
+            <pre><code>
+Posts
+Pages
+Custom post types
+Attachments
+            </code></pre>
+            <p>Conceptually:</p>
+            <pre><code>
+wp_posts
+-------------------------
+ID
+post_author
+post_date
+post_content
+post_title
+post_status
+post_type
+            </code></pre>
+            <p>So a page like:</p>
+            <pre><code>
+About Us
+            </code></pre>
+            <p>might be stored in:</p>
+            <pre><code>
+wp_posts
+            </code></pre>
+            <p>with:</p>
+            <pre><code>
+post_type = page
+            </code></pre>
+            <p>while a blog article might have:</p>
+            <pre><code>
+post_type = post
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Part 5 — Themes</h2>
+            <p>A WordPress theme controls the presentation of the website.</p>
+            <p>You'll find themes here:</p>
+            <pre><code>
+wp-content/themes/
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+wp-content/themes/mytheme/
+            </code></pre>
+            <p>A traditional theme might contain:</p>
+            <pre><code>
+mytheme/
+│
+├── style.css
+├── index.php
+├── header.php
+├── footer.php
+├── sidebar.php
+├── single.php
+├── page.php
+├── archive.php
+└── functions.php
+            </code></pre>
+            <p>This is where PHP becomes important.</p>
+        </section>
+
+        <section>
+            <h2>Part 6 — Create your first theme</h2>
+            <p>Create:</p>
+            <pre><code>
+wp-content/themes/my-first-theme/
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+style.css
+index.php
+functions.php
+            </code></pre>
+            <p>style.css contains the theme metadata.</p>
+            <p>For example:</p>
+            <pre><code>
+/*
+Theme Name: My First Theme
+Author: Paul
+Version: 1.0
+*/
+            </code></pre>
+            <p>Then WordPress can recognize the directory as a theme.</p>
+            <p>Your first PHP template can be:</p>
+            <pre><code>
+&lt;?php
+
+get_header();
+
+if (have_posts()) {
+    while (have_posts()) {
+        the_post();
+
+        the_title();
+        the_content();
+    }
+}
+
+get_footer();
+            </code></pre>
+            <p>This introduces one of the most important WordPress concepts:</p>
+            <h2>The WordPress Loop</h2>
+            <pre><code>
+if (have_posts()) {
+
+    while (have_posts()) {
+
+        the_post();
+
+        the_title();
+        the_content();
+
+    }
+}
+            </code></pre>
+            <p>Conceptually:</p>
+            <pre><code>
+Query database
+      ↓
+Are there posts?
+      ↓
+     YES
+      ↓
+Load post
+      ↓
+Display post
+      ↓
+Next post
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Part 7 — WordPress Template Hierarchy</h2>
+            <p>This is one of the most important things to learn as a developer.</p>
+            <p>WordPress determines which PHP template to use.</p>
+            <p>For example:</p>
+            <pre><code>
+Homepage
+   ↓
+front-page.php
+   ↓
+index.php
+            </code></pre>
+            <p>Single blog article:</p>
+            <pre><code>
+single.php
+   ↓
+index.php
+            </code></pre>
+            <p>Page:</p>
+            <pre><code>
+page.php
+   ↓
+index.php
+            </code></pre>
+            <p>Category:</p>
+            <pre><code>
+category.php
+   ↓
+archive.php
+   ↓
+index.php
+            </code></pre>
+            <p>Once you understand this, WordPress themes become much easier to understand.</p>
+        </section>
+
+        <section>
+            <h2>Part 8 — functions.php</h2>
+            <p>This is where you register functionality for your theme.</p>
+            <p>For example:</p>
+            <pre><code>
+&lt;?php
+
+function mytheme_setup() {
+
+    add_theme_support('title-tag');
+
+    add_theme_support('post-thumbnails');
+
+    register_nav_menus([
+        'primary' => 'Primary Menu'
+    ]);
+}
+
+add_action('after_setup_theme', 'mytheme_setup');
+            </code></pre>
+            <p>Notice something important:</p>
+            <pre><code>
+add_action(...)
+            </code></pre>
+            <p>This introduces the WordPress Hooks system.</p>
+        </section>
+
+        <section>
+            <h2>Part 9 — Hooks</h2>
+            <p>WordPress has two major hook types:</p>
+            <pre><code>
+Actions
+Filters
+            </code></pre>
+            <p>Action</p>
+            <p>Do something when something happens.</p>
+            <pre><code>
+add_action('init', function () {
+    // do something
+});
+            </code></pre>
+            <p>Filter</p>
+            <p>Modify existing data.</p>
+            <pre><code>
+add_filter('the_title', function ($title) {
+
+    return $title . ' - My Site';
+
+});
+            </code></pre>
+            <p>This is extremely important for WordPress plugin development.</p>
+        </section>
+
+        <section>
+            <h2>Part 10 — Plugins</h2>
+            <p>Themes control presentation.</p>
+            <p>Plugins add functionality.</p>
+            <p>Example:</p>
+            <pre><code>
+Theme
+  ↓
+How the website looks
+
+Plugin
+  ↓
+What the website does
+            </code></pre>
+            <p>Examples:</p>
+            <pre><code>
+Contact form
+SEO
+Payment
+Authentication
+Custom API
+WooCommerce
+Analytics
+            </code></pre>
+            <p>Create:</p>
+            <pre><code>
+wp-content/plugins/my-plugin/
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+my-plugin.php
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+&lt;?php
+
+/*
+Plugin Name: My First Plugin
+Version: 1.0
+*/
+
+add_action('init', function () {
+
+    // Plugin functionality
+
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Part 11 — Custom Post Types</h2>
+            <p>This is where WordPress starts becoming much more interesting for a developer.</p>
+            <p>Suppose we're building:</p>
+            <pre><code>
+Company Website
+            </code></pre>
+            <p>We could create:</p>
+            <pre><code>
+Services
+Projects
+Employees
+Testimonials
+            </code></pre>
+            <p>Instead of putting everything into normal posts.</p>
+            <p>For example:</p>
+            <pre><code>
+register_post_type('project', [
+    'public' => true,
+    'label'  => 'Projects',
+    'supports' => [
+        'title',
+        'editor',
+        'thumbnail'
+    ]
+]);
+            </code></pre>
+            <p>Now WordPress has:</p>
+            <pre><code>
+Posts
+Pages
+Projects
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Part 12 — Custom Fields</h2>
+            <p>A project might have:</p>
+            <pre><code>
+Project Name
+Description
+Client
+Technology
+URL
+Completion Date
+            </code></pre>
+            <p>You can store additional data using post metadata.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+Project
+│
+├── title
+├── content
+├── image
+│
+├── client
+├── technology
+├── website
+└── completion_date
+            </code></pre>
+            <p>This is where WordPress starts resembling a CMS/backend framework.</p>
+        </section>
+
+        <section>
+            <h2>Part 13 — WordPress REST API</h2>
+            <p>This part should be especially interesting for you because of your React/Node experience.</p>
+            <p>WordPress provides an API such as:</p>
+            <pre><code>
+/wp-json/wp/v2/posts
+            </code></pre>
+            <p>A React application can request:</p>
+            <pre><code>
+React
+   │
+   │ HTTP GET
+   ▼
+WordPress REST API
+   │
+   ▼
+MySQL
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+fetch(
+  'https://example.com/wp-json/wp/v2/posts'
+)
+.then(response => response.json())
+.then(posts => {
+    console.log(posts);
+});
+            </code></pre>
+            <p>Now WordPress can act as a headless CMS.</p>
+        </section>
+
+        <section>
+            <h2>Part 14 — Authentication</h2>
+            <p>Eventually we'll learn:</p>
+            <pre><code>
+Users
+Roles
+Capabilities
+Application Passwords
+REST authentication
+JWT
+OAuth
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+React
+   │
+   │ authentication
+   ▼
+WordPress API
+   │
+   ▼
+WordPress user
+            </code></pre>
+            <p>This will make WordPress much more familiar if you're already working with:</p>
+            <pre><code>
+OAuth2
+JWT
+Firebase Auth
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Part 15 — Security</h2>
+            <p>Before deploying, we'll cover:</p>
+            <pre><code>
+HTTPS
+Passwords
+User roles
+File permissions
+Plugin security
+SQL injection
+XSS
+CSRF
+Authentication
+API security
+Backups
+Updates
+            </code></pre>
+            <p>For example, never do:</p>
+            <pre><code>
+$sql = "SELECT * FROM users WHERE id = " . $_GET['id'];
+            </code></pre>
+            <p>Instead, WordPress provides APIs such as:</p>
+            <pre><code>
+$wpdb->prepare()
+            </code></pre>
+            <p>to safely construct database queries.</p>
+        </section>
+
+        <section>
+            <h2>Part 16 — Performance</h2>
+            <p>We'll then learn:</p>
+            <pre><code>
+Page caching
+Object caching
+Database optimization
+Image optimization
+Lazy loading
+CDN
+Minification
+PHP OPcache
+Redis
+CloudFront
+            </code></pre>
+            <p>Architecture can eventually look like:</p>
+            <pre><code>
+                CloudFront
+                │
+                ▼
+           Web Server
+                │
+           ┌────┴────┐
+           │         │
+        WordPress   Cache
+           │
+           ▼
+         MySQL
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Part 17 — Git</h2>
+            <p>Never develop a serious WordPress project by manually copying files around.</p>
+            <p>We'll structure it like:</p>
+            <pre><code>
+my-wordpress-project/
+│
+├── wp-content/
+│   ├── themes/
+│   │   └── my-theme/
+│   └── plugins/
+│       └── my-plugin/
+│
+└── README.md
+            </code></pre>
+            <p>And use:</p>
+            <pre><code>
+git init
+git add .
+git commit
+            </code></pre>
+            <p>We can also create:</p>
+            <pre><code>
+development
+staging
+production
+            </code></pre>
+            <p>environments.</p>
+        </section>
+
+        <section>
+            <h2>Part 18 — Deployment</h2>
+            <p>Finally we'll deploy the WordPress application.</p>
+            <p>A typical production architecture:</p>
+            <pre><code>
+            Internet
+                │
+                ▼
+            DNS Domain
+                │
+                ▼
+            CloudFront
+                │
+                ▼
+             Nginx
+                │
+                ▼
+           PHP-FPM
+                │
+                ▼
+           WordPress
+                │
+                ▼
+           MySQL/RDS
+            </code></pre>
+            <p>Or a simpler deployment:</p>
+            <pre><code>
+Domain
+  │
+  ▼
+Nginx/Apache
+  │
+  ▼
+PHP
+  │
+  ▼
+WordPress
+  │
+  ▼
+MySQL
+            </code></pre>
+            <p>We'll configure:</p>
+            <pre><code>
+Domain
+DNS
+SSL
+PHP
+MySQL
+WordPress
+Nginx/Apache
+File permissions
+Backups
+Environment configuration
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Complete learning path</h2>
+            <p>I'd recommend doing it in this order:</p>
+            <pre><code>
+01. What is WordPress?
+        ↓
+02. Install WordPress
+        ↓
+03. Dashboard
+        ↓
+04. WordPress database
+        ↓
+05. Themes
+        ↓
+06. PHP fundamentals
+        ↓
+07. WordPress Loop
+        ↓
+08. Template hierarchy
+        ↓
+09. functions.php
+        ↓
+10. Hooks
+        ↓
+11. Plugins
+        ↓
+12. Custom Post Types
+        ↓
+13. Custom Fields
+        ↓
+14. WordPress REST API
+        ↓
+15. Authentication
+        ↓
+16. Security
+        ↓
+17. Performance
+        ↓
+18. Git
+        ↓
+19. Staging
+        ↓
+20. Production deployment
+        ↓
+21. Headless WordPress + React
+        ↓
+22. WordPress + AI
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The project we'll build</h2>
+            <p>Rather than learning each feature in isolation, we can build a real project throughout the tutorial:</p>
+            <pre><code>
+            WordPress
+                │
+         ┌──────┴──────┐
+         │             │
+       Admin        Website
+         │             │
+         ▼             ▼
+     Projects       Home
+     Services       About
+     Employees      Services
+     Blog           Projects
+                    Contact
+                       │
+                       ▼
+                REST API
+                       │
+                       ▼
+                    React
+            </code></pre>
+            <p>By the end, you'll understand WordPress as a developer, including PHP, themes, plugins, database structure, REST APIs, security, Git, and deployment—not just how to install WordPress and choose a theme.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

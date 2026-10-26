@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Learn AWS as a developer</title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title">Learn AWS as a developer</h1>
+                    <p class="subtitle">
+                        If you're coming from a traditional architecture like:
+                        <p>Frontend → Backend Server → Database</p>
+                        <p>the easiest way to learn AWS as a developer is to learn how AWS replaces each part of that architecture.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Start with the traditional architecture</h2>
+            <p>Imagine you build an application like this:</p>
+            <pre><code>
+    React / Mobile App
+        ↓
+     REST API
+        ↓
+   Node.js Server
+        ↓
+     MongoDB
+            </code></pre>
+            <p>Traditionally, you might have:</p>
+            <ul>
+                <li>One physical/virtual server</li>
+                <li>Nginx</li>
+                <li>Node.js</li>
+                <li>Database server</li>
+                <li>Manual deployment</li>
+                <li>Server monitoring</li>
+                <li>Manual scaling</li>
+            </ul>
+            <p>You need to worry about:</p>
+            <pre><code>
+Server CPU
+RAM
+Disk
+OS updates
+Backups
+Networking
+Scaling
+SSL
+Load balancing
+            </code></pre>
+            <p>AWS changes the way you think about these components.</p>
+        </section>
+
+        <section>
+            <h2>2. Learn AWS by mapping old → cloud</h2>
+            <p>This is the most important concept.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Traditional</th>
+                        <th>AWS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Physical server</td>
+                        <td>EC2</td>
+                    </tr>
+                    <tr>
+                        <td>Virtual machine</td>
+                        <td>EC2</td>
+                    </tr>
+                    <tr>
+                        <td>Nginx</td>
+                        <td>ALB / CloudFront</td>
+                    </tr>
+                    <tr>
+                        <td>Node.js server</td>
+                        <td>EC2 / Lambda</td>
+                    </tr>
+                    <tr>
+                        <td>REST API</td>
+                        <td>API Gateway</td>
+                    </tr>
+                    <tr>
+                        <td>File storage</td>
+                        <td>S3</td>
+                    </tr>
+                    <tr>
+                        <td>MySQL/PostgreSQL server</td>
+                        <td>RDS</td>
+                    </tr>
+                    <tr>
+                        <td>MongoDB server</td>
+                        <td>MongoDB Atlas / DocumentDB</td>
+                    </tr>
+                    <tr>
+                        <td>Redis server</td>
+                        <td>ElastiCache</td>
+                    </tr>
+                    <tr>
+                        <td>Load balancer</td>
+                        <td>Application Load Balancer</td>
+                    </tr>
+                    <tr>
+                        <td>DNS</td>
+                        <td>Route 53</td>
+                    </tr>
+                    <tr>
+                        <td>CDN</td>
+                        <td>CloudFront</td>
+                    </tr>
+                    <tr>
+                        <td>SSL certificate</td>
+                        <td>ACM</td>
+                    </tr>
+                    <tr>
+                        <td>Background jobs</td>
+                        <td>SQS</td>
+                    </tr>
+                    <tr>
+                        <td>Pub/sub</td>
+                        <td>SNS</td>
+                    </tr>
+                    <tr>
+                        <td>Logs</td>
+                        <td>CloudWatch</td>
+                    </tr>
+                    <tr>
+                        <td>User authentication</td>
+                        <td>Cognito</td>
+                    </tr>
+                    <tr>
+                        <td>Secrets/config</td>
+                        <td>Secrets Manager / Parameter Store</td>
+                    </tr>
+                    <tr>
+                        <td>Containers</td>
+                        <td>ECS / Fargate</td>
+                    </tr>
+                    <tr>
+                        <td>Kubernetes</td>
+                        <td>EKS</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Don't try to memorize all of these initially.</p>
+        </section>
+
+        <section>
+            <h2>3. Your AWS Developer Learning Path</h2>
+            <p>I recommend this order:</p>
+            <pre><code>
+Traditional Architecture
+        ↓
+AWS Fundamentals
+        ↓
+IAM
+        ↓
+EC2
+        ↓
+S3
+        ↓
+RDS
+        ↓
+VPC
+        ↓
+API Gateway
+        ↓
+Lambda
+        ↓
+CloudWatch
+        ↓
+SQS / SNS
+        ↓
+CloudFront
+        ↓
+ECS / Docker
+        ↓
+CI/CD
+        ↓
+Serverless Architecture
+        ↓
+Production Architecture
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>4. Phase 1 — AWS fundamentals</h2>
+            <p>First understand:</p>
+            <p>Regions</p>
+            <p>AWS has physical geographic locations:</p>
+            <pre><code>
+us-east-1
+us-west-2
+ap-southeast-1
+ap-northeast-1
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+Philippines
+    ↓
+ap-southeast-1
+    ↓
+Singapore
+            </code></pre>
+            <p>You don't need to memorize every region.</p>
+            <p>Understand:</p>
+            <p>A region is a geographic AWS location containing AWS infrastructure.</p>
+        </section>
+
+        <section>
+            <h2>Availability Zones</h2>
+            <p>A region contains multiple isolated locations.</p>
+            <pre><code>
+Singapore Region
+       |
+ ┌─────┼─────┐
+ AZ-a  AZ-b  AZ-c
+            </code></pre>
+            <p>This helps AWS applications survive infrastructure failures.</p>
+        </section>
+
+        <section>
+            <h2>5. Phase 2 — IAM</h2>
+            <p>Learn IAM early.</p>
+            <p>IAM controls:</p>
+            <pre><code>
+WHO can access
+WHAT they can access
+WHAT they can do
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+Developer
+   ↓
+IAM
+   ↓
+Can deploy Lambda
+Can read S3
+Cannot delete production database
+            </code></pre>
+            <p>Learn:</p>
+            <ul>
+                <li>Users</li>
+                <li>Groups</li>
+                <li>Roles</li>
+                <li>Policies</li>
+                <li>Access keys</li>
+                <li>Least privilege</li>
+            </ul>
+            <p>Especially understand IAM Roles.</p>
+            <p>For example:</p>
+            <pre><code>
+Lambda
+   ↓
+IAM Role
+   ↓
+Read S3
+            </code></pre>
+            <p>You don't want to put AWS passwords inside your code.</p>
+        </section>
+
+        <section>
+            <h2>6. Phase 3 — EC2</h2>
+            <p>EC2 is probably the easiest bridge from traditional development to AWS.</p>
+            <p>Think:</p>
+            <p>EC2 = renting a server from AWS.</p>
+            <p>Traditional:</p>
+            <pre><code>
+Buy server
+     ↓
+Install Ubuntu
+     ↓
+Install Node.js
+     ↓
+Install Nginx
+     ↓
+Deploy application
+            </code></pre>
+            <p>AWS:</p>
+            <pre><code>
+EC2
+ ↓
+Ubuntu
+ ↓
+Node.js
+ ↓
+Nginx
+ ↓
+Your application
+            </code></pre>
+            <p>Learn:</p>
+            <ul>
+                <li>Launch EC2</li>
+                <li>SSH</li>
+                <li>Security Groups</li>
+                <li>Elastic IP</li>
+                <li>EBS</li>
+                <li>Install Node.js</li>
+                <li>Deploy a REST API</li>
+            </ul>
+            <p>Practical project</p>
+            <p>Deploy:</p>
+            <pre><code>
+React
+  ↓
+EC2
+  ↓
+Node.js Express
+  ↓
+MongoDB Atlas
+            </code></pre>
+            <p>This teaches you the cloud version of what you already know.</p>
+        </section>
+
+        <section>
+            <h2>7. Phase 4 — S3</h2>
+            <p>S3 is extremely important.</p>
+            <p>Think:</p>
+            <p>S3 = cloud object/file storage.</p>
+            <p>Traditional:</p>
+            <pre><code>
+Server
+ └── uploads/
+      ├── image.jpg
+      ├── resume.pdf
+      └── document.pdf
+            </code></pre>
+            <p>AWS:</p>
+            <pre><code>
+Application
+     ↓
+    S3
+     ↓
+ ┌───────┐
+ │ files │
+ └───────┘
+            </code></pre>
+            <p>Learn:</p>
+            <ul>
+                <li>Buckets</li>
+                <li>Objects</li>
+                <li>Permissions</li>
+                <li>Bucket policies</li>
+                <li>Pre-signed URLs</li>
+                <li>Static website hosting</li>
+                <li>Lifecycle rules</li>
+            </ul>
+            <p>A very common architecture is:</p>
+            <pre><code>
+React
+  ↓
+API
+  ↓
+S3
+            </code></pre>
+            <p>For uploads:</p>
+            <pre><code>
+React
+  ↓
+Request upload URL
+  ↓
+API
+  ↓
+Pre-signed S3 URL
+  ↓
+S3
+            </code></pre>
+            <p>The file doesn't even need to pass through your backend.</p>
+        </section>
+
+        <section>
+            <h2>8. Phase 5 — Databases</h2>
+            <p>Now learn AWS database services.</p>
+            <p>RDS</p>
+            <p>For relational databases:</p>
+            <pre><code>
+Node.js
+   ↓
+RDS
+   ↓
+PostgreSQL
+            </code></pre>
+            <p>Instead of:</p>
+            <pre><code>
+Node.js
+   ↓
+Your own PostgreSQL server
+            </code></pre>
+            <p>AWS manages much of the infrastructure.</p>
+            <p>Learn:</p>
+            <ul>
+                <li>PostgreSQL/MySQL</li>
+                <li>Backups</li>
+                <li>Multi-AZ</li>
+                <li>Security Groups</li>
+                <li>Encryption</li>
+                <li>Database credentials</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>DynamoDB</h2>
+            <p>Then learn DynamoDB.</p>
+            <p>Think:</p>
+            <p>DynamoDB = AWS-native NoSQL database.</p>
+            <p>Traditional:</p>
+            <pre><code>
+MongoDB
+            </code></pre>
+            <p>AWS-native:</p>
+            <pre><code>
+DynamoDB
+            </code></pre>
+            <p>Don't learn DynamoDB before understanding basic database concepts.</p>
+        </section>
+
+        <section>
+            <h2>9. Phase 6 — VPC</h2>
+            <p>This is where many developers start getting confused.</p>
+            <p>Don't rush it.</p>
+            <p>Think of VPC as:</p>
+            <p>Your private network inside AWS.</p>
+            <p>Traditional:</p>
+            <pre><code>
+Internet
+   ↓
+Router
+   ↓
+Private Network
+   ↓
+Servers
+            </code></pre>
+            <p>AWS:</p>
+            <pre><code>
+Internet
+    ↓
+ Internet Gateway
+    ↓
+   VPC
+ ┌───────────────┐
+ │ Public subnet │
+ │               │
+ │ Private subnet│
+ └───────────────┘
+            </code></pre>
+            <p>Learn these concepts:</p>
+            <pre><code>
+VPC
+Subnet
+Route Table
+Internet Gateway
+NAT Gateway
+Security Group
+Network ACL
+            </code></pre>
+            <p>The most important distinction initially:</p>
+            <p>Public subnet</p>
+            <p>Can communicate directly with the internet.</p>
+            <p>Private subnet</p>
+            <p>Normally does not accept direct inbound internet traffic.</p>
+            <p>For example:</p>
+            <pre><code>
+Internet
+   ↓
+Load Balancer
+   ↓
+Private EC2
+   ↓
+Database
+            </code></pre>
+            <p>That's a common production architecture.</p>
+        </section>
+
+        <section>
+            <h2>10. Phase 7 — API Gateway + Lambda</h2>
+            <p>Now you move from server-based architecture to serverless architecture.</p>
+            <p>Traditional:</p>
+            <pre><code>
+React
+  ↓
+Node.js server
+  ↓
+MongoDB
+            </code></pre>
+            <p>Serverless:</p>
+            <pre><code>
+React
+  ↓
+API Gateway
+  ↓
+Lambda
+  ↓
+MongoDB
+            </code></pre>
+            <p>Lambda</p>
+            <p>Think:</p>
+            <p>Lambda = run my function without managing a server.</p>
+            <p>Instead of:</p>
+            <pre><code>
+EC2
+ └── Node.js
+      └── Express
+           └── API
+            </code></pre>
+            <p>you can have:</p>
+            <pre><code>
+Lambda
+ └── getUsers()
+            </code></pre>
+            <p>AWS handles the underlying server.</p>
+        </section>
+
+        <section>
+            <h2>11. Understand API Gateway</h2>
+            <p>API Gateway exposes your Lambda functions as HTTP APIs.</p>
+            <p>For example:</p>
+            <pre><code>
+GET /users
+       ↓
+API Gateway
+       ↓
+Lambda
+       ↓
+MongoDB
+            </code></pre>
+            <p>Your React application simply calls:</p>
+            <pre><code>
+GET https://api.example.com/users
+            </code></pre>
+            <p>Learn:</p>
+            <ul>
+                <li>REST APIs</li>
+                <li>HTTP APIs</li>
+                <li>Routes</li>
+                <li>Methods</li>
+                <li>CORS</li>
+                <li>Authentication</li>
+                <li>Authorizers</li>
+                <li>Throttling</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>12. Phase 8 — CloudWatch</h2>
+            <p>Traditional server:</p>
+            <pre><code>
+/var/log/app.log
+            </code></pre>
+            <p>AWS:</p>
+            <pre><code>
+Application
+     ↓
+CloudWatch Logs
+            </code></pre>
+            <p>Learn:</p>
+            <ul>
+                <li>Logs</li>
+                <li>Metrics</li>
+                <li>Alarms</li>
+                <li>Lambda logs</li>
+                <li>API Gateway logs</li>
+                <li>EC2 monitoring</li>
+            </ul>
+            <p>For example:</p>
+            <pre><code>
+Lambda error
+     ↓
+CloudWatch
+     ↓
+Alarm
+     ↓
+Notification
+            </code></pre>
+            <p>This is essential for production development.</p>
+        </section>
+
+        <section>
+            <h2>13. Phase 9 — SQS</h2>
+            <p>Now learn asynchronous architecture.</p>
+            <p>Traditional:</p>
+            <pre><code>
+API
+ ↓
+Process everything
+ ↓
+Response
+            </code></pre>
+            <p>Problem:</p>
+            <pre><code>
+10,000 tasks
+     ↓
+API becomes slow
+            </code></pre>
+            <p>AWS:</p>
+            <pre><code>
+API
+ ↓
+SQS
+ ↓
+Lambda workers
+ ↓
+Process tasks
+            </code></pre>
+            <p>SQS is essentially:</p>
+            <p>A queue where work waits to be processed.</p>
+            <p>Example:</p>
+            <pre><code>
+User uploads PDF
+       ↓
+API
+       ↓
+SQS
+       ↓
+Lambda
+       ↓
+Process PDF
+       ↓
+Database
+            </code></pre>
+            <p>Very useful for scalable systems.</p>
+        </section>
+
+        <section>
+            <h2>14. Phase 10 — CloudFront</h2>
+            <p>CloudFront is AWS's CDN.</p>
+            <p>Traditional:</p>
+            <pre><code>
+User
+ ↓
+Your server
+ ↓
+Image
+            </code></pre>
+            <p>CloudFront:</p>
+            <pre><code>
+                ┌── CloudFront ── User
+                │
+  S3 ───────────┤
+                │
+                └── CloudFront ── User
+            </code></pre>
+            <p>It caches content closer to users.</p>
+            <p>For a React application:</p>
+            <pre><code>
+React build
+    ↓
+S3
+    ↓
+CloudFront
+    ↓
+Users
+            </code></pre>
+            <p>This is a very common architecture.</p>
+        </section>
+
+        <section>
+            <h2>15. Phase 11 — Docker + ECS</h2>
+            <p>After understanding EC2 and Lambda, learn containers.</p>
+            <p>Traditional:</p>
+            <pre><code>
+EC2
+ ↓
+Node.js
+ ↓
+Application
+            </code></pre>
+            <p>Docker:</p>
+            <pre><code>
+Docker container
+ ├── Node.js
+ ├── dependencies
+ └── application
+            </code></pre>
+            <p>Then AWS:</p>
+            <pre><code>
+Docker
+   ↓
+ECS
+   ↓
+Fargate
+            </code></pre>
+            <p>Think:</p>
+            <p>ECS = AWS manages containers for you.</p>
+            <p>Fargate lets you run containers without managing the underlying servers yourself.</p>
+        </section>
+
+        <section>
+            <h2>16. Phase 12 — CI/CD</h2>
+            <p>Once you understand deployment, learn automation.</p>
+            <p>Traditional:</p>
+            <pre><code>
+Developer
+   ↓
+git push
+   ↓
+SSH server
+   ↓
+git pull
+   ↓
+npm install
+   ↓
+restart
+            </code></pre>
+            <p>CI/CD:</p>
+            <pre><code>
+Developer
+   ↓
+GitHub
+   ↓
+CI/CD
+   ↓
+Build
+   ↓
+Test
+   ↓
+Deploy
+   ↓
+AWS
+            </code></pre>
+            <p>Learn:</p>
+            <ul>
+                <li>GitHub Actions</li>
+                <li>AWS CodeBuild</li>
+                <li>CodeDeploy</li>
+                <li>CodePipeline</li>
+                <li>Deployment strategies</li>
+            </ul>
+            <p>You don't need to master every AWS CI/CD service. GitHub Actions + AWS is already extremely useful.</p>
+        </section>
+
+        <section>
+            <h2>17. Eventually learn this architecture</h2>
+            <p>A very useful target for you would be:</p>
+            <pre><code>
+                Internet
+                │
+                ▼
+           CloudFront
+           /         \
+          /           \
+         ▼             ▼
+      S3            API Gateway
+   React App             │
+                         ▼
+                       Lambda
+                         │
+          ┌──────────────┼──────────────┐
+          ▼              ▼              ▼
+       MongoDB         S3             SQS
+          │                             │
+          │                             ▼
+          │                           Lambda
+          │
+          ▼
+      Application
+            </code></pre>
+            <p>This is much closer to modern cloud architecture than simply putting everything on an EC2 server.</p>
+        </section>
+
+        <section>
+            <h2>18. The learning sequence I'd recommend for you</h2>
+            <p>Because you're already a traditional/full-stack developer, I would not start AWS like a complete beginner.</p>
+            <p>Follow this:</p>
+            <p>Level 1 — Cloud fundamentals</p>
+            <pre><code>
+1. AWS Regions
+2. Availability Zones
+3. IAM
+4. Shared Responsibility Model
+5. AWS pricing basics
+            </code></pre>
+            <p>↓</p>
+            <p>Level 2 — Traditional server → AWS</p>
+            <pre><code>
+6. EC2
+7. Security Groups
+8. EBS
+9. S3
+10. RDS
+            </code></pre>
+            <p>↓</p>
+            <p>Level 3 — Networking</p>
+            <pre><code>
+11. VPC
+12. Subnets
+13. Route Tables
+14. Internet Gateway
+15. NAT Gateway
+16. Security Groups
+            </code></pre>
+            <p>↓</p>
+            <p>Level 4 — Serverless</p>
+            <pre><code>
+17. Lambda
+18. API Gateway
+19. CloudWatch
+20. IAM Roles
+            </code></pre>
+            <p>↓</p>
+            <p>Level 5 — Modern architecture</p>
+            <pre><code>
+21. SQS
+22. SNS
+23. CloudFront
+24. Route 53
+25. ACM
+26. Secrets Manager
+            </code></pre>
+            <p>↓</p>
+            <p>Level 6 — Containers</p>
+            <pre><code>
+27. Docker
+28. ECR
+29. ECS
+30. Fargate
+            </code></pre>
+            <p>↓</p>
+            <p>Level 7 — DevOps</p>
+            <pre><code>
+31. GitHub Actions
+32. CI/CD
+33. Infrastructure as Code
+34. CloudFormation / CDK / Terraform
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>19. Build one project throughout the entire learning path</h2>
+            <p>This is much better than watching 50 hours of AWS videos.</p>
+            <p>Use a project like:</p>
+            <p>Cloud Contact Management System</p>
+            <pre><code>
+React
+  ↓
+CloudFront
+  ↓
+S3
+            </code></pre>
+            <p>Backend:</p>
+            <pre><code>
+React
+  ↓
+API Gateway
+  ↓
+Lambda
+  ↓
+MongoDB
+            </code></pre>
+            <p>Authentication:</p>
+            <pre><code>
+React
+  ↓
+Cognito
+  ↓
+JWT
+  ↓
+API Gateway
+            </code></pre>
+            <p>File upload:</p>
+            <pre><code>
+React
+  ↓
+API
+  ↓
+Pre-signed URL
+  ↓
+S3
+            </code></pre>
+            <p>Background processing:</p>
+            <pre><code>
+API
+ ↓
+SQS
+ ↓
+Lambda
+ ↓
+Worker
+            </code></pre>
+            <p>Monitoring:</p>
+            <pre><code>
+Lambda
+ ↓
+CloudWatch
+            </code></pre>
+            <p>DNS:</p>
+            <pre><code>
+example.com
+     ↓
+Route 53
+     ↓
+CloudFront
+            </code></pre>
+            <p>Then automate deployment:</p>
+            <pre><code>
+GitHub
+   ↓
+GitHub Actions
+   ↓
+AWS
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The biggest mindset change</h2>
+            <p>Don't think:</p>
+            <p>"I need to learn 100 AWS services."</p>
+            <p>Think:</p>
+            <p>"I need to understand how AWS replaces the infrastructure I used to manage myself."</p>
+            <p>For example:</p>
+            <pre><code>
+OLD WORLD
+
+Server
+ ├── OS
+ ├── Nginx
+ ├── Node.js
+ ├── App
+ └── Logs
+            </code></pre>
+            <p>becomes:</p>
+            <pre><code>
+AWS WORLD
+
+CloudFront
+     ↓
+API Gateway
+     ↓
+Lambda
+     ↓
+Database
+     
+CloudWatch → Logs
+IAM        → Security
+S3         → Files
+SQS        → Background work
+            </code></pre>
+            <p>Once you understand that mapping, AWS becomes much easier to learn.</p>
+            <p>And given your existing React + Node.js + MongoDB + Lambda + API Gateway experience, you're actually already partway through this path. The main gap is likely understanding AWS networking, IAM, deployment, security, and production architecture, rather than learning programming from scratch.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

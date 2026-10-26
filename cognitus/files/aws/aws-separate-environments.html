@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> AWS Separate Environments </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> AWS Separate Environments </h1>
+                    <p class="subtitle"> For a Node.js + AWS Serverless application, I recommend treating Developer, UAT, and Production as separate environments, with separate configuration, databases, and ideally separate AWS resources. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> A good architecture for your situation would be: </h2>
+            <pre><code>
+            GitHub / Bitbucket
+                │
+┌───────────────┼───────────────┐
+│               │               │
+develop           uat             main
+│               │               │
+▼               ▼               ▼
+DEV environment   UAT environment   PROD environment
+│               │               │
+┌───────┴───────┐ ┌────┴──────┐ ┌─────┴────────┐
+│               │ │           │ │              │
+API Gateway     | Lambda      | Lambda         API Gateway
+│               │ │           │ │              │
+iapi...         | MongoDB     | MongoDB        sapi...
+│               │ │           │ │              │
+DEV DB            UAT DB        UAT DB         PROD DB
+            </code></pre>
+            <p>For your existing Castanet-style setup, I would use something like:</p>
+            <pre><code>
+DEV
+https://iapi.thetoast.io
+
+UAT
+https://uapi.thetoast.io
+
+PRODUCTION
+https://sapi.thetoast.io
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>1. Separate environments</h2>
+            <p>The most important rule is:</p>
+            <p>Never let your developer environment accidentally use production resources.</p>
+            <p>For example:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Environment</th>
+                        <th>API</th>
+                        <th>Database</th>
+                        <th>AWS Account/Resources</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Developer</td>
+                        <td>iapi.thetoast.io</td>
+                        <td>castanet_dev</td>
+                        <td>DEV</td>
+                    </tr>
+                    <tr>
+                        <td>UAT</td>
+                        <td>uapi.thetoast.io</td>
+                        <td>castanet_uat</td>
+                        <td>UAT</td>
+                    </tr>
+                    <tr>
+                        <td>Production</td>
+                        <td>sapi.thetoast.io</td>
+                        <td>castanet_prod</td>
+                        <td>PROD</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Ideally, you eventually use separate AWS accounts:</p>
+            <pre><code>
+AWS Organization
+│
+├── Development Account
+├── UAT Account
+└── Production Account
+            </code></pre>
+            <p>For a smaller project, separate AWS resources inside one account can work initially.</p>
+        </section>
+
+        <section>
+            <h2>2. Use Serverless Framework or AWS SAM</h2>
+            <p>For Node.js Lambda applications, I'd strongly recommend Infrastructure as Code.</p>
+            <p>For example:</p>
+            <pre><code>
+castanet-api/
+│
+├── src/
+│   ├── handlers/
+│   │   ├── auth.js
+│   │   ├── contacts.js
+│   │   ├── users.js
+│   │   └── analytics.js
+│   │
+│   ├── services/
+│   ├── repositories/
+│   └── utils/
+│
+├── serverless.yml
+├── package.json
+├── .env.development
+├── .env.uat
+├── .env.production
+└── .gitignore
+            </code></pre>
+            <p>I would personally use Serverless Framework if your goal is a relatively straightforward Lambda/API Gateway application.</p>
+        </section>
+
+        <section>
+            <h2>3. Environment configuration</h2>
+            <p>Don't hard-code things like:</p>
+            <pre><code>
+const mongoUri = "mongodb+srv://production...";
+            </code></pre>
+            <p>Instead:</p>
+            <pre><code>
+const mongoUri = process.env.MONGO_URI;
+            </code></pre>
+            <p>Then each environment gets its own value.</p>
+            <p>For example:</p>
+            <p>Developer</p>
+            <pre><code>
+NODE_ENV=development
+
+MONGO_DATABASE=castanet_dev
+
+API_URL=https://iapi.thetoast.io
+
+GOOGLE_REDIRECT_URI=https://iapi.thetoast.io/auth/google/callback
+            </code></pre>
+            <p>UAT</p>
+            <pre><code>
+NODE_ENV=uat
+
+MONGO_DATABASE=castanet_uat
+
+API_URL=https://uapi.thetoast.io
+
+GOOGLE_REDIRECT_URI=https://uapi.thetoast.io/auth/google/callback
+            </code></pre>
+            <p>Production</p>
+            <pre><code>
+NODE_ENV=production
+
+MONGO_DATABASE=castanet_prod
+
+API_URL=https://sapi.thetoast.io
+
+GOOGLE_REDIRECT_URI=https://sapi.thetoast.io/auth/google/callback
+            </code></pre>
+            <p>But don't put production secrets in .env.production inside Git.</p>
+            <p>Use AWS Secrets Manager or SSM Parameter Store.</p>
+        </section>
+
+        <section>
+            <h2>4. Separate secrets from configuration</h2>
+            <p>This is very important for production.</p>
+            <p>For example:</p>
+            <pre><code>
+AWS Secrets Manager
+│
+├── /castanet/dev/mongodb
+├── /castanet/uat/mongodb
+├── /castanet/prod/mongodb
+│
+├── /castanet/dev/google
+├── /castanet/uat/google
+└── /castanet/prod/google
+            </code></pre>
+            <p>Your Lambda receives the appropriate secret.</p>
+            <p>For example:</p>
+            <pre><code>
+const mongoUri = process.env.MONGO_URI;
+            </code></pre>
+            <p>AWS supplies:</p>
+            <pre><code>
+MONGO_URI
+            </code></pre>
+            <p>without your source code knowing the actual password.</p>
+        </section>
+
+        <section>
+            <h2>5. Serverless configuration</h2>
+            <p>A simplified serverless.yml could look like:</p>
+            <pre><code>
+service: castanet-api
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: us-east-2
+
+  environment:
+    NODE_ENV: ${sls:stage}
+    MONGO_URI: ${ssm:/castanet/${sls:stage}/mongo-uri}
+
+functions:
+
+  api:
+    handler: src/handler.handler
+
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+serverless deploy --stage dev
+            </code></pre>
+            <p>creates DEV.</p>
+            <pre><code>
+serverless deploy --stage uat
+            </code></pre>
+            <p>creates UAT.</p>
+            <pre><code>
+serverless deploy --stage prod
+            </code></pre>
+            <p>creates production.</p>
+        </section>
+
+        <section>
+            <h2>6. Use different Lambda resources</h2>
+            <p>You want:</p>
+            <pre><code>
+castanet-api-dev
+castanet-api-uat
+castanet-api-prod
+            </code></pre>
+            <p>rather than one Lambda constantly being overwritten.</p>
+            <p>For example:</p>
+            <pre><code>
+Lambda
+│
+├── castanet-api-dev
+│
+├── castanet-api-uat
+│
+└── castanet-api-prod
+            </code></pre>
+            <p>Same codebase, different deployment.</p>
+            <p>This makes it much safer.</p>
+        </section>
+
+        <section>
+            <h2>7. API Gateway</h2>
+            <p>Likewise:</p>
+            <pre><code>
+API Gateway
+│
+├── DEV
+│   └── iapi.thetoast.io
+│
+├── UAT
+│   └── uapi.thetoast.io
+│
+└── PROD
+    └── sapi.thetoast.io
+            </code></pre>
+            <p>So your React/mobile applications know which backend they're talking to.</p>
+        </section>
+
+        <section>
+            <h2>8. MongoDB should also be separated</h2>
+            <p>Since your application uses MongoDB, don't have this:</p>
+            <pre><code>
+DEV ──────┐
+UAT ──────┼──> production MongoDB
+PROD ─────┘
+            </code></pre>
+            <p>That's dangerous.</p>
+            <p>Instead:</p>
+            <pre><code>
+DEV ──> castanet_dev
+
+UAT ──> castanet_uat
+
+PROD ──> castanet_prod
+            </code></pre>
+            <p>Even better:</p>
+            <pre><code>
+MongoDB Atlas
+│
+├── DEV cluster
+├── UAT cluster
+└── PROD cluster
+            </code></pre>
+            <p>For smaller applications, you can initially use separate databases within a cluster:</p>
+            <pre><code>
+castanet_dev
+castanet_uat
+castanet_prod
+            </code></pre>
+            <p>but production isolation is preferable as the system grows.</p>
+        </section>
+
+        <section>
+            <h2>9. Git branches</h2>
+            <p>I'd structure your Git workflow like this:</p>
+            <pre><code>
+feature/*
+     │
+     ▼
+ develop
+     │
+     ▼
+    UAT
+     │
+     ▼
+   main
+     │
+     ▼
+ PRODUCTION
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+git checkout -b feature/add-contacts
+            </code></pre>
+            <p>Develop:</p>
+            <pre><code>
+feature/add-contacts
+        ↓
+     develop
+        ↓
+       DEV
+            </code></pre>
+            <p>When ready:</p>
+            <pre><code>
+develop
+   ↓
+ UAT
+            </code></pre>
+            <p>After UAT approval:</p>
+            <pre><code>
+uat
+ ↓
+main
+ ↓
+PRODUCTION
+            </code></pre>
+            <p>You don't necessarily need a permanent uat branch; many teams use:</p>
+            <pre><code>
+        feature → develop → main
+             │
+             └── UAT deployment
+            </code></pre>
+            <p>I actually prefer this simpler approach.</p>
+        </section>
+
+        <section>
+            <h2>10. CI/CD</h2>
+            <p>This is where AWS Serverless becomes really powerful.</p>
+            <p>For example, GitHub Actions:</p>
+            <pre><code>
+            GitHub
+                │
+       ┌────────┴────────┐
+       │                 │
+    develop             main
+       │                 │
+       ▼                 ▼
+   Deploy DEV       Deploy PROD
+       │
+       ▼
+      UAT
+            </code></pre>
+            <p>A more controlled pipeline:</p>
+            <pre><code>
+Feature
+   │
+   ▼
+Pull Request
+   │
+   ▼
+develop
+   │
+   ├── npm test
+   ├── npm run lint
+   ├── npm audit
+   └── deploy DEV
+          │
+          ▼
+       QA/UAT
+          │
+          ▼
+      Approval
+          │
+          ▼
+        main
+          │
+          ▼
+      Production
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>11. Don't use AWS access keys in GitHub</h2>
+            <p>This is another important production practice.</p>
+            <p>Avoid:</p>
+            <pre><code>
+AWS_ACCESS_KEY_ID=xxxxx
+AWS_SECRET_ACCESS_KEY=xxxxx
+            </code></pre>
+            <p>inside GitHub secrets if you can avoid it.</p>
+            <p>Use GitHub OIDC → AWS IAM Role.</p>
+            <p>Architecture:</p>
+            <pre><code>
+GitHub Actions
+       │
+       │ OIDC
+       ▼
+AWS IAM Role
+       │
+       ▼
+Lambda / API Gateway / S3 / etc.
+            </code></pre>
+            <p>Then GitHub receives temporary AWS credentials.</p>
+            <p>Much safer than permanent access keys.</p>
+        </section>
+
+        <section>
+            <h2>12. Developer environment</h2>
+            <p>Your developers should be able to run:</p>
+            <pre><code>
+npm install
+npm run dev
+            </code></pre>
+            <p>and get:</p>
+            <pre><code>
+localhost:3000
+            </code></pre>
+            <p>or deploy their branch to a development environment.</p>
+            <p>For example:</p>
+            <pre><code>
+Developer laptop
+       │
+       ▼
+localhost
+       │
+       ▼
+DEV AWS
+       │
+       ▼
+DEV MongoDB
+            </code></pre>
+            <p>Never:</p>
+            <pre><code>
+Developer laptop
+       │
+       ▼
+PRODUCTION MongoDB
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>13. Configuration object in Node.js</h2>
+            <p>I recommend centralizing environment configuration.</p>
+            <p>For example:</p>
+            <pre><code>
+const config = {
+    environment: process.env.NODE_ENV,
+    
+    mongo: {
+        uri: process.env.MONGO_URI,
+        database: process.env.MONGO_DATABASE
+    },
+    
+    google: {
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        redirectUri: process.env.GOOGLE_REDIRECT_URI
+    },
+    
+    jwt: {
+        secret: process.env.JWT_SECRET
+    }
+};
+
+module.exports = config;
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+const config = require('./config');
+
+await connectMongo(
+  config.mongo.uri,
+  config.mongo.database
+);
+            </code></pre>
+            <p>This prevents environment-specific logic from being scattered throughout the application.</p>
+        </section>
+
+        <section>
+            <h2>14. Environment-specific frontend/mobile configuration</h2>
+            <p>Your React application can have:</p>
+            <pre><code>
+DEV
+REACT_APP_API_URL=https://iapi.thetoast.io
+
+UAT
+REACT_APP_API_URL=https://uapi.thetoast.io
+
+PROD
+REACT_APP_API_URL=https://sapi.thetoast.io
+            </code></pre>
+            <p>And your mobile app:</p>
+            <pre><code>
+const API_URL = Config.API_URL;
+            </code></pre>
+            <p>giving:</p>
+            <pre><code>
+Development build
+    ↓
+iapi.thetoast.io
+
+UAT build
+    ↓
+uapi.thetoast.io
+
+Production build
+    ↓
+sapi.thetoast.io
+            </code></pre>
+            <p>This is especially useful for your Castanet mobile application.</p>
+        </section>
+
+        <section>
+            <h2>15. Logging</h2>
+            <p>Don't mix logs between environments.</p>
+            <p>Use CloudWatch log groups such as:</p>
+            <pre><code>
+/aws/lambda/castanet-api-dev
+/aws/lambda/castanet-api-uat
+/aws/lambda/castanet-api-prod
+            </code></pre>
+            <p>Then you can immediately answer:</p>
+            <p>Is this a production problem or a UAT problem?</p>
+            <p>For production, I would also add:</p>
+            <ul>
+                <li>CloudWatch alarms</li>
+                <li>Lambda error alarms</li>
+                <li>API Gateway 5xx alarms</li>
+                <li>latency monitoring</li>
+                <li>AWS X-Ray/OpenTelemetry where appropriate</li>
+                <li>centralized structured JSON logging</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+console.log(JSON.stringify({
+    level: "info",
+    event: "contact_created",
+    userId,
+    environment: process.env.NODE_ENV
+}));
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>16. IAM permissions</h2>
+            <p>Don't give your Lambda:</p>
+            <pre><code>
+AdministratorAccess
+            </code></pre>
+            <p>Instead:</p>
+            <pre><code>
+DEV Lambda
+ ├── DEV Secrets
+ ├── DEV S3
+ └── DEV resources
+
+UAT Lambda
+ ├── UAT Secrets
+ ├── UAT S3
+ └── UAT resources
+
+PROD Lambda
+ ├── PROD Secrets
+ ├── PROD S3
+ └── PROD resources
+            </code></pre>
+            <p>Use least privilege.</p>
+        </section>
+
+        <section>
+            <h2>17. S3 should be separated too</h2>
+            <p>If your application uploads files:</p>
+            <pre><code>
+castanet-dev-assets
+castanet-uat-assets
+castanet-prod-assets
+            </code></pre>
+            <p>rather than:</p>
+            <pre><code>
+castanet-assets
+            </code></pre>
+            <p>with everything mixed together.</p>
+        </section>
+
+        <section>
+            <h2>18. Recommended architecture for you</h2>
+            <p>Considering the Node.js/AWS Serverless architecture you've been working with, I'd build it like this:</p>
+            <pre><code>
+        GitHub / Bitbucket
+                │
+       Pull Request / Push
+                │
+ ┌──────────────┴──────────────┐
+ │                             │
+develop                         main
+ │                             │
+ ▼                             ▼
+CI/CD Pipeline                 CI/CD Pipeline
+ │                             │
+ ▼                             ▼
+AWS DEV Account              AWS PROD Account
+ │                             │
+┌────────┼────────┐                    │
+│        │        │                    │
+Lambda   API GW    S3                 Lambda
+│        │                             │
+└────┬───┘                             │
+│                                 │
+MongoDB DEV                        MongoDB PROD
+
+ │
+ ▼
+UAT deploy
+ │
+ ▼
+AWS UAT resources
+ │
+ ▼
+MongoDB UAT
+            </code></pre>
+            <p>And domains:</p>
+            <pre><code>
+iapi.thetoast.io   → DEV
+uapi.thetoast.io   → UAT
+sapi.thetoast.io   → PROD
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>19. The most important principle</h2>
+            <p>Think of the environments as three completely different systems:</p>
+            <p>DEV</p>
+            <pre><code>
+Code changes
+↓
+Fast deployment
+↓
+Developer testing
+↓
+Can break
+            </code></pre>
+            <p>UAT</p>
+            <pre><code>
+Release candidate
+↓
+QA/business testing
+↓
+Production-like configuration
+↓
+Should be stable
+            </code></pre>
+            <p>PROD</p>
+            <pre><code>
+Approved release
+↓
+Real users
+↓
+Real data
+↓
+Maximum protection
+            </code></pre>
+            <p>So the deployment pipeline becomes:</p>
+            <pre><code>
+FEATURE
+   │
+   ▼
+DEVELOP
+   │
+   ▼
+ DEV AWS
+   │
+   ▼
+ QA / UAT
+   │
+   ▼
+ APPROVAL
+   │
+   ▼
+ MAIN
+   │
+   ▼
+ PROD AWS
+            </code></pre>
+            <p>What I would use for your stack</p>
+            <p>Given your existing Node.js + Lambda + API Gateway + MongoDB + Firebase/Auth + Google OAuth + GitHub Actions background, a solid modern stack would be:</p>
+            <p>Node.js 22 + Serverless Framework + Lambda + API Gateway HTTP API + MongoDB Atlas + Secrets Manager/SSM + CloudWatch + GitHub Actions + AWS IAM/OIDC + separate DEV/UAT/PROD resources.</p>
+            <p>That gives you a production architecture that is also a very good foundation for moving toward Senior/Staff Engineer or Systems Architect responsibilities.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> React Native and Flutter </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> React Native and Flutter </h1>
+                    <p class="subtitle"> React Native and Flutter both let you build iOS and Android apps from one codebase, but their architectures are fundamentally different. </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> The simplest technical distinction is: </h2>
+            <p>React Native = JavaScript/TypeScript code controlling native platform components through a native runtime/bridge architecture.</p>
+            <p>Flutter = Dart code rendered by Flutter's own rendering engine, largely independent of native UI widgets.</p>
+            <p>Since you work with native iOS (Swift/Objective-C/UIKit) as well as React Native, this architectural difference is especially important.</p>
+        </section>
+
+        <section>
+            <h2>1. High-level architecture</h2>
+            <p>React Native</p>
+            <pre><code>
+        JavaScript / TypeScript
+                │
+                ▼
+       React component tree
+                │
+                ▼
+      React Native runtime
+                │
+       ┌────────┴────────┐
+       │                 │
+       ▼                 ▼
+  Native Modules    Native Components
+       │                 │
+       ▼                 ▼
+    Obj-C/Swift       UIKit / Android
+            </code></pre>
+            <p>Your code:</p>
+            <pre><code>
+&lt;View&gt;
+    &lt;Text&gt;Hello&lt;/Text&gt;
+    &lt;Button title="Login" /&gt;
+&lt;/View&gt;
+            </code></pre>
+            <p>doesn't mean React Native draws those pixels itself.</p>
+            <p>Instead, React Native ultimately causes native platform views/components to be created or updated.</p>
+            <p>On iOS, this historically means things such as:</p>
+            <pre><code>
+RCTView
+RCTText
+UIButton / custom native components
+UIView
+UIViewController
+            </code></pre>
+            <p>and corresponding Objective-C/Swift implementations.</p>
+        </section>
+
+        <section>
+            <h2>2. Flutter architecture</h2>
+            <p>Flutter is quite different.</p>
+            <pre><code>
+                Dart
+                │
+                ▼
+         Flutter Framework
+                │
+                ▼
+         Flutter Engine
+                │
+         ┌──────┴──────┐
+         │             │
+      Skia/Impeller   Dart VM
+         │
+         ▼
+      GPU rendering
+         │
+         ▼
+        Pixels
+            </code></pre>
+            <p>Flutter generally does not ask UIKit:</p>
+            <p>"Please create a UIButton."</p>
+            <p>Instead, Flutter's rendering system draws the button itself.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+Flutter Widget
+      ↓
+Element
+      ↓
+RenderObject
+      ↓
+Flutter Engine
+      ↓
+GPU
+      ↓
+Pixels
+            </code></pre>
+            <p>So a Flutter button is primarily a Flutter-rendered object rather than a native UIButton.</p>
+        </section>
+
+        <section>
+            <h2>3. The biggest architectural difference</h2>
+            <p>This is probably the most important thing to understand.</p>
+            <p>React Native</p>
+            <p>React Native is essentially:</p>
+            <pre><code>
+React
+  ↓
+Native UI
+            </code></pre>
+            <p>Flutter is:</p>
+            <pre><code>
+Flutter
+  ↓
+Flutter-rendered UI
+            </code></pre>
+            <p>For example:</p>
+            <p>React Native</p>
+            <pre><code>
+&lt;View style={styles.container}&gt;
+    &lt;Text&gt;Hello&lt;/Text&gt;
+&lt;/View&gt;
+            </code></pre>
+            <p>The React Native framework maps this into native/platform-backed UI structures.</p>
+            <p>Flutter</p>
+            <pre><code>
+Container(
+  child: Text('Hello'),
+)
+            </code></pre>
+            <p>Flutter's rendering engine handles the rendering.</p>
+            <p>It doesn't need to translate that Text into a native UILabel for normal Flutter UI.</p>
+        </section>
+
+        <section>
+            <h2>4. React Native's JavaScript runtime</h2>
+            <p>React Native applications contain JavaScript/TypeScript.</p>
+            <p>For example:</p>
+            <pre><code>
+const Contact = ({name}: Props) => {
+    return (
+        &lt;View&gt;
+            &lt;Text&gt;{name}&lt;/Text&gt;
+        &lt;/View&gt;
+    );
+};
+            </code></pre>
+            <p>The JavaScript executes inside a JavaScript runtime.</p>
+            <p>Modern React Native uses Hermes heavily.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+TypeScript
+    ↓
+JavaScript
+    ↓
+Hermes
+    ↓
+React Native runtime
+    ↓
+Native platform
+            </code></pre>
+            <p>Your TypeScript isn't directly compiled into ARM machine code in the same manner as a native Swift application.</p>
+        </section>
+
+        <section>
+            <h2>5. Flutter's Dart runtime</h2>
+            <p>Flutter uses Dart.</p>
+            <pre><code>
+class Contact extends StatelessWidget {
+    final String name;
+    
+    const Contact({
+        required this.name,
+    });
+    
+    @override
+    Widget build(BuildContext context) {
+        return Column(
+        children: [
+            Text(name),
+        ],
+        );
+    }
+}
+            </code></pre>
+            <p>Dart has multiple execution modes.</p>
+            <p>Development</p>
+            <p>Dart VM provides things such as:</p>
+            <pre><code>
+Hot Reload
+Debugging
+Runtime inspection
+            </code></pre>
+
+            <p>Release</p>
+            <p>Dart can be compiled ahead-of-time into native machine code.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+Dart
+ ↓
+AOT compiler
+ ↓
+ARM64 machine code
+ ↓
+iOS / Android
+            </code></pre>
+            <p>This is one reason Flutter release applications don't require a JavaScript runtime to execute the application logic.</p>
+        </section>
+
+        <section>
+            <h2>6. React Native's rendering model</h2>
+            <p>React Native uses React's reconciliation model.</p>
+            <p>Suppose you have:</p>
+            <pre><code>
+&lt;Text&gt;{count}&lt;/Text&gt;
+            </code></pre>
+            <p>and:</p>
+            <pre><code>
+setCount(count + 1);
+            </code></pre>
+            <p>React determines what changed.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+State change
+     ↓
+React render
+     ↓
+Reconciliation
+     ↓
+Determine changed UI
+     ↓
+Update native representation
+            </code></pre>
+            <p>This is similar to React on the web conceptually, but the target isn't the DOM.</p>
+            <p>Instead of:</p>
+            <pre><code>
+React → DOM
+            </code></pre>
+            <p>you have:</p>
+            <pre><code>
+React → React Native host components
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>7. Flutter's widget tree</h2>
+            <p>Flutter uses a different model.</p>
+            <p>You write:</p>
+            <pre><code>
+Column(
+  children: [
+    Text('Paul'),
+    Text('Developer'),
+  ],
+)
+            </code></pre>
+            <p>Flutter has several layers.</p>
+            <p>Widget</p>
+            <p>Describes configuration.</p>
+            <pre><code>
+Widget
+            </code></pre>
+            <p>Element</p>
+            <p>Represents the widget's position/lifecycle in the tree.</p>
+            <pre><code>
+Widget
+  ↓
+Element
+            </code></pre>
+            <p>RenderObject</p>
+            <p>Handles layout and painting.</p>
+            <pre><code>
+Element
+  ↓
+RenderObject
+            </code></pre>
+            <p>Then:</p>
+            <pre><code>
+RenderObject
+      ↓
+Flutter Engine
+      ↓
+GPU
+            </code></pre>
+            <p>This is a major conceptual difference from React Native.</p>
+        </section>
+
+        <section>
+            <h2>8. React Native has native UI constraints</h2>
+            <p>Suppose you're building a complicated iOS interface.</p>
+            <p>React Native might ultimately interact with:</p>
+            <pre><code>
+UIView
+UIViewController
+UIScrollView
+UITextField
+UIImageView
+UINavigationController
+            </code></pre>
+            <p>This is advantageous when you need deep integration with the operating system.</p>
+            <p>For example:</p>
+            <pre><code>
+React Native
+     ↓
+Native Module
+     ↓
+Swift / Objective-C
+     ↓
+UIKit
+     ↓
+iOS
+            </code></pre>
+            <p>You can create:</p>
+            <pre><code>
+RCT_EXPORT_MODULE(MyScanner);
+            </code></pre>
+            <p>or modern native module implementations.</p>
+            <p>This lets React Native access capabilities that JavaScript itself cannot directly access.</p>
+        </section>
+
+        <section>
+            <h2>9. Flutter also has platform channels</h2>
+            <p>Flutter has a similar concept, but the mechanism is different.</p>
+            <p>Flutter code:</p>
+            <pre><code>
+MethodChannel('scanner')
+    .invokeMethod('startScanner');
+            </code></pre>
+            <p>can communicate with:</p>
+            <pre><code>
+Dart
+ ↓
+Platform Channel
+ ↓
+Swift / Objective-C
+            </code></pre>
+            <p>or:</p>
+            <pre><code>
+Dart
+ ↓
+Platform Channel
+ ↓
+Kotlin / Java
+            </code></pre>
+            <p>So:</p>
+            <pre><code>
+React Native:
+
+JS
+ ↓
+Native Module
+ ↓
+Swift / Obj-C
+
+
+Flutter:
+
+Dart
+ ↓
+Platform Channel
+ ↓
+Swift / Obj-C
+            </code></pre>
+            <p>Both can access native functionality.</p>
+        </section>
+
+        <section>
+            <h2>10. Native modules vs Flutter plugins</h2>
+            <p>The concepts are similar.</p>
+            <p>React Native</p>
+            <p>You might create:</p>
+            <p>MyScannerModule.swift</p>
+            <p>and expose:</p>
+            <pre><code>
+startScanner()
+stopScanner()
+            </code></pre>
+            <p>to JavaScript.</p>
+            <p>Flutter</p>
+            <p>You might create:</p>
+            <p>scanner_plugin</p>
+            <p>with:</p>
+            <pre><code>
+Dart API
+   ↓
+Platform implementation
+   ↓
+Swift / Kotlin
+            </code></pre>
+            <p>Flutter's ecosystem calls these plugins.</p>
+        </section>
+
+        <section>
+            <h2>11. UI rendering is where Flutter becomes particularly different</h2>
+            <p>Consider:</p>
+            <pre><code>
+Button
+            </code></pre>
+            <p>React Native</p>
+            <p>Conceptually:</p>
+            <pre><code>
+JS Button
+   ↓
+RN abstraction
+   ↓
+Native platform
+   ↓
+UIKit / Android View
+            </code></pre>
+            <p>Flutter</p>
+            <pre><code>
+Dart Button
+   ↓
+Flutter Widget
+   ↓
+RenderObject
+   ↓
+Flutter Engine
+   ↓
+GPU
+            </code></pre>
+            <p>Flutter has much greater control over the rendering pipeline.</p>
+            <p>This is particularly useful for:</p>
+            <ul>
+                <li>custom animations</li>
+                <li>highly customized UI</li>
+                <li>games</li>
+                <li>graphics</li>
+                <li>complex transitions</li>
+                <li>pixel-consistent UI</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>12. Why Flutter can look almost identical on iOS and Android</h2>
+            <p>Because Flutter controls much of the rendering.</p>
+            <p>For example:</p>
+            <pre><code>
+            Flutter UI
+                │
+       ┌────────┴────────┐
+       ▼                 ▼
+      iOS              Android
+       │                 │
+  Flutter Engine    Flutter Engine
+       │                 │
+       ▼                 ▼
+      GPU               GPU
+            </code></pre>
+            <p>The same Flutter rendering system produces the interface.</p>
+            <p>Therefore:</p>
+            <pre><code>
+iOS appearance
+≈
+Android appearance
+            </code></pre>
+            <p>unless you deliberately use platform-specific widgets/design.</p>
+        </section>
+
+        <section>
+            <h2>13. React Native naturally follows platform conventions</h2>
+            <p>React Native can take advantage of the platform's native behavior.</p>
+            <p>For example:</p>
+            <pre><code>
+iOS
+ ↓
+UIKit behavior
+
+Android
+ ↓
+Android framework behavior
+            </code></pre>
+            <p>That can be an advantage when you want the application to feel like a conventional native application.</p>
+        </section>
+
+        <section>
+            <h2>14. Performance differences</h2>
+            <p>This subject is often oversimplified.</p>
+            <p>It isn't accurate to say:</p>
+            <p>Flutter is fast, React Native is slow.</p>
+            <p>Modern React Native is significantly different from the old architecture.</p>
+            <p>A more useful comparison is:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>React Native</th>
+                        <th>Flutter</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Application language</td>
+                        <td>JS/TS</td>
+                        <td>Dart</td>
+                    </tr>
+                    <tr>
+                        <td>Runtime</td>
+                        <td>Hermes/JS runtime</td>
+                        <td>Dart VM/AOT</td>
+                    </tr>
+                    <tr>
+                        <td>UI</td>
+                        <td>Native/platform-backed abstractions</td>
+                        <td>Flutter-rendered</td>
+                    </tr>
+                    <tr>
+                        <td>Rendering</td>
+                        <td>RN/native rendering architecture</td>
+                        <td>Flutter engine</td>
+                    </tr>
+                    <tr>
+                        <td>Native integration</td>
+                        <td>Native Modules</td>
+                        <td>Plugins/platform channels</td>
+                    </tr>
+                    <tr>
+                        <td>Hot reload</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Release compilation</td>
+                        <td>JS + native runtime</td>
+                        <td>AOT native code</td>
+                    </tr>
+                    <tr>
+                        <td>Custom rendering</td>
+                        <td>More involved</td>
+                        <td>Very strong</td>
+                    </tr>
+                    <tr>
+                        <td>Native UI integration</td>
+                        <td>Very strong</td>
+                        <td>Possible, but indirect</td>
+                    </tr>
+                    <tr>
+                        <td>Web ecosystem</td>
+                        <td>Very strong</td>
+                        <td>Separate Flutter ecosystem</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>15. React Native's New Architecture</h2>
+            <p>This is particularly important for you because you're working with React Native 0.68.x.</p>
+            <p>Older React Native architecture:</p>
+            <pre><code>
+JavaScript
+    ↓
+Bridge
+    ↓
+Native
+            </code></pre>
+            <p>The traditional architecture relied heavily on an asynchronous bridge.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+JS Thread
+   │
+   │ serialized messages
+   ▼
+Bridge
+   │
+   ▼
+Native Modules / UI
+            </code></pre>
+            <p>This introduced overhead for certain communication patterns.</p>
+        </section>
+
+        <section>
+            <h2>16. Modern React Native</h2>
+            <p>Modern React Native introduced the New Architecture, centered around:</p>
+            <pre><code>
+Fabric
+TurboModules
+JSI
+Codegen
+            </code></pre>
+            <p>The conceptual architecture becomes closer to:</p>
+            <pre><code>
+JavaScript / TypeScript
+          │
+          ▼
+         JSI
+          │
+    ┌─────┴─────┐
+    ▼           ▼
+ Fabric     TurboModules
+    │           │
+    ▼           ▼
+ Native UI    Native APIs
+            </code></pre>
+            <p>JSI</p>
+            <p>JavaScript Interface allows JavaScript and C++/native code to interact more directly.</p>
+            <p>Instead of everything being serialized through the old bridge model:</p>
+            <pre><code>
+JS
+ ↓
+JSON-like serialization
+ ↓
+Bridge
+ ↓
+Native
+            </code></pre>
+            <p>modern React Native can do much more direct interop.</p>
+        </section>
+
+        <section>
+            <h2>17. Fabric</h2>
+            <p>Fabric is React Native's modern rendering architecture.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+React
+ ↓
+Shadow Tree
+ ↓
+Fabric
+ ↓
+Native UI
+            </code></pre>
+            <p>Fabric improves things such as:</p>
+            <ul>
+                <li>rendering synchronization</li>
+                <li>concurrent rendering</li>
+                <li>native interoperability</li>
+                <li>performance</li>
+                <li>layout processing</li>
+                <li>integration with modern React</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>18. TurboModules</h2>
+            <p>Old architecture:</p>
+            <pre><code>
+JS
+ ↓
+Bridge
+ ↓
+Native Module
+            </code></pre>
+            <p>TurboModules:</p>
+            <pre><code>
+JS
+ ↓
+JSI
+ ↓
+TurboModule
+ ↓
+Native
+            </code></pre>
+            <p>This can substantially reduce communication overhead.</p>
+        </section>
+
+        <section>
+            <h2>19. This matters for your Castanet app</h2>
+            <p>Your Castanet application has things such as:</p>
+            <pre><code>
+React Native
+     │
+     ├── Firebase
+     ├── FCM
+     ├── native permissions
+     ├── Google authentication
+     ├── notifications
+     ├── iOS lifecycle
+     └── native iOS code
+            </code></pre>
+            <p>So you're not just writing JavaScript.</p>
+            <p>Your actual application architecture is more like:</p>
+            <pre><code>
+            Castanet
+                │
+       React Native Application
+                │
+    ┌───────────┴────────────┐
+    │                        │
+TypeScript                 Native
+    │                        │
+    │                  Swift / Obj-C
+    │                        │
+    └──────────┬─────────────┘
+               │
+          iOS runtime
+            </code></pre>
+            <p>That's why your recent UIScene/AppDelegate/RCTBridge problems are fundamentally native iOS integration issues, even though the application is React Native.</p>
+        </section>
+
+        <section>
+            <h2>20. Flutter would handle this differently</h2>
+            <p>A Flutter application would look more like:</p>
+            <pre><code>
+            Flutter App
+                │
+               Dart
+                │
+       Flutter Framework
+                │
+       Flutter Engine
+                │
+      ┌─────────┴─────────┐
+      │                   │
+  iOS embedding       Android embedding
+      │                   │
+      ▼                   ▼
+     UIKit              Android
+            </code></pre>
+            <p>The Flutter engine still needs an iOS embedding.</p>
+            <p>Therefore Flutter isn't completely independent of iOS.</p>
+            <p>You still have:</p>
+            <pre><code>
+AppDelegate
+SceneDelegate
+Info.plist
+entitlements
+Swift/Obj-C
+Xcode
+            </code></pre>
+            <p>when required by the platform.</p>
+        </section>
+
+        <section>
+            <h2>21. Flutter doesn't eliminate native problems</h2>
+            <p>This is a common misconception.</p>
+            <p>Flutter:</p>
+            <pre><code>
+Dart
+ ↓
+Flutter Engine
+ ↓
+iOS
+            </code></pre>
+            <p>still needs to integrate with:</p>
+            <pre><code>
+UIApplication
+UIScene
+AppDelegate
+permissions
+push notifications
+Keychain
+StoreKit
+CoreBluetooth
+AVFoundation
+etc.
+            </code></pre>
+            <p>For example, if your Flutter application needs camera functionality:</p>
+            <pre><code>
+Flutter
+ ↓
+camera plugin
+ ↓
+iOS AVFoundation
+            </code></pre>
+            <p>So you can still encounter:</p>
+            <pre><code>
+Swift
+Objective-C
+Xcode
+Pods
+Info.plist
+iOS lifecycle
+            </code></pre>
+            <p>issues.</p>
+        </section>
+
+        <section>
+            <h2>22. Dependency architecture</h2>
+            <p>React Native commonly looks like:</p>
+            <pre><code>
+package.json
+       │
+       ▼
+node_modules
+       │
+       ├── React
+       ├── React Native
+       ├── Firebase
+       ├── permissions
+       └── other packages
+              │
+              ▼
+             iOS
+              │
+             Pods
+            </code></pre>
+            <p>Flutter:</p>
+            <pre><code>
+pubspec.yaml
+      │
+      ▼
+pub cache
+      │
+      ├── firebase
+      ├── camera
+      ├── notifications
+      └── other packages
+              │
+              ▼
+         iOS / Android
+            </code></pre>
+            <p>Flutter's dependency manager is:</p>
+            <pre><code>
+pub
+            </code></pre>
+            <p>React Native typically uses:</p>
+            <pre><code>
+npm
+            </code></pre>
+            <p>or:</p>
+            <pre><code>
+yarn
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>23. Build pipeline</h2>
+            <p>React Native iOS</p>
+            <p>Conceptually:</p>
+            <pre><code>
+.tsx
+ ↓
+TypeScript
+ ↓
+JavaScript
+ ↓
+Metro
+ ↓
+Hermes
+ ↓
+Xcode
+ ↓
+iOS application
+            </code></pre>
+            <p>Native dependencies:</p>
+            <pre><code>
+CocoaPods
+ ↓
+Xcode
+ ↓
+Native frameworks
+            </code></pre>
+            <p>Flutter iOS</p>
+            <pre><code>
+.dart
+ ↓
+Dart compiler
+ ↓
+Flutter engine
+ ↓
+AOT compilation
+ ↓
+Xcode
+ ↓
+iOS application
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>24. State management</h2>
+            <p>React Native itself doesn't prescribe one state-management system.</p>
+            <p>You can use:</p>
+            <pre><code>
+useState
+useReducer
+Context
+Redux
+Zustand
+MobX
+Recoil
+etc.
+            </code></pre>
+            <p>Example:</p>
+            <pre><code>
+const [contacts, setContacts] = useState&lt;Contact[]&gt;([]);
+            </code></pre>
+            <p>Flutter has its own ecosystem:</p>
+            <pre><code>
+setState
+Provider
+Riverpod
+Bloc
+Cubit
+GetX
+MobX
+etc.
+            </code></pre>
+            <p>Basic Flutter:</p>
+            <pre><code>
+setState(() {
+    contacts = newContacts;
+});
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>25. React vs Flutter programming model</h2>
+            <p>React Native:</p>
+            <pre><code>
+function Contact({contact}) {
+    return (
+        &lt;View&gt;
+        &lt;Text&gt;{contact.name}&lt;/Text&gt;
+        &lt;/View&gt;
+    );
+}
+            </code></pre>
+            <p>The fundamental idea is:</p>
+            <pre><code>
+state
+ ↓
+render
+ ↓
+UI
+            </code></pre>
+            <p>Flutter:</p>
+            <pre><code>
+class Contact extends StatelessWidget {
+    final ContactModel contact;
+    
+    const Contact({
+        super.key,
+        required this.contact,
+    });
+    
+    @override
+    Widget build(BuildContext context) {
+        return Column(
+        children: [
+            Text(contact.name),
+        ],
+        );
+    }
+}
+            </code></pre>
+            <p>Flutter's fundamental abstraction is the:</p>
+            <p>Widget</p>
+            <p>Almost everything is a widget.</p>
+        </section>
+
+        <section>
+            <h2>26. Layout differences</h2>
+            <p>React Native:</p>
+            <pre><code>
+&lt;View
+  style={{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  }}
+&gt;
+            </code></pre>
+            <p>Flutter:</p>
+            <pre><code>
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    ...
+  ],
+)
+            </code></pre>
+            <p>React Native primarily uses concepts derived from:</p>
+            <pre><code>
+Flexbox
+            </code></pre>
+            <p>Flutter uses its own layout system.</p>
+            <p>Examples:</p>
+            <pre><code>
+Row
+Column
+Stack
+Expanded
+Flexible
+Padding
+Align
+Center
+Container
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>27. Native UI vs custom UI</h2>
+            <p>This is an important decision point.</p>
+            <p>Suppose you want:</p>
+            <pre><code>
+100% custom graphical interface
+            </code></pre>
+            <p>Flutter's model is naturally suited to that:</p>
+            <pre><code>
+Widget
+ ↓
+RenderObject
+ ↓
+Engine
+ ↓
+GPU
+            </code></pre>
+            <p>React Native:</p>
+            <pre><code>
+React component
+ ↓
+RN
+ ↓
+native UI
+            </code></pre>
+            <p>You can absolutely create custom components in React Native, but you're working within a different architecture.</p>
+        </section>
+
+        <section>
+            <h2>28. Animations</h2>
+            <p>Flutter has a very extensive animation system.</p>
+            <p>For example:</p>
+            <pre><code>
+AnimationController
+Tween
+CurvedAnimation
+AnimatedBuilder
+            </code></pre>
+            <p>Because Flutter controls the rendering pipeline, it can coordinate animations tightly with its frame rendering.</p>
+            <p>React Native has:</p>
+            <pre><code>
+Animated
+LayoutAnimation
+Reanimated
+            </code></pre>
+            <p>The popular react-native-reanimated library moves substantial animation work away from the normal JS execution path.</p>
+            <p>Conceptually:</p>
+            <pre><code>
+JS
+ ↓
+Animation definition
+ ↓
+UI-thread/native execution
+ ↓
+60/120 FPS
+            </code></pre>
+            <p>This is why modern React Native animation performance can be very good when implemented correctly.</p>
+        </section>
+
+        <section>
+            <h2>29. Threading</h2>
+            <p>A simplified React Native architecture can involve:</p>
+            <pre><code>
+JavaScript thread
+        │
+        ├── React
+        └── application logic
+
+Native/UI thread
+        │
+        └── UI rendering
+
+Other native threads
+        │
+        └── networking / background operations
+            </code></pre>
+            <p>Modern React Native complicates this architecture somewhat because JSI, Fabric, worklets, and native components can execute outside the traditional JS path.</p>
+            <p>Flutter typically has:</p>
+            <pre><code>
+Dart UI thread
+      │
+      ▼
+Flutter framework
+      │
+      ▼
+Rendering
+            </code></pre>
+            <p>plus engine/platform threads.</p>
+            <p>Flutter's threading model is therefore different rather than simply "single-threaded."</p>
+        </section>
+
+        <section>
+            <h2>30. Memory</h2>
+            <p>React Native application memory includes things such as:</p>
+            <pre><code>
+iOS process
+ ├── JS runtime
+ ├── React Native runtime
+ ├── native UI
+ ├── native modules
+ └── application data
+            </code></pre>
+            <p>Flutter includes:</p>
+            <pre><code>
+iOS process
+ ├── Dart runtime
+ ├── Flutter engine
+ ├── widget/rendering structures
+ ├── GPU resources
+ └── application data
+            </code></pre>
+            <p>Flutter's engine adds a relatively substantial runtime footprint because the rendering engine is packaged with the application.</p>
+            <p>React Native leverages more of the platform UI infrastructure.</p>
+        </section>
+
+        <section>
+            <h2>31. App size</h2>
+            <p>Neither framework has a universally smaller application.</p>
+            <p>It depends heavily on:</p>
+            <pre><code>
+framework version
+dependencies
+architecture
+native libraries
+assets
+debug/release configuration
+            </code></pre>
+            <p>Flutter has to package its engine.</p>
+            <p>React Native packages its JS/runtime and native dependencies.</p>
+            <p>So don't use:</p>
+            <p>"Flutter is always smaller."</p>
+            <p>or:</p>
+            <p>"React Native is always smaller."</p>
+            <p>as a general rule.</p>
+        </section>
+
+        <section>
+            <h2>32. When React Native is particularly attractive</h2>
+            <p>React Native is especially attractive if your team has:</p>
+            <pre><code>
+JavaScript
+TypeScript
+React
+React web
+Node.js
+            </code></pre>
+            <p>experience.</p>
+            <p>For you specifically, that maps closely to your existing stack:</p>
+            <pre><code>
+React
+   +
+React Native
+   +
+Node.js
+   +
+AWS
+   +
+MongoDB
+            </code></pre>
+            <p>You can share concepts between:</p>
+            <pre><code>
+React web
+      ↕
+React Native
+            </code></pre>
+            <p>although you generally should not expect to share all UI code directly.</p>
+        </section>
+
+        <section>
+            <h2>33. When Flutter is particularly attractive</h2>
+            <p>Flutter becomes attractive when the team wants:</p>
+            <pre><code>
+Dart
++
+strongly controlled UI
++
+custom rendering
++
+consistent cross-platform UI
++
+single Flutter widget system
+            </code></pre>
+            <p>For example:</p>
+            <pre><code>
+POS
+kiosk
+custom dashboard
+interactive visualization
+animation-heavy app
+custom-designed consumer app
+            </code></pre>
+            <p>can benefit from Flutter's rendering model.</p>
+        </section>
+
+        <section>
+            <h2>34. A very important distinction: "cross-platform"</h2>
+            <p>People often say:</p>
+            <p>"Both are cross-platform."</p>
+            <p>True, but they achieve it differently.</p>
+            <p>React Native</p>
+            <pre><code>
+            Shared
+                │
+         React/TypeScript
+                │
+       ┌────────┴────────┐
+       ▼                 ▼
+     iOS               Android
+       │                 │
+    UIKit             Android UI
+            </code></pre>
+            <p>Flutter</p>
+            <pre><code>
+            Shared
+                │
+               Dart
+                │
+          Flutter Engine
+                │
+       ┌────────┴────────┐
+       ▼                 ▼
+     iOS               Android
+            </code></pre>
+            <p>React Native shares application logic + UI abstraction, while relying much more on platform-native UI infrastructure.</p>
+            <p>Flutter shares application logic + rendering framework, with its own rendering engine.</p>
+        </section>
+
+        <section>
+            <h2>35. Native integration comparison</h2>
+            <p>For your background, this is probably one of the most important comparisons.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Capability</th>
+                        <th>React Native</th>
+                        <th>React Native</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Swift integration</td>
+                        <td>Excellent</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>Objective-C integration</td>
+                        <td>Excellent</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>Kotlin integration</td>
+                        <td>Excellent</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>Native UI embedding</td>
+                        <td>Very strong</td>
+                        <td>Supported</td>
+                    </tr>
+                    <tr>
+                        <td>Native SDK access</td>
+                        <td>Native modules</td>
+                        <td>Plugins/platform channels</td>
+                    </tr>
+                    <tr>
+                        <td>Existing native app migration</td>
+                        <td>Very strong</td>
+                        <td>Strong</td>
+                    </tr>
+                    <tr>
+                        <td>UIKit integration</td>
+                        <td>Direct</td>
+                        <td>Through embedding/plugins</td>
+                    </tr>
+                    <tr>
+                        <td>Custom rendering</td>
+                        <td>Possible</td>
+                        <td>Core strength</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>If you're maintaining an existing Objective-C/UIKit application, React Native can fit very naturally into the existing architecture.</p>
+        </section>
+
+        <section>
+            <h2>36. Your UIScene problem is a good real-world example</h2>
+            <p>Your current Castanet situation is approximately:</p>
+            <pre><code>
+iOS
+ │
+ ├── UIApplication
+ │
+ ├── UIScene
+ │
+ ├── AppDelegate
+ │
+ ├── SceneDelegate
+ │
+ └── RCTBridge
+          │
+          ▼
+      React Native
+          │
+          ▼
+       JavaScript
+            </code></pre>
+            <p>Your recent error:</p>
+            <pre><code>
+Application failed to launch:
+UIScene life cycle is required...
+            </code></pre>
+            <p>is fundamentally an iOS lifecycle / native embedding issue.</p>
+            <p>React Native is sitting inside that iOS application lifecycle.</p>
+            <p>Switching to Flutter would not magically remove the requirement for the iOS application to comply with the current iOS lifecycle requirements.</p>
+        </section>
+
+        <section>
+            <h2>37. The easiest mental model</h2>
+            <p>If you're a native iOS developer, think about them this way:</p>
+            <p>React Native</p>
+            <p>"I have a React application that controls native platform components."</p>
+            <pre><code>
+React
+ ↓
+React Native
+ ↓
+UIKit / Android
+            </code></pre>
+            <p>Flutter</p>
+            <p>"I have a Dart application running inside a cross-platform rendering engine."</p>
+            <pre><code>
+Dart
+ ↓
+Flutter
+ ↓
+Flutter Engine
+ ↓
+GPU
+            </code></pre>
+            <p>That distinction explains most of the other differences.</p>
+        </section>
+
+        <section>
+            <h2>38. Final architectural comparison</h2>
+            <pre><code>
+                REACT NATIVE
+          
+                TypeScript / JavaScript
+                          │
+                          ▼
+                        React
+                          │
+                          ▼
+                   React Native Runtime
+                          │
+                     ┌────┴────┐
+                     │         │
+                     ▼         ▼
+                   Fabric   TurboModules
+                     │         │
+                     ▼         ▼
+                  Native UI  Native APIs
+                     │
+                     ▼
+                iOS / Android
+            </code></pre>
+            <p>versus:</p>
+            <pre><code>
+                FLUTTER
+
+                Dart
+                 │
+                 ▼
+         Flutter Framework
+                 │
+         Widget / Element
+                 │
+            RenderObject
+                 │
+                 ▼
+          Flutter Engine
+                 │
+          ┌──────┴──────┐
+          │             │
+     Rendering       Platform
+          │          Integration
+          ▼             │
+         GPU            ▼
+          │         iOS/Android
+          ▼
+        Pixels
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>Bottom line</h2>
+            <p>The most fundamental difference isn't JavaScript vs Dart.</p>
+            <p>It's:</p>
+            <p>React Native's fundamental model:</p>
+            <pre><code>
+React → native platform UI
+            </code></pre>
+            <p>Flutter's fundamental model:</p>
+            <pre><code>
+Dart → Flutter rendering engine → pixels
+            </code></pre>
+            <p>And that leads to the practical differences in UI behavior, native integration, rendering, performance characteristics, architecture, debugging, dependency management, and how much platform-specific code you need.</p>
+            <p>For someone with your React + React Native + Swift/Objective-C/UIKit background, understanding JSI/Fabric/TurboModules and the native iOS embedding/lifecycle is particularly important because modern React Native is considerably different from the old "JavaScript bridge" architecture.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

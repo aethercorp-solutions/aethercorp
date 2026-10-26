@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> Serverless Functions </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> Serverless Functions </h1>
+                    <p class="subtitle"> 
+                        The easiest way to understand them is:
+                        <p>Firebase Functions = Google Cloud Functions designed around Firebase.</p>
+                        <p>Google Cloud Functions = Google's general-purpose serverless functions.</p>
+                        <p>AWS Lambda = Amazon's equivalent serverless function service.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> Side-by-side </h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Firebase Functions</th>
+                        <th>Google Cloud Functions</th>
+                        <th>AWS Lambda</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cloud provider</td>
+                        <td>Google</td>
+                        <td>Google</td>
+                        <td>AWS</td>
+                    </tr>
+                    <tr>
+                        <td>Main purpose</td>
+                        <td>Firebase applications</td>
+                        <td>General backend/serverless</td>
+                        <td>General backend/serverless</td>
+                    </tr>
+                    <tr>
+                        <td>Service</td>
+                        <td>Firebase Functions</td>
+                        <td>Cloud Functions</td>
+                        <td>Lambda</td>
+                    </tr>
+                    <tr>
+                        <td>Triggered by</td>
+                        <td>Firebase + Google events + HTTP</td>
+                        <td>HTTP + Google Cloud events</td>
+                        <td>AWS events + HTTP/API Gateway</td>
+                    </tr>
+                    <tr>
+                        <td>Best with</td>
+                        <td>Firebase</td>
+                        <td>Google Cloud</td>
+                        <td>AWS</td>
+                    </tr>
+                    <tr>
+                        <td>Database integration</td>
+                        <td>Firestore, Realtime DB</td>
+                        <td>Any Google Cloud DB/service</td>
+                        <td>DynamoDB, RDS, etc.</td>
+                    </tr>
+                    <tr>
+                        <td>Authentication</td>
+                        <td>Firebase Auth</td>
+                        <td>Usually implement/configure yourself</td>
+                        <td>Cognito/IAM/custom</td>
+                    </tr>
+                    <tr>
+                        <td>Mobile integration</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                        <td>⭐⭐⭐</td>
+                        <td>⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>Infrastructure control</td>
+                        <td>Lower</td>
+                        <td>Medium</td>
+                        <td>Medium/high</td>
+                    </tr>
+                    <tr>
+                        <td>Typical language</td>
+                        <td>JS/TS, Python, Go, Java, etc.</td>
+                        <td>JS/TS, Python, Go, Java, etc.</td>
+                        <td>JS/TS, Python, Java, Go, .NET, Ruby, etc.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>1. Firebase Functions</h2>
+            <p>Firebase Functions are essentially a Firebase-oriented serverless backend.</p>
+            <p>For example:</p>
+            <pre><code>
+React Native App
+       ↓
+Firebase Auth
+       ↓
+Firebase Function
+       ↓
+MongoDB / Firestore / external API
+            </code></pre>
+            <p>You can write:</p>
+            <pre><code>
+exports.createUser = functions.https.onCall(async (data, context) => {
+    // backend logic
+});
+            </code></pre>
+            <p>Firebase can also trigger functions when things happen in Firebase:</p>
+            <pre><code>
+User signs up
+     ↓
+Firebase Auth
+     ↓
+Function executes
+     ↓
+Create user profile
+     ↓
+Send notification
+            </code></pre>
+            <p>They're particularly convenient for mobile applications.</p>
+        </section>
+
+        <section>
+            <h2>2. Google Cloud Functions</h2>
+            <p>Google Cloud Functions are Google's general serverless compute platform.</p>
+            <p>Think:</p>
+            <pre><code>
+HTTP request
+     ↓
+Cloud Function
+     ↓
+Business logic
+     ↓
+Cloud SQL / BigQuery / Storage / API
+            </code></pre>
+            <p>You don't have to use Firebase.</p>
+            <p>For example, you could have:</p>
+            <pre><code>
+React Web App
+       ↓
+Cloud Function
+       ↓
+PostgreSQL
+            </code></pre>
+            <p>or:</p>
+            <pre><code>
+Cloud Storage
+     ↓
+Cloud Function
+     ↓
+Process uploaded image
+            </code></pre>
+            <p>Firebase Functions actually uses Google's underlying cloud infrastructure.</p>
+        </section>
+
+        <section>
+            <h2>3. AWS Lambda</h2>
+            <p>Amazon Web Services Lambda is Amazon's equivalent concept.</p>
+            <p>For example:</p>
+            <pre><code>
+React Native
+     ↓
+API Gateway
+     ↓
+AWS Lambda
+     ↓
+MongoDB
+            </code></pre>
+            <p>Or:</p>
+            <pre><code>
+S3 upload
+   ↓
+Lambda
+   ↓
+Process image
+            </code></pre>
+            <p>AWS Lambda is deeply integrated with the AWS ecosystem:</p>
+            <pre><code>
+Lambda
+ ├── API Gateway
+ ├── S3
+ ├── DynamoDB
+ ├── SQS
+ ├── SNS
+ ├── EventBridge
+ ├── Cognito
+ └── CloudWatch
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>The important distinction</h2>
+            <p>Don't think:</p>
+            <pre><code>
+Firebase Function
+Google Function
+AWS Function
+            </code></pre>
+            <p>as three completely different programming concepts.</p>
+            <p>Think:</p>
+            <pre><code>
+                SERVERLESS FUNCTIONS
+
+                ┌─────────────────────┐
+                │   Your code         │
+                │   Node/Python/etc.  │
+                └──────────┬──────────┘
+                           │
+             ┌─────────────┴─────────────┐
+             ↓                           ↓
+        Google Cloud                  AWS
+             │                           │
+      ┌──────┴──────┐                 Lambda
+      ↓             ↓
+   Firebase       Cloud
+   Functions     Functions
+            </code></pre>
+            <p>The biggest difference is the surrounding ecosystem and how you trigger/connect the function.</p>
+        </section>
+
+        <section>
+            <h2>In your Castanet architecture</h2>
+            <p>Based on the architecture you've been working with, you actually have something close to:</p>
+            <pre><code>
+React / React Native
+        │
+        ↓
+Firebase Auth
+        │
+        ↓
+AWS Lambda / API Gateway
+        │
+        ├── MongoDB
+        ├── Google People API
+        └── other services
+            </code></pre>
+            <p>That is perfectly valid.</p>
+            <p>You don't need Firebase Functions just because you're using Firebase Auth.</p>
+            <p>For example:</p>
+            <pre><code>
+Firebase Authentication
+        ↓
+JWT
+        ↓
+AWS API Gateway
+        ↓
+AWS Lambda
+        ↓
+MongoDB
+            </code></pre>
+            <p>Firebase handles identity, while AWS handles backend computation.</p>
+            <p>That's actually a useful architecture for Castanet because you can use Firebase for mobile-oriented services while keeping your main API/backend in AWS.</p>
+            <p>Simple rule</p>
+            <p>Use Firebase Functions when:</p>
+            <ul>
+                <li>Your application is heavily Firebase-based.</li>
+                <li>You want easy Firebase event triggers.</li>
+                <li>You want quick mobile/backend development.</li>
+            </ul>
+            <p>Use Google Cloud Functions when:</p>
+            <ul>
+                <li>You're primarily using Google Cloud.</li>
+                <li>You need serverless processing independent of Firebase.</li>
+                <li>You're integrating services such as Cloud Storage, Pub/Sub, BigQuery, etc.</li>
+            </ul>
+            <p>Use AWS Lambda when:</p>
+            <ul>
+                <li>Your backend is primarily AWS.</li>
+                <li>You're using API Gateway, S3, SQS, DynamoDB, EventBridge, etc.</li>
+                <li>You need a larger AWS serverless architecture.</li>
+            </ul>
+            <p>One important modern detail</p>
+            <p>The terminology can be confusing because Google has evolved its serverless offerings. Cloud Functions is now closely tied to Cloud Run infrastructure in Google's newer 2nd-generation model. So when learning modern Google serverless architecture, you should also understand Cloud Run, not just Cloud Functions.</p>
+            <p>If you're aiming toward Systems Architect, I'd learn the three concepts as:</p>
+            <p>Firebase Functions → Google Cloud Functions/Cloud Run → AWS Lambda</p>
+            <p>and, more importantly, learn when to choose each architecture, rather than memorizing the APIs.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
