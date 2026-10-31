@@ -539,6 +539,8 @@ const htmlFiles = [
   "files/mathematics/random-simulations.html",
   "files/mathematics/right-triangle.html",
   "files/mathematics/tiered-learning-roadmap.html",
+  "files/mongodb/bson.html",
+  "files/mongodb/unwind.html",
   "files/networking/SSL-Pinning.html",
   "files/networking/access-control.html",
   "files/networking/api-keys-and-jwt.html",

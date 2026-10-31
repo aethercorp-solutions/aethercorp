@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> $unwind </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> $unwind </h1>
+                    <p class="subtitle">
+                        In MongoDB, { $unwind: '$ContactList' } is an aggregation pipeline stage that separates an array into individual documents, creating one document for each element in the array.    
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. Example </h2>
+            <p>Suppose your MongoDB document looks like this:</p>
+            <pre><code>
+{
+    _id: 1,
+    user_email: "john@example.com",
+    ContactList: [
+        { name: "Alice", status: "due" },
+        { name: "Bob", status: "overdue" },
+        { name: "Charlie", status: "due" }
+    ]
+}
+            </code></pre>
+
+            <p>When you execute:</p>
+            <pre><code>
+{
+    $unwind: '$ContactList'
+}
+            </code></pre>
+            <p>MongoDB transforms the single document into three separate documents.</p>
+
+            <pre><code>
+BEFORE — 1 DOCUMENT
+ 
+  user_email: john@example.com
+  ContactList: [Alice, Bob, Charlie]
+  
+  $unwind: '$ContactList'
+
+AFTER — 3 DOCUMENTS
+
+    { 
+        user_email: "john@example.com",
+        ContactList: { name: "Alice", status: "due" } 
+    }
+
+    { 
+        user_email: "john@example.com",
+        ContactList: { name: "Bob", status: "overdue" } 
+    }
+
+    { 
+        user_email: "john@example.com",
+        ContactList: { name: "Charlie", status: "due" } 
+    }
+            </code></pre>
+            <p>Notice that MongoDB preserves the other fields, such as user_email, while replacing the array with one individual element per document.</p>
+        </section>
+
+        <section>
+            <h2>2. Why is $unwind useful?</h2>
+            <p>It allows you to filter, sort, count, or process individual array elements.</p>
+            <p>For example, you could find only contacts whose status is due:</p>
+            <pre><code>
+db.users.aggregate([
+  { $unwind: '$ContactList' },
+  {
+    $match: {
+      'ContactList.status': 'due'
+    }
+  }
+])
+            </code></pre>
+            <p>The result contains Alice and Charlie, each as a separate document.</p>
+        </section>
+
+        <section>
+            <h2>3. How this applies to your Castanet code</h2>
+            <p>In your getDueContacts aggregation pipeline, if ContactList is an array of contacts, this stage allows MongoDB to process each contact individually.</p>
+            <p>For example, you could:</p>
+            <ol>
+                <li>Unwind ContactList to separate each contact.</li>
+                <li>Filter contacts based on their due dates.</li>
+                <li>Sort the matching contacts.</li>
+                <li>Apply pagination using $skip and $limit.</li>
+            </ol>
+            <p>Important: $unwind increases the number of pipeline documents when an array contains multiple elements. If the array is empty or missing, MongoDB normally drops that document unless you use preserveNullAndEmptyArrays: true.</p>
+            <p>In simple terms: $unwind converts an array of contacts into individual records so MongoDB can query each contact separately.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>

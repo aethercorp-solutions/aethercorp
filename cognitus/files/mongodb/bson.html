@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> BSON (Binary JSON) </title>
+    <link rel="stylesheet" href="../../style.css">
+    <script src="../../index.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="corporate-nav">
+            <div class="nav-container">
+                <div class="title-header">
+                    <h1 class="title"> BSON (Binary JSON) </h1>
+                    <p class="subtitle"> 
+                        BSON (Binary JSON) is a binary format used by MongoDB to store and represent documents. It is similar to JSON, but it encodes data in a binary format that supports additional data types, such as dates and binary data.
+                        <p>Since you're working with Node.js and MongoDB, you'll encounter BSON when storing and retrieving data through MongoDB.</p>
+                    </p>
+                </div>        
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2> 1. JSON vs. BSON </h2>
+            <p>For example, consider this JSON document:</p>
+            <pre><code>
+{
+  "name": "John",
+  "age": 30,
+  "isActive": true
+}
+            </code></pre>
+            <p>MongoDB stores documents using BSON, which encodes the same information in a binary representation rather than plain text.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>JSON</th>
+                        <th>BSON</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Format</td>
+                        <td>Text</td>
+                        <td>Binary</td>
+                    </tr>
+                    <tr>
+                        <td>Readable by humans</td>
+                        <td>Yes</td>
+                        <td>Not directly</td>
+                    </tr>
+                    <tr>
+                        <td>Data types</td>
+                        <td>Basic types</td>
+                        <td>Additional types, including Date and ObjectId</td>
+                    </tr>
+                    <tr>
+                        <td>Common use</td>
+                        <td>APIs and data exchange</td>
+                        <td>MongoDB document storage</td>
+                    </tr>
+                    <tr>
+                        <td>Size and speed</td>
+                        <td>Text-based encoding</td>
+                        <td>Designed for efficient encoding, decoding, and database operations</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>BSON isn't necessarily smaller or faster than JSON in every situation; the result depends on the data and operation.</p>
+        </section>
+
+        <section>
+            <h2>2. How BSON works in MongoDB</h2>
+            <p>Consider a MongoDB document:</p>
+            <pre><code>
+{
+  _id: ObjectId("671a1234567890abcdef1234"),
+  name: "John",
+  age: 30,
+  createdAt: new Date()
+}
+            </code></pre>
+            <p>Here are three important BSON types:</p>
+            <ul>
+                <li>ObjectId — A commonly used unique identifier for MongoDB documents.</li>
+                <li>Date — Stores a date and time as a BSON date value.</li>
+                <li>Int32 / Int64 — Represent integer values using specific numeric types.</li>
+            </ul>
+            <p>These types go beyond standard JSON's basic data types.</p>
+        </section>
+
+        <section>
+            <h2>3. How you use BSON with Node.js</h2>
+            <p>When using the MongoDB Node.js driver, you usually don't need to convert objects to BSON manually. The driver handles serialization and deserialization.</p>
+            <pre><code>
+const { MongoClient, ObjectId } = require("mongodb");
+
+async function main() {
+  const client = new MongoClient(process.env.MONGODB_URI);
+
+  try {
+    await client.connect();
+
+    const db = client.db("myapp");
+    const users = db.collection("users");
+
+    // Insert a document
+    const result = await users.insertOne({
+      name: "John",
+      age: 30,
+      createdAt: new Date()
+    });
+
+    // Retrieve the document
+    const user = await users.findOne({
+      _id: new ObjectId(result.insertedId)
+    });
+
+    console.log(user);
+  } finally {
+    await client.close();
+  }
+}
+
+main().catch(console.error);
+            </code></pre>
+            <p>The MongoDB driver converts JavaScript values into BSON when sending data to MongoDB and converts returned BSON documents back into JavaScript objects.</p>
+        </section>
+
+        <section>
+            <h2>4. What about Mongoose?</h2>
+            <p>If your Node.js application uses Mongoose, as many applications do, you still work primarily with JavaScript objects and Mongoose models.</p>
+            <pre><code>
+const userSchema = new mongoose.Schema({
+  name: String,
+  age: Number,
+  createdAt: Date
+});
+
+const User = mongoose.model("User", userSchema);
+
+await User.create({
+  name: "John",
+  age: 30,
+  createdAt: new Date()
+});
+            </code></pre>
+            <p>Mongoose works with the MongoDB driver, which handles BSON serialization. Mongoose schemas define application-level data structure and validation, while BSON defines how document data is encoded for MongoDB.</p>
+            <p>The key takeaway: JSON is commonly used to exchange data between your frontend and backend, while BSON is the binary document format MongoDB uses internally to store and transmit documents. You generally don't need to handle BSON directly unless you're working with advanced MongoDB features or low-level data serialization.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">
+            &copy; <span id="year"></span> Aether Corp. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
